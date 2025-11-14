@@ -101,9 +101,15 @@
   }
 
   body {
-    font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     @apply bg-background text-foreground;
+    font-family: "Montserrat", sans-serif;
   }
 
+  button {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
 }
 
