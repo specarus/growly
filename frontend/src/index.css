@@ -33,16 +33,16 @@
     --ring: 18 78% 68%;
 
     --radius: 1rem;
-    
+
     --coral: 8 82% 70%;
     --coral-foreground: 0 0% 100%;
-    
+
     --yellow-soft: 45 90% 75%;
     --yellow-soft-foreground: 240 10% 15%;
-    
+
     --green-soft: 145 35% 65%;
     --green-soft-foreground: 0 0% 100%;
-    
+
     --analytics-dark: 30 25% 15%;
     --analytics-dark-foreground: 0 0% 100%;
 
@@ -110,6 +110,5 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+  }
 }
-}
-

@@ -12,8 +12,8 @@ import AnalyticsWidget from "@/components/dashboard/AnalyticsWidget";
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-[1800px] mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      <header className="border-b border-gray-50 border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-[1750px] mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500"></div>
@@ -62,8 +62,8 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-3 sm:px-6 py-2 sm:py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-9 gap-4 sm:gap-6">
+      <main className="w-full shadow-inner">
+        <div className="max-w-[1750px] mx-auto px-3 sm:px-6 py-2 sm:py-4 grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-4 sm:space-y-6 flex flex-col">
             <div>
               <GreetingWidget />
@@ -71,12 +71,12 @@ const Dashboard = () => {
             <div>
               <CalendarWidget />
             </div>
-            {/*<div>
+            <div>
               <SyncWidget />
-            </div>*/}
+            </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="lg:col-span-2 flex flex-col h-full gap-4 sm:gap-6">
             <div>
               <WeatherWidget />
             </div>
@@ -86,7 +86,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-6">
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-5 gap-4 lg:gap-6">
                 <div className="lg:col-span-3">
@@ -104,6 +104,8 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+      <footer className="h-32 border-t-[1px] border-gray-50">Footer</footer>
     </div>
   );
 };

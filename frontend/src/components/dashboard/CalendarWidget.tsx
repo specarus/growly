@@ -32,12 +32,16 @@ const CalendarWidget = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
-  const selectedDays = [2, 5, 8, 12, 15, 20, 24, 28, 30];
-
   const numDaysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDayIndex = getFirstDayOfMonth(currentYear, currentMonth);
 
-  const days = Array.from({ length: numDaysInMonth }, (_, i) => i + 1);
+  const step = 0.1;
+  const max = 1;
+
+  const days = Array.from({ length: numDaysInMonth }, (_, i) => ({
+    day: i + 1,
+    progress: Math.floor(Math.random() * (max / step + 1)) * step,
+  }));
 
   const paddedDays = [...Array(firstDayIndex).fill(null), ...days];
 
@@ -58,90 +62,96 @@ const CalendarWidget = () => {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <Card className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-[1px] border-gray-50 shadow-md">
-      {/* Header & Navigation */}
-      <div className="flex items-center justify-between mb-2 sm:mb-4">
-        <Button
-          size="icon"
-          className="rounded-full bg-primary hover:bg-primary/90 w-7 h-7 sm:w-8 sm:h-8"
-          onClick={handlePreviousMonth}
-        >
-          <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        </Button>
-        <h3 className="font-semibold text-base sm:text-lg text-gray-900 dark:text-white">
+    <Card className="border-none shadow-none xl:min-h-80 2xl:min-h-96">
+      <div className="flex items-center justify-between xl:mb-2 2xl:mb-4">
+        <h3 className="font-semibold xl:text-lg 2xl:text-xl text-gray-900 dark:text-white">
           {getMonthName(currentMonth)}, {currentYear}
         </h3>
-        <Button
-          size="icon"
-          className="rounded-full bg-primary hover:bg-primary/90 w-7 h-7 sm:w-8 sm:h-8"
-          onClick={handleNextMonth}
-        >
-          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        </Button>
+        <div className="flex gap-3 xl:gap-1 2xl:gap-2 items-center">
+          <Button
+            size="icon"
+            className="rounded-full text-muted-foreground hover:text-white bg-white hover:bg-primary/90 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
+            onClick={handlePreviousMonth}
+          >
+            <ChevronLeft className="xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="rounded-full text-muted-foreground hover:text-white bg-white hover:bg-primary/90 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
+            onClick={handleNextMonth}
+          >
+            <ChevronRight className="xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* Day Names Header */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2 mb-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-1.5 mb-2">
         {dayNames.map((dayName) => (
           <div
             key={dayName}
-            className="text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400"
+            className="text-center xl:text-xs 2xl:text-sm font-medium text-gray-500 dark:text-gray-400"
           >
             {dayName}
           </div>
         ))}
       </div>
 
-      {/* Calendar Grid */}
       {dayWeeks.map((week, weekIndex) => (
         <div
           key={weekIndex}
-          className={`grid grid-cols-7 gap-1.5 sm:gap-2 ${
-            weekIndex < dayWeeks.length - 1 ? "mb-3 sm:mb-4" : ""
+          className={`grid grid-cols-7 xl:gap-1.5 2xl:gap-2 ${
+            weekIndex < dayWeeks.length - 1 ? "xl:mb-2 2xl:mb-3" : ""
           }`}
         >
-          {week.map((day, dayIndex) => {
-            if (day === null) {
-              return (
-                <div
-                  key={`pad-${weekIndex}-${dayIndex}`}
-                  className="aspect-square"
-                ></div>
-              );
+          {week.map((dayObj, dayIndex) => {
+            if (dayObj === null) {
+              return <div key={`pad-${weekIndex}-${dayIndex}`}></div>;
             }
 
-            const isSelected = selectedDays.includes(day);
-
-            let dayClasses =
-              "text-gray-500 dark:text-gray-400 transition-colors duration-300 ease-in-out";
-
-            if (
-              isSelected &&
-              currentYear === now.getFullYear() &&
-              currentMonth === now.getMonth()
-            ) {
-              dayClasses =
-                "border-2 border-primary text-gray-900 dark:text-white font-medium transition-colors duration-300 ease-in-out"; // **2. Add transition class here too**
-
-              if (day === 30) {
-                dayClasses =
-                  "bg-primary text-white font-medium transition-colors duration-300 ease-in-out"; // **3. Add transition class here too**
-              }
-            }
+            const { day, progress } = dayObj;
 
             return (
               <div
                 key={day}
-                className={`aspect-square flex items-center justify-center text-xs sm:text-sm rounded-full ${dayClasses}`}
+                className={`${
+                  progress == 1 ? "text-white bg-primary" : ""
+                } relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 flex items-center justify-center xl:text-xs 2xl:text-sm rounded-full`}
               >
                 {day}
+                <svg
+                  className="absolute w-full h-full inset-0"
+                  viewBox="0 0 100 100"
+                >
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="48"
+                    strokeDasharray={300}
+                    strokeDashoffset={0}
+                    className="stroke-muted-foreground/30 stroke-[2px] fill-none"
+                  />
+                </svg>
+
+                <svg
+                  className="absolute w-full h-full inset-0"
+                  viewBox="0 0 100 100"
+                >
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="48"
+                    strokeDasharray={300}
+                    strokeDashoffset={300 * (1 - progress)}
+                    className="stroke-primary stroke-[4px] fill-none transition-all duration-300"
+                  />
+                </svg>
               </div>
             );
           })}
         </div>
       ))}
 
-      <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-green-500 font-medium">
+      <div className="xl:mt-2 2xl:mt-3 xl:text-xs 2xl:text-sm text-green-500 font-medium">
         +3,2% from last month
       </div>
     </Card>

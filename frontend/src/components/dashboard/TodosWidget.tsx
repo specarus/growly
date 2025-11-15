@@ -53,10 +53,10 @@ const TodosWidget = () => {
   ];
 
   return (
-    <Card className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-0 shadow-none">
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="font-semibold text-base sm:text-lg">Today's Todos</h3>
-        <button className="text-xs sm:text-sm text-muted-foreground hover:text-foreground whitespace-nowrap">
+    <Card className="xl:p-2 2xl:p-6 border-0 shadow-none">
+      <div className="flex items-center justify-between xl:mb-4 2xl:mb-6">
+        <h3 className="font-semibold xl:text-lg 2xl:text-xl">Today's Todos</h3>
+        <button className="xl:text-xs 2xl:text-sm text-muted-foreground hover:text-foreground whitespace-nowrap">
           View Details
         </button>
       </div>
