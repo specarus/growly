@@ -37,7 +37,6 @@ const AnalyticsWidget = () => {
   const containerRef = useRef(null);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // Handle outside click for dropdown
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -48,7 +47,6 @@ const AnalyticsWidget = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Track container height for responsive scaling
   useEffect(() => {
     function updateHeight() {
       if (containerRef.current) {
@@ -83,15 +81,15 @@ const AnalyticsWidget = () => {
           </div>
         </Card>
 
-        <Card className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
+        <Card className="h-full xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
           <div className="absolute xl:top-[-10px] 2xl:top-[-12px] left-1/2 -translate-x-1/2 xl:w-40 2xl:w-48 pointer-events-none select-none">
             <img src="/confetti.png" alt="Confetti" className="w-full h-full" />
           </div>
-          <div className="relative z-10 pt-4 flex flex-col xl:gap-2 2xl:gap-4 items-center">
+          <div className="relative z-10 pt-4 flex flex-col justify-between h-full xl:gap-2 2xl:gap-4 items-center">
             <div className="select-none xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 bg-gray-300 bg-opacity-70 rounded-full flex items-center justify-center text-lg sm:text-xl">
               🎁
             </div>
-            <span className="xl:text-xs 2xl:text-sm opacity-80">
+            <span className="xl:text-sm 2xl:text-md opacity-80">
               Habits Wrapped
             </span>
             <div className="xl:text-3xl 2xl:text-4xl font-bold">2025</div>
@@ -106,7 +104,7 @@ const AnalyticsWidget = () => {
       </div>
 
       <div className="space-y-4 flex-grow">
-        <Card className="xl:p-4 2xl:p-6 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-inner">
+        <Card className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-inner h-full">
           <div className="flex items-center justify-between xl:mb-4 2xl:mb-6 gap-2">
             <h3 className="font-semibold xl:text-lg 2xl:text-xl">
               Favorite Habits
@@ -180,10 +178,9 @@ const AnalyticsWidget = () => {
               ))}
             </div>
 
-            {/* Habit bars */}
             <div
               ref={containerRef}
-              className="relative xl:h-48 2xl:h-64 flex justify-start xl:gap-2 2xl:gap-3"
+              className="relative xl:h-56 2xl:h-80 flex justify-start xl:gap-2 2xl:gap-3 pb-4"
             >
               {habits.map((habit) => {
                 const height = containerHeight
@@ -198,7 +195,7 @@ const AnalyticsWidget = () => {
                       {habit.percentage}%
                     </div>
                     <div
-                      className={`w-16 sm:w-20 ${habit.color} rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
+                      className={`w-16 sm:w-20 ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
                       style={{ height: `${height}px` }}
                     ></div>
                   </div>
