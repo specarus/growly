@@ -61,8 +61,8 @@ const AnalyticsWidget = () => {
   const maxPercentage = Math.max(...habits.map((h) => h.percentage));
 
   return (
-    <div className="flex xl:gap-4 2xl:gap-6">
-      <div className="flex flex-col gap-4">
+    <div className="flex xl:gap-4 2xl:gap-6 h-full">
+      <div className="grid gap-3">
         <div className="flex items-center justify-between">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
         </div>
@@ -76,23 +76,37 @@ const AnalyticsWidget = () => {
               Positive Habits
             </span>
           </div>
-          <div className="xl:text-2xl 2xl:text-4xl font-bold text-white mb-1">
+          <div className="xl:text-2xl 2xl:text-3xl font-bold text-white mb-1">
             +58,2%
           </div>
         </Card>
 
-        <Card className="h-full xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
+        <Card className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-gradient-to-br from-green-soft to-green-600">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <TrendingUp className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
+            </div>
+            <span className="text-white/80 xl:text-xs 2xl:text-sm">
+              Positive Habits
+            </span>
+          </div>
+          <div className="xl:text-2xl 2xl:text-3xl font-bold text-white mb-1">
+            +58,2%
+          </div>
+        </Card>
+
+        <Card className="h-full p-2 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
           <div className="absolute xl:top-[-10px] 2xl:top-[-12px] left-1/2 -translate-x-1/2 xl:w-40 2xl:w-48 pointer-events-none select-none">
             <img src="/confetti.png" alt="Confetti" className="w-full h-full" />
           </div>
-          <div className="relative z-10 pt-4 flex flex-col justify-between h-full xl:gap-2 2xl:gap-4 items-center">
+          <div className="relative z-10 pt-2 flex flex-col justify-between h-full xl:gap-2 2xl:gap-3 items-center">
             <div className="select-none xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 bg-gray-300 bg-opacity-70 rounded-full flex items-center justify-center text-lg sm:text-xl">
               🎁
             </div>
             <span className="xl:text-sm 2xl:text-md opacity-80">
               Habits Wrapped
             </span>
-            <div className="xl:text-3xl 2xl:text-4xl font-bold">2025</div>
+            <div className="xl:text-3xl 2xl:text-3xl font-bold">2025</div>
             <Button
               variant="secondary"
               className="w-full rounded-full bg-card hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2"
@@ -126,7 +140,6 @@ const AnalyticsWidget = () => {
                 />
               </div>
 
-              {/* Month Dropdown */}
               <div className="relative xl:w-32 2xl:w-40" ref={dropdownRef}>
                 <div
                   onClick={() => setOpen(!open)}
@@ -160,7 +173,6 @@ const AnalyticsWidget = () => {
             </div>
           </div>
 
-          {/* Past five days */}
           <div className="space-y-4 overflow-x-auto">
             <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground mb-2 min-w-max sm:min-w-0">
               {pastFiveDays.map((day, index) => (
@@ -180,7 +192,7 @@ const AnalyticsWidget = () => {
 
             <div
               ref={containerRef}
-              className="relative xl:h-56 2xl:h-80 flex justify-start xl:gap-2 2xl:gap-3 pb-4"
+              className="relative xl:h-80 2xl:h-[350px] flex justify-start xl:gap-2 2xl:gap-3 pb-4"
             >
               {habits.map((habit) => {
                 const height = containerHeight

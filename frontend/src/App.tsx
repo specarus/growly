@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DashboardPage from "./pages/DashboardPage";
+import TodosPage from "./pages/TodosPage";
 
 const queryClient = new QueryClient();
 
@@ -16,8 +17,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/todos" element={<TodosPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

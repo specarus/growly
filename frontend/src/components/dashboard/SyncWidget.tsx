@@ -24,9 +24,9 @@ const SyncWidget = () => {
         />
       </div>
 
-      <div className="relative inset-0 bg-[#fefbee] xl:p-6 2xl:p-4 rounded-2xl z-10">
+      <div className="flex flex-col justify-between relative inset-0 bg-[#fefbee] xl:p-6 2xl:p-4 rounded-2xl z-10 h-full">
         <h3 className="font-semibold xl:text-base 2xl:text-lg mb-1">
-          Sync anywhere with <br />{" "}
+          Sync anywhere with <br />
           <span className="text-green-soft">Growly</span> Mobile App
         </h3>
         <p className="text-muted-foreground xl:text-xs 2xl:text-sm mb-3 sm:mb-4">

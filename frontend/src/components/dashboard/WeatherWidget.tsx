@@ -130,7 +130,7 @@ const WeatherWidget = ({ onReady }: WeatherWidgetProps) => {
       </div>
 
       <div
-        className="flex flex-col justify-top select-none xl:h-64 2xl:h-80 bg-contain bg-bottom bg-[#eee9cf] bg-no-repeat shadow-md xl:p-4 2xl:p-6 xl:rounded-xl 2xl:rounded-2xl border-0 relative"
+        className="flex flex-col justify-top select-none xl:h-64 2xl:h-80 bg-contain bg-bottom bg-[#eee9cf] bg-no-repeat shadow-none xl:p-4 2xl:p-6 xl:rounded-xl 2xl:rounded-2xl border-0 relative"
         style={{ backgroundImage: "url('/seasons/autumn.png')" }}
       >
         <div className="absolute xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-white grid place-items-center">

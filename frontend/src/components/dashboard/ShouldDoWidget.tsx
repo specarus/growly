@@ -18,24 +18,26 @@ const ShouldDoWidget = () => {
   ];
 
   return (
-    <Card className="xl:p-4 2xl:p-6 xl:rounded-2xl 2xl:rounded-3xl border-[1px] border-gray-50">
-      <div className="flex items-center justify-between xl:mb-3 2xl:mb-4">
+    // 💡 Key Change: Added 'flex flex-col' to make the Card a column-based flex container
+    // that stretches to the full height provided by its parent in DashboardPage.
+    <Card className="flex flex-col xl:rounded-2xl 2xl:rounded-3xl border-none shadow-none h-full">
+      {/* Widget Header - fixed height */}
+      <div className="flex items-center justify-between xl:mb-2 2xl:mb-3">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">Should Do!</h3>
         <button className="xl:text-xs 2xl:text-sm text-muted-foreground hover:text-foreground whitespace-nowrap">
           View Details
         </button>
       </div>
 
-      <div
-        className="grid gap-4"
-        style={{ gridTemplateRows: `repeat(${activities.length}, 1fr)` }}
-      >
+      {/* Activity List Container - uses 'flex-1' to take all remaining vertical space */}
+      <div className="flex flex-col flex-1 gap-4">
         {activities.map((activity) => (
+          // Individual Activity Item - uses 'flex-1' to share the list container's height equally
           <div
             key={activity.id}
-            className="shadow-inner select-none border-[1px] border-dashed flex items-center justify-between xl:p-3 2xl:p-4 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
+            className="flex-1 shadow-inner select-none border-[1px] border-dashed flex items-center justify-between xl:py-2 2xl:py-3 xl:px-3 2xl:px-4 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
           >
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span className="xl:text-2xl 2xl:text-3xl flex-shrink-0">
                 {activity.emoji}
               </span>
