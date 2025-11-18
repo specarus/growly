@@ -22,7 +22,9 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
   const safeProgress = Math.min(100, Math.max(0, progress));
   const nextLevel = level + 1;
 
-  const formatNumber = (num: number): string => num.toLocaleString();
+  const formatNumber = (num: number): string => {
+    return new Intl.NumberFormat("en-US").format(num);
+  };
 
   const maxDailyXP = 1000;
   const maxStreakBonus = 200;
