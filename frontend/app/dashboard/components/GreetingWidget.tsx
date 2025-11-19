@@ -7,41 +7,49 @@ import { useState, useEffect } from "react";
 interface GreetingWidgetProps {}
 
 const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
-  const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
+  const [currentDateTime, setCurrentDateTime] = useState<Date | null>(null);
 
   useEffect(() => {
-    const timerId = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
+    const updateTime = () => setCurrentDateTime(new Date());
+
+    updateTime();
+
+    const timerId = setInterval(updateTime, 1000);
 
     return () => clearInterval(timerId);
   }, []);
 
-  const today: Date = currentDateTime;
+  const dayName: string | null = currentDateTime
+    ? currentDateTime.toLocaleDateString("en-US", {
+        weekday: "long",
+      })
+    : null;
 
-  const dayName: string = today.toLocaleDateString("en-US", {
-    weekday: "long",
-  });
+  const formattedDate: string | null = currentDateTime
+    ? currentDateTime.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
 
-  const formattedDate: string = today.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-  const formattedTime: string = today.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const formattedTime: string | null = currentDateTime
+    ? currentDateTime.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
 
   return (
     <div className="flex flex-col xl:gap-4 2xl:gap-6 xl:pt-2 2xl:pt-6 text-foreground">
       <div>
         <h1 className="xl:text-3xl 2xl:text-4xl font-bold mb-1">
-          Happy {dayName}
+          Happy {dayName ?? "Day"}
         </h1>
         <p className="xl:text-sm 2xl:text-base text-muted-foreground">
-          {formattedDate}, {formattedTime}
+          {formattedDate && formattedTime
+            ? `${formattedDate}, ${formattedTime}`
+            : "Loading time..."}
         </p>
       </div>
 

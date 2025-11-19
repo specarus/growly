@@ -50,9 +50,21 @@ const CalendarWidget: React.FC = () => {
   const step = 0.1;
   const max = 1;
 
+  const getDeterministicProgress = (
+    year: number,
+    monthIndex: number,
+    day: number
+  ) => {
+    const pseudoRandom = Math.sin(year * 10000 + monthIndex * 100 + day) * 10000;
+    const normalized = pseudoRandom - Math.floor(pseudoRandom);
+    const buckets = max / step + 1;
+    const bucketValue = Math.floor(normalized * buckets) * step;
+    return Math.min(max, Number(bucketValue.toFixed(2)));
+  };
+
   const days: DayData[] = Array.from({ length: numDaysInMonth }, (_, i) => ({
     day: i + 1,
-    progress: Math.floor(Math.random() * (max / step + 1)) * step,
+    progress: getDeterministicProgress(currentYear, currentMonth, i + 1),
   }));
 
   const paddedDays: (DayData | null)[] = [

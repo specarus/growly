@@ -1,3 +1,7 @@
+"use client";
+
+import React from "react";
+import { useRouter } from "next/navigation";
 import { Search, Bell, HelpCircle, User } from "lucide-react";
 import Button from "../components/ui/Button";
 
@@ -14,6 +18,14 @@ const IconButton: React.FC<IconButtonProps> = ({ children }) => {
 };
 
 export default function Header() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <header className="sticky top-0 left-0 shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
       <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 flex items-center justify-between">
@@ -42,9 +54,13 @@ export default function Header() {
           <IconButton>
             <HelpCircle className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
           </IconButton>
-          <IconButton>
+          <Button
+            onClick={handleLogout}
+            className="hover:text-white hover:bg-green-soft p-2 transition duration-100 gap-1"
+          >
             <User className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
-          </IconButton>
+            <span className="text-xs font-medium hidden sm:inline">Logout</span>
+          </Button>
         </div>
       </div>
     </header>

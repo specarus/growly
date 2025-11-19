@@ -1,140 +1,9 @@
-"use client";
-
 import DetailsButton from "@/app/components/ui/DetailsButton";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
-interface WeatherWidgetProps {
-  onReady?: () => void;
-}
+interface WeatherWidgetProps {}
 
-interface WeatherData {
-  temperature: number;
-  windSpeed: number;
-  precipitation: number;
-  apparentTemp: number;
-  weatherCode: number;
-}
-
-interface GeoLocation {
-  latitude: number;
-  longitude: number;
-}
-
-const getGeolocation = (): Promise<GeoLocation> => {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      return reject(new Error("Geolocation not supported"));
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) =>
-        resolve({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        }),
-      (err) =>
-        reject(new Error(`Location error: ${err.code} - ${err.message}`)),
-      { timeout: 5000 }
-    );
-  });
-};
-const WeatherWidget: React.FC<WeatherWidgetProps> = ({
-  onReady,
-}: WeatherWidgetProps) => {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadWeather = async () => {
-      let latitude = 0;
-      let longitude = 0;
-      let locationFound = false;
-
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      try {
-        const location = await getGeolocation();
-        latitude = location.latitude;
-        longitude = location.longitude;
-        locationFound = true;
-      } catch (e) {
-        console.warn("Geolocation failed. No weather data will be fetched.");
-      }
-
-      if (locationFound) {
-        try {
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=precipitation,apparent_temperature&timezone=${timezone}`;
-
-          const response = await fetch(url);
-          const data = await response.json();
-
-          if (data.error) {
-            throw new Error(data.reason || "Weather API returned an error.");
-          }
-
-          if (active) {
-            const current = data.current_weather;
-            const latestIndex = data.hourly.time.length - 1;
-
-            setWeather({
-              temperature: Math.round(current.temperature),
-              windSpeed: Math.round(current.windspeed),
-              precipitation: data.hourly.precipitation[latestIndex],
-              apparentTemp: Math.round(
-                data.hourly.apparent_temperature[latestIndex]
-              ),
-              weatherCode: current.weathercode,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to fetch weather:", error);
-        }
-      }
-
-      if (active) {
-        onReady?.();
-      }
-    };
-
-    loadWeather();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  if (!weather)
-    return (
-      <div className="xl:pt-2 2xl:pt-6">
-        <div className="flex items-center justify-center xl:h-64 2xl:h-80">
-          Loading...
-        </div>
-      </div>
-    );
-
-  const weatherIcons: Record<number, string> = {
-    0: "/weather/sunny.png",
-    1: "/weather/partly-cloudy.png",
-    2: "/weather/partly-cloudy.png",
-    3: "/weather/cloudy.png",
-    45: "/weather/foggy.png",
-    48: "/weather/foggy.png",
-    51: "/weather/rain.png",
-    53: "/weather/rain.png",
-    55: "/weather/rain.png",
-    61: "/weather/rain.png",
-    63: "/weather/rain.png",
-    65: "/weather/rain.png",
-    71: "/weather/snow.png",
-    73: "/weather/snow.png",
-    75: "/weather/snow.png",
-    95: "/weather/thunderstorm.png",
-    99: "/weather/thunderstorm.png",
-  };
-
-  // const iconUrl = weatherIcons[weather.weatherCode] || "/weather/unknown.png";
+const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
   const iconUrl = "/weather/sunny.png";
 
   return (
@@ -159,7 +28,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         </div>
 
         <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-4 2xl:mb-6">
-          {weather.temperature}°C
+          7°C
         </p>
 
         <div className="flex items-center gap-6">
@@ -167,27 +36,21 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Feels like
             </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">
-              {-1 * weather.apparentTemp}°C
-            </div>
+            <div className="font-semibold xl:text-xs 2xl:text-base">4°C</div>
           </div>
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Wind
             </div>
             <div className="font-semibold xl:text-xs 2xl:text-base flex items-center gap-1">
-              <span className="whitespace-nowrap">
-                {weather.windSpeed} km/h
-              </span>
+              <span className="whitespace-nowrap">4 km/h</span>
             </div>
           </div>
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Precipitation
             </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">
-              {weather.precipitation} mm
-            </div>
+            <div className="font-semibold xl:text-xs 2xl:text-base">0.1 mm</div>
           </div>
         </div>
       </div>
