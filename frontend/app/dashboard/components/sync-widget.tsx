@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/app/components/ui/Button";
+import Button from "@/app/components/ui/button";
 import Image from "next/image";
 
 interface SyncWidgetProps {}

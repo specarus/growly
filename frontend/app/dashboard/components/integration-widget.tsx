@@ -1,4 +1,4 @@
-import Button from "@/app/components/ui/Button";
+import Button from "@/app/components/ui/button";
 import { Link as LinkIcon } from "lucide-react";
 
 const IntegrationWidget = () => {

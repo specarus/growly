@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Button from "@/app/components/ui/Button";
+import Button from "@/app/components/ui/button";
 
 type DayName = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
 
@@ -55,7 +55,8 @@ const CalendarWidget: React.FC = () => {
     monthIndex: number,
     day: number
   ) => {
-    const pseudoRandom = Math.sin(year * 10000 + monthIndex * 100 + day) * 10000;
+    const pseudoRandom =
+      Math.sin(year * 10000 + monthIndex * 100 + day) * 10000;
     const normalized = pseudoRandom - Math.floor(pseudoRandom);
     const buckets = max / step + 1;
     const bucketValue = Math.floor(normalized * buckets) * step;

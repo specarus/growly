@@ -1,4 +1,4 @@
-import DetailsButton from "@/app/components/ui/DetailsButton";
+import DetailsButton from "@/app/components/ui/details-button";
 import Image from "next/image";
 
 interface WeatherWidgetProps {}

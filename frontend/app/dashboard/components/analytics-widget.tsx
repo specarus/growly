@@ -4,7 +4,7 @@ import { ChevronDown, TrendingUp, Search } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import confettiImage from "@/public/confetti.png";
-import Button from "@/app/components/ui/Button";
+import Button from "@/app/components/ui/button";
 
 interface Habit {
   name: string;

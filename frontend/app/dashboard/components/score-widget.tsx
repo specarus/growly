@@ -1,4 +1,4 @@
-import CircularProgress from "./CircularProgress";
+import CircularProgress from "./circular-progress";
 
 interface ScoreWidgetProps {
   totalXP: number;

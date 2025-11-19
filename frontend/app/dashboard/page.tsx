@@ -1,12 +1,12 @@
-import AnalyticsWidget from "./components/AnalyticsWidget";
-import CalendarWidget from "./components/CalendarWidget";
-import GreetingWidget from "./components/GreetingWidget";
-import IntegrationWidget from "./components/IntegrationWidget";
-import ScoreWidget from "./components/ScoreWidget";
-import ShouldDoWidget from "./components/ShouldDoWidget";
-import SyncWidget from "./components/SyncWidget";
-import TodosWidget from "./components/TodosWidget";
-import WeatherWidget from "./components/WeatherWidget";
+import AnalyticsWidget from "./components/analytics-widget";
+import CalendarWidget from "./components/calendar-widget";
+import GreetingWidget from "./components/greeting-widget";
+import IntegrationWidget from "./components/integration-widget";
+import ScoreWidget from "./components/score-widget";
+import ShouldDoWidget from "./components/should-do-widget";
+import SyncWidget from "./components/sync-widget";
+import TodosWidget from "./components/todos-widget";
+import WeatherWidget from "./components/weather-widget";
 
 const DashboardPage: React.FC = () => {
   return (

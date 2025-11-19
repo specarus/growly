@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import React from "react";
-import Header from "./Header";
+import Header from "./header";
 
 const HeaderWrapper: React.FC = () => {
   const pathname = usePathname();

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Mail, Lock, User } from "lucide-react";
-import Button from "./ui/Button";
+import Button from "./ui/button";
 
 interface LabelProps {
   children: React.ReactNode;

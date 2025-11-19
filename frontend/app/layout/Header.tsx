@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Search, Bell, HelpCircle, User } from "lucide-react";
-import Button from "../components/ui/Button";
+import Button from "../components/ui/button";
 
 interface IconButtonProps {
   children: React.ReactNode;
