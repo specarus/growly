@@ -64,3 +64,8 @@ export type Account = Prisma.AccountModel
  * 
  */
 export type Verification = Prisma.VerificationModel
+/**
+ * Model Todo
+ * 
+ */
+export type Todo = Prisma.TodoModel

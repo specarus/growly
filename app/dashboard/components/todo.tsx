@@ -1,7 +1,7 @@
 import { Check, Clock, LucideIcon, MapPin } from "lucide-react";
 
 interface TodoItem {
-  id: number;
+  id: string;
   title: string;
   time: string;
   location: string;

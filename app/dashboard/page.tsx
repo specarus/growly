@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { headers } from "next/headers";
 import Dashboard from "./dashboard-page";
 import { auth } from "@/lib/auth";

@@ -24,6 +24,7 @@ model User {
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  todos         Todo[]
 
   @@unique([email])
   @@map("user")
@@ -72,4 +73,41 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model Todo {
+  id              String       @id @default(uuid())
+  title           String
+  description     String?
+  category        String?
+  priority        TodoPriority @default(MEDIUM)
+  status          TodoStatus   @default(PLANNED)
+  dueAt           DateTime?
+  durationMinutes Int?
+  location        String?
+  reminder        String?
+  recurrence      String?
+  tags            String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dueAt])
+  @@unique([id, userId])
+  @@map("todo")
+}
+
+enum TodoPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TodoStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  MISSED
 }

@@ -95,11 +95,11 @@ const AnalyticsWidget: React.FC = () => {
 
   return (
     <div className="flex xl:gap-4 2xl:gap-6 h-full text-foreground">
-      <div className="grid gap-3">
+      <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
         </div>
-        <div className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-linear-to-br from-green-soft to-green-600">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600">
           <div className="flex items-center gap-2 mb-2">
             <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <TrendingUp className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
@@ -108,12 +108,10 @@ const AnalyticsWidget: React.FC = () => {
               Positive Habits
             </span>
           </div>
-          <div className="xl:text-2xl 2xl:text-3xl font-bold text-white mb-1">
-            +58,2%
-          </div>
+          <div className="xl:text-3xl font-bold text-white mb-1">+58,2%</div>
         </div>
 
-        <div className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-linear-to-br from-blue-300 to-blue-600">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600">
           <div className="flex items-center gap-2 mb-2">
             <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <CheckCircle className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
@@ -122,12 +120,10 @@ const AnalyticsWidget: React.FC = () => {
               Completion Rate
             </span>
           </div>
-          <div className="xl:text-2xl 2xl:text-3xl font-bold text-white mb-1">
-            85%
-          </div>
+          <div className="xl:text-3xl font-bold text-white mb-1">85%</div>
         </div>
 
-        <div className="h-full p-2 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
+        <div className="h-full p-2 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
           <div className="absolute xl:-top-2.5 2xl:-top-3 left-1/2 -translate-x-1/2 xl:w-40 2xl:w-48 pointer-events-none select-none">
             <Image
               src={confettiImage}
@@ -137,14 +133,14 @@ const AnalyticsWidget: React.FC = () => {
               className="w-full h-full"
             />
           </div>
-          <div className="relative z-10 pt-2 flex flex-col justify-between h-full xl:gap-2 2xl:gap-3 items-center">
-            <div className="select-none xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 bg-gray-300/30 rounded-full flex items-center justify-center text-lg sm:text-xl">
+          <div className="relative z-10 xl:pt-6 2xl:pt-2 flex flex-col justify-between h-full xl:gap-2 2xl:gap-3 items-center">
+            <div className="select-none xl:w-12 xl:h-12 bg-gray-300/30 rounded-full flex items-center justify-center text-lg sm:text-xl">
               🎁
             </div>
             <span className="xl:text-sm 2xl:text-md opacity-80">
               Habits Wrapped
             </span>
-            <div className="xl:text-3xl 2xl:text-3xl font-bold">2025</div>
+            <div className="xl:text-3xl font-bold">2025</div>
             <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100">
               View
             </Button>

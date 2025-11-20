@@ -1,16 +1,24 @@
-import DetailsButton from "@/app/components/ui/details-button";
-import Todo from "./todo";
+import Link from "next/link";
+import { headers } from "next/headers";
 import {
   Book,
-  ShoppingCart,
-  Salad,
-  BookOpen,
-  Waves,
+  Briefcase,
+  CalendarDays,
+  Clock3,
+  HeartPulse,
   LucideIcon,
+  Palette,
+  ShoppingCart,
+  Sparkles,
 } from "lucide-react";
 
+import DetailsButton from "@/app/components/ui/details-button";
+import Todo from "./todo";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
 interface TodoItem {
-  id: number;
+  id: string;
   title: string;
   time: string;
   location: string;
@@ -19,68 +27,114 @@ interface TodoItem {
   iconBg: string;
 }
 
-interface TodosWidgetProps {}
+const categoryIcon: Record<string, LucideIcon> = {
+  Work: Briefcase,
+  Personal: Book,
+  Wellness: HeartPulse,
+  Errand: ShoppingCart,
+  Creative: Palette,
+};
 
-const TodosWidget: React.FC<TodosWidgetProps> = () => {
-  const todos: TodoItem[] = [
-    {
-      id: 1,
-      title: "Study",
-      time: "10:00am",
-      location: "K-Cafe",
-      icon: Book,
-      completed: false,
-      iconBg: "bg-yellow-soft",
-    },
-    {
-      id: 2,
-      title: "Groceries",
-      time: "02:00pm",
-      location: "Hayday Market",
-      icon: ShoppingCart,
-      completed: false,
-      iconBg: "bg-muted",
-    },
-    {
-      id: 3,
-      title: "Eat Healthy Food",
-      time: "08:30am",
-      location: "Home",
-      icon: Salad,
-      completed: true,
-      iconBg: "bg-green-soft/20",
-    },
-    {
-      id: 4,
-      title: "Read a book",
-      time: "08:00am",
-      location: "Library",
-      icon: BookOpen,
-      completed: true,
-      iconBg: "bg-coral/20",
-    },
-    {
-      id: 5,
-      title: "Swimming for 45min",
-      time: "06:00am",
-      location: "Gym Pool",
-      icon: Waves,
-      completed: true,
-      iconBg: "bg-blue-100",
-    },
-  ];
+const toTime = (dueAt?: Date | string | null) => {
+  if (!dueAt) return "--:--";
+  const date = new Date(dueAt);
+  if (Number.isNaN(date.getTime())) return "--:--";
+  return date.toISOString().slice(11, 16);
+};
+
+const TodosWidget = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const todosFromDb =
+    session?.user?.id
+      ? await prisma.todo.findMany({
+          where: { userId: session.user.id },
+          orderBy: { dueAt: "asc" },
+          take: 6,
+        })
+      : [];
+
+  const hasTodos = todosFromDb.length > 0;
+
+  const todos: TodoItem[] = todosFromDb.map(
+    ({ title, dueAt, location, priority, status, id, category }) => ({
+      id,
+      title,
+      time: toTime(dueAt),
+      location: location || "No location",
+      icon: categoryIcon[category || ""] || Sparkles,
+      completed: status?.toUpperCase() === "COMPLETED",
+      iconBg:
+        priority?.toUpperCase() === "HIGH"
+          ? "bg-coral/20"
+          : priority?.toUpperCase() === "CRITICAL"
+          ? "bg-coral/50"
+          : "bg-muted",
+    })
+  );
+
+  const topTodos = todos.slice(0, 3);
+  const remainingCount = Math.max(todos.length - topTodos.length, 0);
 
   return (
     <div className="xl:p-2 2xl:p-6 text-foreground">
       <div className="flex items-center justify-between xl:mb-4 2xl:mb-6">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">Today's Todos</h3>
-        <DetailsButton />
+        <DetailsButton href="/dashboard/todos" />
       </div>
 
       <div className="xl:space-y-3 2xl:space-y-4">
-        {todos.map((todo) => (
-          <Todo key={todo.id} todo={todo} />
-        ))}
+        {hasTodos ? (
+          topTodos.map((todo) => (
+            <Link
+              key={todo.id}
+              href={`/dashboard/todos/${todo.id}/edit`}
+              className="block hover:opacity-90 transition"
+            >
+              <Todo todo={todo} />
+            </Link>
+          ))
+        ) : (
+          <div className="border border-dashed border-gray-200 rounded-2xl bg-white px-4 py-5 text-sm text-muted-foreground">
+            <p className="font-semibold text-foreground mb-1">No todos yet</p>
+            <p>Start a new one to see it here.</p>
+            <Link
+              href="/dashboard/todos/create"
+              className="mt-3 inline-flex items-center gap-2 text-xs text-primary hover:underline"
+            >
+              <Sparkles className="w-3 h-3" />
+              Create a todo
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {hasTodos && remainingCount > 0 ? (
+        <div className="mt-3 text-xs text-muted-foreground">
+          +{remainingCount} more waiting —{" "}
+          <Link href="/dashboard/todos" className="text-primary hover:underline">
+            view all
+          </Link>
+        </div>
+      ) : null}
+
+      <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <CalendarDays className="w-3 h-3" />
+        <span className="truncate">
+          {hasTodos
+            ? "Tap a todo to edit or reschedule."
+            : "No todos yet — start by creating one."}
+        </span>
+      </div>
+      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+        <Clock3 className="w-3 h-3" />
+        <span className="truncate">
+          {hasTodos
+            ? "Need a new one? Start fresh in seconds."
+            : "Click the link above to open the create flow."}
+        </span>
       </div>
     </div>
   );

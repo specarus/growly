@@ -9,7 +9,21 @@
 * 🟢 You can import this file directly.
 */
 
+export const TodoPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+} as const
+
+export type TodoPriority = (typeof TodoPriority)[keyof typeof TodoPriority]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const TodoStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  MISSED: 'MISSED'
+} as const
+
+export type TodoStatus = (typeof TodoStatus)[keyof typeof TodoStatus]

@@ -29,7 +29,7 @@ const SyncWidget: React.FC<SyncWidgetProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col justify-between relative bg-light-yellow xl:p-6 2xl:p-4 rounded-2xl z-10 h-full">
+      <div className="flex flex-col justify-between shadow-md relative bg-light-yellow xl:p-6 2xl:p-4 rounded-2xl z-10 h-full">
         <h3 className="font-semibold xl:text-base 2xl:text-lg mb-1">
           Sync anywhere with <br />
           <span className="text-green-soft">Growly</span> Mobile App
