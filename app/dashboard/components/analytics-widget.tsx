@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, TrendingUp, Search } from "lucide-react";
+import { ChevronDown, TrendingUp, Search, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import confettiImage from "@/public/confetti.png";
@@ -99,7 +99,6 @@ const AnalyticsWidget: React.FC = () => {
         <div className="flex items-center justify-between">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
         </div>
-
         <div className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-linear-to-br from-green-soft to-green-600">
           <div className="flex items-center gap-2 mb-2">
             <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
@@ -114,17 +113,17 @@ const AnalyticsWidget: React.FC = () => {
           </div>
         </div>
 
-        <div className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-linear-to-br from-green-soft to-green-600">
+        <div className="xl:p-2 2xl:p-4 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-sm bg-linear-to-br from-blue-300 to-blue-600">
           <div className="flex items-center gap-2 mb-2">
             <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-              <TrendingUp className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
+              <CheckCircle className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
             </div>
             <span className="text-white/80 xl:text-xs 2xl:text-sm">
-              Positive Habits
+              Completion Rate
             </span>
           </div>
           <div className="xl:text-2xl 2xl:text-3xl font-bold text-white mb-1">
-            +58,2%
+            85%
           </div>
         </div>
 

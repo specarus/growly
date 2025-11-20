@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useCallback } from "react";
 import { AuthModal } from "./components/auth/auth-modal";
-import { ModalContext } from "./context/ModalContext";
+import { ModalContext } from "./context/modal-context";
 
 export default function LandingPage() {
   const context = useContext(ModalContext);

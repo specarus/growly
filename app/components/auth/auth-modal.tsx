@@ -7,8 +7,24 @@ import { Mail, Lock, User } from "lucide-react";
 import Button from "../ui/button";
 
 import { signIn, signUp } from "@/lib/actions/auth-actions";
+import { useSession } from "@/app/context/session-context";
 
 import { useRouter } from "next/navigation";
+
+type Session = typeof import("@/lib/auth").auth.$Infer.Session;
+
+const getSessionFromResult = (result: unknown): Session | null => {
+  if (
+    typeof result === "object" &&
+    result !== null &&
+    "session" in result &&
+    (result as { session?: Session | null }).session
+  ) {
+    return (result as { session?: Session | null }).session ?? null;
+  }
+
+  return null;
+};
 
 interface LabelProps {
   children: React.ReactNode;
@@ -43,6 +59,7 @@ interface FormProps {
 
 const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
   const router = useRouter();
+  const { setSession } = useSession();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -60,7 +77,16 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
       if (!result.user) {
         setError("Invalid email or password");
+        return;
       }
+
+      const session = getSessionFromResult(result);
+      if (session) {
+        setSession(session);
+      }
+
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError(
         `Authentication error: ${
@@ -153,6 +179,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
 const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
   const router = useRouter();
+  const { setSession } = useSession();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -171,7 +198,16 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
       if (!result.user) {
         setError("Failed to create account");
+        return;
       }
+
+      const session = getSessionFromResult(result);
+      if (session) {
+        setSession(session);
+      }
+
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError(
         `Authentication error: ${

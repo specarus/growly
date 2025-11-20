@@ -3,9 +3,10 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 
 import Header from "./components/layout/header";
-import { ModalProvider } from "./context/ModalContext";
+import { ModalProvider } from "./context/modal-context";
 import { auth } from "../lib/auth";
 import { headers } from "next/headers";
+import { SessionProvider } from "./context/session-context";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -30,12 +31,14 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${montserrat.variable} antialiased`}>
       <body>
-        <ModalProvider>
-          <section>
-            <Header session={session} />
-          </section>
-          <section className="w-full h-full">{children}</section>
-        </ModalProvider>
+        <SessionProvider initialSession={session}>
+          <ModalProvider>
+            <section>
+              <Header />
+            </section>
+            <section className="w-full h-full">{children}</section>
+          </ModalProvider>
+        </SessionProvider>
       </body>
     </html>
   );

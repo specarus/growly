@@ -2,15 +2,16 @@
 
 import { useContext } from "react";
 
+import { useRouter } from "next/navigation";
+
 import { Search, Bell, HelpCircle } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
 
-import { ModalContext } from "@/app/context/ModalContext";
-
-import { auth } from "@/lib/auth";
+import { ModalContext } from "@/app/context/modal-context";
 
 import { signOut } from "@/lib/actions/auth-actions";
+import { useSession } from "@/app/context/session-context";
 
 interface IconButtonProps {
   children: React.ReactNode;
@@ -24,13 +25,20 @@ const IconButton: React.FC<IconButtonProps> = ({ children }) => {
   );
 };
 
-type Session = typeof auth.$Infer.Session;
-
-export default function Header({ session }: { session: Session | null }) {
+export default function Header() {
   const context = useContext(ModalContext);
   if (!context) return null;
 
   const { setShowModal } = context;
+  const router = useRouter();
+  const { session, setSession } = useSession();
+
+  const handleSignOut = async () => {
+    await signOut();
+    setSession(null);
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
@@ -62,7 +70,7 @@ export default function Header({ session }: { session: Session | null }) {
           </IconButton>
           {session ? (
             <Button
-              onClick={signOut}
+              onClick={handleSignOut}
               className="xl:text-sm 2xl:text-[16px] hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
             >
               Log out
