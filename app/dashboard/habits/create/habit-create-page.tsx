@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlarmCheck,
   AlarmClockCheck,
@@ -30,17 +30,32 @@ interface HabitFormState {
   reminder: string;
 }
 
+interface HabitFormProps {
+  mode?: "create" | "edit";
+  initialHabit?: Partial<HabitFormState>;
+}
+
 const inputClassName =
   "w-full rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-sm 2xl:text-base text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30";
 
-const HabitCreatePage: React.FC = () => {
+const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHabit }) => {
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  const buildDefaultForm = useMemo(
+    () => ({
+      name: "",
+      description: "",
+      cadence: "Daily" as Cadence,
+      startDate: today,
+      timeOfDay: "07:00",
+      reminder: "15 minutes before",
+    }),
+    [today]
+  );
+
   const [form, setForm] = useState<HabitFormState>({
-    name: "",
-    description: "",
-    cadence: "Daily",
-    startDate: new Date().toISOString().slice(0, 10),
-    timeOfDay: "07:00",
-    reminder: "15 minutes before",
+    ...buildDefaultForm,
+    ...initialHabit,
   });
   const [saved, setSaved] = useState(false);
 
@@ -66,10 +81,26 @@ const HabitCreatePage: React.FC = () => {
   ];
 
   const safeguards = [
-    "Cap to one tiny win on busy days instead of skipping.",
-    "Prep gear the night before to protect the cue.",
-    "Pair with an existing routine so it is hard to miss.",
+    {
+      title: "Tiny win fallback",
+      label: "Rescue",
+      detail: "If the day slips, do one micro rep (1 minute) and keep the streak alive.",
+    },
+    {
+      title: "Night-before prep",
+      label: "Guardrail",
+      detail: "Lay out gear, water, and a note so the cue is ready when you wake.",
+    },
+    {
+      title: "Attach to routine",
+      label: "Anchor",
+      detail: "Pair this habit to something you already do (coffee, commute, shutdown).",
+    },
   ];
+
+  useEffect(() => {
+    setForm({ ...buildDefaultForm, ...initialHabit });
+  }, [buildDefaultForm, initialHabit]);
 
   const handleChange =
     (field: keyof HabitFormState) =>
@@ -90,10 +121,12 @@ const HabitCreatePage: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
               <BadgeCheck className="w-4 h-4" />
-              <span>Create habit</span>
+              <span>{mode === "edit" ? "Edit habit" : "Create habit"}</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">Design a new habit</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                {mode === "edit" ? "Tune this habit" : "Design a new habit"}
+              </h1>
               <p className="text-sm text-muted-foreground max-w-2xl">
                 Set the cadence, start small, and add the reminders that keep you honest.
               </p>
@@ -239,7 +272,7 @@ const HabitCreatePage: React.FC = () => {
                 type="submit"
                 className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
               >
-                Save habit draft
+                {mode === "edit" ? "Update habit" : "Save habit draft"}
               </Button>
               <span className="text-xs text-muted-foreground self-center">
                 This currently saves locally. Connect to your backend to persist.
@@ -372,6 +405,9 @@ const HabitCreatePage: React.FC = () => {
                     Safety net
                   </p>
                   <h2 className="text-xl font-semibold">Keep it slipping-proof</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Plan the backup moves now so you do not lose a streak on a messy day. This list will be AI-generated later.
+                  </p>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                   <Flame className="w-4 h-4 text-primary" />
@@ -382,14 +418,24 @@ const HabitCreatePage: React.FC = () => {
               <div className="space-y-3">
                 {safeguards.map((item, index) => (
                   <div
-                    key={item}
-                    className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 space-y-1"
+                    key={item.title}
+                    className="rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-sm space-y-2"
                   >
-                    <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-primary uppercase tracking-[0.12em]">
-                      <Sparkles className="w-4 h-4" />
-                      Guardrail {index + 1}
+                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.12em]">
+                      <span className="inline-flex items-center gap-2 font-semibold text-primary">
+                        <Sparkles className="w-4 h-4" />
+                        {item.label}
+                      </span>
+                      <span className="text-muted-foreground">Guardrail {index + 1}</span>
                     </div>
-                    <p className="text-sm text-foreground">{item}</p>
+                    <div className="space-y-1">
+                      <p className="font-semibold text-sm">{item.title}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{item.detail}</p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      Add this to your routine checklist
+                    </div>
                   </div>
                 ))}
               </div>
