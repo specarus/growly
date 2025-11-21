@@ -11,7 +11,7 @@ const NotFound = () => {
       "404 Error: User attempted to access non-existent route:",
       pathName
     );
-  }, [location.pathname]);
+  }, [pathName]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">

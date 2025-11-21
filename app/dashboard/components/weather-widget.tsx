@@ -10,7 +10,6 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
     <div className="xl:pt-2 2xl:pt-6 text-foreground">
       <div className="flex items-center justify-between xl:pb-2 2xl:pb-4">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">Weather</h3>
-        <DetailsButton />
       </div>
 
       <div

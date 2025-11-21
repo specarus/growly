@@ -1,107 +1,74 @@
-const Footer = () => {
+import Link from "next/link";
+
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Todos", href: "/dashboard/todos" },
+  { label: "Weather", href: "/dashboard/weather" },
+  { label: "New todo", href: "/dashboard/todos/create" },
+];
+
+const legalLinks = [
+  { label: "Privacy", href: "#" },
+  { label: "Terms", href: "#" },
+  { label: "Support", href: "#" },
+];
+
+export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="bg-card border-t border-gray-50 shadow-md pt-12 pb-6">
-      <div className="mx-auto px-28">
-        <div className="grid grid-cols-4 gap-8 mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-xl font-bold text-primary-foreground">
-                  G
-                </span>
-              </div>
-              <span className="text-xl font-bold text-foreground">Growly</span>
+    <footer className="border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+      <div className="2xl:px-28 xl:px-8 py-8 space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-primary/15 text-primary font-semibold text-lg flex items-center justify-center">
+              G
             </div>
-            <p className="text-muted-foreground text-sm">
-              Build better habits, one day at a time.
-            </p>
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">Growly</p>
+              <p className="text-sm text-muted-foreground">
+                Stay consistent, win the tiny moments.
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Mobile App
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Updates
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Cookie Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Licenses
-                </a>
-              </li>
-            </ul>
-          </div>
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-muted-foreground">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="hover:text-primary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 Growly. All rights reserved.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 rounded-full bg-green-soft/15 text-green-soft-foreground font-medium">
+              Tiny wins, every day.
+            </span>
+            <span className="hidden sm:inline text-muted-foreground/70">
+              &copy; {year} Growly
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="hover:text-primary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

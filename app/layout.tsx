@@ -7,6 +7,7 @@ import { ModalProvider } from "./context/modal-context";
 import { auth } from "../lib/auth";
 import { headers } from "next/headers";
 import { SessionProvider } from "./context/session-context";
+import Footer from "./components/layout/footer";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -33,10 +34,11 @@ export default async function RootLayout({
       <body>
         <SessionProvider initialSession={session}>
           <ModalProvider>
-            <section>
+            <div className="min-h-screen flex flex-col">
               <Header />
-            </section>
-            <section className="w-full h-full">{children}</section>
+              <main className="flex-1 w-full h-full">{children}</main>
+              <Footer />
+            </div>
           </ModalProvider>
         </SessionProvider>
       </body>

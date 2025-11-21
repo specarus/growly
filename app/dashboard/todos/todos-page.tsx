@@ -223,24 +223,9 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
             </div>
           </div>
         </div>
-
+      </div>
+      <div className="w-full h-auto px-8">
         <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
-          {todos.length === 0 && (
-            <div className="border border-dashed border-gray-200 rounded-2xl bg-white px-4 py-6 text-center space-y-2">
-              <p className="font-semibold">No todos yet</p>
-              <p className="text-sm text-muted-foreground">
-                Add your first todo to see it here and in the dashboard widget.
-              </p>
-              <Link
-                href="/dashboard/todos/create"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
-              >
-                <Plus className="w-4 h-4" />
-                Create a todo
-              </Link>
-            </div>
-          )}
-
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <ListChecks className="w-5 h-5 text-primary" />
@@ -273,194 +258,110 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="min-w-[720px] grid grid-cols-8 xl:text-xs 2xl:text-sm text-muted-foreground px-3 pb-2 border-b border-gray-100">
-              <div className="col-span-3">Todo</div>
-              <div>Status</div>
-              <div>Priority</div>
-              <div>Due</div>
-              <div className="text-center">Reminder</div>
-              <div className="text-center">Progress</div>
-            </div>
-
-            <div className="divide-y divide-gray-50">
-              {filtered.map((todo) => (
-                <Link
-                  key={todo.id}
-                  href={`/dashboard/todos/${todo.id}/edit`}
-                  className="block min-w-[720px] hover:bg-gray-50 transition"
-                >
-                  <div className="grid grid-cols-8 items-center xl:py-3 2xl:py-4 px-3">
-                    <div className="col-span-3 space-y-1">
-                      <div className="font-semibold xl:text-sm 2xl:text-base">
-                        {todo.title}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" />
-                          {todo.dueDate}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock3 className="w-3 h-3" />
-                          {todo.dueTime}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {todo.location}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <span
-                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[12px] font-semibold ${
-                          statusStyles[todo.status]
-                        }`}
-                      >
-                        <span className="h-2 w-2 rounded-full bg-white/70" />
-                        {todo.status}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`h-2.5 w-2.5 rounded-full ${
-                          priorityDots[todo.priority]
-                        }`}
-                      />
-                      <span className="text-sm">{todo.priority}</span>
-                    </div>
-
-                    <div className="text-sm">
-                      {todo.dueDate} · {todo.dueTime}
-                    </div>
-
-                    <div className="text-center text-sm">{todo.reminder}</div>
-
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary"
-                          style={{ width: `${todo.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {todo.progress}%
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-4 2xl:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock3 className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold xl:text-lg 2xl:text-xl">
-                  Next up
-                </h3>
-              </div>
-              <Link
-                href="/dashboard/todos/create"
-                className="text-sm text-primary hover:underline"
-              >
-                Add another
-              </Link>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-3">
-              {filtered.slice(0, 4).map((todo) => (
-                <Link
-                  key={todo.id}
-                  href={`/dashboard/todos/${todo.id}/edit`}
-                  className="rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-3 shadow-inner space-y-2 hover:border-primary/40 transition"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`h-2.5 w-2.5 rounded-full ${
-                          priorityDots[todo.priority]
-                        }`}
-                      />
-                      <p className="font-semibold text-sm">{todo.title}</p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-[11px] font-semibold ${
-                        statusStyles[todo.status]
-                      }`}
-                    >
-                      {todo.status}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="w-3 h-3" />
-                      {todo.dueDate}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock3 className="w-3 h-3" />
-                      {todo.dueTime}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {todo.location}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Bell className="w-3 h-3" />
-                      {todo.reminder}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="h-2 rounded-full bg-muted overflow-hidden">
-                      <div
-                        className="h-full bg-primary"
-                        style={{ width: `${todo.progress}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
-                      <span>{todo.category}</span>
-                      <span>{todo.progress}%</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-4 2xl:p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Flag className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold xl:text-lg 2xl:text-xl">
-                Progress pulse
-              </h3>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">On track</span>
-                <span className="font-medium">
-                  {totals.completed} completed
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Active focus</span>
-                <span className="font-medium">{totals.active} in motion</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Focus score</span>
-                <span className="font-medium">{totals.focus}%</span>
-              </div>
-            </div>
-            <div className="rounded-2xl bg-muted px-4 py-3 flex items-center gap-3">
-              <Sparkles className="w-4 h-4 text-primary" />
+          {filtered.length === 0 ? (
+            <div className="border border-dashed border-gray-200 rounded-2xl bg-white px-4 py-6 text-center space-y-3">
+              <p className="font-semibold">No todos match this view</p>
               <p className="text-sm text-muted-foreground">
-                Keep todos small and specific. Done feels better than perfect.
+                Create a new todo or reset filters to see items here.
               </p>
+              <div className="flex items-center justify-center gap-2">
+                <Link
+                  href="/dashboard/todos/create"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create a todo
+                </Link>
+                <button
+                  onClick={() => setFilter("All")}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm text-foreground hover:border-primary/40 transition"
+                >
+                  Reset filters
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <div className="min-w-[720px] grid grid-cols-8 xl:text-xs 2xl:text-sm text-muted-foreground px-3 pb-2 border-b border-gray-100">
+                <div className="col-span-3">Todo</div>
+                <div>Status</div>
+                <div>Priority</div>
+                <div>Due</div>
+                <div className="text-center">Reminder</div>
+                <div className="text-center">Progress</div>
+              </div>
+
+              <div className="divide-y divide-gray-50">
+                {filtered.map((todo) => (
+                  <Link
+                    key={todo.id}
+                    href={`/dashboard/todos/${todo.id}/edit`}
+                    className="block min-w-[720px] hover:bg-gray-50 transition"
+                  >
+                    <div className="grid grid-cols-8 items-center xl:py-3 2xl:py-4 px-3">
+                      <div className="col-span-3 space-y-1">
+                        <div className="font-semibold xl:text-sm 2xl:text-base">
+                          {todo.title}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <CalendarDays className="w-3 h-3" />
+                            {todo.dueDate}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock3 className="w-3 h-3" />
+                            {todo.dueTime}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {todo.location}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[12px] font-semibold ${
+                            statusStyles[todo.status]
+                          }`}
+                        >
+                          <span className="h-2 w-2 rounded-full bg-white/70" />
+                          {todo.status}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`h-2.5 w-2.5 rounded-full ${
+                            priorityDots[todo.priority]
+                          }`}
+                        />
+                        <span className="text-sm">{todo.priority}</span>
+                      </div>
+
+                      <div className="text-sm">
+                        {todo.dueDate} — {todo.dueTime}
+                      </div>
+
+                      <div className="text-center text-sm">{todo.reminder}</div>
+
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary"
+                            style={{ width: `${todo.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {todo.progress}%
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
