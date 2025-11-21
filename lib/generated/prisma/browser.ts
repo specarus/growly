@@ -42,3 +42,13 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type Todo = Prisma.TodoModel
+/**
+ * Model Collection
+ * 
+ */
+export type Collection = Prisma.CollectionModel
+/**
+ * Model CollectionTodo
+ * 
+ */
+export type CollectionTodo = Prisma.CollectionTodoModel

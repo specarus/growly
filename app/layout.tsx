@@ -11,10 +11,26 @@ import Footer from "./components/layout/footer";
 
 const montserrat = localFont({
   src: [
-    { path: "../public/fonts/montserrat/Montserrat-400.ttf", weight: "400", style: "normal" },
-    { path: "../public/fonts/montserrat/Montserrat-500.ttf", weight: "500", style: "normal" },
-    { path: "../public/fonts/montserrat/Montserrat-600.ttf", weight: "600", style: "normal" },
-    { path: "../public/fonts/montserrat/Montserrat-700.ttf", weight: "700", style: "normal" },
+    {
+      path: "../public/fonts/montserrat/Montserrat-400.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/montserrat/Montserrat-500.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/montserrat/Montserrat-600.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/montserrat/Montserrat-700.ttf",
+      weight: "700",
+      style: "normal",
+    },
   ],
   variable: "--font-montserrat",
   display: "swap",
@@ -39,7 +55,7 @@ export default async function RootLayout({
       <body>
         <SessionProvider initialSession={session}>
           <ModalProvider>
-            <div className="min-h-screen flex flex-col">
+            <div className="min-h-screen flex flex-col text-foreground">
               <Header />
               <main className="flex-1 w-full h-full">{children}</main>
               <Footer />

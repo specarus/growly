@@ -8,6 +8,8 @@ interface TodoItem {
   icon: LucideIcon;
   completed: boolean;
   iconColor: string;
+  statusLabel: string;
+  statusColor: string;
 }
 
 interface TodoProps {
@@ -38,10 +40,10 @@ const Todo: React.FC<TodoProps> = ({ todo }) => {
   return (
     <div key={todo.id} className="flex items-start gap-3 select-none">
       <div
-        className="xl:p-1.5 2xl:p-2 xl:rounded-lg 2xl:rounded-xl shrink-0 border border-white/60 shadow-inner"
+        className="grid place-items-center w-12 h-12 xl:rounded-lg 2xl:rounded-xl shrink-0 border border-white shadow-sm"
         style={{ backgroundColor: todo.iconColor || "#E5E7EB" }}
       >
-        <todo.icon className="w-5 h-5" />
+        <todo.icon className="w-5 h-5 text-foreground/80" />
       </div>
       <div className="flex-1 min-w-0">
         <div
@@ -50,6 +52,21 @@ const Todo: React.FC<TodoProps> = ({ todo }) => {
           }`}
         >
           {todo.title}
+        </div>
+        <div className="flex items-center gap-2 mb-1">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            style={{
+              backgroundColor: `${todo.statusColor}22`,
+              color: todo.statusColor,
+            }}
+          >
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: todo.statusColor }}
+            />
+            {todo.statusLabel}
+          </span>
         </div>
         <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-xs 2xl:text-sm text-muted-foreground">
           <span className="flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">

@@ -586,16 +586,15 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                   }));
                                   setShowIconPicker(false);
                                 }}
-                                className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2 text-[11px] transition hover:border-primary/50 hover:bg-primary/5 ${
+                                aria-label={label}
+                                className={`flex items-center justify-center rounded-xl border p-3 transition hover:border-primary/50 hover:bg-primary/5 ${
                                   form.iconName === name
                                     ? "border-primary/60 bg-primary/10"
                                     : "border-gray-100"
                                 }`}
                               >
                                 <Icon className="w-5 h-5" />
-                                <span className="truncate w-full text-center">
-                                  {label}
-                                </span>
+                                <span className="sr-only">{label}</span>
                               </button>
                             ))}
                           </div>

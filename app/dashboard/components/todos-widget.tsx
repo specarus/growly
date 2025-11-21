@@ -9,6 +9,7 @@ import {
   icons,
   LucideIcon,
   Palette,
+  Plus,
   ShoppingCart,
   Sparkles,
 } from "lucide-react";
@@ -26,6 +27,8 @@ interface TodoItem {
   icon: LucideIcon;
   completed: boolean;
   iconColor: string;
+  statusLabel: string;
+  statusColor: string;
 }
 
 const categoryIcon: Record<string, LucideIcon> = {
@@ -43,19 +46,31 @@ const toTime = (dueAt?: Date | string | null) => {
   return date.toISOString().slice(11, 16);
 };
 
+const statusMeta = (status?: string) => {
+  switch (status?.toUpperCase()) {
+    case "IN_PROGRESS":
+      return { label: "In Progress", color: "#F59E0B" };
+    case "COMPLETED":
+      return { label: "Completed", color: "#10B981" };
+    case "MISSED":
+      return { label: "Missed", color: "#EF4444" };
+    default:
+      return { label: "Planned", color: "#6366F1" };
+  }
+};
+
 const TodosWidget = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  const todosFromDb =
-    session?.user?.id
-      ? await prisma.todo.findMany({
-          where: { userId: session.user.id },
-          orderBy: { dueAt: "asc" },
-          take: 6,
-        })
-      : [];
+  const todosFromDb = session?.user?.id
+    ? await prisma.todo.findMany({
+        where: { userId: session.user.id },
+        orderBy: { dueAt: "asc" },
+        take: 6,
+      })
+    : [];
 
   const hasTodos = todosFromDb.length > 0;
 
@@ -71,7 +86,9 @@ const TodosWidget = async () => {
       iconName,
       iconColor,
     }) => {
-      const customIcon = (icons as Record<string, LucideIcon>)[iconName || ""] || null;
+      const customIcon =
+        (icons as Record<string, LucideIcon>)[iconName || ""] || null;
+      const { label, color } = statusMeta(status);
 
       return {
         id,
@@ -87,6 +104,8 @@ const TodosWidget = async () => {
             : priority?.toUpperCase() === "CRITICAL"
             ? "#FCA5A5"
             : "#E5E7EB"),
+        statusLabel: label,
+        statusColor: color,
       };
     }
   );
@@ -97,8 +116,19 @@ const TodosWidget = async () => {
   return (
     <div className="xl:p-2 2xl:p-6 text-foreground">
       <div className="flex items-center justify-between xl:mb-4 2xl:mb-6">
-        <h3 className="font-semibold xl:text-lg 2xl:text-xl">Today&apos;s Todos</h3>
-        <DetailsButton href="/dashboard/todos" />
+        <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+          Today&apos;s Todos
+        </h3>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/todos/create"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-105"
+          >
+            <Plus className="w-3 h-3" />
+            New todo
+          </Link>
+          <DetailsButton href="/dashboard/todos" />
+        </div>
       </div>
 
       <div className="xl:space-y-3 2xl:space-y-4">
@@ -130,7 +160,10 @@ const TodosWidget = async () => {
       {hasTodos && remainingCount > 0 ? (
         <div className="mt-3 text-xs text-muted-foreground">
           +{remainingCount} more waiting —{" "}
-          <Link href="/dashboard/todos" className="text-primary hover:underline">
+          <Link
+            href="/dashboard/todos"
+            className="text-primary hover:underline"
+          >
             view all
           </Link>
         </div>

@@ -9,6 +9,10 @@ generator client {
   output   = "../lib/generated/prisma"
 }
 
+generator defaultClient {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -25,6 +29,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   todos         Todo[]
+  collections   Collection[]
 
   @@unique([email])
   @@map("user")
@@ -94,10 +99,37 @@ model Todo {
   updatedAt       DateTime     @updatedAt
   userId          String
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collections     CollectionTodo[]
 
   @@index([userId, dueAt])
   @@unique([id, userId])
   @@map("todo")
+}
+
+model Collection {
+  id          String           @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CollectionTodo[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([userId, name])
+  @@map("collection")
+}
+
+model CollectionTodo {
+  id           String      @id @default(uuid())
+  collectionId String
+  todoId       String
+  collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  todo         Todo        @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+
+  @@unique([collectionId, todoId], name: "collectionId_todoId")
+  @@map("collection_todo")
 }
 
 enum TodoPriority {
