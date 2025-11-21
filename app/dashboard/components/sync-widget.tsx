@@ -3,7 +3,7 @@
 import Button from "@/app/components/ui/button";
 import Image from "next/image";
 
-interface SyncWidgetProps {}
+type SyncWidgetProps = Record<string, never>;
 
 const SyncWidget: React.FC<SyncWidgetProps> = () => {
   return (

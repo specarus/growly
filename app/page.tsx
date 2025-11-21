@@ -61,12 +61,13 @@ const proof = [
   { label: "Users who stay", value: "9/10" },
 ];
 
+const noop = () => {};
+
 export default function LandingPage() {
   const context = useContext(ModalContext);
-  if (!context) return null;
-
-  const { showModal, setShowModal } = context;
   const { session } = useSession();
+  const showModal = context?.showModal ?? false;
+  const setShowModal = context?.setShowModal ?? noop;
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -94,7 +95,7 @@ export default function LandingPage() {
   }, [showModal, setShowModal]);
 
   return (
-    <main className="relative min-h-screen pt-24 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
+    <main className="relative min-h-screen xl:pt-20 2xl:pt-24 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
       {showModal && (
         <div
           onClick={handleOverlayClick}

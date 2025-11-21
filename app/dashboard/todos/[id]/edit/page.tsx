@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import CreateTodoPage from "../../create/create-todo-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Todo } from "@/lib/generated/prisma/client";
 
 interface EditTodoPageProps {
   params: {
@@ -17,7 +18,7 @@ type ParamsArg =
   | EditTodoPageProps["params"]
   | Promise<EditTodoPageProps["params"]>;
 
-const buildInitial = (todo: any) => ({
+const buildInitial = (todo: Todo) => ({
   id: todo.id as string,
   title: todo.title as string,
   description: todo.description as string | null,
@@ -30,6 +31,8 @@ const buildInitial = (todo: any) => ({
   reminder: todo.reminder as string | null,
   recurrence: todo.recurrence as string | null,
   tags: todo.tags as string | null,
+  iconName: todo.iconName as string | null,
+  iconColor: todo.iconColor as string | null,
 });
 
 export default async function EditTodoPage({ params }: { params: ParamsArg }) {

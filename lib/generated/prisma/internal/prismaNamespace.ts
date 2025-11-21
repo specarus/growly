@@ -894,6 +894,8 @@ export const TodoScalarFieldEnum = {
   reminder: 'reminder',
   recurrence: 'recurrence',
   tags: 'tags',
+  iconName: 'iconName',
+  iconColor: 'iconColor',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'

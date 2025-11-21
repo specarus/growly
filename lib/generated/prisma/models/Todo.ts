@@ -47,6 +47,8 @@ export type TodoMinAggregateOutputType = {
   reminder: string | null
   recurrence: string | null
   tags: string | null
+  iconName: string | null
+  iconColor: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -65,6 +67,8 @@ export type TodoMaxAggregateOutputType = {
   reminder: string | null
   recurrence: string | null
   tags: string | null
+  iconName: string | null
+  iconColor: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -83,6 +87,8 @@ export type TodoCountAggregateOutputType = {
   reminder: number
   recurrence: number
   tags: number
+  iconName: number
+  iconColor: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -111,6 +117,8 @@ export type TodoMinAggregateInputType = {
   reminder?: true
   recurrence?: true
   tags?: true
+  iconName?: true
+  iconColor?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -129,6 +137,8 @@ export type TodoMaxAggregateInputType = {
   reminder?: true
   recurrence?: true
   tags?: true
+  iconName?: true
+  iconColor?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -147,6 +157,8 @@ export type TodoCountAggregateInputType = {
   reminder?: true
   recurrence?: true
   tags?: true
+  iconName?: true
+  iconColor?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -252,6 +264,8 @@ export type TodoGroupByOutputType = {
   reminder: string | null
   recurrence: string | null
   tags: string | null
+  iconName: string
+  iconColor: string
   createdAt: Date
   updatedAt: Date
   userId: string
@@ -293,6 +307,8 @@ export type TodoWhereInput = {
   reminder?: Prisma.StringNullableFilter<"Todo"> | string | null
   recurrence?: Prisma.StringNullableFilter<"Todo"> | string | null
   tags?: Prisma.StringNullableFilter<"Todo"> | string | null
+  iconName?: Prisma.StringFilter<"Todo"> | string
+  iconColor?: Prisma.StringFilter<"Todo"> | string
   createdAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   userId?: Prisma.StringFilter<"Todo"> | string
@@ -312,6 +328,8 @@ export type TodoOrderByWithRelationInput = {
   reminder?: Prisma.SortOrderInput | Prisma.SortOrder
   recurrence?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrderInput | Prisma.SortOrder
+  iconName?: Prisma.SortOrder
+  iconColor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -335,6 +353,8 @@ export type TodoWhereUniqueInput = Prisma.AtLeast<{
   reminder?: Prisma.StringNullableFilter<"Todo"> | string | null
   recurrence?: Prisma.StringNullableFilter<"Todo"> | string | null
   tags?: Prisma.StringNullableFilter<"Todo"> | string | null
+  iconName?: Prisma.StringFilter<"Todo"> | string
+  iconColor?: Prisma.StringFilter<"Todo"> | string
   createdAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   userId?: Prisma.StringFilter<"Todo"> | string
@@ -354,6 +374,8 @@ export type TodoOrderByWithAggregationInput = {
   reminder?: Prisma.SortOrderInput | Prisma.SortOrder
   recurrence?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrderInput | Prisma.SortOrder
+  iconName?: Prisma.SortOrder
+  iconColor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -380,6 +402,8 @@ export type TodoScalarWhereWithAggregatesInput = {
   reminder?: Prisma.StringNullableWithAggregatesFilter<"Todo"> | string | null
   recurrence?: Prisma.StringNullableWithAggregatesFilter<"Todo"> | string | null
   tags?: Prisma.StringNullableWithAggregatesFilter<"Todo"> | string | null
+  iconName?: Prisma.StringWithAggregatesFilter<"Todo"> | string
+  iconColor?: Prisma.StringWithAggregatesFilter<"Todo"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Todo"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Todo"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Todo"> | string
@@ -398,6 +422,8 @@ export type TodoCreateInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTodosInput
@@ -416,6 +442,8 @@ export type TodoUncheckedCreateInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -434,6 +462,8 @@ export type TodoUpdateInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTodosNestedInput
@@ -452,6 +482,8 @@ export type TodoUncheckedUpdateInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -470,6 +502,8 @@ export type TodoCreateManyInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -488,6 +522,8 @@ export type TodoUpdateManyMutationInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -505,6 +541,8 @@ export type TodoUncheckedUpdateManyInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -538,6 +576,8 @@ export type TodoCountOrderByAggregateInput = {
   reminder?: Prisma.SortOrder
   recurrence?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  iconName?: Prisma.SortOrder
+  iconColor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -560,6 +600,8 @@ export type TodoMaxOrderByAggregateInput = {
   reminder?: Prisma.SortOrder
   recurrence?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  iconName?: Prisma.SortOrder
+  iconColor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -578,6 +620,8 @@ export type TodoMinOrderByAggregateInput = {
   reminder?: Prisma.SortOrder
   recurrence?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  iconName?: Prisma.SortOrder
+  iconColor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -658,6 +702,8 @@ export type TodoCreateWithoutUserInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -675,6 +721,8 @@ export type TodoUncheckedCreateWithoutUserInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -721,6 +769,8 @@ export type TodoScalarWhereInput = {
   reminder?: Prisma.StringNullableFilter<"Todo"> | string | null
   recurrence?: Prisma.StringNullableFilter<"Todo"> | string | null
   tags?: Prisma.StringNullableFilter<"Todo"> | string | null
+  iconName?: Prisma.StringFilter<"Todo"> | string
+  iconColor?: Prisma.StringFilter<"Todo"> | string
   createdAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Todo"> | Date | string
   userId?: Prisma.StringFilter<"Todo"> | string
@@ -739,6 +789,8 @@ export type TodoCreateManyUserInput = {
   reminder?: string | null
   recurrence?: string | null
   tags?: string | null
+  iconName?: string
+  iconColor?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -756,6 +808,8 @@ export type TodoUpdateWithoutUserInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -773,6 +827,8 @@ export type TodoUncheckedUpdateWithoutUserInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -790,6 +846,8 @@ export type TodoUncheckedUpdateManyWithoutUserInput = {
   reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurrence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iconName?: Prisma.StringFieldUpdateOperationsInput | string
+  iconColor?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -809,6 +867,8 @@ export type TodoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   reminder?: boolean
   recurrence?: boolean
   tags?: boolean
+  iconName?: boolean
+  iconColor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -828,6 +888,8 @@ export type TodoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   reminder?: boolean
   recurrence?: boolean
   tags?: boolean
+  iconName?: boolean
+  iconColor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -847,6 +909,8 @@ export type TodoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   reminder?: boolean
   recurrence?: boolean
   tags?: boolean
+  iconName?: boolean
+  iconColor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -866,12 +930,14 @@ export type TodoSelectScalar = {
   reminder?: boolean
   recurrence?: boolean
   tags?: boolean
+  iconName?: boolean
+  iconColor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type TodoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "category" | "priority" | "status" | "dueAt" | "durationMinutes" | "location" | "reminder" | "recurrence" | "tags" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["todo"]>
+export type TodoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "category" | "priority" | "status" | "dueAt" | "durationMinutes" | "location" | "reminder" | "recurrence" | "tags" | "iconName" | "iconColor" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["todo"]>
 export type TodoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -900,6 +966,8 @@ export type $TodoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     reminder: string | null
     recurrence: string | null
     tags: string | null
+    iconName: string
+    iconColor: string
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -1339,6 +1407,8 @@ export interface TodoFieldRefs {
   readonly reminder: Prisma.FieldRef<"Todo", 'String'>
   readonly recurrence: Prisma.FieldRef<"Todo", 'String'>
   readonly tags: Prisma.FieldRef<"Todo", 'String'>
+  readonly iconName: Prisma.FieldRef<"Todo", 'String'>
+  readonly iconColor: Prisma.FieldRef<"Todo", 'String'>
   readonly createdAt: Prisma.FieldRef<"Todo", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Todo", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Todo", 'String'>

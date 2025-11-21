@@ -4,11 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   BadgeCheck,
-  Bell,
   CalendarDays,
   CheckCircle2,
   Clock3,
-  Flag,
   ListChecks,
   MapPin,
   Plus,
@@ -16,7 +14,6 @@ import {
   Timer,
 } from "lucide-react";
 
-import Button from "@/app/components/ui/button";
 
 type Status = "Planned" | "In Progress" | "Completed" | "Missed";
 type Priority = "Low" | "Medium" | "High" | "Critical";
@@ -32,6 +29,7 @@ interface TodoRow {
   location: string;
   reminder: string;
   progress: number;
+  tags: string[];
 }
 
 interface TodosPageProps {
@@ -111,7 +109,15 @@ const deriveProgress = (status: Status) => {
   return 10;
 };
 
-const mapToRow = (todo: TodosPageProps["initialTodos"][number]): TodoRow => {
+const toTagList = (raw: string) =>
+  raw
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+const mapToRow = (
+  todo: NonNullable<TodosPageProps["initialTodos"]>[number]
+): TodoRow => {
   const status = formatStatus(todo.status);
   const { dueDate, dueTime } = formatDueParts(todo.dueAt);
 
@@ -126,6 +132,7 @@ const mapToRow = (todo: TodosPageProps["initialTodos"][number]): TodoRow => {
     location: todo.location || "No location",
     reminder: todo.reminder || "No reminder",
     progress: deriveProgress(status),
+    tags: toTagList(todo.tags || ""),
   };
 };
 
@@ -134,16 +141,28 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
     initialTodos.map(mapToRow)
   );
   const [filter, setFilter] = useState<Status | "All">("All");
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
+  const [showTagPicker, setShowTagPicker] = useState(false);
 
   useEffect(() => {
     setTodos(initialTodos.map(mapToRow));
   }, [initialTodos]);
 
-  const filtered = useMemo(
-    () =>
-      filter === "All" ? todos : todos.filter((todo) => todo.status === filter),
-    [filter, todos]
-  );
+  const filtered = useMemo(() => {
+    const byStatus =
+      filter === "All" ? todos : todos.filter((todo) => todo.status === filter);
+
+    if (tagFilter.length === 0) return byStatus;
+    const targets = tagFilter.map((tag) => tag.toLowerCase());
+    return byStatus.filter((todo) =>
+      todo.tags.some((tag) => targets.includes(tag.toLowerCase()))
+    );
+  }, [filter, tagFilter, todos]);
+
+  const uniqueTags = useMemo(() => {
+    const all = todos.flatMap((todo) => todo.tags);
+    return Array.from(new Set(all));
+  }, [todos]);
 
   const totals = useMemo(() => {
     const completed = todos.filter(
@@ -163,7 +182,7 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
   }, [todos]);
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 text-foreground">
+    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-8">
       <div className="xl:px-8 2xl:px-28 pb-10 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -188,9 +207,9 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
               <Plus className="w-4 h-4" />
               New todo
             </Link>
-            <Button className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition">
+            {/* <Button className="xl:min-w-48 2xl:min-w-52 xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition">
               Start focus mode
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -224,7 +243,7 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
           </div>
         </div>
       </div>
-      <div className="w-full h-auto px-8">
+      <div className="w-full h-auto xl:px-8 2xl:px-28">
         <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -255,6 +274,65 @@ const TodosPage: React.FC<TodosPageProps> = ({ initialTodos = [] }) => {
                   {option}
                 </button>
               ))}
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => setShowTagPicker((open) => !open)}
+                className="px-3 py-2 rounded-full text-sm transition border bg-white text-muted-foreground border-gray-100 hover:border-primary/30 flex items-center gap-2"
+                type="button"
+              >
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span>
+                  {tagFilter.length === 0
+                    ? "All tags"
+                    : `Tags: ${tagFilter.join(", ")}`}
+                </span>
+              </button>
+              {showTagPicker ? (
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-gray-100 bg-white shadow-xl p-3 z-10">
+                  <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
+                    <span>Select tags</span>
+                    <button
+                      type="button"
+                      className="hover:text-primary"
+                      onClick={() => setTagFilter([])}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {uniqueTags.length === 0 ? (
+                      <div className="col-span-2 text-xs text-muted-foreground px-2 py-1">
+                        No tags yet
+                      </div>
+                    ) : (
+                      uniqueTags.map((tag) => {
+                        const active = tagFilter.includes(tag);
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => {
+                              setTagFilter((prev) =>
+                                prev.includes(tag)
+                                  ? prev.filter((t) => t !== tag)
+                                  : [...prev, tag]
+                              );
+                            }}
+                            className={`w-full px-3 py-2 rounded-xl border transition text-left ${
+                              active
+                                ? "bg-primary text-white border-primary"
+                                : "bg-white text-foreground border-gray-100 hover:border-primary/40"
+                            }`}
+                          >
+                            {tag}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 

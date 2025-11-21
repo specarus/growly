@@ -21,6 +21,8 @@ export interface TodoInput {
   reminder?: string;
   recurrence?: string;
   tags?: string;
+  iconName?: string;
+  iconColor?: string;
 }
 
 const requireUserId = async () => {
@@ -87,7 +89,9 @@ export async function createTodo(input: TodoInput) {
       location: input.location || null,
       reminder: input.reminder || null,
       recurrence: input.recurrence || null,
-      tags: input.tags || null,
+    tags: input.tags || null,
+    iconName: input.iconName || "Notebook",
+    iconColor: input.iconColor || "#E5E7EB",
       userId,
     },
   });
@@ -116,8 +120,10 @@ export async function updateTodo(id: string, input: TodoInput) {
       durationMinutes: input.durationMinutes ?? null,
       location: input.location || null,
       reminder: input.reminder || null,
-      recurrence: input.recurrence || null,
-      tags: input.tags || null,
+    recurrence: input.recurrence || null,
+    tags: input.tags || null,
+    iconName: input.iconName || "Notebook",
+    iconColor: input.iconColor || "#E5E7EB",
     },
   });
 

@@ -1,7 +1,6 @@
-import DetailsButton from "@/app/components/ui/details-button";
 import Image from "next/image";
 
-interface WeatherWidgetProps {}
+type WeatherWidgetProps = Record<string, never>;
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
   const iconUrl = "/weather/sunny.png";

@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronDown, TrendingUp, Search, CheckCircle } from "lucide-react";
+import { ChevronDown, TrendingUp, Search, CheckCircle, BarChart3 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import confettiImage from "@/public/confetti.png";
 import Button from "@/app/components/ui/button";
 
@@ -98,6 +99,13 @@ const AnalyticsWidget: React.FC = () => {
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
+          <Link
+            href="/dashboard/analytics"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-gray-100 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            Open dashboard
+          </Link>
         </div>
         <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600">
           <div className="flex items-center gap-2 mb-2">
@@ -141,7 +149,7 @@ const AnalyticsWidget: React.FC = () => {
               Habits Wrapped
             </span>
             <div className="xl:text-3xl font-bold">2025</div>
-            <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100">
+            <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100 inline-flex items-center justify-center px-4 rounded-full border border-gray-100 shadow-sm">
               View
             </Button>
           </div>

@@ -42,7 +42,7 @@ export const Label: React.FC<LabelProps> = ({ children, htmlFor }) => {
   );
 };
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Input: React.FC<InputProps> = ({ ...props }) => {
   return (
@@ -154,11 +154,18 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
           </a>
         </div>
 
+        {error ? (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        ) : null}
+
         <Button
           type="submit"
-          className="bg-primary text-white h-12 w-full text-lg font-semibold hover:bg-white border border-primary hover:text-primary transition-all duration-200"
+          disabled={isLoading}
+          className="bg-primary text-white h-12 w-full text-lg font-semibold hover:bg-white border border-primary hover:text-primary transition-all duration-200 disabled:opacity-60"
         >
-          Log in
+          {isLoading ? "Logging in..." : "Log in"}
         </Button>
 
         <div className="flex items-center justify-center gap-2 pt-2 text-sm">
@@ -272,11 +279,18 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
           </div>
         </div>
 
+        {error ? (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        ) : null}
+
         <Button
           type="submit"
-          className="bg-primary border border-primary text-white h-12 w-full text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-200"
+          disabled={isLoading}
+          className="bg-primary border border-primary text-white h-12 w-full text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-200 disabled:opacity-60"
         >
-          Sign Up
+          {isLoading ? "Creating..." : "Sign Up"}
         </Button>
 
         <div className="flex justify-center items-center gap-2 pt-2 text-sm">
@@ -332,7 +346,7 @@ const SocialLoginDividers: React.FC = () => (
   </div>
 );
 
-interface AuthModalProps {}
+type AuthModalProps = Record<string, never>;
 
 export const AuthModal: React.FC<AuthModalProps> = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);

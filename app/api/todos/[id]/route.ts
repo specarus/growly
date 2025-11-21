@@ -45,16 +45,25 @@ const normalizeStatus = (status?: string) => {
   return "PLANNED";
 };
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+type ParamsArg = { params: Promise<{ id: string }> } | { params: { id: string } };
+
+const resolveParams = async (raw: ParamsArg) => {
+  const params = "params" in raw ? await (raw as { params: { id: string } | Promise<{ id: string }> }).params : null;
+  const id = params?.id;
+  if (!id || typeof id !== "string") {
+    throw new Error("Invalid todo id");
+  }
+  return { id };
+};
+
+export async function GET(_request: Request, ctx: ParamsArg) {
   try {
+    const { id } = await resolveParams(ctx);
     const userId = await requireUserId();
     const todo = await prisma.todo.findUnique({
       where: {
         id_userId: {
-          id: params.id,
+          id,
           userId,
         },
       },
@@ -71,18 +80,16 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, ctx: ParamsArg) {
   try {
+    const { id } = await resolveParams(ctx);
     const userId = await requireUserId();
     const body = await request.json();
 
     const todo = await prisma.todo.update({
       where: {
         id_userId: {
-          id: params.id,
+          id,
           userId,
         },
       },
@@ -98,6 +105,8 @@ export async function PUT(
         reminder: body.reminder || null,
         recurrence: body.recurrence || null,
         tags: body.tags || null,
+        iconName: body.iconName || "Notebook",
+        iconColor: body.iconColor || "#E5E7EB",
       },
     });
 
@@ -108,17 +117,15 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: Request, ctx: ParamsArg) {
   try {
+    const { id } = await resolveParams(ctx);
     const userId = await requireUserId();
 
     await prisma.todo.delete({
       where: {
         id_userId: {
-          id: params.id,
+          id,
           userId,
         },
       },

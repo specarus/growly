@@ -7,7 +7,7 @@ interface TodoItem {
   location: string;
   icon: LucideIcon;
   completed: boolean;
-  iconBg: string;
+  iconColor: string;
 }
 
 interface TodoProps {
@@ -38,7 +38,8 @@ const Todo: React.FC<TodoProps> = ({ todo }) => {
   return (
     <div key={todo.id} className="flex items-start gap-3 select-none">
       <div
-        className={`xl:p-1.5 2xl:p-2 xl:rounded-lg 2xl:rounded-xl ${todo.iconBg} shrink-0`}
+        className="xl:p-1.5 2xl:p-2 xl:rounded-lg 2xl:rounded-xl shrink-0 border border-white/60 shadow-inner"
+        style={{ backgroundColor: todo.iconColor || "#E5E7EB" }}
       >
         <todo.icon className="w-5 h-5" />
       </div>

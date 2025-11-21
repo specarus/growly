@@ -33,6 +33,8 @@ export default async function Todos() {
     reminder: todo.reminder || "No reminder",
     recurrence: todo.recurrence || "None",
     tags: todo.tags || "",
+    iconName: todo.iconName || "Notebook",
+    iconColor: todo.iconColor || "#E5E7EB",
   }));
 
   return <TodosPage initialTodos={initialTodos} />;

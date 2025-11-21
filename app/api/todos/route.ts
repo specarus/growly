@@ -79,6 +79,8 @@ export async function POST(request: Request) {
         reminder: body.reminder || null,
         recurrence: body.recurrence || null,
         tags: body.tags || null,
+        iconName: body.iconName || "Notebook",
+        iconColor: body.iconColor || "#E5E7EB",
         userId,
       },
     });

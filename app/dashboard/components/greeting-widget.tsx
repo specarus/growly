@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import Button from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface GreetingWidgetProps {}
+type GreetingWidgetProps = Record<string, never>;
 
 const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
   const [currentDateTime, setCurrentDateTime] = useState<Date | null>(null);
@@ -54,10 +55,12 @@ const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
       </div>
 
       <div className="flex flex-col gap-1 xl:gap-2 2xl:gap-3">
-        <Button className="bg-primary hover:bg-primary/90 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base text-white transition-all duration-100">
-          <Plus className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
-          New Habits
-        </Button>
+        <Link href="/dashboard/habits/create" className="w-full">
+          <Button className="w-full bg-primary hover:bg-primary/90 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base text-white transition-all duration-100">
+            <Plus className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
+            New Habits
+          </Button>
+        </Link>
 
         <Button className="border border-muted hover:text-foreground text-foreground hover:bg-muted/20 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base transition-all duration-100">
           Browse Popular Habits

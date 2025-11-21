@@ -24,12 +24,10 @@ const isLikelyId = (segment: string) => /^[0-9a-fA-F-]{6,}$/.test(segment);
 
 export default function Header() {
   const context = useContext(ModalContext);
-  if (!context) return null;
-
-  const { setShowModal } = context;
   const router = useRouter();
   const { session, setSession } = useSession();
   const pathname = usePathname();
+  const setShowModal = context?.setShowModal ?? (() => {});
 
   const segments = pathname
     .split("/")
@@ -48,7 +46,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
-      <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 flex items-center justify-between">
+      <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 flex items-center justify-between">
         <div className="flex items-center xl:gap-2 2xl:gap-4 flex-1 min-w-0">
           <div className="flex items-center xl:gap-2 2xl:gap-3">
             <div className="xl:w-2 xl:h-2 2xl:w-2.5 2xl:h-2.5 rounded-full bg-red-500" />

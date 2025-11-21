@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Clock3,
   HeartPulse,
+  icons,
   LucideIcon,
   Palette,
   ShoppingCart,
@@ -24,7 +25,7 @@ interface TodoItem {
   location: string;
   icon: LucideIcon;
   completed: boolean;
-  iconBg: string;
+  iconColor: string;
 }
 
 const categoryIcon: Record<string, LucideIcon> = {
@@ -59,20 +60,35 @@ const TodosWidget = async () => {
   const hasTodos = todosFromDb.length > 0;
 
   const todos: TodoItem[] = todosFromDb.map(
-    ({ title, dueAt, location, priority, status, id, category }) => ({
-      id,
+    ({
       title,
-      time: toTime(dueAt),
-      location: location || "No location",
-      icon: categoryIcon[category || ""] || Sparkles,
-      completed: status?.toUpperCase() === "COMPLETED",
-      iconBg:
-        priority?.toUpperCase() === "HIGH"
-          ? "bg-coral/20"
-          : priority?.toUpperCase() === "CRITICAL"
-          ? "bg-coral/50"
-          : "bg-muted",
-    })
+      dueAt,
+      location,
+      priority,
+      status,
+      id,
+      category,
+      iconName,
+      iconColor,
+    }) => {
+      const customIcon = (icons as Record<string, LucideIcon>)[iconName || ""] || null;
+
+      return {
+        id,
+        title,
+        time: toTime(dueAt),
+        location: location || "No location",
+        icon: customIcon || categoryIcon[category || ""] || Sparkles,
+        completed: status?.toUpperCase() === "COMPLETED",
+        iconColor:
+          iconColor ||
+          (priority?.toUpperCase() === "HIGH"
+            ? "#FECACA"
+            : priority?.toUpperCase() === "CRITICAL"
+            ? "#FCA5A5"
+            : "#E5E7EB"),
+      };
+    }
   );
 
   const topTodos = todos.slice(0, 3);
@@ -81,7 +97,7 @@ const TodosWidget = async () => {
   return (
     <div className="xl:p-2 2xl:p-6 text-foreground">
       <div className="flex items-center justify-between xl:mb-4 2xl:mb-6">
-        <h3 className="font-semibold xl:text-lg 2xl:text-xl">Today's Todos</h3>
+        <h3 className="font-semibold xl:text-lg 2xl:text-xl">Today&apos;s Todos</h3>
         <DetailsButton href="/dashboard/todos" />
       </div>
 

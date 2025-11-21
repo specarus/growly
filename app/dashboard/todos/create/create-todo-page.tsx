@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import type React from "react";
 import {
+  type LucideIcon,
   BadgeCheck,
   Bell,
   CalendarDays,
@@ -12,8 +19,10 @@ import {
   Clock3,
   Flag,
   Hash,
+  icons,
   ListChecks,
   MapPin,
+  Palette,
   Repeat,
   Sparkles,
   Target,
@@ -40,6 +49,8 @@ interface FormState {
   recurrence: Recurrence;
   tags: string;
   status: StatusLabel;
+  iconName: string;
+  iconColor: string;
 }
 
 interface ChecklistItem {
@@ -63,6 +74,8 @@ interface TodoFormProps {
     reminder?: string | null;
     recurrence?: string | null;
     tags?: string | null;
+    iconName?: string | null;
+    iconColor?: string | null;
   };
 }
 
@@ -91,6 +104,17 @@ const progressByPriority: Record<PriorityLabel, number> = {
 
 const inputClassName =
   "w-full rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-sm 2xl:text-base text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30";
+
+const colorPalette = [
+  { name: "Sky", value: "#BAE6FD" },
+  { name: "Mint", value: "#BBF7D0" },
+  { name: "Lemon", value: "#FEF9C3" },
+  { name: "Coral", value: "#FECACA" },
+  { name: "Lilac", value: "#E9D5FF" },
+  { name: "Slate", value: "#E5E7EB" },
+  { name: "Sunset", value: "#FDE68A" },
+  { name: "Ocean", value: "#A5B4FC" },
+];
 
 const toPriorityLabel = (priority?: string | null): PriorityLabel => {
   switch (priority?.toUpperCase()) {
@@ -153,6 +177,8 @@ const buildDefaultForm = (
     recurrence: (initialTodo?.recurrence as Recurrence) || "None",
     tags: initialTodo?.tags || "",
     status: toStatusLabel(initialTodo?.status),
+    iconName: initialTodo?.iconName || "Notebook",
+    iconColor: initialTodo?.iconColor || "#E5E7EB",
   };
 };
 
@@ -171,6 +197,8 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [form, setForm] = useState<FormState>(
     buildDefaultForm(today, initialTodo)
   );
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
     { id: 1, label: "Define the outcome", done: true },
     { id: 2, label: "Estimate effort and duration", done: false },
@@ -180,6 +208,47 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const formatIconLabel = useCallback((name: string) => {
+    const withoutLeadingA =
+      name.startsWith("A") && name[1] && /[A-Z]/.test(name[1])
+        ? name.slice(1)
+        : name;
+
+    return withoutLeadingA
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/([A-Za-z])(\d+)/g, "$1 $2")
+      .trim();
+  }, []);
+
+  const iconOptions = useMemo(
+    () =>
+      Object.entries(icons)
+        .filter(
+          ([name, component]) =>
+            (typeof component === "function" ||
+              typeof component === "object") &&
+            component !== null &&
+            /^[A-Z]/.test(name)
+        )
+        .map(
+          ([name, component]) =>
+            ({
+              name,
+              label: formatIconLabel(name),
+              Icon: component as LucideIcon,
+            } as const)
+        ),
+    [formatIconLabel]
+  );
+
+  const SelectedIcon = useMemo(() => {
+    const candidate = (icons as Record<string, LucideIcon | undefined>)[
+      form.iconName
+    ];
+
+    return candidate || Sparkles;
+  }, [form.iconName]);
 
   useEffect(() => {
     setForm(buildDefaultForm(today, initialTodo));
@@ -217,6 +286,8 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     reminder: form.reminder,
     recurrence: form.recurrence,
     tags: form.tags,
+    iconName: form.iconName,
+    iconColor: form.iconColor,
   });
 
   const todoId = initialTodo?.id;
@@ -301,8 +372,8 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const primaryCtaLabel = mode === "edit" ? "Update todo" : "Add todo";
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 text-foreground">
-      <div className="xl:px-8 2xl:px-28 pb-12 space-y-8">
+    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground">
+      <div className="xl:px-8 2xl:px-28 pb-8 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
@@ -326,7 +397,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
               type="button"
               onClick={() => handleSubmit("Planned")}
               disabled={isPending}
-              className="xl:h-10 2xl:h-12 xl:px-4 2xl:px-6 xl:text-sm 2xl:text-base bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
+              className="xl:min-w-28 2xl:min-w-36 l:h-10 2xl:h-12 xl:px-4 2xl:px-6 xl:text-sm 2xl:text-base bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
             >
               Save draft
             </Button>
@@ -334,7 +405,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
               type="button"
               onClick={() => handleSubmit()}
               disabled={isPending}
-              className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+              className="xl:min-w-32 2xl:min-w-40 xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
             >
               {primaryCtaLabel}
             </Button>
@@ -470,6 +541,132 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                           {priority}
                         </Button>
                       ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span>Icon</span>
+                    </div>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowIconPicker((open) => !open)}
+                        className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 text-left xl:text-sm 2xl:text-base shadow-inner hover:border-primary/40 transition"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="grid place-items-center w-8 h-8 rounded-xl bg-muted text-primary">
+                            <SelectedIcon className="w-4 h-4" />
+                          </span>
+                          <div className="flex flex-col truncate">
+                            <span className="font-semibold truncate">
+                              {formatIconLabel(form.iconName)}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              Tap to browse all icons
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {showIconPicker ? "Close" : "Browse"}
+                        </span>
+                      </button>
+                      {showIconPicker ? (
+                        <div className="absolute z-20 mt-2 h-64 w-full overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-xl p-2">
+                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                            {iconOptions.map(({ name, Icon, label }) => (
+                              <button
+                                key={name}
+                                type="button"
+                                onClick={() => {
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    iconName: name,
+                                  }));
+                                  setShowIconPicker(false);
+                                }}
+                                className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2 text-[11px] transition hover:border-primary/50 hover:bg-primary/5 ${
+                                  form.iconName === name
+                                    ? "border-primary/60 bg-primary/10"
+                                    : "border-gray-100"
+                                }`}
+                              >
+                                <Icon className="w-5 h-5" />
+                                <span className="truncate w-full text-center">
+                                  {label}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Palette className="w-4 h-4 text-primary" />
+                      <span>Accent color</span>
+                    </div>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowColorPicker((open) => !open)}
+                        className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 text-left xl:text-sm 2xl:text-base shadow-inner hover:border-primary/40 transition"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="w-8 h-8 rounded-xl border border-gray-100 shadow-inner"
+                            style={{ backgroundColor: form.iconColor }}
+                          />
+                          <div className="flex flex-col">
+                            <span className="font-semibold">
+                              {colorPalette.find(
+                                (color) => color.value === form.iconColor
+                              )?.name || "Custom"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {form.iconColor}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {showColorPicker ? "Close" : "Pick"}
+                        </span>
+                      </button>
+                      {showColorPicker ? (
+                        <div className="absolute z-20 mt-2 w-full rounded-2xl border border-gray-100 bg-white shadow-xl p-3">
+                          <div className="grid grid-cols-4 gap-3">
+                            {colorPalette.map((color) => (
+                              <button
+                                key={color.value}
+                                type="button"
+                                onClick={() => {
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    iconColor: color.value,
+                                  }));
+                                  setShowColorPicker(false);
+                                }}
+                                className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-2 text-[11px] transition hover:border-primary/50 hover:bg-primary/5 ${
+                                  form.iconColor === color.value
+                                    ? "border-primary/60 bg-primary/10"
+                                    : "border-gray-100"
+                                }`}
+                              >
+                                <span
+                                  className="w-full h-8 rounded-lg border border-white shadow-inner"
+                                  style={{ backgroundColor: color.value }}
+                                />
+                                <span className="font-semibold">
+                                  {color.name}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -706,6 +903,20 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   </p>
                 </div>
 
+                <div className="flex items-center gap-3">
+                  <span
+                    className="w-12 h-12 rounded-2xl grid place-items-center border border-white/60 shadow-inner"
+                    style={{ backgroundColor: form.iconColor }}
+                  >
+                    <SelectedIcon className="w-5 h-5 text-foreground" />
+                  </span>
+                  <div className="text-sm">
+                    <p className="font-semibold">
+                      {formatIconLabel(form.iconName)}
+                    </p>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="w-4 h-4 text-primary" />
@@ -718,7 +929,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-primary" />
                     <span className="truncate">
-                      {form.location || "Add where you'll do this"}
+                      {form.location || "Add where you&apos;ll do this"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -753,7 +964,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     <li className="flex items-start gap-2">
                       <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
                       <span>
-                        Prep workspace and pull any resources you'll need.
+                        Prep workspace and pull any resources you&apos;ll need.
                       </span>
                     </li>
                     <li className="flex items-start gap-2">

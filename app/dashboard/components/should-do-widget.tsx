@@ -8,7 +8,7 @@ interface Activity {
   likes: string;
 }
 
-interface ShouldDoWidgetProps {}
+type ShouldDoWidgetProps = Record<string, never>;
 
 const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
   const activities: Activity[] = [

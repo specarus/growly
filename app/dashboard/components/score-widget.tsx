@@ -76,7 +76,7 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
             </CircularProgress>
 
             <span className="xl:text-[10px] 2xl:text-xs font-medium text-gray-500 mt-1">
-              Today's XP
+              Today&apos;s XP
             </span>
           </div>
           <div className="flex flex-col items-center gap-1 select-none">
