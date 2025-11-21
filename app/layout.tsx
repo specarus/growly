@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
 
 import Header from "./components/layout/header";
 import { ModalProvider } from "./context/modal-context";
@@ -9,10 +9,15 @@ import { headers } from "next/headers";
 import { SessionProvider } from "./context/session-context";
 import Footer from "./components/layout/footer";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const montserrat = localFont({
+  src: [
+    { path: "../public/fonts/montserrat/Montserrat-400.ttf", weight: "400", style: "normal" },
+    { path: "../public/fonts/montserrat/Montserrat-500.ttf", weight: "500", style: "normal" },
+    { path: "../public/fonts/montserrat/Montserrat-600.ttf", weight: "600", style: "normal" },
+    { path: "../public/fonts/montserrat/Montserrat-700.ttf", weight: "700", style: "normal" },
+  ],
   variable: "--font-montserrat",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -4,7 +4,6 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Todos", href: "/dashboard/todos" },
-  { label: "Weather", href: "/dashboard/weather" },
   { label: "New todo", href: "/dashboard/todos/create" },
 ];
 

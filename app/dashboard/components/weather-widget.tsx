@@ -30,7 +30,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
           7°C
         </p>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center xl:gap-4 2xl:gap-6">
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Feels like
