@@ -16,6 +16,7 @@ import {
   TableProperties,
   Timer,
   Search,
+  ChevronDown,
 } from "lucide-react";
 
 type Status = "Planned" | "In Progress" | "Completed" | "Missed";
@@ -205,9 +206,12 @@ const TodosPage: React.FC<TodosPageProps> = ({
   const [pickerOpenId, setPickerOpenId] = useState<string | null>(null);
   const [collectionAssignSearch, setCollectionAssignSearch] = useState("");
   const [newCollectionSearch, setNewCollectionSearch] = useState("");
+  const [expandedCollections, setExpandedCollections] = useState<
+    Record<string, boolean>
+  >({});
   const isCollectionView = Boolean(collectionContext);
 
-  const tabs: Array<{
+  const tabs: ReadonlyArray<{
     id: TabKey;
     label: string;
     Icon: typeof LayoutPanelLeft;
@@ -646,7 +650,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   key={status}
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={(event) => handleDrop(event, status)}
-                  className={`rounded-2xl border border-gray-100 bg-white/80 shadow-sm xl:p-4 2xl:p-5 min-h-[240px] transition ${
+                  className={`rounded-2xl border border-gray-100 bg-white/80 shadow-sm xl:p-4 2xl:p-5 min-h-60 transition ${
                     draggingId ? "ring-1 ring-primary/40" : ""
                   }`}
                 >
@@ -1088,157 +1092,215 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   </div>
                 </div>
 
-                <div className="xl:col-span-2 grid md:grid-cols-2 gap-3">
-                  {collections.length === 0 ? (
-                    <div className="md:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-white/60 px-4 py-6 text-sm text-muted-foreground">
-                      No collections yet. Add a name, description, and select
-                      todos to start grouping.
-                    </div>
-                  ) : (
-                    collections.map((collection) => {
-                      const searchTerm = collectionAssignSearch
-                        .trim()
-                        .toLowerCase();
-                      const selectableTodos = availableTodos.filter((todo) => {
-                        if (!searchTerm) return true;
-                        const inTitle = todo.title
-                          .toLowerCase()
-                          .includes(searchTerm);
-                        const inTags = todo.tags.some((tag) =>
-                          tag.toLowerCase().includes(searchTerm)
+                <div className="xl:col-span-2">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
+                    {collections.length === 0 ? (
+                      <div className="sm:col-span-2 lg:col-span-3 2xl:col-span-4 rounded-2xl border border-dashed border-gray-200 bg-white/60 px-4 py-6 text-sm text-muted-foreground">
+                        No collections yet. Add a name, description, and select
+                        todos to start grouping.
+                      </div>
+                    ) : (
+                      collections.map((collection) => {
+                        const searchTerm = collectionAssignSearch
+                          .trim()
+                          .toLowerCase();
+                        const selectableTodos = availableTodos.filter(
+                          (todo) => {
+                            if (!searchTerm) return true;
+                            const inTitle = todo.title
+                              .toLowerCase()
+                              .includes(searchTerm);
+                            const inTags = todo.tags.some((tag) =>
+                              tag.toLowerCase().includes(searchTerm)
+                            );
+                            return inTitle || inTags;
+                          }
                         );
-                        return inTitle || inTags;
-                      });
-                      const isPickerOpen = pickerOpenId === collection.id;
-                      const assignedCount = collection.todoIds.length;
-                      return (
-                        <div
-                          key={collection.id}
-                          className="relative rounded-2xl border border-gray-100 bg-white shadow-sm p-4 space-y-3"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="space-y-1">
-                              <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
-                                Collection
-                              </p>
-                              <Link
-                                href={`/dashboard/todos/collections/${collection.id}`}
-                                className="block text-lg font-semibold hover:text-primary transition"
-                              >
-                                {collection.name}
-                              </Link>
-                              <p className="text-xs text-muted-foreground">
-                                {collection.description ||
-                                  "No description yet."}
-                              </p>
+                        const isPickerOpen = pickerOpenId === collection.id;
+                        const collectionTodos = todos.filter((todo) =>
+                          todo.collectionIds.includes(collection.id)
+                        );
+                        const assignedCount = Math.max(
+                          collection.todoIds.length,
+                          collectionTodos.length
+                        );
+                        const isExpanded = Boolean(
+                          expandedCollections[collection.id]
+                        );
+                        const visibleCollectionTodos = collectionTodos.slice(
+                          0,
+                          6
+                        );
+
+                        return (
+                          <div
+                            key={collection.id}
+                            className="relative rounded-xl border border-gray-100 bg-white/70 shadow-sm p-3 space-y-3 hover:border-primary/40 transition"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1 min-w-0">
+                                <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
+                                  Collection
+                                </p>
+                                <Link
+                                  href={`/dashboard/todos/collections/${collection.id}`}
+                                  className="block text-base font-semibold hover:text-primary transition truncate"
+                                >
+                                  {collection.name}
+                                </Link>
+                                <p className="text-[11px] text-muted-foreground line-clamp-2">
+                                  {collection.description ||
+                                    "No description yet."}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+                                  {assignedCount} todo
+                                  {assignedCount === 1 ? "" : "s"}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setPickerOpenId((prev) =>
+                                      prev === collection.id
+                                        ? null
+                                        : collection.id
+                                    );
+                                    setCollectionAssignSearch("");
+                                  }}
+                                  className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-2.5 py-2 text-primary shadow-sm hover:border-primary/60 transition disabled:opacity-50"
+                                  disabled={assignmentPending}
+                                  aria-label="Add todo to collection"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="rounded-full bg-primary/10 text-primary px-3 py-1 text-[11px] font-semibold">
-                                {assignedCount} todo
-                                {assignedCount === 1 ? "" : "s"}
-                              </span>
+
+                            <div className="flex items-center justify-end text-xs text-muted-foreground">
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setPickerOpenId((prev) =>
-                                    prev === collection.id
-                                      ? null
-                                      : collection.id
-                                  );
-                                  setCollectionAssignSearch("");
-                                }}
-                                className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-white px-2.5 py-2 text-primary shadow-sm hover:border-primary/60 transition disabled:opacity-50"
-                                disabled={assignmentPending}
-                                aria-label="Add todo to collection"
+                                onClick={() =>
+                                  setExpandedCollections((prev) => ({
+                                    ...prev,
+                                    [collection.id]: !prev[collection.id],
+                                  }))
+                                }
+                                className="inline-flex items-center gap-1 rounded-full px-2 py-1 hover:bg-muted/80 transition"
                               >
-                                <Plus className="w-4 h-4" />
+                                <span className="font-semibold text-foreground">
+                                  {isExpanded ? "Hide todos" : "Show todos"}
+                                </span>
+                                <ChevronDown
+                                  className={`w-4 h-4 transition ${
+                                    isExpanded ? "rotate-180 text-primary" : ""
+                                  }`}
+                                />
                               </button>
                             </div>
-                          </div>
 
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-                              <Sparkles className="w-3 h-3" />
-                              Opens its own board
-                            </span>
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-                              {availableTodos.length} unassigned left
-                            </span>
-                          </div>
-
-                          {isPickerOpen ? (
-                            <div className="absolute right-0 top-14 z-20 w-full rounded-2xl border border-gray-100 bg-white shadow-2xl">
-                              <div className="p-3 border-b border-gray-100">
-                                <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-inner text-xs text-muted-foreground">
-                                  <Search className="w-3.5 h-3.5" />
-                                  <input
-                                    value={collectionAssignSearch}
-                                    onChange={(e) =>
-                                      setCollectionAssignSearch(e.target.value)
-                                    }
-                                    autoFocus
-                                    placeholder="Search todos by title or tag"
-                                    className="w-full bg-transparent focus:outline-none"
-                                  />
-                                </div>
-                              </div>
-                              <div className="max-h-64 overflow-auto divide-y divide-gray-50">
-                                {selectableTodos.length === 0 ? (
-                                  <div className="px-3 py-3 text-xs text-muted-foreground">
-                                    No matching todos
-                                  </div>
+                            {isExpanded ? (
+                              <div className="rounded-lg border border-gray-100 bg-white/80 p-2 space-y-1">
+                                {visibleCollectionTodos.length === 0 ? (
+                                  <p className="text-[11px] text-muted-foreground">
+                                    {assignedCount === 0
+                                      ? "No todos in this collection yet."
+                                      : "Todos will show here once loaded."}
+                                  </p>
                                 ) : (
-                                  selectableTodos.map((todo) => (
-                                    <button
+                                  visibleCollectionTodos.map((todo) => (
+                                    <div
                                       key={todo.id}
-                                      type="button"
-                                      onClick={() =>
-                                        addTodoToExistingCollection(
-                                          todo.id,
-                                          collection.id
-                                        )
-                                      }
-                                      className="w-full text-left px-3 py-3 hover:bg-primary/5 transition"
-                                      disabled={assignmentPending}
+                                      className="flex items-center justify-between gap-2 text-xs"
                                     >
-                                      <p className="font-semibold text-sm truncate">
+                                      <span className="truncate font-medium">
                                         {todo.title}
-                                      </p>
-                                      <p className="text-[11px] text-muted-foreground flex items-center gap-2">
-                                        <span className="inline-flex items-center gap-1">
-                                          <CalendarDays className="w-3 h-3" />
-                                          {todo.dueDate}
-                                        </span>
-                                        <span className="inline-flex items-center gap-1">
-                                          <Clock3 className="w-3 h-3" />
-                                          {todo.dueTime}
-                                        </span>
-                                      </p>
-                                      <div className="mt-1 flex flex-wrap gap-1 text-[11px] text-muted-foreground">
-                                        {todo.tags.map((tag) => (
-                                          <span
-                                            key={tag}
-                                            className="px-2 py-0.5 rounded-full bg-muted"
-                                          >
-                                            {tag}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </button>
+                                      </span>
+                                      <span
+                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] ${
+                                          statusStyles[todo.status]
+                                        }`}
+                                      >
+                                        <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                                        {todo.status}
+                                      </span>
+                                    </div>
                                   ))
                                 )}
                               </div>
-                            </div>
-                          ) : null}
+                            ) : null}
 
-                          <div className="text-xs text-muted-foreground">
-                            Assigned todos move off the main board and appear
-                            here.
+                            {isPickerOpen ? (
+                              <div className="absolute right-0 top-12 z-20 w-full rounded-2xl border border-gray-100 bg-white shadow-2xl">
+                                <div className="p-3 border-b border-gray-100">
+                                  <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-inner text-xs text-muted-foreground">
+                                    <Search className="w-3.5 h-3.5" />
+                                    <input
+                                      value={collectionAssignSearch}
+                                      onChange={(e) =>
+                                        setCollectionAssignSearch(
+                                          e.target.value
+                                        )
+                                      }
+                                      autoFocus
+                                      placeholder="Search todos by title or tag"
+                                      className="w-full bg-transparent focus:outline-none"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="max-h-64 overflow-auto divide-y divide-gray-50">
+                                  {selectableTodos.length === 0 ? (
+                                    <div className="px-3 py-3 text-xs text-muted-foreground">
+                                      No matching todos
+                                    </div>
+                                  ) : (
+                                    selectableTodos.map((todo) => (
+                                      <button
+                                        key={todo.id}
+                                        type="button"
+                                        onClick={() =>
+                                          addTodoToExistingCollection(
+                                            todo.id,
+                                            collection.id
+                                          )
+                                        }
+                                        className="w-full text-left px-3 py-3 hover:bg-primary/5 transition"
+                                        disabled={assignmentPending}
+                                      >
+                                        <p className="font-semibold text-sm truncate">
+                                          {todo.title}
+                                        </p>
+                                        <p className="text-[11px] text-muted-foreground flex items-center gap-2">
+                                          <span className="inline-flex items-center gap-1">
+                                            <CalendarDays className="w-3 h-3" />
+                                            {todo.dueDate}
+                                          </span>
+                                          <span className="inline-flex items-center gap-1">
+                                            <Clock3 className="w-3 h-3" />
+                                            {todo.dueTime}
+                                          </span>
+                                        </p>
+                                        <div className="mt-1 flex flex-wrap gap-1 text-[11px] text-muted-foreground">
+                                          {todo.tags.map((tag) => (
+                                            <span
+                                              key={tag}
+                                              className="px-2 py-0.5 rounded-full bg-muted"
+                                            >
+                                              {tag}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </button>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                            ) : null}
                           </div>
-                        </div>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

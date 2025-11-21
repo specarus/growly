@@ -5,10 +5,14 @@ type WeatherWidgetProps = Record<string, never>;
 const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
   const iconUrl = "/weather/sunny.png";
   const seasonalBackgrounds: Record<string, string> = {
-    spring: "radial-gradient(circle at 20% 20%, #e3f9e5 0, #f6fff2 25%, transparent 40%), linear-gradient(135deg, #d4f4dd 0%, #a1e5b9 50%, #7fd1ae 100%)",
-    summer: "radial-gradient(circle at 80% 10%, #fff3c5 0, #ffe8a3 28%, transparent 45%), linear-gradient(135deg, #ffd89b 0%, #fcb69f 50%, #ff9a9e 100%)",
-    autumn: "radial-gradient(circle at 15% 15%, #fff2db 0, #ffdfb8 30%, transparent 48%), linear-gradient(135deg, #f7c978 0%, #f78ca0 50%, #f9748f 100%)",
-    winter: "radial-gradient(circle at 80% 20%, #d8ebff 0, #bddbff 32%, transparent 48%), linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%)",
+    spring:
+      "radial-gradient(circle at 20% 20%, #e3f9e5 0, #f6fff2 25%, transparent 40%), linear-gradient(135deg, #d4f4dd 0%, #a1e5b9 50%, #7fd1ae 100%)",
+    summer:
+      "radial-gradient(circle at 80% 10%, #fff3c5 0, #ffe8a3 28%, transparent 45%), linear-gradient(135deg, #ffd89b 0%, #fcb69f 50%, #ff9a9e 100%)",
+    autumn:
+      "radial-gradient(circle at 15% 15%, #fff2db 0, #ffdfb8 30%, transparent 48%), linear-gradient(135deg, #f7c978 0%, #f78ca0 50%, #f9748f 100%)",
+    winter:
+      "radial-gradient(circle at 80% 20%, #d8ebff 0, #bddbff 32%, transparent 48%), linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%)",
   };
   const activeSeason = "autumn";
 
