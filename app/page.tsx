@@ -17,6 +17,7 @@ import {
 import { AuthModal } from "./components/auth/auth-modal";
 import Button from "./components/ui/button";
 import { ModalContext } from "./context/modal-context";
+import { useSession } from "./context/session-context";
 
 const highlights = [
   {
@@ -65,6 +66,7 @@ export default function LandingPage() {
   if (!context) return null;
 
   const { showModal, setShowModal } = context;
+  const { session } = useSession();
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -92,7 +94,7 @@ export default function LandingPage() {
   }, [showModal, setShowModal]);
 
   return (
-    <main className="relative min-h-screen pt-24 pb-16 bg-gradient-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
+    <main className="relative min-h-screen pt-24 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
       {showModal && (
         <div
           onClick={handleOverlayClick}
@@ -125,21 +127,33 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-              <Button
-                onClick={() => setShowModal(true)}
-                className="sm:w-auto px-6 py-3 bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all"
-              >
-                Start a streak
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Link
-                href="/dashboard"
-                className="sm:w-auto px-6 py-3 rounded-full border border-muted text-foreground font-semibold hover:border-primary hover:text-primary transition-all bg-white/80 backdrop-blur"
-              >
-                Peek at the dashboard
-              </Link>
-            </div>
+            {session ? (
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                <Link
+                  href="/dashboard"
+                  className="sm:w-auto px-6 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
+                >
+                  Go to dashboard
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                <Button
+                  onClick={() => setShowModal(true)}
+                  className="sm:w-auto px-6 py-3 bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all"
+                >
+                  Start a streak
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Link
+                  href="/dashboard"
+                  className="sm:w-auto px-6 py-3 rounded-full border border-muted text-foreground font-semibold hover:border-primary hover:text-primary transition-all bg-white/80 backdrop-blur"
+                >
+                  Peek at the dashboard
+                </Link>
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -158,7 +172,7 @@ export default function LandingPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/15 via-white to-green-soft/20 blur-3xl" />
+            <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-primary/15 via-white to-green-soft/20 blur-3xl" />
             <div className="relative rounded-3xl border border-white/60 bg-white/80 backdrop-blur shadow-xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -192,9 +206,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CalendarRange className="h-4 w-4 text-yellow-soft-foreground" />
-                    <p className="text-sm text-white/80">
-                      Monday ritual stack
-                    </p>
+                    <p className="text-sm text-white/80">Monday ritual stack</p>
                   </div>
                   <span className="text-sm text-green-soft-foreground">
                     On track
@@ -248,7 +260,7 @@ export default function LandingPage() {
             {highlights.map(({ title, description, icon: Icon }) => (
               <div
                 key={title}
-                className="group rounded-2xl border border-muted bg-gradient-to-b from-white to-muted/30 shadow-md p-6 space-y-3 hover:-translate-y-1 transition-transform"
+                className="group rounded-2xl border border-muted bg-linear-to-b from-white to-muted/30 shadow-md p-6 space-y-3 hover:-translate-y-1 transition-transform"
               >
                 <div className="h-11 w-11 rounded-2xl bg-primary/15 text-primary grid place-items-center mb-2 group-hover:scale-105 transition">
                   <Icon className="h-5 w-5" />
@@ -297,7 +309,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/70 bg-gradient-to-br from-analytics-dark to-analytics-dark/95 text-white p-8 shadow-xl space-y-6">
+          <div className="rounded-3xl border border-white/70 bg-linear-to-br from-analytics-dark to-analytics-dark/95 text-white p-8 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm text-white/70">Today&apos;s focus</p>
