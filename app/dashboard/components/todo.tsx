@@ -103,7 +103,7 @@ const Todo: FC<TodoProps> = ({
               {todo.title}
             </div>
             <span
-              className={`pointer-events-none absolute left-0 right-0 top-1/2 h-[2px] origin-left rounded-full bg-muted-foreground transition-transform duration-300 ${
+              className={`pointer-events-none absolute left-0 right-0 top-1/2 h-0.5 origin-left rounded-full bg-muted-foreground transition-transform duration-300 ${
                 todo.completed || isCompleting ? "scale-x-100" : "scale-x-0"
               }`}
             />
@@ -126,11 +126,11 @@ const Todo: FC<TodoProps> = ({
           </div>
           <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-xs 2xl:text-sm text-muted-foreground">
             <span className="flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
-              <Clock className="w-3 h-3 shrink-0" />
+              <Clock className="w-3 h-3 shrink-0 text-foreground" />
               {todo.time}
             </span>
             <span className="flex items-center gap-0.5 sm:gap-1 truncate">
-              <MapPin className="w-3 h-3 shrink-0" />
+              <MapPin className="w-3 h-3 shrink-0 text-red-400" />
               <span className="truncate">{todo.location}</span>
             </span>
           </div>

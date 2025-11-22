@@ -56,21 +56,21 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
       const spreadY = (Math.random() - 0.8) * 200;
       const rotation = Math.random() * 720 - 360;
 
-      piece
-        .animate(
-          [
-            { transform: "translate3d(0,0,0) rotate(0deg)", opacity: 1 },
-            {
-              transform: `translate3d(${spreadX}px, ${spreadY - 40}px, 0) rotate(${rotation}deg)`,
-              opacity: 0,
-            },
-          ],
+      piece.animate(
+        [
+          { transform: "translate3d(0,0,0) rotate(0deg)", opacity: 1 },
           {
-            duration: 850,
-            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
-          }
-        )
-        .onfinish = () => piece.remove();
+            transform: `translate3d(${spreadX}px, ${
+              spreadY - 40
+            }px, 0) rotate(${rotation}deg)`,
+            opacity: 0,
+          },
+        ],
+        {
+          duration: 850,
+          easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+        }
+      ).onfinish = () => piece.remove();
     }
   }, []);
 
@@ -107,7 +107,10 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
           throw new Error("Unable to update todo status");
         }
 
-        setTimeout(() => setTodos((prev) => prev.filter((todo) => todo.id !== id)), 450);
+        setTimeout(
+          () => setTodos((prev) => prev.filter((todo) => todo.id !== id)),
+          450
+        );
       } catch (error) {
         console.error(error);
         setTodos((prev) =>
@@ -134,7 +137,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
 
   return (
     <div className="xl:p-2 2xl:p-6 text-foreground">
-      <div className="flex items-center justify-between xl:mb-4 2xl:mb-6">
+      <div className="flex items-center justify-between xl:mb-2 2xl:mb-4">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">
           Today&apos;s Todos
         </h3>
@@ -155,7 +158,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
         </div>
       </div>
 
-      <div className="xl:space-y-3 2xl:space-y-4 min-h-[6rem]">
+      <div className="xl:space-y-3 2xl:space-y-4 min-h-24">
         {hasTodos ? (
           topTodos.map((todo) => (
             <Todo

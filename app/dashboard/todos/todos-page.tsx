@@ -477,7 +477,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
   };
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-8">
+    <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-8">
       <div className="xl:px-8 2xl:px-28 pb-10 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
