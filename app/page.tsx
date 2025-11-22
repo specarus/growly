@@ -18,6 +18,7 @@ import { AuthModal } from "./components/auth/auth-modal";
 import Button from "./components/ui/button";
 import { ModalContext } from "./context/modal-context";
 import { useSession } from "./context/session-context";
+import useLockBodyScroll from "./hooks/use-lock-body-scroll";
 
 const highlights = [
   {
@@ -68,6 +69,7 @@ export default function LandingPage() {
   const { session } = useSession();
   const showModal = context?.showModal ?? false;
   const setShowModal = context?.setShowModal ?? noop;
+  useLockBodyScroll(showModal);
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -99,7 +101,7 @@ export default function LandingPage() {
       {showModal && (
         <div
           onClick={handleOverlayClick}
-          className="fixed inset-0 grid place-items-center z-50 bg-black/20"
+          className="fixed inset-0 grid place-items-center z-50 bg-black/20 backdrop-blur-sm"
         >
           <AuthModal />
         </div>
