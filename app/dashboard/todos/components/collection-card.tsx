@@ -81,16 +81,16 @@ const CollectionCard: FC<CollectionCardProps> = ({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
+          <p className="xl:text-[9px] 2xl:text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
             Collection
           </p>
           <Link
             href={`/dashboard/todos/collections/${collection.id}`}
-            className="block text-base font-semibold hover:text-primary transition truncate"
+            className="block xl:text-sm 2xl:text-base font-semibold hover:text-primary transition truncate"
           >
             {collection.name}
           </Link>
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
             {assignedCount} todo{assignedCount === 1 ? "" : "s"}
           </span>
         </div>
@@ -102,7 +102,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
             disabled={assignmentPending}
             aria-label="Add todo to collection"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
           </button>
         </div>
       </div>
@@ -111,7 +111,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
         <button
           type="button"
           onClick={onViewTodos}
-          className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground transition hover:border-primary/60"
+          className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground transition hover:border-primary/60"
         >
           View todos
         </button>
@@ -124,7 +124,9 @@ const CollectionCard: FC<CollectionCardProps> = ({
               <Search className="w-3.5 h-3.5" />
               <input
                 value={collectionAssignSearch}
-                onChange={(event) => onCollectionAssignSearch(event.target.value)}
+                onChange={(event) =>
+                  onCollectionAssignSearch(event.target.value)
+                }
                 autoFocus
                 placeholder="Search todos by title or tag"
                 className="w-full bg-transparent focus:outline-none"

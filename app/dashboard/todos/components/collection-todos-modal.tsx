@@ -30,39 +30,39 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="collection-modal-title"
-        className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-gray-100 bg-white text-foreground shadow-2xl"
+        className="relative w-full xl:max-w-2xl 2xl:max-w-3xl overflow-hidden rounded-3xl border border-gray-100 bg-white text-foreground shadow-2xl"
       >
         <div className="flex items-start justify-between gap-3 border-b border-gray-100 px-5 py-5">
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground/80 font-semibold">
+            <p className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.2em] text-muted-foreground/80 font-semibold">
               Collection
             </p>
             <h3
               id="collection-modal-title"
-              className="text-xl font-semibold text-foreground"
+              className="xl:text-lg 2xl:text-xl font-semibold text-foreground"
             >
               {collection.name}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
               {collection.description || "No description yet."}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-xs font-semibold text-muted-foreground transition hover:text-foreground"
+            className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground transition hover:text-foreground"
           >
             Close
           </button>
         </div>
-        <div className="px-5 pt-4 text-xs text-muted-foreground">
+        <div className="px-5 pt-4 xl:text-[11px] 2xl:text-xs text-muted-foreground">
           Showing {todos.length} todo{todos.length === 1 ? "" : "s"}
         </div>
         <div className="max-h-[65vh] space-y-3 overflow-auto border-gray-100 px-5 py-5">
           {todos.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No todos in this collection yet.<br></br>Add one to keep this space
-              meaningful.
+              No todos in this collection yet.<br></br>Add one to keep this
+              space meaningful.
             </p>
           ) : (
             todos.map((todo) => (
@@ -71,11 +71,11 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
                 className="rounded-2xl border border-gray-100 bg-white/80 px-4 py-3 shadow-sm"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-sm truncate">
+                  <span className="font-semibold xl:text-[13px] 2xl:text-sm truncate">
                     {todo.title}
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full xl:text-[10px] 2xl:text-[11px] ${
                       statusStyles[todo.status]
                     }`}
                   >
@@ -83,7 +83,7 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
                     {todo.status}
                   </span>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap gap-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
                     <CalendarDays className="w-3 h-3" />
                     {todo.dueDate}
@@ -94,7 +94,7 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
                   </span>
                 </div>
                 {todo.tags.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-1 text-[11px] text-muted-foreground">
+                  <div className="mt-2 flex flex-wrap gap-1 xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
                     {todo.tags.map((tag) => (
                       <span
                         key={tag}

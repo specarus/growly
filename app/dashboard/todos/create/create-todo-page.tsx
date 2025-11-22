@@ -16,11 +16,14 @@ import {
   BadgeCheck,
   Bell,
   CalendarDays,
-  CheckSquare,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   Flag,
+  Group,
   Hash,
+  Hourglass,
   icons,
   ListChecks,
   MapPin,
@@ -91,32 +94,43 @@ const pillByPriority: Record<PriorityLabel, string> = {
     "border border-primary/80 bg-primary text-white hover:border-primary",
 };
 
-const progressByPriority: Record<PriorityLabel, number> = {
-  Low: 35,
-  Medium: 55,
-  High: 75,
-  Critical: 90,
-};
-
 const inputClassName =
-  "w-full rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-sm 2xl:text-base text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30";
-
-const startTimeInputClassName =
-  "w-full rounded-2xl border border-gray-200 bg-gradient-to-br from-white/95 to-white/80 px-4 py-3 text-foreground text-base font-medium tracking-wider shadow-inner transition focus:border-primary/60 focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 appearance-none";
+  "w-full border-none bg-transparent px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none xl:text-sm 2xl:text-base";
 
 const fieldButtonClassName =
-  "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
+  "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
-const categorySelectWrapperClassName =
-  "relative overflow-visible rounded-2xl border border-[#F7C7B9] bg-gradient-to-br from-white/95 to-white/70 shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
+const dropdownSelectWrapperClassName =
+  "relative overflow-visible rounded-2xl border border-gray-100 bg-gradient-to-br from-white/95 to-white/70 shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
 
 const categoryOptions = ["Personal", "Work"];
 const CATEGORY_PLACEHOLDER = "Choose a category";
 
 const categoryDropdownOptionsId = "category-dropdown-options";
+const reminderOptions = [
+  "No reminder",
+  "5 minutes before",
+  "15 minutes before",
+  "30 minutes before",
+  "1 hour before",
+  "1 day before",
+];
+const reminderDropdownOptionsId = "reminder-dropdown-options";
+const recurrenceOptions: Recurrence[] = ["None", "Daily", "Weekly", "Monthly"];
+const recurrenceDropdownOptionsId = "recurrence-dropdown-options";
+
+const sanitizeDropdownValue = (value: string) =>
+  value.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
+
+const toDropdownOptionId = (field: string, value: string) =>
+  `${field}-option-${sanitizeDropdownValue(value)}`;
 
 const toCategoryOptionId = (value: string) =>
-  `category-option-${value.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`;
+  toDropdownOptionId("category", value);
+const toReminderOptionId = (value: string) =>
+  toDropdownOptionId("reminder", value);
+const toRecurrenceOptionId = (value: string) =>
+  toDropdownOptionId("recurrence", value);
 
 const colorPalette = [
   { name: "Sky", value: "#BAE6FD" },
@@ -213,25 +227,6 @@ const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 const TIME_INTERVAL = 15;
 
-const TIME_OPTIONS = Array.from(
-  { length: (24 * 60) / TIME_INTERVAL },
-  (_, index) => {
-    const totalMinutes = index * TIME_INTERVAL;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-      2,
-      "0"
-    )}`;
-    const period = hours >= 12 ? "PM" : "AM";
-    const hourLabel = hours % 12 === 0 ? 12 : hours % 12;
-    return {
-      value,
-      label: `${hourLabel}:${String(minutes).padStart(2, "0")} ${period}`,
-    };
-  }
-);
-
 const formatMonthLabel = (date: Date) =>
   new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -250,6 +245,38 @@ const formatTimeForDisplay = (value?: string) => {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+};
+
+const MINUTES_PER_DAY = 24 * 60;
+
+const normalizeTotalMinutes = (value: number) =>
+  ((value % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+
+const buildTimeFromTotalMinutes = (totalMinutes: number) => {
+  const normalized = normalizeTotalMinutes(totalMinutes);
+  const hours = Math.floor(normalized / 60);
+  const minutes = normalized % 60;
+  const formatSegment = (segment: number) => String(segment).padStart(2, "0");
+  return `${formatSegment(hours)}:${formatSegment(minutes)}`;
+};
+
+const parseTimeParts = (value?: string | null) => {
+  if (!value) {
+    return { hours: 12, minutes: 0 };
+  }
+  const [hourText = "0", minuteText = "0"] = value.split(":");
+  const parsedHour = Number.parseInt(hourText, 10);
+  const parsedMinute = Number.parseInt(minuteText, 10);
+
+  const normalize = (num: number, modulus: number) =>
+    ((Math.floor(num) % modulus) + modulus) % modulus;
+
+  const hours = Number.isFinite(parsedHour) ? normalize(parsedHour, 24) : 12;
+  const minutes = Number.isFinite(parsedMinute)
+    ? normalize(parsedMinute, 60)
+    : 0;
+
+  return { hours, minutes };
 };
 
 const isSameDay = (a: Date, b: Date) =>
@@ -368,48 +395,40 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
       ref={panelRef}
       role="dialog"
       aria-modal="true"
-      className="absolute left-0 top-full z-50 mt-2 w-full min-w-60 max-w-sm rounded-3xl border border-gray-100 bg-white px-5 py-5 shadow-2xl"
+      className="absolute left-0 top-full z-50 mt-2 w-full min-w-60 max-w-sm rounded-3xl border border-gray-100 bg-white px-5 py-4 shadow-xl"
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Due date
-          </p>
           <h3 className="text-lg font-semibold text-foreground">
             {formatMonthLabel(viewDate)}
           </h3>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-xs font-semibold text-muted-foreground transition hover:text-foreground"
-        >
-          Close
-        </button>
       </div>
-      <div className="mt-4 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-        <button
-          type="button"
-          onClick={() =>
-            setViewDate(
-              (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
-            )
-          }
-          className="rounded-2xl border border-gray-200 px-3 py-1 font-medium transition hover:border-primary/60"
-        >
-          Prev
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            setViewDate(
-              (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
-            )
-          }
-          className="rounded-2xl border border-gray-200 px-3 py-1 font-medium transition hover:border-primary/60"
-        >
-          Next
-        </button>
+      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              setViewDate(
+                (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+              )
+            }
+            className="rounded-2xl border border-gray-200 px-3 py-1 font-medium transition hover:border-primary/60"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setViewDate(
+                (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+              )
+            }
+            className="rounded-2xl border border-gray-200 px-3 py-1 font-medium transition hover:border-primary/60"
+          >
+            Next
+          </button>
+        </div>
         <button
           type="button"
           onClick={() => setViewDate(new Date())}
@@ -418,14 +437,14 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
           Today
         </button>
       </div>
-      <div className="mt-4 grid grid-cols-7 gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+      <div className="mt-3 grid grid-cols-7 gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
         {WEEK_DAYS.map((day) => (
           <span key={day} className="text-center">
             {day}
           </span>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-7 gap-2 text-sm">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-xs">
         {weeks.map((week, weekIndex) =>
           week.map(({ date, inMonth }) => {
             const iso = date.toISOString().slice(0, 10);
@@ -437,11 +456,11 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
                 key={`${weekIndex}-${iso}`}
                 type="button"
                 onClick={() => handleSelect(date)}
-                className={`h-10 w-10 rounded-2xl text-center text-sm font-semibold transition ${
+                className={`h-8 w-8 rounded-full text-center text-xs font-semibold transition ${
                   inMonth ? "text-foreground" : "text-muted-foreground"
                 } ${
                   isSelected
-                    ? "bg-primary text-white shadow-[0_8px_20px_rgba(59,130,246,0.25)]"
+                    ? "bg-primary text-white shadow-sm"
                     : "hover:bg-primary/10"
                 } ${isToday ? "border border-primary/40" : ""}`}
               >
@@ -455,99 +474,80 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
   );
 };
 
-interface TimePickerDropdownProps {
-  selectedTime: string;
-  onSelect: (time: string) => void;
-  onClose: () => void;
-  anchorRef: React.RefObject<HTMLButtonElement | null>;
+interface TimeSpinnerProps {
+  time: string;
+  onChange: (value: string) => void;
 }
 
-const TimePickerDropdown: React.FC<TimePickerDropdownProps> = ({
-  selectedTime,
-  onSelect,
-  onClose,
-  anchorRef,
-}) => {
-  const panelRef = useRef<HTMLDivElement | null>(null);
+const TimeSpinner: React.FC<TimeSpinnerProps> = ({ time, onChange }) => {
+  const { hours, minutes } = parseTimeParts(time);
+  const hasValue = Boolean(time);
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  const displayHour = hasValue ? String(hour12).padStart(2, "0") : "--";
+  const displayMinute = hasValue ? String(minutes).padStart(2, "0") : "--";
+  const meridiem = hours >= 12 ? "PM" : "AM";
 
-  useEffect(() => {
-    const handleDismiss = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as Node | null;
-      if (
-        panelRef.current?.contains(target) ||
-        anchorRef.current?.contains(target)
-      ) {
-        return;
-      }
-      onClose();
-    };
+  const changeHour = (delta: number) =>
+    onChange(buildTimeFromTotalMinutes(hours * 60 + minutes + delta * 60));
+  const changeMinute = (delta: number) =>
+    onChange(buildTimeFromTotalMinutes(hours * 60 + minutes + delta));
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleDismiss);
-    document.addEventListener("touchstart", handleDismiss);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleDismiss);
-      document.removeEventListener("touchstart", handleDismiss);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [anchorRef, onClose]);
+  const spinnerBoxClass =
+    "flex items-center gap-4 rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-inner";
+  const arrowButtonClass =
+    "grid place-content-center xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 rounded-full border border-gray-100 bg-white text-muted-foreground transition hover:border-primary/60 hover:text-primary";
 
   return (
-    <div
-      ref={panelRef}
-      role="listbox"
-      aria-label="Pick a start time"
-      className="absolute left-0 top-full z-50 mt-2 w-full min-w-60 max-w-sm rounded-3xl border border-gray-100 bg-white px-5 py-5 shadow-2xl"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Start time
-          </p>
-          <h3 className="text-lg font-semibold text-foreground">
-            {selectedTime
-              ? formatTimeForDisplay(selectedTime)
-              : "Choose a time"}
-          </h3>
-        </div>
+    <div className="flex items-center gap-3">
+      <div className={spinnerBoxClass}>
         <button
           type="button"
-          onClick={onClose}
-          className="text-xs font-semibold text-muted-foreground transition hover:text-foreground"
+          onClick={() => changeHour(-1)}
+          className={arrowButtonClass}
+          aria-label="Decrease hour"
         >
-          Close
+          <ChevronLeft className="h-3 w-3" />
+        </button>
+        <span className="xl:text-md 2xl:text-lg font-semibold tracking-tight text-foreground">
+          {displayHour}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => changeHour(1)}
+          className={arrowButtonClass}
+          aria-label="Increase hour"
+        >
+          <ChevronRight className="h-3 w-3" />
         </button>
       </div>
-      <div className="mt-4 max-h-64 space-y-2 overflow-auto pr-2">
-        {TIME_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => {
-              onSelect(option.value);
-              onClose();
-            }}
-            className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition focus-visible:outline-none ${
-              selectedTime === option.value
-                ? "bg-primary text-white shadow-[0_12px_30px_rgba(59,130,246,0.25)]"
-                : "border border-gray-100 text-foreground hover:border-primary/40 hover:bg-primary/5"
-            }`}
-          >
-            <span>{option.label}</span>
-            <span className="text-xs text-muted-foreground">
-              {option.value}
-            </span>
-          </button>
-        ))}
+      <span className="xl:text-xl 2xl:text-2xl font-semibold tracking-tight text-muted-foreground">
+        :
+      </span>
+      <div className={spinnerBoxClass}>
+        <button
+          type="button"
+          onClick={() => changeMinute(-TIME_INTERVAL)}
+          className={arrowButtonClass}
+          aria-label="Decrease minutes"
+        >
+          <ChevronLeft className="h-3 w-3" />
+        </button>
+        <span className="xl:text-md 2xl:text-lg font-semibold tracking-tight text-foreground">
+          {displayMinute}
+        </span>
+        <button
+          type="button"
+          onClick={() => changeMinute(TIME_INTERVAL)}
+          className={arrowButtonClass}
+          aria-label="Increase minutes"
+        >
+          <ChevronRight className="h-3 w-3" />
+        </button>
       </div>
+      <span className="xl:text-[12px] 2xl:text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        {meridiem}
+      </span>
     </div>
   );
 };
@@ -565,12 +565,16 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [reminderMenuOpen, setReminderMenuOpen] = useState(false);
+  const [recurrenceMenuOpen, setRecurrenceMenuOpen] = useState(false);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
-  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const categoryToggleRef = useRef<HTMLButtonElement | null>(null);
   const categoryPanelRef = useRef<HTMLDivElement | null>(null);
+  const reminderToggleRef = useRef<HTMLButtonElement | null>(null);
+  const reminderPanelRef = useRef<HTMLDivElement | null>(null);
+  const recurrenceToggleRef = useRef<HTMLButtonElement | null>(null);
+  const recurrencePanelRef = useRef<HTMLDivElement | null>(null);
   const dateToggleRef = useRef<HTMLButtonElement | null>(null);
-  const timeToggleRef = useRef<HTMLButtonElement | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -653,6 +657,72 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [categoryMenuOpen]);
+
+  useEffect(() => {
+    if (!reminderMenuOpen) return;
+
+    const handleOutside = (event: Event) => {
+      const target = event.target as Node | null;
+      if (
+        reminderToggleRef.current?.contains(target) ||
+        reminderPanelRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setReminderMenuOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setReminderMenuOpen(false);
+        reminderToggleRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [reminderMenuOpen]);
+
+  useEffect(() => {
+    if (!recurrenceMenuOpen) return;
+
+    const handleOutside = (event: Event) => {
+      const target = event.target as Node | null;
+      if (
+        recurrenceToggleRef.current?.contains(target) ||
+        recurrencePanelRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setRecurrenceMenuOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setRecurrenceMenuOpen(false);
+        recurrenceToggleRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [recurrenceMenuOpen]);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -774,29 +844,26 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     "Add a quick description so future you knows exactly what to do.";
 
   const categoryLabel = form.category || CATEGORY_PLACEHOLDER;
-  const categorySummaryLabel = form.category
-    ? `${form.category} category`
-    : CATEGORY_PLACEHOLDER;
 
   const primaryCtaLabel = mode === "edit" ? "Update todo" : "Add todo";
 
   return (
     <>
       <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground">
-        <div className="xl:px-8 2xl:px-28 pb-8 space-y-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="xl:px-8 2xl:px-28 pb-16 space-y-8">
+          <div className="flex gap-4 flex-row items-center justify-between">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+              <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 xl:text-[10px] 2xl:text-[11px] xl:font-semibold uppercase tracking-[0.18em] text-amber-700">
                 <BadgeCheck className="w-4 h-4" />
                 <span>{mode === "edit" ? "Edit todo" : "Create todo"}</span>
               </div>
               <div className="space-y-1">
-                <h1 className="text-3xl font-bold">
+                <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
                   {mode === "edit"
                     ? "Keep this todo moving"
                     : "Bring a new todo to life"}
                 </h1>
-                <p className="text-sm text-muted-foreground max-w-2xl">
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
                   Capture the essentials and set a realistic schedule so you can
                   start fast.
                 </p>
@@ -807,7 +874,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 type="button"
                 onClick={() => handleSubmit("Planned")}
                 disabled={isPending}
-                className="xl:min-w-28 2xl:min-w-36 l:h-10 2xl:h-12 xl:px-4 2xl:px-6 xl:text-sm 2xl:text-base bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
+                className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
               >
                 Save draft
               </Button>
@@ -815,7 +882,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 type="button"
                 onClick={() => handleSubmit()}
                 disabled={isPending}
-                className="xl:min-w-32 2xl:min-w-40 xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+                className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
               >
                 {primaryCtaLabel}
               </Button>
@@ -824,7 +891,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   type="button"
                   onClick={handleDelete}
                   disabled={isPending}
-                  className="xl:h-10 2xl:h-12 xl:px-4 2xl:px-6 xl:text-sm 2xl:text-base bg-white border border-destructive text-destructive hover:bg-destructive hover:text-white transition disabled:opacity-60"
+                  className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
                 >
                   <Trash className="w-4 h-4" />
                   Delete
@@ -846,16 +913,16 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
           )}
 
           <div className="grid xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2 space-y-5">
+            <div className="xl:col-span-2 space-y-8">
               <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <Target className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
                     <div>
                       <h2 className="font-semibold xl:text-lg 2xl:text-xl">
                         Todo basics
                       </h2>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                         Name the todo and add the context you need later.
                       </p>
                     </div>
@@ -876,12 +943,14 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                           Required
                         </span>
                       </div>
-                      <input
-                        value={form.title}
-                        onChange={handleChange("title")}
-                        placeholder="Add a concise title"
-                        className={inputClassName}
-                      />
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.title}
+                          onChange={handleChange("title")}
+                          placeholder="Add a concise title"
+                          className={inputClassName}
+                        />
+                      </div>
                     </label>
 
                     <label className="space-y-2">
@@ -889,23 +958,25 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         <ListChecks className="w-4 h-4 text-primary" />
                         <span>Description</span>
                       </div>
-                      <textarea
-                        value={form.description}
-                        onChange={handleChange("description")}
-                        placeholder="Add helpful notes, links, or acceptance criteria."
-                        rows={3}
-                        className={`${inputClassName} resize-none leading-relaxed`}
-                      />
+                      <div className={dropdownSelectWrapperClassName}>
+                        <textarea
+                          value={form.description}
+                          onChange={handleChange("description")}
+                          placeholder="Add helpful notes, links, or acceptance criteria."
+                          rows={3}
+                          className={`${inputClassName} resize-none leading-relaxed`}
+                        />
+                      </div>
                     </label>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <label className="space-y-2">
                       <div className="flex items-center gap-2 text-sm font-semibold">
-                        <Sparkles className="w-4 h-4 text-primary" />
+                        <Group className="w-4 h-4 text-primary" />
                         <span>Category</span>
                       </div>
-                      <div className={categorySelectWrapperClassName}>
+                      <div className={dropdownSelectWrapperClassName}>
                         <button
                           type="button"
                           ref={categoryToggleRef}
@@ -913,11 +984,11 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                           aria-expanded={categoryMenuOpen}
                           aria-controls={categoryDropdownOptionsId}
                           onClick={() => setCategoryMenuOpen((open) => !open)}
-                          className="w-full flex items-center justify-between rounded-2xl border-none bg-transparent px-4 py-3 text-left text-foreground xl:text-sm 2xl:text-base focus:outline-none focus-visible:outline-none"
+                          className="w-full flex items-center justify-between rounded-2xl border-none bg-transparent px-4 py-3 text-left text-foreground xl:text-xs 2xl:text-sm focus:outline-none focus-visible:outline-none"
                         >
                           <span className="truncate">{categoryLabel}</span>
                           <ChevronDown
-                            className={`h-4 w-4 transition-transform ${
+                            className={`2xl:h-4 2xl:w-4 xl:h-3 xl:w-3 transition-transform ${
                               categoryMenuOpen
                                 ? "rotate-180 text-primary"
                                 : "text-muted-foreground"
@@ -934,7 +1005,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                 ? toCategoryOptionId(form.category)
                                 : undefined
                             }
-                            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_20px_45px_rgba(15,23,42,0.24)]"
+                            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
                           >
                             {categoryOptions.map((category) => (
                               <button
@@ -950,7 +1021,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                   }));
                                   setCategoryMenuOpen(false);
                                 }}
-                                className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
+                                className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
                                   form.category === category
                                     ? "bg-primary/10 text-primary font-semibold"
                                     : "text-foreground hover:bg-primary/5"
@@ -1003,7 +1074,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         <Sparkles className="w-4 h-4 text-primary" />
                         <span>Icon</span>
                       </div>
-                      <div className="relative">
+                      <div className={dropdownSelectWrapperClassName}>
                         <button
                           type="button"
                           onClick={() => setShowIconPicker((open) => !open)}
@@ -1060,9 +1131,9 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm font-semibold">
                         <Palette className="w-4 h-4 text-primary" />
-                        <span>Accent color</span>
+                        <span>Accent color</span>{" "}
                       </div>
-                      <div className="relative">
+                      <div className={dropdownSelectWrapperClassName}>
                         <button
                           type="button"
                           onClick={() => setShowColorPicker((open) => !open)}
@@ -1124,33 +1195,32 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     </div>
                   </div>
 
-                  <label className="space-y-2 block">
+                  <label className="space-y-2 block bg-red-400">
                     <div className="flex items-center gap-2 text-sm font-semibold">
                       <Hash className="w-4 h-4 text-primary" />
                       <span>Tags</span>
-                      <span className="text-[11px] text-muted-foreground font-normal">
-                        Optional
-                      </span>
                     </div>
-                    <input
-                      value={form.tags}
-                      onChange={handleChange("tags")}
-                      placeholder="Add quick labels — e.g. focus, writing, deep work"
-                      className={inputClassName}
-                    />
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={form.tags}
+                        onChange={handleChange("tags")}
+                        placeholder="Add quick labels — e.g. focus, writing, deep work"
+                        className={inputClassName}
+                      />
+                    </div>
                   </label>
                 </form>
               </div>
 
               <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <CalendarDays className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
                     <div>
                       <h2 className="font-semibold xl:text-lg 2xl:text-xl">
                         Schedule & reminders
                       </h2>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                         Lock in when and where you will do this todo.
                       </p>
                     </div>
@@ -1164,29 +1234,30 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                       <CalendarDays className="w-4 h-4 text-primary" />
                       <span>Due date</span>
                     </div>
-                    <div className="relative">
+                    <div className={dropdownSelectWrapperClassName}>
                       <button
                         type="button"
                         ref={dateToggleRef}
                         onClick={() => {
                           setShowDateDropdown((prev) => !prev);
-                          setShowTimeDropdown(false);
                         }}
                         className={fieldButtonClassName}
                         aria-label="Pick a due date"
                         aria-expanded={showDateDropdown}
                       >
                         <span className="flex flex-col items-start gap-1 text-left">
-                          <span className="text-sm font-semibold">
+                          <span className="xl:text-xs 2xl:text-sm font-semibold">
                             {formattedDate}
                           </span>
-                          <span className="text-[11px] text-muted-foreground">
+                          <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
                             {form.date ? "Tap to change" : "Tap to pick a date"}
                           </span>
                         </span>
                         <ChevronDown
-                          className={`h-5 w-5 text-muted-foreground transition-transform duration-150 ${
-                            showDateDropdown ? "rotate-180" : "rotate-0"
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            showDateDropdown
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
                           }`}
                         />
                       </button>
@@ -1201,97 +1272,86 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     </div>
                   </label>
 
-                  <label className="space-y-2 relative">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
+                  <label className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold pb-2">
                       <Clock3 className="w-4 h-4 text-primary" />
                       <span>Start time</span>
                     </div>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        ref={timeToggleRef}
-                        onClick={() => {
-                          setShowTimeDropdown((prev) => !prev);
-                          setShowDateDropdown(false);
-                        }}
-                        className={fieldButtonClassName}
-                        aria-label="Pick a start time"
-                        aria-expanded={showTimeDropdown}
-                      >
-                        <span className="flex flex-col items-start gap-1 text-left">
-                          <span className="text-sm font-semibold">
-                            {formattedStartTime}
-                          </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            {form.time ? "Tap to change" : "Tap to pick a time"}
-                          </span>
-                        </span>
-                        <ChevronDown
-                          className={`h-5 w-5 text-muted-foreground transition-transform duration-150 ${
-                            showTimeDropdown ? "rotate-180" : "rotate-0"
-                          }`}
-                        />
-                      </button>
-                      {showTimeDropdown && (
-                        <TimePickerDropdown
-                          selectedTime={form.time}
-                          onSelect={handleTimeSelect}
-                          onClose={() => setShowTimeDropdown(false)}
-                          anchorRef={timeToggleRef}
-                        />
-                      )}
+                    <div className="bg-red-400">
+                      <TimeSpinner
+                        time={form.time}
+                        onChange={handleTimeSelect}
+                      />
                     </div>
                   </label>
 
                   <label className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
-                      <Target className="w-4 h-4 text-primary" />
-                      <span>Duration (minutes)</span>
-                    </div>
-                    <input
-                      value={form.duration}
-                      onChange={handleChange("duration")}
-                      placeholder="e.g. 45"
-                      className={inputClassName}
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <span>Location</span>
-                    </div>
-                    <input
-                      value={form.location}
-                      onChange={handleChange("location")}
-                      placeholder="Where you'll do it"
-                      className={inputClassName}
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
+                    <div className="flex items-center gap-2 xl:text-sm font-semibold">
                       <Bell className="w-4 h-4 text-primary" />
                       <span>Reminder</span>
                     </div>
-                    <select
-                      value={form.reminder}
-                      onChange={handleChange("reminder")}
-                      className={`${inputClassName} cursor-pointer`}
-                    >
-                      {[
-                        "No reminder",
-                        "5 minutes before",
-                        "15 minutes before",
-                        "30 minutes before",
-                        "1 hour before",
-                        "1 day before",
-                      ].map((reminder) => (
-                        <option key={reminder} value={reminder}>
-                          {reminder}
-                        </option>
-                      ))}
-                    </select>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <button
+                        type="button"
+                        ref={reminderToggleRef}
+                        aria-haspopup="listbox"
+                        aria-expanded={reminderMenuOpen}
+                        aria-controls={reminderDropdownOptionsId}
+                        onClick={() => {
+                          setReminderMenuOpen((open) => !open);
+                          setRecurrenceMenuOpen(false);
+                        }}
+                        className="w-full flex items-center justify-between rounded-2xl border-none bg-transparent px-4 py-3 text-left text-foreground xl:text-xs 2xl:text-sm focus:outline-none focus-visible:outline-none"
+                      >
+                        <span className="truncate">
+                          {form.reminder || reminderOptions[0]}
+                        </span>
+                        <ChevronDown
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            reminderMenuOpen
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {reminderMenuOpen && (
+                        <div
+                          ref={reminderPanelRef}
+                          id={reminderDropdownOptionsId}
+                          role="listbox"
+                          aria-activedescendant={
+                            form.reminder
+                              ? toReminderOptionId(form.reminder)
+                              : undefined
+                          }
+                          className="absolute left-0 right-0 top-full z-20 mt-2 max-h-max rounded-2xl border border-gray-100 bg-white shadow-lg overflow-hidden"
+                        >
+                          {reminderOptions.map((reminder) => (
+                            <button
+                              key={reminder}
+                              id={toReminderOptionId(reminder)}
+                              role="option"
+                              type="button"
+                              aria-selected={form.reminder === reminder}
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  reminder,
+                                }));
+                                setReminderMenuOpen(false);
+                              }}
+                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
+                                form.reminder === reminder
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-primary/5"
+                              }`}
+                            >
+                              {reminder}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </label>
 
                   <label className="space-y-2">
@@ -1299,19 +1359,98 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                       <Repeat className="w-4 h-4 text-primary" />
                       <span>Repeat</span>
                     </div>
-                    <select
-                      value={form.recurrence}
-                      onChange={handleChange("recurrence")}
-                      className={`${inputClassName} cursor-pointer`}
-                    >
-                      {(
-                        ["None", "Daily", "Weekly", "Monthly"] as Recurrence[]
-                      ).map((recurrence) => (
-                        <option key={recurrence} value={recurrence}>
-                          {recurrence}
-                        </option>
-                      ))}
-                    </select>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <button
+                        type="button"
+                        ref={recurrenceToggleRef}
+                        aria-haspopup="listbox"
+                        aria-expanded={recurrenceMenuOpen}
+                        aria-controls={recurrenceDropdownOptionsId}
+                        onClick={() => {
+                          setRecurrenceMenuOpen((open) => !open);
+                          setReminderMenuOpen(false);
+                        }}
+                        className="w-full flex items-center justify-between rounded-2xl border-none bg-transparent px-4 py-3 text-left text-foreground xl:text-xs 2xl:text-sm focus:outline-none focus-visible:outline-none"
+                      >
+                        <span className="truncate">
+                          {form.recurrence || recurrenceOptions[0]}
+                        </span>
+                        <ChevronDown
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            recurrenceMenuOpen
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {recurrenceMenuOpen && (
+                        <div
+                          ref={recurrencePanelRef}
+                          id={recurrenceDropdownOptionsId}
+                          role="listbox"
+                          aria-activedescendant={
+                            form.recurrence
+                              ? toRecurrenceOptionId(form.recurrence)
+                              : undefined
+                          }
+                          className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg"
+                        >
+                          {recurrenceOptions.map((recurrence) => (
+                            <button
+                              key={recurrence}
+                              id={toRecurrenceOptionId(recurrence)}
+                              role="option"
+                              type="button"
+                              aria-selected={form.recurrence === recurrence}
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  recurrence,
+                                }));
+                                setRecurrenceMenuOpen(false);
+                              }}
+                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
+                                form.recurrence === recurrence
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-primary/5"
+                              }`}
+                            >
+                              {recurrence}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+
+                  <label className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Hourglass className="w-4 h-4 text-primary" />
+                      <span>Duration (minutes)</span>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={form.duration}
+                        onChange={handleChange("duration")}
+                        placeholder="e.g. 45"
+                        className={inputClassName}
+                      />
+                    </div>
+                  </label>
+
+                  <label className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      <span>Location</span>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={form.location}
+                        onChange={handleChange("location")}
+                        placeholder="Where you'll do it"
+                        className={inputClassName}
+                      />
+                    </div>
                   </label>
                 </div>
               </div>
@@ -1322,7 +1461,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 <div className="absolute -right-10 -top-10 w-36 h-36 bg-primary/10 rounded-full" />
                 <div className="relative space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                    <span className="xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
                       Live preview
                     </span>
                     <span
@@ -1335,27 +1474,29 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="text-xl font-semibold">{summaryTitle}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <h3 className="xl:text-lg 2xl:text-xl font-semibold">
+                      {summaryTitle}
+                    </h3>
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
                       {summaryDescription}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-12 h-12 rounded-2xl grid place-items-center border border-white/60 shadow-inner"
+                      className="xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-2xl grid place-items-center border border-gray-200 shadow-sm"
                       style={{ backgroundColor: form.iconColor }}
                     >
-                      <SelectedIcon className="w-5 h-5 text-foreground" />
+                      <SelectedIcon className="xl:w-5 xl:h-5 text-muted-foreground" />
                     </span>
-                    <div className="text-sm">
+                    <div className="xl:text-xs 2xl:text-sm">
                       <p className="font-semibold">
                         {formatIconLabel(form.iconName)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-2 gap-3 xl:text-xs 2xl:text-sm">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4 text-primary" />
                       <span>{formattedDate}</span>
@@ -1376,8 +1517,11 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         {form.reminder || "No reminder"}
                       </span>
                     </div>
+                    <div className="flex items-center justify-center gap-2 bg-foreground text-background xl:py-1 2xl:py-2 xl:w-20 2xl:w-28 rounded-xl xl:mt-2 2xl:mt-4  ">
+                      <Group className="w-4 h-4" />
+                      <span className="truncate">{categoryLabel}</span>
+                    </div>
                   </div>
-
                 </div>
               </div>
 
@@ -1385,33 +1529,40 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock3 className="w-4 h-4 text-primary" />
-                    <h4 className="font-semibold text-sm">Momentum planner</h4>
+                    <h4 className="font-semibold xl:text-sm">
+                      Momentum planner
+                    </h4>
                   </div>
                   <span className="text-[11px] text-muted-foreground">
                     Optional
                   </span>
                 </div>
-                <div className="space-y-3 text-sm">
+                <div className="space-y-3 xl:text-xs 2xl:text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Recurs</span>
+                    <span className="text-muted-foreground">Recursion</span>
                     <span className="font-medium">{form.recurrence}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Tags</span>
-                    <span className="font-medium truncate">{form.tags}</span>
+                    <span className="font-medium truncate flex gap-2">
+                      {form.tags.split(",").map((tag) => (
+                        <p
+                          key={tag}
+                          className="xl:text-[10px] 2xl:text-xs bg-muted text-muted-foreground px-3 py-1 rounded-full"
+                        >
+                          {tag}
+                        </p>
+                      ))}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Reminder</span>
-                    <span className="font-medium">{form.reminder}</span>
-                  </div>
+
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Status</span>
                     <span className="font-medium">{form.status}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-2xl bg-muted px-3 py-3">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="text-center rounded-xl bg-muted xl:py-2 2xl:py-3 border border-gray-300">
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                     {mode === "edit"
                       ? "Refine, ship, or reschedule. Progress beats perfection."
                       : "Small, clear todos are easier to start. Keep the scope tight and mark it done in one sitting."}

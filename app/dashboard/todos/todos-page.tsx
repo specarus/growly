@@ -612,24 +612,24 @@ const TodosPage: React.FC<TodosPageProps> = ({
 
   return (
     <>
-      <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-8">
-        <div className="xl:px-8 2xl:px-28 pb-10 space-y-8">
+      <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16">
+        <div className="xl:px-8 2xl:px-28 pb-8 space-y-8">
           <div className="flex gap-4 flex-row items-center justify-between">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full select-none bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+              <div className="inline-flex items-center gap-2 rounded-full select-none bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
                 <BadgeCheck className="w-4 h-4" />
                 <span>
                   {isCollectionView ? "Collection overview" : "Todos overview"}
                 </span>
               </div>
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold">
+                <h1 className="xl:text-xl 2xl:text-2xl md:text-3xl font-bold">
                   {isCollectionView
                     ? `${collectionContext?.name || "Collection"} todos`
                     : "Your todos"}
                 </h1>
                 <p
-                  className="text-sm text-muted-foreground max-w-4xl"
+                  className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-4xl"
                   dangerouslySetInnerHTML={{
                     __html: isCollectionView
                       ? (
@@ -645,7 +645,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-row gap-2 sm:gap-3">
+            <div className="flex flex-row gap-3">
               {isCollectionView ? (
                 <Link
                   href="/dashboard/todos"
@@ -657,38 +657,50 @@ const TodosPage: React.FC<TodosPageProps> = ({
               <MainButton
                 href="/dashboard/todos/create"
                 label="New todo"
-                icon={<Plus className="w-4 h-4" />}
-                className="text-sm"
+                icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
+                className="xl:text-xs 2xl:text-sm xl:h-9 2xl:h-10"
               />
             </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-4 2xl:p-5 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-muted-foreground" />
+            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+              <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
+                <CheckCircle2 className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-xl font-semibold">{totals.completed}</p>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Completed
+                </p>
+                <p className="xl:text-lg 2xl:text-xl font-semibold">
+                  {totals.completed}
+                </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-4 2xl:p-5 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
-                <Timer className="w-6 h-6 text-muted-foreground" />
+            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+              <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
+                <Timer className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Active</p>
-                <p className="text-xl font-semibold">{totals.active}</p>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Active
+                </p>
+                <p className="xl:text-lg 2xl:text-xl font-semibold">
+                  {totals.active}
+                </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-4 2xl:p-5 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
-                <Target className="w-6 h-6 text-muted-foreground" />
+            <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+              <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
+                <Target className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Focus score</p>
-                <p className="text-xl font-semibold">{focusStats.focusScore}</p>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Focus score
+                </p>
+                <p className="xl:text-lg 2xl:text-xl font-semibold">
+                  {focusStats.focusScore}
+                </p>
               </div>
             </div>
           </div>
@@ -699,9 +711,9 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 deleteCompletedPending || visibleCompletedIds.length === 0
               }
               onClick={handleDeleteCompleted}
-              className="cursor-pointer inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+              className="cursor-pointer inline-flex items-center gap-2 rounded-full border px-4 py-2 xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
               Delete completed
             </button>
             {(deleteCompletedMessage || deleteCompletedError) && (
@@ -730,7 +742,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setShowTagPicker((open) => !open)}
-                    className="px-4 py-2 rounded-full text-sm transition border bg-white text-muted-foreground border-gray-100 hover:border-green-soft/30 flex items-center gap-2"
+                    className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm transition border bg-white text-muted-foreground border-gray-100 hover:border-green-soft/30 flex items-center gap-2"
                     type="button"
                   >
                     <span className="h-2 w-2 rounded-full bg-green-soft" />
@@ -742,7 +754,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   </button>
                   {showTagPicker ? (
                     <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-gray-100 bg-white shadow-xl p-3 z-10">
-                      <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between mb-2 xl:text-[10px] 2xl:text-xs text-muted-foreground">
                         <span>Select tags</span>
                         <button
                           type="button"
@@ -752,7 +764,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                           Clear
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="grid grid-cols-2 gap-2 xl:text-xs 2xl:text-sm">
                         {uniqueTags.length === 0 ? (
                           <div className="col-span-2 text-xs text-muted-foreground px-2 py-1">
                             No tags yet
@@ -834,7 +846,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                             className="h-2 w-2 rounded-full"
                             style={{ backgroundColor: laneStatusColor }}
                           />
-                          <span className="font-semibold text-sm">
+                          <span className="font-semibold xl:text-xs 2xl:text-sm">
                             {status}
                           </span>
                         </div>
@@ -1026,11 +1038,11 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Clock3 className="w-4 h-4 text-primary" />
-                      <span className="font-semibold text-sm">
+                      <span className="font-semibold xl:text-xs 2xl:text-sm">
                         Upcoming schedule
                       </span>
                     </div>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
                       Soonest first
                     </span>
                   </div>
@@ -1051,10 +1063,10 @@ const TodosPage: React.FC<TodosPageProps> = ({
                             <div className="flex items-center gap-3">
                               <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                               <div className="space-y-0.5">
-                                <p className="font-medium text-sm">
+                                <p className="font-medium xl:text-[13px] 2xl:text-sm">
                                   {todo.title}
                                 </p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
                                   <span className="inline-flex items-center gap-1">
                                     <CalendarDays className="w-3 h-3" />
                                     {todo.dueDate}
@@ -1071,7 +1083,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                               </div>
                             </div>
                             <span
-                              className="inline-flex items-center gap-2 px-2 py-1 rounded-full text-[11px] font-semibold"
+                              className="inline-flex items-center gap-2 px-2 py-1 rounded-full xl:text-[10px] 2xl:text-[11px] font-semibold"
                               style={{
                                 backgroundColor: `${statusColor}22`,
                                 color: statusColor,
@@ -1093,13 +1105,15 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 <div className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm space-y-4 p-4">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold text-sm">Status breakdown</h3>
+                    <h3 className="font-semibold xl:text-xs 2xl:text-sm">
+                      Status breakdown
+                    </h3>
                   </div>
                   <div className="space-y-3">
                     {statusBreakdown.map(({ status, count }) => (
                       <div
                         key={status}
-                        className="flex items-center justify-between text-sm"
+                        className="flex items-center justify-between xl:text-xs 2xl:text-sm"
                       >
                         <div className="flex items-center gap-2">
                           <span className="h-2 w-2 rounded-full bg-primary" />
@@ -1127,10 +1141,12 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   <div className="border-t border-gray-100 pt-3">
                     <div className="flex items-center gap-2 mb-2">
                       <ListChecks className="w-4 h-4 text-primary" />
-                      <h3 className="font-semibold text-sm">Tag highlights</h3>
+                      <h3 className="font-semibold xl:text-xs 2xl:text-sm">
+                        Tag highlights
+                      </h3>
                     </div>
                     {sortedTags.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                         Add tags to see focus areas here.
                       </p>
                     ) : (
@@ -1138,10 +1154,10 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         {sortedTags.map(([tag, count]) => (
                           <span
                             key={tag}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-xs font-semibold text-muted-foreground"
+                            className="inline-flex items-center gap-2 pl-3 pr-1 py-1 rounded-full bg-muted xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
                           >
                             {tag}
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white border border-gray-100">
+                            <span className="xl:text-[9px] 2xl:text-[10px] px-1.5 p-0.5 rounded-full bg-white border border-gray-100">
                               {count}
                             </span>
                           </span>
@@ -1240,14 +1256,14 @@ const TodosPage: React.FC<TodosPageProps> = ({
               <div className="rounded-3xl border border-gray-50 bg-linear-to-r from-primary/5 via-white to-green-soft/10 shadow-inner p-6 space-y-6 mt-6">
                 <div className="flex flex-row items-center justify-between gap-3">
                   <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary shadow-sm border border-primary/20">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] text-primary shadow-sm border border-primary/20">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>Collections</span>
                     </div>
-                    <h3 className="text-xl font-semibold xl:pt-2 2xl:pt-4">
+                    <h3 className="xl:text-lg 2xl:text-xl font-semibold xl:pt-2 2xl:pt-4">
                       Collections overview
                     </h3>
-                    <p className="text-sm text-muted-foreground max-w-2xl">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
                       Unassigned todos live in the views above.<br></br>Drop one
                       into a collection to move it there and keep this main
                       board focused.
@@ -1257,7 +1273,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
 
                 {(collectionMessage || collectionError) && (
                   <div
-                    className={`rounded-xl border px-3 py-2 text-sm ${
+                    className={`rounded-xl border px-3 py-2 xl:text-xs 2xl:text-sm ${
                       collectionMessage
                         ? "border-green-soft/50 bg-green-soft/10 text-foreground"
                         : "border-destructive/60 bg-destructive/10 text-destructive"
@@ -1271,13 +1287,13 @@ const TodosPage: React.FC<TodosPageProps> = ({
                   <div className="xl:col-span-1 rounded-2xl border border-gray-100 bg-white/80 shadow-sm p-4 space-y-3">
                     <div className="flex items-center gap-2">
                       <ListChecks className="w-4 h-4 text-primary" />
-                      <h4 className="font-semibold text-sm">
+                      <h4 className="font-semibold xl:text-sm">
                         Create a collection
                       </h4>
                     </div>
-                    <div className="space-y-3 text-sm">
-                      <label className="space-y-1 block">
-                        <span className="text-muted-foreground text-xs font-semibold">
+                    <div className="space-y-3">
+                      <label className="space-y-2 block xl:text-xs 2xl:text-sm">
+                        <span className="text-muted-foreground xl:text-xs font-semibold">
                           Name
                         </span>
                         <input
@@ -1292,7 +1308,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                           className="w-full rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
                       </label>
-                      <label className="space-y-1 block">
+                      <label className="space-y-2 block xl:text-xs 2xl:text-sm">
                         <span className="text-muted-foreground text-xs font-semibold">
                           Description
                         </span>
@@ -1310,7 +1326,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         />
                       </label>
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-1.5 shadow-inner text-xs text-muted-foreground w-full">
+                        <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-1.5 shadow-inner xl:text-[11px] 2xl:text-xs text-muted-foreground w-full">
                           <Search className="w-3.5 h-3.5 shrink-0" />
                           <input
                             value={newCollectionSearch}
@@ -1323,11 +1339,11 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         </div>
                         <div className="max-h-44 overflow-auto space-y-2 pr-1">
                           {availableTodos.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                               No todos yet. Create one to add.
                             </p>
                           ) : filteredCreationTodos.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                               No todos match that search.
                             </p>
                           ) : (
@@ -1338,7 +1354,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                               return (
                                 <label
                                   key={todo.id}
-                                  className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-3 py-2 text-sm hover:border-primary/40 cursor-pointer"
+                                  className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-3 py-2 xl:text-xs 2xl:text-sm hover:border-primary/40 cursor-pointer"
                                 >
                                   <input
                                     type="checkbox"
@@ -1358,7 +1374,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                       <button
                         type="button"
                         onClick={handleCreateCollection}
-                        className="w-full rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow-sm hover:brightness-105 transition disabled:opacity-50"
+                        className="w-full rounded-full bg-primary text-white px-4 py-2 xl:text-xs 2xl:text-sm font-semibold shadow-sm hover:brightness-105 transition disabled:opacity-50"
                         disabled={
                           !newCollection.name.trim() || collectionPending
                         }
