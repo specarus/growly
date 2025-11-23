@@ -17,8 +17,6 @@ import {
   Bell,
   CalendarDays,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Clock3,
   Flag,
   Group,
@@ -32,6 +30,7 @@ import {
   Sparkles,
   Target,
   Trash,
+  X,
 } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
@@ -52,7 +51,7 @@ interface FormState {
   priority: PriorityLabel;
   reminder: string;
   recurrence: Recurrence;
-  tags: string;
+  tags: string[];
   status: StatusLabel;
   iconName: string;
   iconColor: string;
@@ -118,6 +117,28 @@ const reminderOptions = [
 const reminderDropdownOptionsId = "reminder-dropdown-options";
 const recurrenceOptions: Recurrence[] = ["None", "Daily", "Weekly", "Monthly"];
 const recurrenceDropdownOptionsId = "recurrence-dropdown-options";
+
+const parseTagList = (raw?: string | null) => {
+  const seen = new Set<string>();
+  return (raw || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .filter((tag) => {
+      const normalized = tag.toLowerCase();
+      if (seen.has(normalized)) {
+        return false;
+      }
+      seen.add(normalized);
+      return true;
+    });
+};
+
+const serializeTags = (tags: string[]) =>
+  tags
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .join(",");
 
 const sanitizeDropdownValue = (value: string) =>
   value.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
@@ -211,7 +232,7 @@ const buildDefaultForm = (
     priority: toPriorityLabel(initialTodo?.priority),
     reminder: initialTodo?.reminder || "No reminder",
     recurrence: (initialTodo?.recurrence as Recurrence) || "None",
-    tags: initialTodo?.tags || "",
+    tags: parseTagList(initialTodo?.tags),
     status: toStatusLabel(initialTodo?.status),
     iconName: initialTodo?.iconName || "Notebook",
     iconColor: initialTodo?.iconColor || "#E5E7EB",
@@ -224,8 +245,6 @@ const parseDurationMinutes = (raw: string) => {
 };
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-
-const TIME_INTERVAL = 15;
 
 const formatMonthLabel = (date: Date) =>
   new Intl.DateTimeFormat("en-US", {
@@ -474,80 +493,185 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
   );
 };
 
-interface TimeSpinnerProps {
+interface TimeInputProps {
   time: string;
   onChange: (value: string) => void;
 }
 
-const TimeSpinner: React.FC<TimeSpinnerProps> = ({ time, onChange }) => {
-  const { hours, minutes } = parseTimeParts(time);
-  const hasValue = Boolean(time);
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-  const displayHour = hasValue ? String(hour12).padStart(2, "0") : "--";
-  const displayMinute = hasValue ? String(minutes).padStart(2, "0") : "--";
-  const meridiem = hours >= 12 ? "PM" : "AM";
+const normalizeHour24Value = (value: number) => ((value % 24) + 24) % 24;
 
-  const changeHour = (delta: number) =>
-    onChange(buildTimeFromTotalMinutes(hours * 60 + minutes + delta * 60));
-  const changeMinute = (delta: number) =>
-    onChange(buildTimeFromTotalMinutes(hours * 60 + minutes + delta));
+const parseHourInputValue = (value: string) => {
+  if (!value) return null;
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return null;
+  const parsed = Number.parseInt(digits, 10);
+  if (!Number.isFinite(parsed)) return null;
+  return normalizeHour24Value(parsed);
+};
 
-  const spinnerBoxClass =
-    "flex items-center gap-4 rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-inner";
-  const arrowButtonClass =
-    "grid place-content-center xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 rounded-full border border-gray-100 bg-white text-muted-foreground transition hover:border-primary/60 hover:text-primary";
+const parseMinuteInputValue = (value: string) => {
+  if (!value) return null;
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return null;
+  const parsed = Number.parseInt(digits, 10);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.min(Math.max(parsed, 0), 59);
+};
+
+const determineMeridiemFromRawHour = (raw: number) => {
+  if (!Number.isFinite(raw)) {
+    return undefined;
+  }
+  if (raw === 0 || raw % 24 === 0) {
+    return "AM";
+  }
+  if (raw >= 13 && raw < 24) {
+    return "PM";
+  }
+  if (raw > 24) {
+    const normalized = normalizeHour24Value(raw);
+    return normalized >= 12 ? "PM" : "AM";
+  }
+  return undefined;
+};
+
+const buildTimeFrom24HourParts = (hour: number, minute: number) =>
+  `${padTwo(hour)}:${padTwo(minute)}`;
+
+const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
+  const appliedTimeRef = useRef<string | null>(null);
+  const [hourInput, setHourInput] = useState("");
+  const [minuteInput, setMinuteInput] = useState("");
+  const [meridiem, setMeridiem] = useState<"AM" | "PM">("AM");
+
+  useEffect(() => {
+    if (appliedTimeRef.current === time) {
+      return;
+    }
+    appliedTimeRef.current = time;
+
+    if (!time) {
+      setHourInput("");
+      setMinuteInput("");
+      setMeridiem("AM");
+      return;
+    }
+    const { hours, minutes } = parseTimeParts(time);
+    const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+    setHourInput(String(hour12).padStart(2, "0"));
+    setMinuteInput(String(minutes).padStart(2, "0"));
+    setMeridiem(hours >= 12 ? "PM" : "AM");
+  }, [time]);
+
+  const emitIfReady = (nextHour: number | null, nextMinute: number | null) => {
+    if (nextHour === null || nextMinute === null) {
+      if (nextHour === null && nextMinute === null) {
+        appliedTimeRef.current = "";
+        onChange("");
+      }
+      return;
+    }
+    const nextTime = buildTimeFrom24HourParts(nextHour, nextMinute);
+    appliedTimeRef.current = nextTime;
+    onChange(nextTime);
+  };
+
+  const handleHourInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const numericValue = event.target.value.replace(/\D/g, "").slice(0, 2);
+    setHourInput(numericValue);
+    const parsedHour = parseHourInputValue(numericValue);
+    const rawHour = Number.parseInt(numericValue, 10);
+    const autoMeridiem = determineMeridiemFromRawHour(rawHour);
+    if (autoMeridiem) {
+      setMeridiem(autoMeridiem);
+    }
+    emitIfReady(parsedHour, parseMinuteInputValue(minuteInput));
+  };
+
+  const handleMinuteInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const numericValue = event.target.value.replace(/\D/g, "").slice(0, 2);
+    setMinuteInput(numericValue);
+    emitIfReady(
+      parseHourInputValue(hourInput),
+      parseMinuteInputValue(numericValue)
+    );
+  };
+
+  const handleMeridiemChange = (value: "AM" | "PM") => {
+    setMeridiem(value);
+    const sourceTime = appliedTimeRef.current || time;
+    const { hours, minutes } = parseTimeParts(sourceTime);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+      return;
+    }
+    const baseHour = hours % 12;
+    const nextHour = value === "PM" ? baseHour + 12 : baseHour;
+    const nextTime = buildTimeFrom24HourParts(nextHour, minutes);
+    appliedTimeRef.current = nextTime;
+    onChange(nextTime);
+  };
 
   return (
-    <div className="flex items-center gap-3">
-      <div className={spinnerBoxClass}>
-        <button
-          type="button"
-          onClick={() => changeHour(-1)}
-          className={arrowButtonClass}
-          aria-label="Decrease hour"
-        >
-          <ChevronLeft className="h-3 w-3" />
-        </button>
-        <span className="xl:text-md 2xl:text-lg font-semibold tracking-tight text-foreground">
-          {displayHour}
+    <div className="space-y-2">
+      <div className="flex items-start xl:gap-3 2xl:gap-4">
+        <div className="space-y-1 text-center">
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={2}
+            value={hourInput}
+            onChange={handleHourInputChange}
+            placeholder="--"
+            aria-label="Hour"
+            className="xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 rounded-2xl border border-gray-200 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          />
+          <p className="xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Hour
+          </p>
+        </div>
+        <span className="xl:text-xl 2xl:text-2xl font-semibold text-muted-foreground xl:pt-2 2xl:pt-3">
+          :
         </span>
-
-        <button
-          type="button"
-          onClick={() => changeHour(1)}
-          className={arrowButtonClass}
-          aria-label="Increase hour"
-        >
-          <ChevronRight className="h-3 w-3" />
-        </button>
+        <div className="space-y-1 text-center">
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={2}
+            value={minuteInput}
+            onChange={handleMinuteInputChange}
+            placeholder="00"
+            aria-label="Minute"
+            className="xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 rounded-2xl border border-gray-200 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          />
+          <p className="xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Minute
+          </p>
+        </div>
+        <div className="grid xl:h-14 xl:w-14 2xl:h-18 2xl:w-18 grid-rows-2 overflow-hidden rounded-2xl border border-gray-200 xl:text-[11px] 2xl:text-sm font-semibold">
+          {(["AM", "PM"] as const).map((option, index) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => handleMeridiemChange(option)}
+              className={`flex h-full items-center justify-center px-3 uppercase tracking-[0.2em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                option === "AM" ? "border-b border-gray-200" : ""
+              } ${
+                meridiem === option
+                  ? "bg-primary text-white"
+                  : "bg-white text-muted-foreground"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
       </div>
-      <span className="xl:text-xl 2xl:text-2xl font-semibold tracking-tight text-muted-foreground">
-        :
-      </span>
-      <div className={spinnerBoxClass}>
-        <button
-          type="button"
-          onClick={() => changeMinute(-TIME_INTERVAL)}
-          className={arrowButtonClass}
-          aria-label="Decrease minutes"
-        >
-          <ChevronLeft className="h-3 w-3" />
-        </button>
-        <span className="xl:text-md 2xl:text-lg font-semibold tracking-tight text-foreground">
-          {displayMinute}
-        </span>
-        <button
-          type="button"
-          onClick={() => changeMinute(TIME_INTERVAL)}
-          className={arrowButtonClass}
-          aria-label="Increase minutes"
-        >
-          <ChevronRight className="h-3 w-3" />
-        </button>
-      </div>
-      <span className="xl:text-[12px] 2xl:text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-        {meridiem}
-      </span>
     </div>
   );
 };
@@ -562,6 +686,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [form, setForm] = useState<FormState>(
     buildDefaultForm(today, initialTodo)
   );
+  const [tagInput, setTagInput] = useState("");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
@@ -622,7 +747,9 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   }, [form.iconName]);
 
   useEffect(() => {
-    setForm(buildDefaultForm(today, initialTodo));
+    const base = buildDefaultForm(today, initialTodo);
+    setForm(base);
+    setTagInput("");
   }, [initialTodo, today]);
 
   useEffect(() => {
@@ -735,6 +862,71 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
       setForm((prev) => ({ ...prev, [field]: value }));
     };
 
+  const handleAddTag = useCallback((tag: string) => {
+    const trimmedTag = tag.trim();
+
+    if (!trimmedTag) {
+      return;
+    }
+
+    setForm((prevForm) => {
+      const existingTags = prevForm.tags || [];
+      const normalizedNewTag = trimmedTag.toLowerCase();
+
+      const isDuplicate = existingTags.some(
+        (t) => t.toLowerCase() === normalizedNewTag
+      );
+
+      if (isDuplicate) {
+        return prevForm;
+      }
+
+      return {
+        ...prevForm,
+        tags: [...existingTags, trimmedTag],
+      };
+    });
+  }, []);
+
+  const handleTagInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.target.value;
+      if (!rawValue.includes(",")) {
+        setTagInput(rawValue);
+        return;
+      }
+
+      const parts = rawValue.split(",");
+      const remainder = parts.pop() ?? "";
+      parts.forEach((part) => {
+        const candidate = part.trim();
+        if (candidate) {
+          handleAddTag(candidate);
+        }
+      });
+      setTagInput(remainder.trimStart());
+    },
+    [handleAddTag]
+  );
+
+  const handleTagInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleAddTag(tagInput);
+        setTagInput("");
+      }
+    },
+    [tagInput, handleAddTag]
+  );
+
+  const handleRemoveTag = useCallback((tagToRemove: string) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      tags: prevForm.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  }, []);
+
   const handleDateSelect = (value: string) => {
     setForm((prev) => ({ ...prev, date: value }));
   };
@@ -755,7 +947,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     location: form.location,
     reminder: form.reminder,
     recurrence: form.recurrence,
-    tags: form.tags,
+    tags: serializeTags(form.tags),
     iconName: form.iconName,
     iconColor: form.iconColor,
   });
@@ -1080,7 +1272,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                           onClick={() => setShowIconPicker((open) => !open)}
                           className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 text-left xl:text-sm 2xl:text-base shadow-inner hover:border-primary/40 transition"
                         >
-                          <div className="flex items-center gap-2 truncate">
+                          <div className="flex items-center gap-3 truncate">
                             <span className="grid place-items-center w-8 h-8 rounded-xl bg-muted text-primary">
                               <SelectedIcon className="w-4 h-4" />
                             </span>
@@ -1195,18 +1387,42 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     </div>
                   </div>
 
-                  <label className="space-y-2 block bg-red-400">
+                  <label className="space-y-2">
                     <div className="flex items-center gap-2 text-sm font-semibold">
                       <Hash className="w-4 h-4 text-primary" />
                       <span>Tags</span>
                     </div>
                     <div className={dropdownSelectWrapperClassName}>
-                      <input
-                        value={form.tags}
-                        onChange={handleChange("tags")}
-                        placeholder="Add quick labels — e.g. focus, writing, deep work"
-                        className={inputClassName}
-                      />
+                      <div className="space-y-2">
+                        <input
+                          value={tagInput}
+                          onChange={handleTagInputChange}
+                          onKeyDown={handleTagInputKeyDown}
+                          placeholder="Type a tag and press Enter"
+                          className={inputClassName}
+                        />
+                      </div>
+
+                      {form.tags && form.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 m-2">
+                          {form.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                            >
+                              {tag}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveTag(tag)}
+                                className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
+                                aria-label={`Remove tag ${tag}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </label>
                 </form>
@@ -1273,15 +1489,12 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   </label>
 
                   <label className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold pb-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
                       <Clock3 className="w-4 h-4 text-primary" />
                       <span>Start time</span>
                     </div>
-                    <div className="bg-red-400">
-                      <TimeSpinner
-                        time={form.time}
-                        onChange={handleTimeSelect}
-                      />
+                    <div>
+                      <TimeInput time={form.time} onChange={handleTimeSelect} />
                     </div>
                   </label>
 
@@ -1489,11 +1702,6 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     >
                       <SelectedIcon className="xl:w-5 xl:h-5 text-muted-foreground" />
                     </span>
-                    <div className="xl:text-xs 2xl:text-sm">
-                      <p className="font-semibold">
-                        {formatIconLabel(form.iconName)}
-                      </p>
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 xl:text-xs 2xl:text-sm">
@@ -1517,7 +1725,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         {form.reminder || "No reminder"}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 bg-foreground text-background xl:py-1 2xl:py-2 xl:w-20 2xl:w-28 rounded-xl xl:mt-2 2xl:mt-4  ">
+                    <div className="flex items-center justify-center gap-2 bg-foreground text-background xl:py-1 2xl:py-2 xl:w-24 2xl:w-28 rounded-xl xl:mt-2 2xl:mt-4">
                       <Group className="w-4 h-4" />
                       <span className="truncate">{categoryLabel}</span>
                     </div>
@@ -1545,9 +1753,9 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Tags</span>
                     <span className="font-medium truncate flex gap-2">
-                      {form.tags.split(",").map((tag) => (
+                      {form.tags.map((tag, index) => (
                         <p
-                          key={tag}
+                          key={`${tag}-${index}`}
                           className="xl:text-[10px] 2xl:text-xs bg-muted text-muted-foreground px-3 py-1 rounded-full"
                         >
                           {tag}

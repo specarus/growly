@@ -1,10 +1,10 @@
 import type { Status, Priority } from "./types";
 
-export const statusStyles: Record<Status, string> = {
-  Planned: "bg-muted text-background",
-  "In Progress": "bg-yellow-soft text-background",
-  Completed: "bg-green-soft text-background",
-  Missed: "bg-coral text-background",
+export const statusColors: Record<Status, string> = {
+  Planned: "#6366F1",
+  "In Progress": "#F59E0B",
+  Completed: "#10B981",
+  Missed: "#EF4444",
 };
 
 export const priorityDots: Record<Priority, string> = {

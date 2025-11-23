@@ -11,7 +11,7 @@ import WeatherWidget from "./components/weather-widget";
 const Dashboard: React.FC = () => {
   return (
     <main className="w-full min-h-screen xl:pt-20">
-      <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 pb-8">
+      <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 pb-16">
         <div className="h-full col-span-2 grid xl:gap-4 2xl:gap-6">
           <GreetingWidget />
           <CalendarWidget />

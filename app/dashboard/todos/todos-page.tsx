@@ -24,7 +24,7 @@ import CollectionCard from "./components/collection-card";
 import CollectionTodosModal from "./components/collection-todos-modal";
 import MainButton from "../../components/ui/main-button";
 import type { Collection, Priority, Status, TodoRow } from "./types";
-import { priorityDots } from "./constants";
+import { priorityDots, statusColors } from "./constants";
 
 interface TodosPageProps {
   initialTodos?: Array<{
@@ -61,15 +61,8 @@ const statusToApi: Record<Status, string> = {
   Missed: "MISSED",
 };
 
-const statusTagColors: Record<Status, string> = {
-  Planned: "#6366F1",
-  "In Progress": "#F59E0B",
-  Completed: "#10B981",
-  Missed: "#EF4444",
-};
-
 const getStatusColor = (status: Status) =>
-  statusTagColors[status] || statusTagColors.Planned;
+  statusColors[status] || statusColors.Planned;
 
 const formatStatus = (status: string): Status => {
   switch (status?.toUpperCase()) {

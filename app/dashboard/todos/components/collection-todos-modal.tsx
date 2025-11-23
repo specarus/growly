@@ -4,7 +4,7 @@ import { CalendarDays, Clock3 } from "lucide-react";
 import type { FC } from "react";
 
 import useLockBodyScroll from "../../../hooks/use-lock-body-scroll";
-import { statusStyles } from "../constants";
+import { statusColors } from "../constants";
 import type { Collection, TodoRow } from "../types";
 
 interface CollectionTodosModalProps {
@@ -65,48 +65,56 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
               space meaningful.
             </p>
           ) : (
-            todos.map((todo) => (
-              <div
-                key={todo.id}
-                className="rounded-2xl border border-gray-100 bg-white/80 px-4 py-3 shadow-sm"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold xl:text-[13px] 2xl:text-sm truncate">
-                    {todo.title}
-                  </span>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full xl:text-[10px] 2xl:text-[11px] ${
-                      statusStyles[todo.status]
-                    }`}
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                    {todo.status}
-                  </span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <CalendarDays className="w-3 h-3" />
-                    {todo.dueDate}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock3 className="w-3 h-3" />
-                    {todo.dueTime}
-                  </span>
-                </div>
-                {todo.tags.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-1 xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
-                    {todo.tags.map((tag) => (
+            todos.map((todo) => {
+              const statusColor = statusColors[todo.status];
+              return (
+                <div
+                  key={todo.id}
+                  className="rounded-2xl border border-gray-100 bg-white/80 px-4 py-3 shadow-sm"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold xl:text-[13px] 2xl:text-sm truncate">
+                      {todo.title}
+                    </span>
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full xl:text-[10px] 2xl:text-[11px]"
+                      style={{
+                        backgroundColor: `${statusColor}22`,
+                        color: statusColor,
+                      }}
+                    >
                       <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded-full bg-muted"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: statusColor }}
+                      />
+                      {todo.status}
+                    </span>
                   </div>
-                ) : null}
-              </div>
-            ))
+                  <div className="mt-2 flex flex-wrap gap-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarDays className="w-3 h-3" />
+                      {todo.dueDate}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Clock3 className="w-3 h-3" />
+                      {todo.dueTime}
+                    </span>
+                  </div>
+                  {todo.tags.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-1 xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
+                      {todo.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 rounded-full bg-muted"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })
           )}
         </div>
       </div>

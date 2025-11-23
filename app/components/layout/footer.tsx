@@ -21,7 +21,7 @@ export default function Footer() {
       <div className="2xl:px-28 xl:px-8 py-8 space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-primary/15 text-primary font-semibold text-lg flex items-center justify-center">
+            <div className="h-14 w-14 rounded-2xl bg-primary/15 text-primary font-semibold text-2xl flex items-center justify-center">
               G
             </div>
             <div className="space-y-1">
@@ -47,7 +47,7 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full bg-green-soft/15 text-green-soft-foreground font-medium">
+            <span className="px-3 py-1 rounded-full bg-green-soft/50 text-green-soft-foreground font-medium">
               Tiny wins, every day.
             </span>
             <span className="hidden sm:inline text-muted-foreground/70">

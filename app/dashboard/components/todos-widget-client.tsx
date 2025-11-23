@@ -153,7 +153,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
             href="/dashboard/todos"
             className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold shadow-sm hover:border-primary/40 transition"
           >
-            Details
+            View Details
           </Link>
         </div>
       </div>
