@@ -1,4 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
+
+import logo from "@/public/logo.png";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -21,8 +24,8 @@ export default function Footer() {
       <div className="2xl:px-28 xl:px-8 py-8 space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 rounded-2xl bg-primary/15 text-primary font-semibold text-2xl flex items-center justify-center">
-              G
+            <div className="select-none pointer-events-none h-14 w-14 rounded-2xl bg-primary/15 text-primary font-semibold text-2xl flex items-center justify-center">
+              <Image src={logo} height={500} width={500} alt="Logo" />
             </div>
             <div className="space-y-1">
               <p className="font-semibold text-foreground">Growly</p>

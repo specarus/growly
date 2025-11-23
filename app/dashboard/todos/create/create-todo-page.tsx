@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -35,6 +36,7 @@ import {
 
 import Button from "@/app/components/ui/button";
 import type { TodoInput } from "@/lib/actions/todo-actions";
+import PlantBanner from "@/app/components/ui/plant-banner";
 
 type PriorityLabel = "Low" | "Medium" | "High" | "Critical";
 type StatusLabel = "Planned" | "In Progress" | "Completed" | "Missed";
@@ -1041,54 +1043,58 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
   return (
     <>
-      <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground">
-        <div className="xl:px-8 2xl:px-28 pb-16 space-y-8">
-          <div className="flex gap-4 flex-row items-center justify-between">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 xl:text-[10px] 2xl:text-[11px] xl:font-semibold uppercase tracking-[0.18em] text-amber-700">
-                <BadgeCheck className="w-4 h-4" />
-                <span>{mode === "edit" ? "Edit todo" : "Create todo"}</span>
+      <main className="xl:px-8 2xl:px-28 pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
+        <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl" />
+        <div className="relative z-10">
+          <div className="space-y-8">
+            <div className="flex gap-4 flex-row items-center justify-between">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 xl:text-[10px] 2xl:text-[11px] xl:font-semibold uppercase tracking-[0.18em] text-amber-700">
+                  <BadgeCheck className="w-4 h-4" />
+                  <span>{mode === "edit" ? "Edit todo" : "Create todo"}</span>
+                </div>
+                <div className="space-y-1">
+                  <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
+                    {mode === "edit"
+                      ? "Keep this todo moving"
+                      : "Bring a new todo to life"}
+                  </h1>
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                    Capture the essentials and set a realistic schedule so you
+                    can start fast.
+                  </p>
+                </div>
               </div>
-              <div className="space-y-1">
-                <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                  {mode === "edit"
-                    ? "Keep this todo moving"
-                    : "Bring a new todo to life"}
-                </h1>
-                <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                  Capture the essentials and set a realistic schedule so you can
-                  start fast.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-row gap-2 sm:gap-3">
-              <Button
-                type="button"
-                onClick={() => handleSubmit("Planned")}
-                disabled={isPending}
-                className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
-              >
-                Save draft
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleSubmit()}
-                disabled={isPending}
-                className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
-              >
-                {primaryCtaLabel}
-              </Button>
-              {mode === "edit" && todoId ? (
+              <div className="flex flex-row gap-2 sm:gap-3">
                 <Button
                   type="button"
-                  onClick={handleDelete}
+                  onClick={() => handleSubmit("Planned")}
                   disabled={isPending}
-                  className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                  className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
                 >
-                  <Trash className="w-4 h-4" />
-                  Delete
+                  Save draft
                 </Button>
-              ) : null}
+                <Button
+                  type="button"
+                  onClick={() => handleSubmit()}
+                  disabled={isPending}
+                  className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+                >
+                  {primaryCtaLabel}
+                </Button>
+                {mode === "edit" && todoId ? (
+                  <Button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isPending}
+                    className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                  >
+                    <Trash className="w-4 h-4" />
+                    Delete
+                  </Button>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -1783,6 +1789,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                   Back to all todos
                 </Link>
               </div>
+              <PlantBanner />
             </aside>
           </div>
         </div>

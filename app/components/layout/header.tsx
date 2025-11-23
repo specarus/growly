@@ -76,14 +76,14 @@ export default function Header() {
           {session ? (
             <Button
               onClick={handleSignOut}
-              className="xl:text-sm 2xl:text-[16px] hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
+              className="xl:text-xs 2xl:text-sm hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
             >
               Log out
             </Button>
           ) : (
             <Button
               onClick={() => setShowModal(true)}
-              className="xl:text-sm 2xl:text-[16px] hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
+              className="xl:text-xs 2xl:text-sm hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
             >
               Log in
             </Button>
