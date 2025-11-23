@@ -735,10 +735,10 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setShowTagPicker((open) => !open)}
-                    className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm transition border bg-white text-muted-foreground border-gray-100 hover:border-green-soft/30 flex items-center gap-2"
+                    className="px-4 py-2 xl:rounded-xl xl:text-xs 2xl:text-sm transition border bg-white text-muted-foreground border-gray-100 hover:border-muted-foreground/30 flex items-center gap-2"
                     type="button"
                   >
-                    <span className="h-2 w-2 rounded-full bg-green-soft" />
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground" />
                     <span>
                       {tagFilter.length === 0
                         ? "All tags"
@@ -751,7 +751,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         <span>Select tags</span>
                         <button
                           type="button"
-                          className="hover:text-green-soft"
+                          className="hover:text-primary"
                           onClick={() => setTagFilter([])}
                         >
                           Clear
@@ -778,8 +778,8 @@ const TodosPage: React.FC<TodosPageProps> = ({
                                 }}
                                 className={`w-full px-3 py-2 rounded-xl border transition text-left ${
                                   active
-                                    ? "bg-green-soft text-white border-green-soft"
-                                    : "bg-white text-foreground border-gray-100 hover:border-green-soft/40"
+                                    ? "bg-muted-foreground/50 text-white border-white"
+                                    : "bg-white text-foreground border-gray-100 hover:border-muted-foreground/40"
                                 }`}
                               >
                                 {tag}

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CalendarDays, Clock3 } from "lucide-react";
 import type { FC } from "react";
 
@@ -37,23 +38,26 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
             <p className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.2em] text-muted-foreground/80 font-semibold">
               Collection
             </p>
-            <h3
+            <Link
               id="collection-modal-title"
-              className="xl:text-lg 2xl:text-xl font-semibold text-foreground"
+              href={`/dashboard/todos/collections/${collection.id}`}
+              className="xl:text-lg 2xl:text-xl font-semibold text-foreground hover:text-primary transition"
             >
               {collection.name}
-            </h3>
+            </Link>
             <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
               {collection.description || "No description yet."}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground transition hover:text-foreground"
-          >
-            Close
-          </button>
+          <div className="flex flex-col items-end gap-2 xl:text-[11px] 2xl:text-xs">
+            <button
+              type="button"
+              onClick={onClose}
+              className="font-semibold text-muted-foreground transition hover:text-foreground"
+            >
+              Close
+            </button>
+          </div>
         </div>
         <div className="px-5 pt-4 xl:text-[11px] 2xl:text-xs text-muted-foreground">
           Showing {todos.length} todo{todos.length === 1 ? "" : "s"}
@@ -68,9 +72,10 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
             todos.map((todo) => {
               const statusColor = statusColors[todo.status];
               return (
-                <div
+                <Link
                   key={todo.id}
-                  className="rounded-2xl border border-gray-100 bg-white/80 px-4 py-3 shadow-sm"
+                  href={`/dashboard/todos/${todo.id}/edit`}
+                  className="block rounded-2xl border border-gray-100 bg-white/80 px-4 py-3 shadow-sm transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold xl:text-[13px] 2xl:text-sm truncate">
@@ -112,7 +117,7 @@ const CollectionTodosModal: FC<CollectionTodosModalProps> = ({
                       ))}
                     </div>
                   ) : null}
-                </div>
+                </Link>
               );
             })
           )}

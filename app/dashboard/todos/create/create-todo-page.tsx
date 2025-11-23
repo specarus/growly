@@ -1725,7 +1725,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         {form.reminder || "No reminder"}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 bg-foreground text-background xl:py-1 2xl:py-2 xl:w-24 2xl:w-28 rounded-xl xl:mt-2 2xl:mt-4">
+                    <div className="flex items-center justify-center gap-2 bg-foreground text-background xl:py-1 2xl:py-2 xl:px-2 2xl:px-3 w-fit rounded-xl xl:mt-2 2xl:mt-4">
                       <Group className="w-4 h-4" />
                       <span className="truncate">{categoryLabel}</span>
                     </div>
@@ -1769,7 +1769,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     <span className="font-medium">{form.status}</span>
                   </div>
                 </div>
-                <div className="text-center rounded-xl bg-muted xl:py-2 2xl:py-3 border border-gray-300">
+                <div className="text-center rounded-xl bg-muted/80 xl:py-2 2xl:py-3 border border-gray-300">
                   <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                     {mode === "edit"
                       ? "Refine, ship, or reschedule. Progress beats perfection."
