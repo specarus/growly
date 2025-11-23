@@ -8,7 +8,7 @@ export default function PlantBanner() {
       <div className="relative z-10">
         <div className="space-y-3">
           <div className="xl:text-xl 2xl:text-2xl font-bold text-foreground">
-            <div className="flex pl-10 pr-28 justify-between">
+            <div className="flex pl-10 pr-36 justify-between">
               <div>Plant small</div>
               <div>wins,</div>
             </div>
@@ -23,7 +23,7 @@ export default function PlantBanner() {
               <div>Build a todo that </div>
               <div>feels effortless to start.</div>
             </div>
-            <div className="flex pl-4 pr-10 justify-between">
+            <div className="flex pl-4 pr-12 justify-between">
               <div>The little wins you </div>
               <div>plant today grow</div>
             </div>
@@ -42,7 +42,7 @@ export default function PlantBanner() {
             </span>
           </div>
         </div>
-        <div className="absolute top-[-96] left-[-7] w-full select-none pointer-events-none">
+        <div className="absolute top-[-96] left-[-12] w-full select-none pointer-events-none">
           <Image
             src="/plant.png"
             width={400}

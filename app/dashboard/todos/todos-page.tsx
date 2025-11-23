@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BadgeCheck,
   CalendarDays,
@@ -9,7 +10,6 @@ import {
   Clock3,
   ListChecks,
   MapPin,
-  Plus,
   BarChart3,
   LayoutPanelLeft,
   Sparkles,
@@ -18,12 +18,13 @@ import {
   Timer,
   Trash2,
   Search,
+  Plus,
 } from "lucide-react";
 
 import CollectionCard from "./components/collection-card";
-import CollectionTodosModal from "./components/collection-todos-modal";
 import type { Collection, Priority, Status, TodoRow } from "./types";
 import { priorityDots, statusColors } from "./constants";
+import MainButton from "@/app/components/ui/main-button";
 
 interface TodosPageProps {
   initialTodos?: Array<{
@@ -177,26 +178,12 @@ const TodosPage: React.FC<TodosPageProps> = ({
   >(null);
   const [collectionAssignSearch, setCollectionAssignSearch] = useState("");
   const [newCollectionSearch, setNewCollectionSearch] = useState("");
-  const [collectionModalId, setCollectionModalId] = useState<string | null>(
-    null
-  );
-  const modalCollection = useMemo(() => {
-    if (!collectionModalId) return null;
-    return (
-      collections.find((collection) => collection.id === collectionModalId) ||
-      null
-    );
-  }, [collectionModalId, collections]);
-  const modalCollectionTodos = useMemo(
-    () =>
-      modalCollection
-        ? todos.filter((todo) =>
-            todo.collectionIds.includes(modalCollection.id)
-          )
-        : [],
-    [modalCollection, todos]
-  );
   const isCollectionView = Boolean(collectionContext);
+  const router = useRouter();
+
+  const handleNewTodo = () => {
+    router.push("/dashboard/todos/create");
+  };
 
   const tabs: ReadonlyArray<{
     id: TabKey;
@@ -220,22 +207,6 @@ const TodosPage: React.FC<TodosPageProps> = ({
   useEffect(() => {
     setCollections(initialCollections.map(normalizeCollection));
   }, [initialCollections]);
-
-  useEffect(() => {
-    if (!collectionModalId) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setCollectionModalId(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [collectionModalId]);
 
   useEffect(() => {
     setDeleteCompletedMessage(null);
@@ -650,11 +621,20 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     {isCollectionView ? (
                       <Link
                         href="/dashboard/todos"
-                        className={`${buttonBase} xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm 2xl:text-base bg-white border border-gray-200 shadow-sm hover:border-primary/40`}
+                        className={`${buttonBase} xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40`}
                       >
                         Back to all todos
                       </Link>
-                    ) : null}
+                    ) : (
+                      <MainButton
+                        label="New Todo"
+                        icon={
+                          <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
+                        }
+                        className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
+                        onClick={handleNewTodo}
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -1467,9 +1447,6 @@ const TodosPage: React.FC<TodosPageProps> = ({
                                   onDropTodo={(todoId) =>
                                     handleCollectionDrop(todoId, collection.id)
                                   }
-                                  onViewTodos={() =>
-                                    setCollectionModalId(collection.id)
-                                  }
                                 />
                               );
                             })
@@ -1484,13 +1461,6 @@ const TodosPage: React.FC<TodosPageProps> = ({
           </div>
         </div>
       </main>
-      {modalCollection ? (
-        <CollectionTodosModal
-          collection={modalCollection}
-          todos={modalCollectionTodos}
-          onClose={() => setCollectionModalId(null)}
-        />
-      ) : null}
     </>
   );
 };

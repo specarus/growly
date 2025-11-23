@@ -647,7 +647,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
             maxLength={2}
             value={minuteInput}
             onChange={handleMinuteInputChange}
-            placeholder="00"
+            placeholder="--"
             aria-label="Minute"
             className="xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 rounded-2xl border border-gray-200 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           />
@@ -1722,7 +1722,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-primary" />
                       <span className="truncate">
-                        {form.location || "Add where you&apos;ll do this"}
+                        {form.location || "Add where you'll do this"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">

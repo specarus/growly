@@ -97,7 +97,7 @@ export default function LandingPage() {
   }, [showModal, setShowModal]);
 
   return (
-    <main className="relative min-h-screen xl:pt-20 2xl:pt-24 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
+    <main className="relative min-h-screen xl:pt-24 2xl:pt-28 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
       {showModal && (
         <div
           onClick={handleOverlayClick}

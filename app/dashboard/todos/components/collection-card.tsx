@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarDays, Clock3, Plus, Search } from "lucide-react";
 import type { DragEvent, FC } from "react";
 
+import { statusColors } from "../constants";
 import type { Collection, TodoRow } from "../types";
 
 export interface CollectionCardProps {
@@ -20,7 +21,6 @@ export interface CollectionCardProps {
   onDragEnter?: () => void;
   onDragLeave?: () => void;
   onDropTodo: (todoId: string) => void;
-  onViewTodos: () => void;
 }
 
 const CollectionCard: FC<CollectionCardProps> = ({
@@ -33,7 +33,6 @@ const CollectionCard: FC<CollectionCardProps> = ({
   onCollectionAssignSearch,
   onTogglePicker,
   onAddTodo,
-  onViewTodos,
   isDropTarget = false,
   onDragEnter,
   onDragLeave,
@@ -73,48 +72,49 @@ const CollectionCard: FC<CollectionCardProps> = ({
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`relative rounded-xl border border-gray-100 bg-white/70 shadow-sm p-3 space-y-3 hover:border-primary/40 transition ${
+      className={`relative rounded-xl border border-gray-100 bg-white/70 shadow-sm p-3 hover:border-primary/40 transition ${
         isDropTarget
           ? "border-primary/60 ring-2 ring-primary/40 bg-primary/5"
           : ""
       }`}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="space-y-1 min-w-0">
-          <p className="xl:text-[9px] 2xl:text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
-            Collection
-          </p>
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="space-y-1 min-w-0">
+            <p className="xl:text-[9px] 2xl:text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold">
+              Collection
+            </p>
+            <Link
+              href={`/dashboard/todos/collections/${collection.id}`}
+              className="block xl:text-sm 2xl:text-base font-semibold hover:text-primary transition truncate"
+            >
+              {collection.name}
+            </Link>
+            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
+              {assignedCount} todo{assignedCount === 1 ? "" : "s"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={onTogglePicker}
+              className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-green-soft shadow-sm hover:border-green-soft/60 transition disabled:opacity-50"
+              disabled={assignmentPending}
+              aria-label="Add todo to collection"
+            >
+              <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end text-xs text-muted-foreground">
           <Link
             href={`/dashboard/todos/collections/${collection.id}`}
-            className="block xl:text-sm 2xl:text-base font-semibold hover:text-primary transition truncate"
+            className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground transition hover:border-primary/60"
           >
-            {collection.name}
+            View todos
           </Link>
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
-            {assignedCount} todo{assignedCount === 1 ? "" : "s"}
-          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={onTogglePicker}
-            className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-green-soft shadow-sm hover:border-green-soft/60 transition disabled:opacity-50"
-            disabled={assignmentPending}
-            aria-label="Add todo to collection"
-          >
-            <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-end text-xs text-muted-foreground">
-        <button
-          type="button"
-          onClick={onViewTodos}
-          className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground transition hover:border-primary/60"
-        >
-          View todos
-        </button>
       </div>
 
       {isPickerOpen ? (
