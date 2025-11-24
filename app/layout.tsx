@@ -9,7 +9,7 @@ import { auth } from "../lib/auth";
 import { headers } from "next/headers";
 import { SessionProvider } from "./context/session-context";
 import Footer from "./components/layout/footer";
-import MainButton from "./components/ui/main-button";
+
 import { LayoutPanelTop } from "lucide-react";
 
 const montserrat = localFont({
@@ -62,13 +62,15 @@ export default async function RootLayout({
               <Header />
               <main className="flex-1 w-full h-full">{children}</main>
               <Footer />
-              <Link
-                href="/dashboard"
-                className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-2xl shadow-primary/60 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                aria-label="Open dashboard"
-              >
-                <LayoutPanelTop />
-              </Link>
+              {session ? (
+                <Link
+                  href="/dashboard"
+                  className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-2xl shadow-primary/60 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  aria-label="Open dashboard"
+                >
+                  <LayoutPanelTop />
+                </Link>
+              ) : null}
             </div>
           </ModalProvider>
         </SessionProvider>

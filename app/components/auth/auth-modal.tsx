@@ -376,17 +376,13 @@ export const AuthModal: React.FC<AuthModalProps> = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
 
   return (
-    <div className="w-full xl:max-w-3xl 2xl:max-w-4xl overflow-hidden shadow-2xl rounded-2xl bg-white">
-      <div className="grid grid-cols-2 h-full">
-        <div className="bg-white"></div>
-
-        <div className="xl:p-8 2xl:p-10 flex items-center justify-center w-full">
-          {isLogin ? (
-            <LoginForm setIsLogin={setIsLogin} />
-          ) : (
-            <SignupForm setIsLogin={setIsLogin} />
-          )}
-        </div>
+    <div className="w-full xl:max-w-md 2xl:max-w-lg overflow-hidden shadow-2xl rounded-2xl bg-white border-2 border-primary/50">
+      <div className="xl:p-8 2xl:p-10 flex items-center justify-center w-full">
+        {isLogin ? (
+          <LoginForm setIsLogin={setIsLogin} />
+        ) : (
+          <SignupForm setIsLogin={setIsLogin} />
+        )}
       </div>
     </div>
   );
