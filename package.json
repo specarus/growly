@@ -10,6 +10,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.0.0",
     "@prisma/client": "^6.19.0",
     "better-auth": "^1.3.34",
     "lucide-react": "^0.554.0",

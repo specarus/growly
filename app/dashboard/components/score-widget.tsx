@@ -39,7 +39,7 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
   );
 
   return (
-    <div className="text-foreground bg-white xl:p-3 2xl:p-4 rounded-2xl shadow-none border-none">
+    <div className="text-foreground xl:p-3 2xl:p-4 rounded-2xl shadow-none border-none">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold  uppercase tracking-wider">
           Habit Score

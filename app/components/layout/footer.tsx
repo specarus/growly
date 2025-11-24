@@ -1,4 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
+
+import logo from "@/public/logo.png";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -17,54 +20,69 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-100 bg-white/80 backdrop-blur-sm">
-      <div className="2xl:px-28 xl:px-8 py-8 space-y-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-primary/15 text-primary font-semibold text-lg flex items-center justify-center">
-              G
+    <footer className="relative border-t border-b-8 border-b-primary border-white/60 bbg-white text-foreground shadow-inner shadow-gray-200/40 overflow-visible">
+      <div className="mx-auto xl:px-8 2xl:px-28 space-y-10 pt-10 pb-8">
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr_1fr]">
+          <div className="flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="space-y-1">
+                <p className="font-semibold text-foreground">Growly</p>
+                <p className="text-sm text-muted-foreground">
+                  Stay consistent, win the tiny moments.
+                </p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="font-semibold text-foreground">Growly</p>
-              <p className="text-sm text-muted-foreground">
-                Stay consistent, win the tiny moments.
+            <div className="flex items-center gap-3 xl:text-xs 2xl:text-sm">
+              <span className="rounded-full bg-white/70 text-primary font-semibold">
+                Tiny wins, every day.
+              </span>
+              <span className="text-muted-foreground/70">
+                &copy; {year} Growly
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground/80">
+              Navigate
+            </p>
+            <nav className="flex flex-col gap-2 text-sm text-muted-foreground/90">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="rounded-xl px-3 py-2 hover:bg-white/70 hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex flex-col justify-between text-sm text-muted-foreground">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground/80">
+                Keep in touch
               </p>
+              <p className="leading-relaxed">
+                Questions or ideas? Reach out any time and we will keep the tiny
+                wins coming.
+              </p>
+              <div className="text-xs uppercase tracking-[0.4em] text-primary">
+                hello@growly.app
+              </div>
             </div>
-          </div>
-
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-muted-foreground">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full bg-green-soft/15 text-green-soft-foreground font-medium">
-              Tiny wins, every day.
-            </span>
-            <span className="hidden sm:inline text-muted-foreground/70">
-              &copy; {year} Growly
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {legalLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <div className="flex flex-wrap items-center gap-8 text-muted-foreground/80">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -53,7 +53,9 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Todo: 'Todo'
+  Todo: 'Todo',
+  Collection: 'Collection',
+  CollectionTodo: 'CollectionTodo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,6 +153,28 @@ export const TodoScalarFieldEnum = {
 } as const
 
 export type TodoScalarFieldEnum = (typeof TodoScalarFieldEnum)[keyof typeof TodoScalarFieldEnum]
+
+
+export const CollectionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CollectionScalarFieldEnum = (typeof CollectionScalarFieldEnum)[keyof typeof CollectionScalarFieldEnum]
+
+
+export const CollectionTodoScalarFieldEnum = {
+  id: 'id',
+  collectionId: 'collectionId',
+  todoId: 'todoId',
+  createdAt: 'createdAt'
+} as const
+
+export type CollectionTodoScalarFieldEnum = (typeof CollectionTodoScalarFieldEnum)[keyof typeof CollectionTodoScalarFieldEnum]
 
 
 export const SortOrder = {

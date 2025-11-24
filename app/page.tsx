@@ -18,6 +18,7 @@ import { AuthModal } from "./components/auth/auth-modal";
 import Button from "./components/ui/button";
 import { ModalContext } from "./context/modal-context";
 import { useSession } from "./context/session-context";
+import useLockBodyScroll from "./hooks/use-lock-body-scroll";
 
 const highlights = [
   {
@@ -68,6 +69,7 @@ export default function LandingPage() {
   const { session } = useSession();
   const showModal = context?.showModal ?? false;
   const setShowModal = context?.setShowModal ?? noop;
+  useLockBodyScroll(showModal);
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -95,11 +97,11 @@ export default function LandingPage() {
   }, [showModal, setShowModal]);
 
   return (
-    <main className="relative min-h-screen xl:pt-20 2xl:pt-24 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
+    <main className="relative min-h-screen xl:pt-24 2xl:pt-28 pb-16 bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 overflow-hidden">
       {showModal && (
         <div
           onClick={handleOverlayClick}
-          className="fixed inset-0 grid place-items-center z-50 bg-black/20"
+          className="fixed inset-0 grid place-items-center z-50 bg-black/20 backdrop-blur-sm"
         >
           <AuthModal />
         </div>
@@ -113,7 +115,6 @@ export default function LandingPage() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-sm text-muted-foreground shadow-sm ring-1 ring-black/5">
-              <Sparkles className="h-4 w-4 text-primary" />
               <span>Growly - Habit tracker for real life</span>
             </div>
 
@@ -147,12 +148,6 @@ export default function LandingPage() {
                   Start a streak
                   <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Link
-                  href="/dashboard"
-                  className="sm:w-auto px-6 py-3 rounded-full border border-muted text-foreground font-semibold hover:border-primary hover:text-primary transition-all bg-white/80 backdrop-blur"
-                >
-                  Peek at the dashboard
-                </Link>
               </div>
             )}
 

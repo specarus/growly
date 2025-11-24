@@ -19,6 +19,13 @@ export default async function Todos() {
   const todos = await prisma.todo.findMany({
     where: { userId: session.user.id },
     orderBy: { dueAt: "asc" },
+    include: { collections: true },
+  });
+
+  const collections = await prisma.collection.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    include: { items: true },
   });
 
   const initialTodos = todos.map((todo) => ({
@@ -35,7 +42,20 @@ export default async function Todos() {
     tags: todo.tags || "",
     iconName: todo.iconName || "Notebook",
     iconColor: todo.iconColor || "#E5E7EB",
+    collections: todo.collections?.map((item) => item.collectionId) || [],
   }));
 
-  return <TodosPage initialTodos={initialTodos} />;
+  const initialCollections = collections.map((collection) => ({
+    id: collection.id,
+    name: collection.name,
+    description: collection.description || "",
+    todoIds: collection.items.map((item) => item.todoId),
+  }));
+
+  return (
+    <TodosPage
+      initialTodos={initialTodos}
+      initialCollections={initialCollections}
+    />
+  );
 }

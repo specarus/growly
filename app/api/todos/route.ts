@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
+import type { Prisma } from "@prisma/client";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -89,5 +91,47 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Failed to create todo" }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const userId = await requireUserId();
+    const url = new URL(request.url);
+    const collectionId = url.searchParams.get("collectionId")?.trim();
+
+    const where: Prisma.TodoWhereInput = {
+      userId,
+      status: "COMPLETED",
+    };
+
+    if (collectionId) {
+      const collection = await prisma.collection.findUnique({
+        where: { id: collectionId },
+        select: { userId: true },
+      });
+      if (!collection || collection.userId !== userId) {
+        return NextResponse.json(
+          { error: "Collection not found" },
+          { status: 404 }
+        );
+      }
+
+      where.collections = { some: { collectionId } };
+    } else {
+      where.collections = { none: {} };
+    }
+
+    const result = await prisma.todo.deleteMany({
+      where,
+    });
+
+    return NextResponse.json({ deleted: result.count });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Failed to delete completed todos" },
+      { status: 400 }
+    );
   }
 }

@@ -1,5 +1,5 @@
-import DetailsButton from "@/app/components/ui/details-button";
 import { ChevronRight, Users } from "lucide-react";
+import PillButton from "@/app/components/ui/pill-button";
 
 interface Activity {
   id: number;
@@ -30,14 +30,16 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
     <div className="flex flex-col xl:rounded-2xl 2xl:rounded-3xl h-full text-foreground">
       <div className="flex items-center justify-between xl:mb-2 2xl:mb-3">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">Should Do!</h3>
-        <DetailsButton />
+        <PillButton href="#" variant="ghost">
+          View Details
+        </PillButton>
       </div>
 
       <div className="flex flex-col flex-1 gap-4">
         {activities.map((activity) => (
           <div
             key={activity.id}
-            className="flex-1 shadow-inner select-none border border-muted border-dashed flex items-center justify-between xl:py-2 2xl:py-3 xl:px-3 2xl:px-4 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
+            className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between xl:py-2 2xl:py-3 xl:px-3 2xl:px-4 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="xl:text-2xl 2xl:text-3xl shrink-0">

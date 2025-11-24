@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
+import type { Prisma } from "@prisma/client";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -45,6 +47,57 @@ const normalizeStatus = (status?: string) => {
   return "PLANNED";
 };
 
+const buildUpdateData = (body: any): Prisma.TodoUpdateInput => {
+  const data: Prisma.TodoUpdateInput = {};
+  const has = (key: string) =>
+    Object.prototype.hasOwnProperty.call(body, key);
+
+  if (typeof body.title === "string" && has("title")) {
+    data.title = body.title;
+  }
+  if (has("description")) {
+    data.description = body.description || null;
+  }
+  if (has("category")) {
+    data.category = body.category || null;
+  }
+  if (has("priority")) {
+    data.priority = normalizePriority(body.priority);
+  }
+  if (has("status")) {
+    data.status = normalizeStatus(body.status);
+  }
+  if (has("date") || has("time")) {
+    data.dueAt = buildDueAt(body.date, body.time);
+  }
+  if (has("durationMinutes")) {
+    data.durationMinutes =
+      typeof body.durationMinutes === "number"
+        ? body.durationMinutes
+        : null;
+  }
+  if (has("location")) {
+    data.location = body.location || null;
+  }
+  if (has("reminder")) {
+    data.reminder = body.reminder || null;
+  }
+  if (has("recurrence")) {
+    data.recurrence = body.recurrence || null;
+  }
+  if (has("tags")) {
+    data.tags = body.tags || null;
+  }
+  if (has("iconName")) {
+    data.iconName = body.iconName || "Notebook";
+  }
+  if (has("iconColor")) {
+    data.iconColor = body.iconColor || "#E5E7EB";
+  }
+
+  return data;
+};
+
 type ParamsArg = { params: Promise<{ id: string }> } | { params: { id: string } };
 
 const resolveParams = async (raw: ParamsArg) => {
@@ -85,6 +138,7 @@ export async function PUT(request: Request, ctx: ParamsArg) {
     const { id } = await resolveParams(ctx);
     const userId = await requireUserId();
     const body = await request.json();
+    const updateData = buildUpdateData(body);
 
     const todo = await prisma.todo.update({
       where: {
@@ -93,21 +147,7 @@ export async function PUT(request: Request, ctx: ParamsArg) {
           userId,
         },
       },
-      data: {
-        title: body.title,
-        description: body.description || null,
-        category: body.category || null,
-        priority: normalizePriority(body.priority),
-        status: normalizeStatus(body.status),
-        dueAt: buildDueAt(body.date, body.time),
-        durationMinutes: body.durationMinutes ?? null,
-        location: body.location || null,
-        reminder: body.reminder || null,
-        recurrence: body.recurrence || null,
-        tags: body.tags || null,
-        iconName: body.iconName || "Notebook",
-        iconColor: body.iconColor || "#E5E7EB",
-      },
+      data: updateData,
     });
 
     return NextResponse.json({ todo });

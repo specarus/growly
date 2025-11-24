@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import confettiImage from "@/public/confetti.png";
 import Button from "@/app/components/ui/button";
+import PillButton from "@/app/components/ui/pill-button";
 
 interface Habit {
   name: string;
@@ -105,13 +105,10 @@ const AnalyticsWidget: React.FC = () => {
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
-          <Link
-            href="/dashboard/analytics"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-gray-100 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
+          <PillButton href="/dashboard/analytics" variant="ghost">
+            <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
             Open
-          </Link>
+          </PillButton>
         </div>
         <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600">
           <div className="flex items-center gap-2 mb-2">
@@ -163,7 +160,7 @@ const AnalyticsWidget: React.FC = () => {
       </div>
 
       <div className="space-y-4 grow w-full">
-        <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl border border-gray-50 shadow-inner h-full">
+        <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full">
           <div className="flex items-center justify-between xl:mb-4 2xl:mb-6 gap-2">
             <h3 className="font-semibold xl:text-lg 2xl:text-xl">
               Favorite Habits
