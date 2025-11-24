@@ -115,7 +115,6 @@ export default function LandingPage() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-sm text-muted-foreground shadow-sm ring-1 ring-black/5">
-              <Sparkles className="h-4 w-4 text-primary" />
               <span>Growly - Habit tracker for real life</span>
             </div>
 
@@ -149,12 +148,6 @@ export default function LandingPage() {
                   Start a streak
                   <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Link
-                  href="/dashboard"
-                  className="sm:w-auto px-6 py-3 rounded-full border border-muted text-foreground font-semibold hover:border-primary hover:text-primary transition-all bg-white/80 backdrop-blur"
-                >
-                  Peek at the dashboard
-                </Link>
               </div>
             )}
 

@@ -20,14 +20,11 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-white/60 bbg-white text-foreground shadow-inner shadow-gray-200/40 overflow-visible">
+    <footer className="relative border-t border-b-8 border-b-primary border-white/60 bbg-white text-foreground shadow-inner shadow-gray-200/40 overflow-visible">
       <div className="mx-auto xl:px-8 2xl:px-28 space-y-10 pt-10 pb-8">
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="flex flex-col justify-between">
             <div className="flex items-center gap-3">
-              <div className="select-none pointer-events-none flex h-14 w-14 items-center justify-center rounded-xl shadow-sm bg-primary/20">
-                <Image src={logo} height={1000} width={1000} alt="Logo" />
-              </div>
               <div className="space-y-1">
                 <p className="font-semibold text-foreground">Growly</p>
                 <p className="text-sm text-muted-foreground">
