@@ -1,16 +1,10 @@
 "use client";
 
-import { useContext } from "react";
-
-import { useRouter } from "next/navigation";
-
-import Button from "@/app/components/ui/button";
-
-import { ModalContext } from "@/app/context/modal-context";
-
-import { signOut } from "@/lib/actions/auth-actions";
-import { useSession } from "@/app/context/session-context";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { useSession } from "@/app/context/session-context";
+import { User } from "lucide-react";
 
 const formatSegment = (segment: string) =>
   segment
@@ -23,11 +17,8 @@ const formatSegment = (segment: string) =>
 const isLikelyId = (segment: string) => /^[0-9a-fA-F-]{6,}$/.test(segment);
 
 export default function Header() {
-  const context = useContext(ModalContext);
-  const router = useRouter();
-  const { session, setSession } = useSession();
+  const { session } = useSession();
   const pathname = usePathname();
-  const setShowModal = context?.setShowModal ?? (() => {});
 
   const segments = pathname
     .split("/")
@@ -36,13 +27,6 @@ export default function Header() {
 
   const breadcrumb = segments.length > 0 ? segments : ["home"];
   const formatted = breadcrumb.map((segment) => formatSegment(segment));
-
-  const handleSignOut = async () => {
-    await signOut();
-    setSession(null);
-    router.push("/");
-    router.refresh();
-  };
 
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
@@ -72,21 +56,15 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="flex items-center xl:gap-2 2xl:gap-4">
-          {session ? (
-            <Button
-              onClick={handleSignOut}
-              className="xl:text-xs 2xl:text-sm hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
+        <div>
+          {session && (
+            <Link
+              href="/account"
+              className="shadow-sm shadow-primary/20 inline-flex items-center justify-center gap-4 rounded-full border border-primary/50 px-4 py-2 bg-white text-xs font-semibold text-primary transition hover:bg-primary hover:text-white"
             >
-              Log out
-            </Button>
-          ) : (
-            <Button
-              onClick={() => setShowModal(true)}
-              className="xl:text-xs 2xl:text-sm hover:bg-primary hover:text-white transition-all duration-100 xl:min-w-20 2xl:min-w-24 xl:h-8 2xl:h-10 border border-primary text-primary"
-            >
-              Log in
-            </Button>
+              <User />
+              <p className="xl:text-xs 2xl:text-sm">{session.user.name}</p>
+            </Link>
           )}
         </div>
       </div>

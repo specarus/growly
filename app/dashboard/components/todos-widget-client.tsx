@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import type { FC } from "react";
 import { CalendarDays, Clock3, Plus, Sparkles } from "lucide-react";
+import PillButton from "@/app/components/ui/pill-button";
 
 import Todo, { TodoItem } from "./todo";
 
@@ -142,19 +143,13 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
           Today&apos;s Todos
         </h3>
         <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/todos/create"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-105"
-          >
+          <PillButton href="/dashboard/todos/create" variant="primary">
             <Plus className="w-3 h-3" />
             New todo
-          </Link>
-          <Link
-            href="/dashboard/todos"
-            className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold shadow-sm hover:border-primary/40 transition"
-          >
+          </PillButton>
+          <PillButton href="/dashboard/todos" variant="ghost">
             View Details
-          </Link>
+          </PillButton>
         </div>
       </div>
 
@@ -174,13 +169,14 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
           <div className="rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-5 text-sm text-muted-foreground">
             <p className="font-semibold text-foreground mb-1">No todos yet</p>
             <p>Start a new one to see it here.</p>
-            <Link
+            <PillButton
               href="/dashboard/todos/create"
-              className="mt-3 inline-flex items-center gap-2 text-xs text-primary hover:underline"
+              variant="text"
+              className="mt-3 gap-2"
             >
               <Sparkles className="w-3 h-3" />
               Create a todo
-            </Link>
+            </PillButton>
           </div>
         )}
       </div>

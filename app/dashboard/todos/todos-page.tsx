@@ -580,7 +580,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
         <div className="pointer-events-none absolute bottom-6 left-12 h-56 w-56 rounded-full bg-green-soft/20 blur-3xl" />
         <div className="relative z-10">
           <div className="xl:px-8 2xl:px-28 pb-8 space-y-8">
-            <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white/90 px-6 py-6 shadow-sm space-y-6">
+            <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white/90 px-6 py-6 shadow-sm space-y-6">
               <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-primary/20 blur-2xl" />
               <div className="pointer-events-none absolute -bottom-12 left-6 h-48 w-48 rounded-full bg-green-soft/30 blur-3xl" />
               <div className="relative z-10 space-y-6">
@@ -595,7 +595,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                       </span>
                     </div>
                     <div className="space-y-1">
-                      <h1 className="xl:text-xl 2xl:text-2xl md:text-3xl font-bold">
+                      <h1 className="xl:text-xl 2xl:text-2xl font-bold">
                         {isCollectionView
                           ? `${collectionContext?.name || "Collection"} todos`
                           : "Your todos"}
