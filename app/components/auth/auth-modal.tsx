@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 import Button from "../ui/button";
 
@@ -47,7 +47,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 export const Input: React.FC<InputProps> = ({ ...props }) => {
   return (
     <input
-      className="pl-14 pr-3 flex h-10 w-full rounded-full border border-input bg-background py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+      className="pl-14 pr-3 flex h-10 w-full rounded-full border border-input shadow-inner bg-background py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 xl:text-xs 2xl:text-sm"
       {...props}
     />
   );
@@ -66,6 +66,8 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,12 +129,23 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="login-password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              onClick={() => setShowPassword(!showPassword)}
+              type="button"
+              className="absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer text-primary"
+            >
+              {showPassword ? (
+                <Eye className="w-4 h-4" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
 
@@ -194,6 +207,8 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,6 +291,17 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              onClick={() => setShowPassword(!showPassword)}
+              type="button"
+              className="absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer text-primary"
+            >
+              {showPassword ? (
+                <Eye className="w-4 h-4" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
 
