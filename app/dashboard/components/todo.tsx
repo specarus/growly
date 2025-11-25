@@ -88,7 +88,7 @@ const Todo: FC<TodoProps> = ({
           {(() => {
             const IconComp =
               (icons as Record<string, LucideIcon>)[todo.iconKey] || Sparkles;
-            return <IconComp className="w-5 h-5 text-foreground/80" />;
+            return <IconComp className="w-5 h-5 text-slate-500" />;
           })()}
         </div>
         <div className="flex-1 min-w-0">
@@ -126,7 +126,7 @@ const Todo: FC<TodoProps> = ({
           </div>
           <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-xs 2xl:text-sm text-muted-foreground">
             <span className="flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
-              <Clock className="w-3 h-3 shrink-0 text-foreground" />
+              <Clock className="w-3 h-3 shrink-0 text-slate-500" />
               {todo.time}
             </span>
             <span className="flex items-center gap-0.5 sm:gap-1 truncate">

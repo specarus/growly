@@ -110,9 +110,9 @@ const AnalyticsWidget: React.FC = () => {
             Open
           </PillButton>
         </div>
-        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600 dark:from-green-soft/70 dark:to-emerald-600">
           <div className="flex items-center gap-2 mb-2">
-            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 dark:bg-red-400 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <TrendingUp className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
             </div>
             <span className="text-white/80 xl:text-xs 2xl:text-sm">
@@ -122,9 +122,9 @@ const AnalyticsWidget: React.FC = () => {
           <div className="xl:text-3xl font-bold text-white mb-1">+58,2%</div>
         </div>
 
-        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600 dark:from-slate-900 dark:to-blue-700">
           <div className="flex items-center gap-2 mb-2">
-            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <CheckCircle className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
             </div>
             <span className="text-white/80 xl:text-xs 2xl:text-sm">
@@ -135,7 +135,7 @@ const AnalyticsWidget: React.FC = () => {
         </div>
 
         <div className="h-full p-2 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
-          <div className="absolute xl:-top-2.5 2xl:-top-3 left-1/2 -translate-x-1/2 xl:w-40 2xl:w-48 pointer-events-none select-none">
+          <div className="absolute xl:-top-2 left-1/2 -translate-x-1/2 xl:w-48 2xl:w-56 pointer-events-none select-none">
             <Image
               src={confettiImage}
               width={1000}
@@ -152,7 +152,7 @@ const AnalyticsWidget: React.FC = () => {
               Habits Wrapped
             </span>
             <div className="xl:text-3xl font-bold">2025</div>
-            <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100 inline-flex items-center justify-center px-4 rounded-full border border-gray-100 shadow-sm">
+            <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100 inline-flex items-center justify-center px-4 rounded-full border border-gray-100 shadow-sm dark:bg-card dark:text-card-foreground dark:hover:bg-card/80 dark:border-border">
               View
             </Button>
           </div>
@@ -160,7 +160,7 @@ const AnalyticsWidget: React.FC = () => {
       </div>
 
       <div className="space-y-4 grow w-full">
-        <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full">
+        <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full dark:bg-card dark:border-border">
           <div className="flex items-center justify-between xl:mb-4 2xl:mb-6 gap-2">
             <h3 className="font-semibold xl:text-lg 2xl:text-xl">
               Favorite Habits
@@ -168,20 +168,20 @@ const AnalyticsWidget: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <div className="flex gap-1 shadow-sm rounded-full">
-                <Button className="xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 bg-white border-muted border">
+                <Button className="xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 bg-white border-muted border dark:bg-card dark:border-border dark:text-foreground">
                   <Search className="xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
                 </Button>
                 <input
                   type="text"
                   placeholder="Search"
-                  className="pl-1 pr-4 outline-none w-24 xl:text-xs 2xl:text-sm text-muted-foreground bg-transparent rounded-full placeholder:text-muted-foreground"
+                  className="pl-1 pr-4 outline-none w-24 xl:text-xs 2xl:text-sm text-muted-foreground bg-transparent rounded-full placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/80"
                 />
               </div>
 
               <div className="relative xl:w-32 2xl:w-40" ref={dropdownRef}>
                 <div
                   onClick={() => setOpen(!open)}
-                  className="select-none relative xl:h-8 2xl:h-10 z-20 rounded-full cursor-pointer flex items-center justify-between gap-2 bg-white border border-gray-50 shadow-sm xl:text-xs 2xl:text-sm sm:rounded-full xl:px-4 py-2 2xl:px-6"
+                  className="select-none relative xl:h-8 2xl:h-10 z-20 rounded-full cursor-pointer flex items-center justify-between gap-2 bg-white border border-gray-50 shadow-sm xl:text-xs 2xl:text-sm sm:rounded-full xl:px-4 py-2 2xl:px-6 dark:bg-card dark:border-border dark:text-foreground"
                 >
                   <p>{month}</p>
                   <ChevronDown
@@ -192,7 +192,7 @@ const AnalyticsWidget: React.FC = () => {
                 </div>
 
                 <div
-                  className={`absolute w-full border border-gray-50 xl:top-4 2xl:top-8 left-0 shadow-lg overflow-y-auto bg-white rounded-b-2xl xl:pt-4 2xl:pt-2 z-10 transition-all duration-300 ease-in-out ${
+                  className={`absolute w-full border border-gray-50 dark:border-border xl:top-4 2xl:top-8 left-0 shadow-lg overflow-y-auto bg-white dark:bg-card rounded-b-2xl xl:pt-4 2xl:pt-2 z-10 transition-all duration-300 ease-in-out ${
                     open
                       ? "xl:max-h-52 2xl:max-h-60 opacity-100"
                       : "max-h-0 opacity-0"
@@ -205,7 +205,7 @@ const AnalyticsWidget: React.FC = () => {
                         setMonth(m);
                         setOpen(false);
                       }}
-                      className="px-4 py-2 xl:text-xs 2xl:text-sm hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                      className="px-4 py-2 xl:text-xs 2xl:text-sm hover:bg-gray-100 cursor-pointer transition-colors duration-200 dark:hover:bg-border/60"
                     >
                       {m}
                     </div>
@@ -216,7 +216,7 @@ const AnalyticsWidget: React.FC = () => {
           </div>
 
           <div className="space-y-4 overflow-x-auto">
-            <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground mb-2 min-w-max sm:min-w-0">
+            <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground dark:text-muted-foreground/70 mb-2 min-w-max sm:min-w-0">
               {pastFiveDays.map((day, index) => (
                 <div
                   key={index}

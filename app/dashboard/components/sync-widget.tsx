@@ -29,15 +29,15 @@ const SyncWidget: React.FC<SyncWidgetProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col justify-between shadow-sm shadow-primary/20 relative bg-light-yellow xl:p-6 2xl:p-4 rounded-2xl z-10 h-full">
-        <h3 className="font-semibold xl:text-base 2xl:text-lg mb-1">
+      <div className="flex flex-col justify-between shadow-sm shadow-primary/20 relative bg-light-yellow xl:p-6 2xl:p-4 rounded-2xl z-10 h-full dark:bg-slate-900 dark:shadow-none">
+        <h3 className="font-semibold xl:text-base 2xl:text-lg mb-1 text-foreground dark:text-white">
           Sync anywhere with <br />
           <span className="text-green-soft">Growly</span> Mobile App
         </h3>
-        <p className="text-muted-foreground xl:text-xs 2xl:text-sm mb-3 sm:mb-4">
+        <p className="text-muted-foreground xl:text-xs 2xl:text-sm mb-3 sm:mb-4 dark:text-muted-foreground/80">
           Download now, sync later!
         </p>
-        <Button className="bg-white hover:bg-primary shadow-sm border border-gray-50 hover:border-primary hover:text-white text-foreground xl:h-9 2xl:h-11 xl:text-sm 2xl:text-base transition-all duration-100">
+        <Button className="shadow-sm bg-foreground hover:bg-foreground/90 text-background xl:h-9 2xl:h-11 xl:text-sm 2xl:text-base transition-all duration-100">
           Download App
         </Button>
       </div>

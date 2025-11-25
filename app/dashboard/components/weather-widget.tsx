@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, type FC } from "react";
+import { useTheme } from "@/app/context/theme-context";
 
 type Location = {
   name: string;
@@ -24,6 +25,17 @@ const seasonalBackgrounds: Record<string, string> = {
     "radial-gradient(circle at 15% 15%, #fff2db 0, #ffdfb8 30%, transparent 48%), linear-gradient(135deg, #f7c978 0%, #f78ca0 50%, #f9748f 100%)",
   winter:
     "radial-gradient(circle at 80% 20%, #d8ebff 0, #bddbff 32%, transparent 48%), linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%)",
+};
+
+const seasonalBackgroundsDark: Record<string, string> = {
+  spring:
+    "radial-gradient(circle at 20% 20%, #0d3d1e 0, #123527 25%, transparent 40%), linear-gradient(135deg, #0b2f1a 0%, #0f3922 50%, #163e2c 100%)",
+  summer:
+    "radial-gradient(circle at 80% 10%, #312100 0, #4f3200 28%, transparent 45%), linear-gradient(135deg, #4f3200 0%, #593900 50%, #6c4500 100%)",
+  autumn:
+    "radial-gradient(circle at 15% 15%, #29170f 0, #3d2414 30%, transparent 48%), linear-gradient(135deg, #3c2414 0%, #4a2816 50%, #5b2f1c 100%)",
+  winter:
+    "radial-gradient(circle at 80% 20%, #081121 0, #1a2740 32%, transparent 48%), linear-gradient(135deg, #1a2a45 0%, #2e3b5c 100%)",
 };
 
 const DEGREE_SYMBOL = "\u00B0";
@@ -165,6 +177,7 @@ const WeatherWidget: FC = () => {
   const [locationStatus, setLocationStatus] = useState<
     "default" | "pending" | "resolved" | "error" | "disabled"
   >("default");
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
@@ -227,6 +240,10 @@ const WeatherWidget: FC = () => {
   }, [location]);
 
   const activeSeason = getSeason(new Date().getMonth());
+  const backgroundImage =
+    theme === "dark"
+      ? seasonalBackgroundsDark[activeSeason]
+      : seasonalBackgrounds[activeSeason];
   const iconUrl = weather
     ? getWeatherIcon(weather.weatherCode, weather.isDay)
     : "/weather/sunny.png";
@@ -265,7 +282,7 @@ const WeatherWidget: FC = () => {
       </div>
       <div
         className="relative text-foreground flex flex-col justify-top shadow-md xl:h-64 2xl:h-80 bg-cover bg-bottom bg-no-repeat xl:p-4 2xl:p-6 xl:rounded-xl 2xl:rounded-2xl"
-        style={{ backgroundImage: seasonalBackgrounds[activeSeason] }}
+        style={{ backgroundImage }}
       >
         {status === "loading" && !weather && (
           <div className="absolute inset-0 rounded-xl bg-card/90 flex flex-col items-center justify-center gap-2">
