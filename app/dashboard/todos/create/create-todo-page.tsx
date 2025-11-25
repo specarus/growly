@@ -1049,7 +1049,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
         <div className="relative z-10">
           <div className="space-y-8">
             <div className="flex gap-4 flex-row items-center justify-between">
-              <div className="space-y-2">
+              <div className="space-y-2 xl:mb-8 2xl:mb-10">
                 <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 xl:text-[10px] 2xl:text-[11px] xl:font-semibold uppercase tracking-[0.18em] text-amber-700">
                   <BadgeCheck className="w-4 h-4" />
                   <span>{mode === "edit" ? "Edit todo" : "Create todo"}</span>
@@ -1100,7 +1100,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
           {(feedback || error) && (
             <div
-              className={`rounded-2xl border px-4 py-3 text-sm ${
+              className={`rounded-2xl border px-4 py-3 xl:text-xs 2xl:text-sm xl:mb-3 2xl:mb-4 ${
                 feedback
                   ? "border-green-soft/60 bg-green-soft/15 text-foreground"
                   : "border-destructive/60 bg-destructive/10 text-destructive"

@@ -5,10 +5,12 @@ import Link from "next/link";
 
 import Header from "./components/layout/header";
 import { ModalProvider } from "./context/modal-context";
+import { XPProvider } from "./context/xp-context";
 import { auth } from "../lib/auth";
 import { headers } from "next/headers";
 import { SessionProvider } from "./context/session-context";
 import Footer from "./components/layout/footer";
+import CelebrationToast from "./components/celebration-toast";
 
 import { LayoutPanelTop } from "lucide-react";
 
@@ -57,22 +59,25 @@ export default async function RootLayout({
     <html lang="en" className={`${montserrat.variable} antialiased`}>
       <body>
         <SessionProvider initialSession={session}>
-          <ModalProvider>
-            <div className="min-h-screen flex flex-col text-foreground">
-              <Header />
-              <main className="flex-1 w-full h-full">{children}</main>
-              <Footer />
-              {session ? (
-                <Link
-                  href="/dashboard"
-                  className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-2xl shadow-primary/60 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  aria-label="Open dashboard"
-                >
-                  <LayoutPanelTop />
-                </Link>
-              ) : null}
-            </div>
-          </ModalProvider>
+          <XPProvider>
+            <ModalProvider>
+              <div className="min-h-screen flex flex-col text-foreground">
+                <Header />
+                <main className="flex-1 w-full h-full">{children}</main>
+                <Footer />
+                <CelebrationToast />
+                {session ? (
+                  <Link
+                    href="/dashboard"
+                    className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-2xl shadow-primary/60 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    aria-label="Open dashboard"
+                  >
+                    <LayoutPanelTop />
+                  </Link>
+                ) : null}
+              </div>
+            </ModalProvider>
+          </XPProvider>
         </SessionProvider>
       </body>
     </html>

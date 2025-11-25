@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FC } from "react";
 import { CalendarDays, Clock3, Plus, Sparkles } from "lucide-react";
 import PillButton from "@/app/components/ui/pill-button";
+
+import { useXP } from "@/app/context/xp-context";
+import { XP_PER_TODO } from "@/lib/xp";
 
 import Todo, { TodoItem } from "./todo";
 
@@ -12,15 +15,26 @@ type TodoStatus = TodoItem["status"];
 
 interface TodosWidgetClientProps {
   initialTodos: TodoItem[];
+  totalActive: number;
 }
 
 const ACTIVE_STATUSES: TodoStatus[] = ["PLANNED", "IN_PROGRESS"];
 const COMPLETED_STATUS = { label: "Completed", color: "#10B981" };
 
-const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
+const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
+  initialTodos,
+  totalActive,
+}) => {
   const [todos, setTodos] = useState<TodoItem[]>(initialTodos);
+  const [activeCount, setActiveCount] = useState(totalActive);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [completingId, setCompletingId] = useState<string | null>(null);
+  const { addXP } = useXP();
+
+  useEffect(() => {
+    setTodos(initialTodos);
+    setActiveCount(totalActive);
+  }, [initialTodos, totalActive]);
 
   const activeTodos = useMemo(
     () => todos.filter((todo) => ACTIVE_STATUSES.includes(todo.status)),
@@ -28,8 +42,8 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
   );
 
   const topTodos = activeTodos.slice(0, 3);
-  const remainingCount = Math.max(activeTodos.length - topTodos.length, 0);
-  const hasTodos = activeTodos.length > 0;
+  const remainingCount = Math.max(activeCount - topTodos.length, 0);
+  const hasTodos = activeCount > 0;
 
   const celebrate = useCallback((origin?: HTMLElement) => {
     if (typeof document === "undefined") return;
@@ -108,6 +122,9 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
           throw new Error("Unable to update todo status");
         }
 
+        addXP(XP_PER_TODO);
+        setActiveCount((prev) => Math.max(prev - 1, 0));
+
         setTimeout(
           () => setTodos((prev) => prev.filter((todo) => todo.id !== id)),
           450
@@ -138,7 +155,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
 
   return (
     <div className="xl:p-2 2xl:p-6 text-foreground">
-      <div className="flex items-center justify-between xl:mb-2 2xl:mb-4">
+      <div className="flex items-center justify-between xl:mb-4">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">
           Today&apos;s Todos
         </h3>
@@ -208,10 +225,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({ initialTodos }) => {
         </>
       ) : (
         <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-          <Sparkles className="w-3 h-3" />
-          <span className="truncate">
-            Add a todo to see it on your dashboard.
-          </span>
+          Add a todo to see it on your dashboard.
         </div>
       )}
     </div>

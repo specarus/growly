@@ -1,25 +1,269 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState, type FC } from "react";
 
-type WeatherWidgetProps = Record<string, never>;
+type Location = {
+  name: string;
+  latitude: number;
+  longitude: number;
+};
 
-const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
-  const iconUrl = "/weather/sunny.png";
-  const seasonalBackgrounds: Record<string, string> = {
-    spring:
-      "radial-gradient(circle at 20% 20%, #e3f9e5 0, #f6fff2 25%, transparent 40%), linear-gradient(135deg, #d4f4dd 0%, #a1e5b9 50%, #7fd1ae 100%)",
-    summer:
-      "radial-gradient(circle at 80% 10%, #fff3c5 0, #ffe8a3 28%, transparent 45%), linear-gradient(135deg, #ffd89b 0%, #fcb69f 50%, #ff9a9e 100%)",
-    autumn:
-      "radial-gradient(circle at 15% 15%, #fff2db 0, #ffdfb8 30%, transparent 48%), linear-gradient(135deg, #f7c978 0%, #f78ca0 50%, #f9748f 100%)",
-    winter:
-      "radial-gradient(circle at 80% 20%, #d8ebff 0, #bddbff 32%, transparent 48%), linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%)",
+const DEFAULT_LOCATION: Location = {
+  name: "Seattle, WA",
+  latitude: 47.608013,
+  longitude: -122.335167,
+};
+
+const seasonalBackgrounds: Record<string, string> = {
+  spring:
+    "radial-gradient(circle at 20% 20%, #e3f9e5 0, #f6fff2 25%, transparent 40%), linear-gradient(135deg, #d4f4dd 0%, #a1e5b9 50%, #7fd1ae 100%)",
+  summer:
+    "radial-gradient(circle at 80% 10%, #fff3c5 0, #ffe8a3 28%, transparent 45%), linear-gradient(135deg, #ffd89b 0%, #fcb69f 50%, #ff9a9e 100%)",
+  autumn:
+    "radial-gradient(circle at 15% 15%, #fff2db 0, #ffdfb8 30%, transparent 48%), linear-gradient(135deg, #f7c978 0%, #f78ca0 50%, #f9748f 100%)",
+  winter:
+    "radial-gradient(circle at 80% 20%, #d8ebff 0, #bddbff 32%, transparent 48%), linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%)",
+};
+
+const DEGREE_SYMBOL = "\u00B0";
+
+const formatTemperature = (value: number) =>
+  `${Math.round(value)}${DEGREE_SYMBOL}C`;
+
+type WeatherApiResponse = {
+  current_weather: {
+    temperature: number;
+    windspeed: number;
+    weathercode: number;
+    time: string;
   };
-  const activeSeason = "autumn";
+  hourly?: {
+    time: string[];
+    precipitation?: number[];
+  };
+};
+
+type WeatherState = {
+  temperature: number;
+  windspeed: number;
+  feelsLike: number;
+  weatherCode: number;
+  isDay: boolean;
+  precipitation: number;
+  time: string;
+};
+
+const getSeason = (month: number) => {
+  if (month >= 2 && month <= 4) {
+    return "spring";
+  }
+  if (month >= 5 && month <= 7) {
+    return "summer";
+  }
+  if (month >= 8 && month <= 10) {
+    return "autumn";
+  }
+  return "winter";
+};
+
+const getWeatherIcon = (code: number, isDay: boolean) => {
+  if (!isDay) {
+    return "/weather/night.png";
+  }
+
+  if (code === 0) {
+    return "/weather/sunny.png";
+  }
+
+  if ([1, 2, 3, 51, 53, 55, 61, 63, 65, 66, 67].includes(code)) {
+    return "/weather/partly-cloudy.png";
+  }
+
+  if ([45, 48].includes(code)) {
+    return "/weather/foggy.png";
+  }
+
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "/weather/snow.png";
+  }
+
+  if ([95, 96, 99].includes(code)) {
+    return "/weather/thunderstorm.png";
+  }
+
+  return "/weather/sunny.png";
+};
+
+const getWeatherLabel = (code: number) => {
+  if (code === 0) {
+    return "Clear skies";
+  }
+
+  if ([1, 2, 3].includes(code)) {
+    return "Partly cloudy";
+  }
+
+  if ([45, 48].includes(code)) {
+    return "Foggy";
+  }
+
+  if ([51, 53, 55, 61, 63, 65, 66, 67].includes(code)) {
+    return "Light showers";
+  }
+
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "Snow";
+  }
+
+  if ([95, 96, 99].includes(code)) {
+    return "Thunderstorm";
+  }
+
+  return "Changing conditions";
+};
+
+const fetchWeatherData = async (
+  loc: Location,
+  signal: AbortSignal
+): Promise<WeatherState> => {
+  const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true&hourly=precipitation&timezone=auto`;
+  const response = await fetch(endpoint, { signal });
+
+  if (!response.ok) {
+    throw new Error("Weather endpoint returned an error");
+  }
+
+  const payload: WeatherApiResponse = await response.json();
+  const current = payload.current_weather;
+  const hourly = payload.hourly;
+  const currentIndex =
+    hourly?.time?.findIndex((time) => time === current.time) ?? -1;
+  const precipitation =
+    currentIndex >= 0 && hourly?.precipitation
+      ? hourly.precipitation[currentIndex]
+      : 0;
+  const feelsLike = current.temperature - current.windspeed * 0.13;
+
+  return {
+    temperature: current.temperature,
+    windspeed: current.windspeed,
+    feelsLike,
+    weatherCode: current.weathercode,
+    isDay: current.is_day === 1,
+    precipitation,
+    time: current.time,
+  };
+};
+
+const WeatherWidget: FC = () => {
+  const [weather, setWeather] = useState<WeatherState | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useState<Location>(DEFAULT_LOCATION);
+  const [locationStatus, setLocationStatus] = useState<
+    "default" | "pending" | "resolved" | "error" | "disabled"
+  >("default");
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setLocationStatus("disabled");
+      return;
+    }
+
+    setLocationStatus("pending");
+
+    const handleSuccess = (position: GeolocationPosition) => {
+      setLocation({
+        name: "Your location",
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+      setLocationStatus("resolved");
+    };
+
+    const handleError = () => {
+      setLocationStatus("error");
+    };
+
+    navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
+      enableHighAccuracy: false,
+      timeout: 10000,
+      maximumAge: 5 * 60 * 1000,
+    });
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadWeather = async () => {
+      setStatus("loading");
+      setError(null);
+
+      try {
+        const weatherState = await fetchWeatherData(location, controller.signal);
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setWeather(weatherState);
+        setStatus("idle");
+      } catch (err) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setStatus("error");
+        setError("Unable to load weather right now.");
+      }
+    };
+
+    loadWeather();
+    return () => controller.abort();
+  }, [location]);
+
+  const activeSeason = getSeason(new Date().getMonth());
+  const iconUrl = weather
+    ? getWeatherIcon(weather.weatherCode, weather.isDay)
+    : "/weather/sunny.png";
+  const weatherLabel = error
+    ? "Weather unavailable"
+    : weather
+    ? getWeatherLabel(weather.weatherCode)
+    : "Fetching current conditions...";
+  const temperatureDisplay = weather
+    ? formatTemperature(weather.temperature)
+    : `--${DEGREE_SYMBOL}C`;
+  const feelsLikeDisplay = weather
+    ? formatTemperature(weather.feelsLike)
+    : `--${DEGREE_SYMBOL}C`;
+  const precipitationDisplay = weather
+    ? `${weather.precipitation.toFixed(1)} mm`
+    : "--";
+  const windDisplay = weather
+    ? `${Math.round(weather.windspeed)} km/h`
+    : "-- km/h";
+  const locationLabel =
+    locationStatus === "pending"
+      ? "Detecting location…"
+      : locationStatus === "disabled"
+      ? `${location.name} (geolocation unavailable)`
+      : locationStatus === "error"
+      ? `${location.name} (using fallback)`
+      : location.name;
 
   return (
     <div className="xl:pt-2 2xl:pt-6 text-foreground">
       <div className="flex items-center justify-between xl:pb-2 2xl:pb-4">
-        <h3 className="font-semibold xl:text-lg 2xl:text-xl">Weather</h3>
+        <div>
+          <h3 className="font-semibold xl:text-lg 2xl:text-xl">Weather</h3>
+          <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground/70">
+            {locationLabel}
+          </p>
+        </div>
+        <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground/70">
+          {status === "loading" ? "Refreshing..." : weatherLabel}
+        </p>
       </div>
 
       <div
@@ -31,35 +275,47 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = () => {
             src={iconUrl}
             width={100}
             height={100}
-            alt="Weather"
+            alt={weatherLabel}
             className="xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 pointer-events-none"
           />
         </div>
 
-        <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-4 2xl:mb-6">
-          7°C
+        <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-1 2xl:mb-2">
+          {temperatureDisplay}
         </p>
+        <p className="text-right xl:text-sm 2xl:text-base uppercase tracking-[0.5em] text-muted-foreground/70">
+          {weatherLabel}
+        </p>
+        {error && (
+          <p className="text-right text-xs text-red-500/90 mt-1">
+            {error}
+          </p>
+        )}
 
-        <div className="flex items-center xl:gap-4 2xl:gap-6">
+        <div className="flex items-center xl:gap-4 2xl:gap-6 mt-auto">
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Feels like
             </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">4°C</div>
+            <div className="font-semibold xl:text-xs 2xl:text-base">
+              {feelsLikeDisplay}
+            </div>
           </div>
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Wind
             </div>
             <div className="font-semibold xl:text-xs 2xl:text-base flex items-center gap-1">
-              <span className="whitespace-nowrap">4 km/h</span>
+              <span className="whitespace-nowrap">{windDisplay}</span>
             </div>
           </div>
           <div>
             <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
               Precipitation
             </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">0.1 mm</div>
+            <div className="font-semibold xl:text-xs 2xl:text-base">
+              {precipitationDisplay}
+            </div>
           </div>
         </div>
       </div>

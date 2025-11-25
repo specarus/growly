@@ -1,10 +1,18 @@
-import { ChevronRight, Users } from "lucide-react";
+import {
+  BicepsFlexed,
+  ChevronRight,
+  Clock,
+  Footprints,
+  LucideIcon,
+  Users,
+} from "lucide-react";
 import PillButton from "@/app/components/ui/pill-button";
 
 interface Activity {
   id: number;
   title: string;
-  emoji: string;
+  icon: LucideIcon;
+  iconColor: string;
   likes: string;
 }
 
@@ -15,35 +23,44 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
     {
       id: 1,
       title: "We go jimmm!",
-      emoji: "💪",
+      icon: BicepsFlexed,
+      iconColor: "text-yellow-500",
       likes: "4.2k love this",
     },
     {
       id: 2,
       title: "The 5am club",
-      emoji: "⏰",
+      icon: Clock,
+      iconColor: "text-pink-400",
       likes: "5.4k love this",
+    },
+    {
+      id: 3,
+      title: "Go running",
+      icon: Footprints,
+      iconColor: "text-blue-400",
+      likes: "2k love this",
     },
   ];
 
   return (
     <div className="flex flex-col xl:rounded-2xl 2xl:rounded-3xl h-full text-foreground">
-      <div className="flex items-center justify-between xl:mb-2 2xl:mb-3">
+      <div className="flex items-center justify-between xl:mb-4">
         <h3 className="font-semibold xl:text-lg 2xl:text-xl">Should Do!</h3>
         <PillButton href="#" variant="ghost">
           View Details
         </PillButton>
       </div>
 
-      <div className="flex flex-col flex-1 gap-4">
+      <div className="flex flex-col flex-1 xl:gap-2 2xl:gap-4">
         {activities.map((activity) => (
           <div
             key={activity.id}
-            className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between xl:py-2 2xl:py-3 xl:px-3 2xl:px-4 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
+            className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between xl:py-2 2xl:py-3 xl:px-5 2xl:px-6 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer"
           >
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-3">
               <span className="xl:text-2xl 2xl:text-3xl shrink-0">
-                {activity.emoji}
+                <activity.icon className={activity.iconColor} />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="font-medium xl:mb-0.5 2xl:mb-1 xl:text-sm 2xl:text-base truncate">

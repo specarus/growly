@@ -80,11 +80,11 @@ function AccountDropdown({ session }: AccountDropdownProps) {
         }`}
       >
         <div className="px-4 py-3 text-[11px] text-muted-foreground">
-          <p className="text-sm font-semibold text-foreground truncate">
+          <p className="xl:text-xs 2xl:text-sm font-semibold text-foreground truncate">
             {name}
           </p>
           {email && (
-            <p className="mt-1 text-[11px] tracking-wide text-muted-foreground truncate">
+            <p className="mt-1 xl:text-[10px] 2xl:text-[11px] tracking-wide text-muted-foreground truncate">
               {email}
             </p>
           )}
@@ -92,7 +92,7 @@ function AccountDropdown({ session }: AccountDropdownProps) {
         <div className="border-t border-gray-50 px-2 py-2 space-y-1">
           <Link
             href="/account"
-            className="block rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.4em] text-primary transition-colors hover:bg-primary/5"
+            className="block rounded-xl px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.4em] text-primary transition-colors hover:bg-primary/5"
             onClick={() => setIsOpen(false)}
           >
             Account
@@ -101,7 +101,7 @@ function AccountDropdown({ session }: AccountDropdownProps) {
             type="button"
             onClick={handleSignOut}
             disabled={isPending}
-            className="w-full cursor-pointer rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl px-3 xl:py-1 2xl:py-2 text-left xl:text-xs 2xl:text-sm font-semibold text-foreground transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Signing out..." : "Log out"}
           </button>

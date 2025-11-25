@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 const stats = [
   { label: "Current streak", value: "12 days", tone: "text-primary" },
-  { label: "Weekly wins", value: "7 / 7", tone: "text-green-soft-foreground" },
+  { label: "Weekly wins", value: "7 / 7", tone: "text-green-soft" },
   {
     label: "Recovery days",
     value: "2 scheduled",
@@ -67,7 +67,7 @@ export default async function AccountPage() {
 
   return (
     <main className="relative min-h-screen bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 pb-16 pt-28">
-      <div className="xl:px-36 2xl:px-80">
+      <div className="xl:px-48 2xl:px-80">
         <div className="mx-auto flex flex-col gap-10">
           <section className="space-y-8">
             <div className="flex flex-col gap-3">
@@ -75,10 +75,10 @@ export default async function AccountPage() {
                 <BadgeCheck className="w-4 h-4" />
                 <span>Account</span>
               </div>
-              <h1 className="text-3xl font-semibold text-foreground">
+              <h1 className="xl:text-2xl 2xl:text-3xl font-semibold text-foreground">
                 Keep your rituals tidy and your focus protected.
               </h1>
-              <p className="text-sm text-muted-foreground max-w-3xl">
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-3xl">
                 Everything starts with a calm overview.<br></br>Adjust
                 notifications, revisit weekly priorities, or glance at how
                 confident you feel about upcoming rituals.
@@ -87,22 +87,24 @@ export default async function AccountPage() {
 
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-6">
-                <div className="space-y-5 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="space-y-5 rounded-3xl border border-gray-100 bg-white xl:p-6 shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="grid h-20 w-20 place-items-center rounded-2xl bg-primary text-2xl font-semibold text-white shadow-lg shadow-primary/30">
+                    <div className="grid xl:h-16 2xl:h-20 xl:w-16 2xl:w-20 place-items-center rounded-2xl bg-primary xl:text-xl 2xl:text-2xl font-semibold text-white shadow-lg shadow-primary/30">
                       {initials}
                     </div>
                     <div>
-                      <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">
+                      <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                         Profile
                       </p>
-                      <p className="text-lg font-semibold text-foreground">
+                      <p className="xl:text-base 2xl:text-lg font-semibold text-foreground">
                         {name}
                       </p>
-                      <p className="text-sm text-muted-foreground">{email}</p>
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                        {email}
+                      </p>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm text-muted-foreground">
+                  <div className="space-y-1 xl:text-xs 2xl:text-sm text-muted-foreground">
                     <p>Joined with patient goals, not noisy streaks.</p>
                     <p>All notifications land in your trusted channels.</p>
                   </div>
@@ -110,7 +112,7 @@ export default async function AccountPage() {
                     {["Release notes", "Privacy", "Support"].map((link) => (
                       <span
                         key={link}
-                        className="rounded-full border border-muted px-3 py-1 text-xs font-semibold text-muted-foreground"
+                        className="rounded-full border border-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
                       >
                         {link}
                       </span>
@@ -127,10 +129,10 @@ export default async function AccountPage() {
 
                 <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
                   <div className="space-y-3">
-                    <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                       Need a break?
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                       Log out when you need a reset and return to your calm
                       landing page.
                     </p>
@@ -140,21 +142,21 @@ export default async function AccountPage() {
               </div>
 
               <div className="rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 p-6 shadow-lg shadow-primary/20 h-fit">
-                <p className="text-xs uppercase tracking-[0.4em] text-primary">
-                  momentum
+                <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
+                  Momentum
                 </p>
-                <p className="text-2xl font-semibold text-foreground">
+                <p className="xl:text-xl 2xl:text-2xl font-semibold text-foreground">
                   {stats[0].value} streak
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                   Focused energy made possible by calm reminders and gentle
                   check-ins.
                 </p>
-                <div className="mt-6 grid gap-3">
+                <div className="xl:mt-5 2xl:mt-6 grid gap-3">
                   {stats.map((stat) => (
                     <div
                       key={stat.label}
-                      className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm shadow-sm"
+                      className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 xl:text-xs 2xl:text-sm shadow-sm"
                     >
                       <span className="text-muted-foreground">
                         {stat.label}
@@ -171,14 +173,14 @@ export default async function AccountPage() {
             <div className="space-y-4">
               <div className="flex gap-3 flex-row items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
+                  <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] xl:mt-2 text-muted-foreground">
                     Quick links
                   </p>
-                  <h2 className="text-2xl font-semibold text-foreground">
+                  <h2 className="xl:text-xl 2xl:text-2xl font-semibold text-foreground">
                     Tap into what matters
                   </h2>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                   Keep renewals thoughtful and purposeful.
                 </p>
               </div>
@@ -188,7 +190,7 @@ export default async function AccountPage() {
                   <Link
                     key={action.label}
                     href={action.href}
-                    className="rounded-full border border-muted px-4 py-2 text-sm font-semibold text-foreground transition hover:border-primary hover:text-primary"
+                    className="rounded-full border border-muted px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-foreground transition hover:border-primary hover:text-primary"
                   >
                     {action.label}
                   </Link>
@@ -197,12 +199,12 @@ export default async function AccountPage() {
             </div>
           </section>
 
-          <section className="grid gap-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm shadow-foreground/5 backdrop-blur">
+          <section className="grid gap-6 rounded-3xl border border-gray-100 bg-white xl:p-6 2xl:p-8 shadow-sm shadow-foreground/5 backdrop-blur">
             <div className="flex flex-col gap-2">
-              <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
+              <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                 Weekly focus
               </p>
-              <h2 className="text-2xl font-semibold text-foreground">
+              <h2 className="xl:text-xl 2xl:text-2xl font-semibold text-foreground">
                 Ritual notes that keep your energy anchored
               </h2>
             </div>
@@ -213,13 +215,15 @@ export default async function AccountPage() {
                   key={title}
                   className="space-y-3 rounded-2xl border border-muted bg-linear-to-b from-white to-muted/30 p-5 shadow-sm"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
-                    <Icon className="h-5 w-5" />
+                  <div className="flex xl:h-9 2xl:h-11 xl:w-9 2xl:w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
+                    <Icon className="xl:w-4 2xl:h-5 xl:h-4 2xl:w-5" />
                   </div>
-                  <p className="text-lg font-semibold text-foreground">
+                  <p className="xl:text- md2xl:text-lg font-semibold text-foreground">
                     {title}
                   </p>
-                  <p className="text-sm text-muted-foreground">{description}</p>
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                    {description}
+                  </p>
                 </div>
               ))}
             </div>

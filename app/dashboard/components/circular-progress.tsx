@@ -22,6 +22,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (progress / 100) * circumference;
+  const baseColor = circleColor ?? "hsl(var(--muted) / 1)";
 
   return (
     <div
@@ -35,7 +36,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
         viewBox={`0 0 ${size} ${size}`}
       >
         <circle
-          stroke={circleColor}
+          stroke={baseColor}
           fill="transparent"
           strokeWidth={strokeWidth}
           r={radius}

@@ -1,24 +1,65 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import CircularProgress from "./circular-progress";
+import { useXP } from "@/app/context/xp-context";
+import { MAX_STREAK_BONUS } from "@/lib/xp";
 
-interface ScoreWidgetProps {
-  totalXP: number;
-  level: number;
-  progress: number;
-  xpGainedInLevel: number;
-  xpNeededForLevelUp: number;
-  todayXP: number;
-  streakBonus: number;
-}
+const ScoreWidget: React.FC = () => {
+  const {
+    totalXP,
+    level,
+    progress,
+    xpGainedInLevel,
+    xpNeededForLevelUp,
+    todayXP,
+    streakBonus,
+    loading,
+  } = useXP();
+  const [pulse, setPulse] = useState(false);
+  const prevTotalXPRef = useRef<number | null>(null);
 
-const ScoreWidget: React.FC<ScoreWidgetProps> = ({
-  totalXP,
-  level,
-  progress,
-  xpGainedInLevel,
-  xpNeededForLevelUp,
-  todayXP,
-  streakBonus,
-}) => {
+  useEffect(() => {
+    if (loading) {
+      prevTotalXPRef.current = null;
+      return;
+    }
+
+    if (prevTotalXPRef.current === null) {
+      prevTotalXPRef.current = totalXP;
+      return;
+    }
+
+    if (prevTotalXPRef.current !== totalXP) {
+      setPulse(true);
+      const handler = window.setTimeout(() => setPulse(false), 900);
+      prevTotalXPRef.current = totalXP;
+      return () => window.clearTimeout(handler);
+    }
+
+    prevTotalXPRef.current = totalXP;
+  }, [loading, totalXP]);
+  if (loading) {
+    return (
+      <div className="text-foreground xl:p-3 2xl:p-4 rounded-2xl border border-muted/50 bg-white/70 shadow-inner">
+        <div className="space-y-3 animate-pulse">
+          <div className="h-4 w-1/3 rounded bg-muted" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="h-12 w-12 rounded bg-muted" />
+            <div className="flex-1 space-y-2">
+              <div className="h-5 rounded bg-muted" />
+              <div className="h-3 w-3/4 rounded bg-muted" />
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="h-16 w-16 rounded-full border border-muted" />
+            <div className="h-16 w-16 rounded-full border border-muted" />
+          </div>
+          <div className="h-4 rounded bg-muted" />
+        </div>
+      </div>
+    );
+  }
   const safeProgress = Math.min(100, Math.max(0, progress));
   const nextLevel = level + 1;
 
@@ -27,7 +68,7 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
   };
 
   const maxDailyXP = 1000;
-  const maxStreakBonus = 200;
+  const maxStreakBonus = MAX_STREAK_BONUS;
 
   const todayXPProgress = Math.min(
     100,
@@ -37,6 +78,18 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
     100,
     Math.floor((streakBonus / maxStreakBonus) * 100)
   );
+
+  const progressFillClassName = [
+    "bg-green-soft",
+    "h-2.5",
+    "rounded-full",
+    "transition-all duration-500 ease-out",
+    "transform",
+    "origin-left",
+    pulse ? "score-widget-pulse" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className="text-foreground xl:p-3 2xl:p-4 rounded-2xl shadow-none border-none">
@@ -105,7 +158,7 @@ const ScoreWidget: React.FC<ScoreWidgetProps> = ({
           </p>
           <div className="w-full rounded-full h-2.5 bg-muted">
             <div
-              className="bg-green-soft h-2.5 rounded-full transition-all duration-500 ease-out"
+              className={progressFillClassName}
               style={{ width: `${safeProgress}%` }}
             ></div>
           </div>

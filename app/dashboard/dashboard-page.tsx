@@ -1,3 +1,4 @@
+import CelebrationToast from "../components/celebration-toast";
 import AnalyticsWidget from "./components/analytics-widget";
 import CalendarWidget from "./components/calendar-widget";
 import GreetingWidget from "./components/greeting-widget";
@@ -14,7 +15,7 @@ const Dashboard: React.FC = () => {
       <div className="pointer-events-none absolute -left-24 -top-12 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 top-48 h-64 w-64 rounded-full bg-green-soft/20 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 bottom-10 h-48 w-48 -translate-x-1/2 rounded-full bg-yellow-soft/25 blur-3xl" />
-      <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 pb-16">
+      <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16">
         <div className="h-full col-span-2 grid xl:gap-4 2xl:gap-6">
           <GreetingWidget />
           <CalendarWidget />
@@ -26,15 +27,7 @@ const Dashboard: React.FC = () => {
             <WeatherWidget />
           </div>
           <div>
-            <ScoreWidget
-              level={3}
-              totalXP={4820}
-              xpGainedInLevel={1820}
-              xpNeededForLevelUp={3000}
-              progress={60}
-              todayXP={450}
-              streakBonus={100}
-            />
+            <ScoreWidget />
           </div>
 
           <div className="flex-1">

@@ -234,7 +234,7 @@ const AnalyticsWidget: React.FC = () => {
 
             <div
               ref={containerRef}
-              className="relative xl:h-80 2xl:h-[350px] flex justify-between pb-4"
+              className="relative xl:h-80 2xl:h-[400px] flex justify-between pb-4"
             >
               {habits.map((habit) => {
                 const height = containerHeight

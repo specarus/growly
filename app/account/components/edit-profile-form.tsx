@@ -52,34 +52,46 @@ export default function EditProfileForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
+      <div className="flex flex-col xl:gap-1 2xl:gap-2">
+        <label className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
           Edit profile
         </label>
-        <p className="text-sm text-muted-foreground">
+        <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
           Keep your name and email current so Growly can stay aligned with your
           rituals.
         </p>
       </div>
 
       <div className="grid gap-3">
-        <label className="flex flex-col gap-1 text-sm">
+        {message && (
+          <div
+            className={`rounded-2xl border px-4 py-3 xl:text-xs 2xl:text-sm ${
+              status === "success"
+                ? "border-green-soft/60 bg-green-soft/15 text-foreground"
+                : "border-destructive/60 bg-destructive/10 text-destructive"
+            }`}
+          >
+            {message}
+          </div>
+        )}
+
+        <label className="flex flex-col gap-1 xl:text-xs 2xl:text-sm">
           <span className="text-muted-foreground">Name</span>
           <input
             name="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="rounded-2xl border border-muted px-4 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="rounded-2xl border border-muted px-4 py-2 xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 xl:text-xs 2xl:text-sm">
           <span className="text-muted-foreground">Email</span>
           <input
             name="email"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="rounded-2xl border border-muted px-4 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="rounded-2xl border border-muted px-4 py-2 xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </label>
       </div>
@@ -88,7 +100,7 @@ export default function EditProfileForm({
         <button
           type="submit"
           disabled={isPending}
-          className="w-full rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-full bg-primary px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending ? "Saving..." : "Save changes"}
         </button>

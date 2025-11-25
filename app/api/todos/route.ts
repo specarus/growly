@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import type { Prisma } from "@prisma/client";
@@ -87,6 +88,9 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/todos");
+
     return NextResponse.json({ todo });
   } catch (error) {
     console.error(error);
@@ -125,6 +129,9 @@ export async function DELETE(request: Request) {
     const result = await prisma.todo.deleteMany({
       where,
     });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/todos");
 
     return NextResponse.json({ deleted: result.count });
   } catch (error) {

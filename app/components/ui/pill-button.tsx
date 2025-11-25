@@ -23,11 +23,10 @@ type PillButtonProps = PillButtonLinkProps | PillButtonNativeProps;
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "inline-flex items-center justify-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-white bg-primary border border-transparent shadow-sm transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed",
+    "inline-flex items-center justify-center gap-2 rounded-full xl:px-3 xl:py-1 2xl:py-1.5 xl:text-[11px] 2xl:text-xs font-semibold text-white bg-primary border border-transparent shadow-sm transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed",
   ghost:
-    "inline-flex items-center justify-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-foreground bg-white border border-gray-200 shadow-sm transition hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed",
-  text:
-    "inline-flex items-center gap-1 text-xs font-semibold text-primary transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+    "inline-flex items-center justify-center gap-2 rounded-full xl:px-3 xl:py-1 2xl:py-1.5 xl:text-[11px] 2xl:text-xs font-semibold text-foreground bg-white border border-gray-200 shadow-sm transition hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed",
+  text: "inline-flex items-center gap-1 xl:text-[11px] 2xl:text-xs font-semibold text-primary transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
 };
 
 const getClassName = (variant: Variant, extra?: string) =>

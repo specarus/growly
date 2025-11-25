@@ -25,6 +25,8 @@ import CollectionCard from "./components/collection-card";
 import type { Collection, Priority, Status, TodoRow } from "./types";
 import { priorityDots, statusColors } from "./constants";
 import MainButton from "@/app/components/ui/main-button";
+import { useXP } from "@/app/context/xp-context";
+import { XP_PER_TODO } from "@/lib/xp";
 
 interface TodosPageProps {
   initialTodos?: Array<{
@@ -180,6 +182,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
   const [newCollectionSearch, setNewCollectionSearch] = useState("");
   const isCollectionView = Boolean(collectionContext);
   const router = useRouter();
+  const { addXP } = useXP();
 
   const handleNewTodo = () => {
     router.push("/dashboard/todos/create");
@@ -282,6 +285,8 @@ const TodosPage: React.FC<TodosPageProps> = ({
     if (!statusPayload) return;
 
     const previousStatus = current.status;
+    const reopenedFromCompleted =
+      previousStatus === "Completed" && targetStatus === "In Progress";
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, status: targetStatus } : todo
@@ -312,6 +317,10 @@ const TodosPage: React.FC<TodosPageProps> = ({
           todo.id === id ? { ...todo, status: confirmedStatus } : todo
         )
       );
+
+      if (reopenedFromCompleted) {
+        addXP(-XP_PER_TODO);
+      }
     } catch (error) {
       console.error(error);
       setTodos((prev) =>

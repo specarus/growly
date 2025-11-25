@@ -143,3 +143,23 @@ body {
   background-color: hsl(var(--primary) / 0.38);
   color: hsl(var(--primary-foreground));
 }
+
+.score-widget-pulse {
+  animation: scoreWidgetPulse 0.9s ease-out;
+  transform-origin: left;
+}
+
+@keyframes scoreWidgetPulse {
+  0% {
+    transform: scaleX(0.98);
+    box-shadow: 0 0 0 hsl(var(--green-soft) / 0);
+  }
+  45% {
+    transform: scaleX(1.05);
+    box-shadow: 0 0 20px hsl(var(--green-soft) / 0.55);
+  }
+  100% {
+    transform: scaleX(1);
+    box-shadow: 0 0 0 hsl(var(--green-soft) / 0);
+  }
+}

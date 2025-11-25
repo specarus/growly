@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import type { Prisma } from "@prisma/client";
@@ -150,6 +151,9 @@ export async function PUT(request: Request, ctx: ParamsArg) {
       data: updateData,
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/todos");
+
     return NextResponse.json({ todo });
   } catch (error) {
     console.error(error);
@@ -170,6 +174,9 @@ export async function DELETE(_request: Request, ctx: ParamsArg) {
         },
       },
     });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/todos");
 
     return NextResponse.json({ success: true });
   } catch (error) {
