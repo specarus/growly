@@ -33,6 +33,7 @@ const formatTemperature = (value: number) =>
 
 type WeatherApiResponse = {
   current_weather: {
+    is_day: number;
     temperature: number;
     windspeed: number;
     weathercode: number;
@@ -201,7 +202,10 @@ const WeatherWidget: FC = () => {
       setError(null);
 
       try {
-        const weatherState = await fetchWeatherData(location, controller.signal);
+        const weatherState = await fetchWeatherData(
+          location,
+          controller.signal
+        );
         if (controller.signal.aborted) {
           return;
         }
@@ -254,22 +258,23 @@ const WeatherWidget: FC = () => {
 
   return (
     <div className="xl:pt-2 2xl:pt-6 text-foreground">
-      <div className="flex items-center justify-between xl:pb-2 2xl:pb-4">
+      <div className="flex items-center justify-between xl:pb-3 2xl:pb-4">
         <div>
           <h3 className="font-semibold xl:text-lg 2xl:text-xl">Weather</h3>
-          <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground/70">
-            {locationLabel}
-          </p>
         </div>
-        <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground/70">
-          {status === "loading" ? "Refreshing..." : weatherLabel}
-        </p>
       </div>
-
       <div
         className="relative text-foreground flex flex-col justify-top shadow-md xl:h-64 2xl:h-80 bg-cover bg-bottom bg-no-repeat xl:p-4 2xl:p-6 xl:rounded-xl 2xl:rounded-2xl"
         style={{ backgroundImage: seasonalBackgrounds[activeSeason] }}
       >
+        {status === "loading" && !weather && (
+          <div className="absolute inset-0 rounded-xl bg-white/90 flex flex-col items-center justify-center gap-2">
+            <span className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-primary" />
+            <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground/80">
+              Loading weather
+            </p>
+          </div>
+        )}
         <div className="absolute xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-white grid place-items-center">
           <Image
             src={iconUrl}
@@ -280,16 +285,14 @@ const WeatherWidget: FC = () => {
           />
         </div>
 
-        <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-1 2xl:mb-2">
+        <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-3">
           {temperatureDisplay}
         </p>
         <p className="text-right xl:text-sm 2xl:text-base uppercase tracking-[0.5em] text-muted-foreground/70">
           {weatherLabel}
         </p>
         {error && (
-          <p className="text-right text-xs text-red-500/90 mt-1">
-            {error}
-          </p>
+          <p className="text-right text-xs text-red-500/90 mt-1">{error}</p>
         )}
 
         <div className="flex items-center xl:gap-4 2xl:gap-6 mt-auto">
