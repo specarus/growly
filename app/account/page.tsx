@@ -87,7 +87,7 @@ export default async function AccountPage() {
 
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-6">
-                <div className="space-y-5 rounded-3xl border border-gray-100 bg-white xl:p-6 shadow-sm">
+                <div className="space-y-5 rounded-3xl border border-gray-100 bg-card xl:p-6 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="grid xl:h-16 2xl:h-20 xl:w-16 2xl:w-20 place-items-center rounded-2xl bg-primary xl:text-xl 2xl:text-2xl font-semibold text-white shadow-lg shadow-primary/30">
                       {initials}
@@ -120,14 +120,14 @@ export default async function AccountPage() {
                   </div>
                 </div>
 
-                <div className="rounded-3xl border border-gray-100 bg-white/90 p-6 shadow-sm">
+                <div className="rounded-3xl border border-gray-100 bg-card/90 p-6 shadow-sm">
                   <EditProfileForm
                     initialName={editableName}
                     initialEmail={editableEmail}
                   />
                 </div>
 
-                <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="rounded-3xl border border-gray-100 bg-card p-6 shadow-sm">
                   <div className="space-y-3">
                     <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                       Need a break?
@@ -156,7 +156,7 @@ export default async function AccountPage() {
                   {stats.map((stat) => (
                     <div
                       key={stat.label}
-                      className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 xl:text-xs 2xl:text-sm shadow-sm"
+                      className="flex items-center justify-between rounded-2xl bg-card px-4 py-3 xl:text-xs 2xl:text-sm shadow-sm"
                     >
                       <span className="text-muted-foreground">
                         {stat.label}
@@ -199,7 +199,7 @@ export default async function AccountPage() {
             </div>
           </section>
 
-          <section className="grid gap-6 rounded-3xl border border-gray-100 bg-white xl:p-6 2xl:p-8 shadow-sm shadow-foreground/5 backdrop-blur">
+          <section className="grid gap-6 rounded-3xl border border-gray-100 bg-card xl:p-6 2xl:p-8 shadow-sm shadow-foreground/5 backdrop-blur">
             <div className="flex flex-col gap-2">
               <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                 Weekly focus

@@ -62,7 +62,7 @@ const CelebrationToast: React.FC = () => {
       className="pointer-events-none fixed inset-x-0 top-8 z-50 flex justify-center"
     >
       <div
-        className={`${animationClass} relative pointer-events-auto border border-gray-100 bg-white/80 xl:px-4 2xl:px-5 xl:py-3 2xl:py-4 rounded-sm overflow-hidden shadow-lg shadow-black/40 transition-all duration-300 origin-top`}
+        className={`${animationClass} relative pointer-events-auto border border-muted/40 bg-card/80 xl:px-4 2xl:px-5 xl:py-3 2xl:py-4 rounded-sm overflow-hidden shadow-lg shadow-black/40 transition-all duration-300 origin-top`}
       >
         <div className="flex items-center">
           <p className="xl:text-xs 2xl:text-sm font-semibold text-foreground">

@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --font-sans: "Montserrat", sans-serif;
 
   --background: 220 20% 97%;
@@ -56,8 +57,63 @@
   --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: 218 12% 12%;
+  --foreground: 210 20% 95%;
+
+  --card: 215 18% 15%;
+  --card-foreground: 210 20% 96%;
+
+  --popover: 215 18% 15%;
+  --popover-foreground: 210 20% 96%;
+
+  --primary: 18 90% 62%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 45 90% 77%;
+  --secondary-foreground: 210 20% 96%;
+
+  --muted: 212 20% 18%;
+  --muted-foreground: 210 18% 90%;
+
+  --accent: 145 45% 65%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 78% 67%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 217 14% 28%;
+  --input: 217 14% 28%;
+  --ring: 18 82% 65%;
+
+  --coral: 8 82% 65%;
+  --coral-foreground: 0 0% 100%;
+
+  --yellow-soft: 48 78% 58%;
+  --yellow-soft-foreground: 210 18% 96%;
+
+  --green-soft: 145 35% 60%;
+  --green-soft-foreground: 0 0% 100%;
+
+  --analytics-dark: 215 18% 13%;
+  --analytics-dark-foreground: 210 20% 96%;
+
+  --sidebar-background: 215 16% 12%;
+  --sidebar-foreground: 210 20% 96%;
+  --sidebar-primary: 240 16% 78%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 16% 85%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 217 14% 32%;
+  --sidebar-ring: 220 14% 42%;
+}
+
 body {
   font-family: var(--font-sans);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .loading-screen {
@@ -162,4 +218,35 @@ body {
     transform: scaleX(1);
     box-shadow: 0 0 0 hsl(var(--green-soft) / 0);
   }
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: hsl(var(--card));
+}
+
+[data-theme="dark"] [class*="bg-white/"] {
+  background-color: hsl(var(--card) / var(--tw-bg-opacity, 1));
+}
+
+[data-theme="dark"] .border-gray-50,
+[data-theme="dark"] .border-gray-100,
+[data-theme="dark"] .border-gray-200,
+[data-theme="dark"] .border-gray-300 {
+  border-color: hsl(var(--border));
+}
+
+[data-theme="dark"] [class*="border-white"] {
+  border-color: hsl(var(--border));
+}
+
+[data-theme="dark"] [class*="from-white"] {
+  --tw-gradient-from: hsl(var(--card) / 0.9);
+}
+
+[data-theme="dark"] [class*="via-white"] {
+  --tw-gradient-to: hsl(var(--card) / 0.4);
+}
+
+[data-theme="dark"] [class*="to-white"] {
+  --tw-gradient-to: hsl(var(--card) / 0.15);
 }

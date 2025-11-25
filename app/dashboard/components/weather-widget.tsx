@@ -268,14 +268,14 @@ const WeatherWidget: FC = () => {
         style={{ backgroundImage: seasonalBackgrounds[activeSeason] }}
       >
         {status === "loading" && !weather && (
-          <div className="absolute inset-0 rounded-xl bg-white/90 flex flex-col items-center justify-center gap-2">
+          <div className="absolute inset-0 rounded-xl bg-card/90 flex flex-col items-center justify-center gap-2">
             <span className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-primary" />
             <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground/80">
               Loading weather
             </p>
           </div>
         )}
-        <div className="absolute xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-white grid place-items-center">
+        <div className="absolute xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-card grid place-items-center">
           <Image
             src={iconUrl}
             width={100}
