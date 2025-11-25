@@ -66,7 +66,7 @@ export default async function AccountPage() {
     .toUpperCase();
 
   return (
-    <main className="relative min-h-screen bg-linear-to-b from-white via-light-yellow/60 to-green-soft/10 pb-16 pt-28">
+    <main className="relative min-h-screen bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 pb-16 pt-28">
       <div className="xl:px-48 2xl:px-80">
         <div className="mx-auto flex flex-col gap-10">
           <section className="space-y-8">

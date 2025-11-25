@@ -108,7 +108,7 @@ function AccountDropdown({ session }: AccountDropdownProps) {
             type="button"
             onClick={handleSignOut}
             disabled={isPending}
-            className="w-full cursor-pointer rounded-xl px-3 xl:py-1 2xl:py-2 text-left xl:text-xs 2xl:text-sm font-semibold text-foreground transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl px-3 xl:py-1 2xl:py-2 text-left xl:text-xs 2xl:text-sm font-semibold text-foreground bg-card/70 hover:bg-card/50 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Signing out..." : "Log out"}
           </button>

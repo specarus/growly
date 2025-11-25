@@ -264,14 +264,6 @@ const WeatherWidget: FC = () => {
   const windDisplay = weather
     ? `${Math.round(weather.windspeed)} km/h`
     : "-- km/h";
-  const locationLabel =
-    locationStatus === "pending"
-      ? "Detecting location…"
-      : locationStatus === "disabled"
-      ? `${location.name} (geolocation unavailable)`
-      : locationStatus === "error"
-      ? `${location.name} (using fallback)`
-      : location.name;
 
   return (
     <div className="xl:pt-2 2xl:pt-6 text-foreground">
@@ -292,7 +284,7 @@ const WeatherWidget: FC = () => {
             </p>
           </div>
         )}
-        <div className="absolute xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-card grid place-items-center">
+        <div className="absolute selecet-none pointer-events-none xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-card grid place-items-center">
           <Image
             src={iconUrl}
             width={100}

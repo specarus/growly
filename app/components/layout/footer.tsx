@@ -17,7 +17,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t xl:border-b-6 2xl:border-b-8 border-b-primary border-muted/60 bg-card text-foreground shadow-inner shadow-gray-200/40 overflow-visible">
+    <footer className="relative border-t xl:border-b-6 2xl:border-b-8 border-b-primary border-muted/60 bg-card text-foreground shadow-inner shadow-gray-200/40 dark:shadow-none overflow-visible">
       <div className="mx-auto xl:px-8 2xl:px-28 space-y-10 xl:pt-8 xl:pb-6 2xl:pt-10 2xl:pb-8">
         <div className="grid xl:gap-6 2xl:gap-8 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="flex flex-col justify-between">
