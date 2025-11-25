@@ -126,7 +126,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
       <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 flex items-center justify-between">
-        <div className="flex items-center flex-1 min-w-0 xl:gap-2 2xl:gap-4">
+        <div className="flex items-center flex-1 min-w-0 xl:gap-4">
           <Sprout className="text-green-soft" />
 
           <div className="flex items-center xl:gap-1.5 2xl:gap-2 xl:text-sm 2xl:text-base truncate">

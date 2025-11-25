@@ -119,6 +119,7 @@ body {
 :is(
     button,
     select,
+    a,
     [role="button"],
     [tabindex]:not([tabindex="-1"])
   ):focus-visible {
