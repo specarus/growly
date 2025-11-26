@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
+import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
+import TimeInput from "@/app/components/ui/time-input";
 
 type Cadence = "Daily" | "Weekly" | "Monthly";
 type UnitCategory = "Quantity" | "Time";
@@ -170,6 +172,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   const cadencePanelRef = useRef<HTMLDivElement | null>(null);
   const reminderToggleRef = useRef<HTMLButtonElement | null>(null);
   const reminderPanelRef = useRef<HTMLDivElement | null>(null);
+  const [showStartDateDropdown, setShowStartDateDropdown] = useState(false);
+  const startDateToggleRef = useRef<HTMLButtonElement | null>(null);
 
   const templates = useMemo(() => buildTemplates(today), [today]);
 
@@ -291,6 +295,17 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
       setSaved(false);
     };
 
+  const handleStartDateSelect = (value: string) => {
+    setForm((prev) => ({ ...prev, startDate: value }));
+    setSaved(false);
+    setShowStartDateDropdown(false);
+  };
+
+  const handleTimeInputChange = (value: string) => {
+    setForm((prev) => ({ ...prev, timeOfDay: value }));
+    setSaved(false);
+  };
+
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
 
@@ -337,6 +352,15 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   const previewGoalUnit =
     form.goalUnit || goalUnitsByCategory[form.goalUnitCategory][0] || "count";
   const previewCadenceLabel = form.cadence.toLowerCase();
+  const formattedStartDate = form.startDate
+    ? new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+      }).format(new Date(form.startDate))
+    : "Tap to pick a date";
+  const startDateHelperText = form.startDate
+    ? "Tap to change"
+    : "Tap to pick a date";
 
   return (
     <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-10">
@@ -599,12 +623,40 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     <span>Start date</span>
                   </div>
                   <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      type="date"
-                      value={form.startDate}
-                      onChange={handleChange("startDate")}
-                      className={`${inputClassName} text-left`}
-                    />
+                    <button
+                      type="button"
+                      ref={startDateToggleRef}
+                      onClick={() => {
+                        setShowStartDateDropdown((open) => !open);
+                      }}
+                      aria-haspopup="dialog"
+                      aria-expanded={showStartDateDropdown}
+                      className={fieldButtonClassName}
+                    >
+                      <span className="flex flex-col items-start gap-1 text-left">
+                        <span className="xl:text-xs 2xl:text-sm font-semibold">
+                          {formattedStartDate}
+                        </span>
+                        <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
+                          {startDateHelperText}
+                        </span>
+                      </span>
+                      <ChevronDown
+                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                          showStartDateDropdown
+                            ? "rotate-180 text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </button>
+                    {showStartDateDropdown && (
+                      <CalendarDropdown
+                        selectedDate={form.startDate}
+                        onSelect={handleStartDateSelect}
+                        onClose={() => setShowStartDateDropdown(false)}
+                        anchorRef={startDateToggleRef}
+                      />
+                    )}
                   </div>
                 </label>
 
@@ -613,14 +665,10 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     <AlarmClockCheck className="w-4 h-4 text-primary" />
                     <span>Preferred time</span>
                   </div>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      type="time"
-                      value={form.timeOfDay}
-                      onChange={handleChange("timeOfDay")}
-                      className={`${inputClassName} text-left`}
-                    />
-                  </div>
+                  <TimeInput
+                    time={form.timeOfDay}
+                    onChange={handleTimeInputChange}
+                  />
                 </label>
 
                 <label className="space-y-2 block">
