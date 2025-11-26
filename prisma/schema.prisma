@@ -29,6 +29,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   todos         Todo[]
+  habits         Habit[]
   collections   Collection[]
 
   @@unique([email])
@@ -130,6 +131,27 @@ model CollectionTodo {
 
   @@unique([collectionId, todoId], name: "collectionId_todoId")
   @@map("collection_todo")
+}
+
+model Habit {
+  id               String   @id @default(uuid())
+  name             String
+  description      String?
+  cadence          String
+  startDate        DateTime
+  timeOfDay        String?
+  reminder         String?
+  goalAmount       Float    @default(1)
+  goalUnit         String   @default("count")
+  goalUnitCategory String   @default("Quantity")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([id, userId])
+  @@index([userId])
+  @@map("habit")
 }
 
 enum TodoPriority {

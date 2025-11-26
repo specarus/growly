@@ -15,15 +15,13 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
+import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
+
 import { safetyNets } from "./playbooks";
 
-type Habit = {
-  id: string;
-  name: string;
-  cadence: string;
-  streak: number;
-  completion: number;
-  focus: string;
+type Habit = PrismaHabit & {
+  streak?: number;
+  completion?: number;
 };
 
 type PlaybookItem = {
@@ -164,36 +162,41 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                     <span className="text-right">Completion</span>
                   </div>
                   <div className="divide-y divide-gray-100">
-                    {habits.map((habit) => {
-                      const isSelected = habit.id === selectedHabitId;
-                      return (
-                        <button
-                          key={habit.id}
-                          onClick={() => setSelectedHabitId(habit.id)}
-                          className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center text-sm bg-white/60 hover:bg-primary/5 transition ${
-                            isSelected ? "ring-2 ring-primary/30" : ""
-                          }`}
-                        >
+                  {habits.map((habit) => {
+                    const isSelected = habit.id === selectedHabitId;
+                    const streakValue = habit.streak ?? 0;
+                    const completionValue = habit.completion ?? 0;
+                    const focusLabel =
+                      habit.description?.trim() ||
+                      `${habit.goalAmount} ${habit.goalUnit ?? "count"} per ${habit.cadence.toLowerCase()}`;
+                    return (
+                      <button
+                        key={habit.id}
+                        onClick={() => setSelectedHabitId(habit.id)}
+                        className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center text-sm bg-white/60 hover:bg-primary/5 transition ${
+                          isSelected ? "ring-2 ring-primary/30" : ""
+                        }`}
+                      >
                           <div className="col-span-2 space-y-1">
                             <div className="font-semibold text-foreground">{habit.name}</div>
                             <div className="text-xs text-muted-foreground flex items-center gap-1">
                               <Sparkles className="w-3 h-3 text-primary" />
-                              {habit.focus}
+                              {focusLabel}
                             </div>
                           </div>
                           <div className="text-muted-foreground">{habit.cadence}</div>
                           <div className="flex items-center gap-2">
                             <Flame className="w-4 h-4 text-primary" />
-                            <span className="font-semibold">{habit.streak}d</span>
+                            <span className="font-semibold">{streakValue}d</span>
                           </div>
                           <div className="flex items-center justify-end gap-3">
                             <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
                               <div
                                 className="h-full bg-linear-to-r from-primary to-coral"
-                                style={{ width: `${habit.completion}%` }}
+                                style={{ width: `${completionValue}%` }}
                               />
                             </div>
-                            <span className="text-sm font-semibold">{habit.completion}%</span>
+                            <span className="text-sm font-semibold">{completionValue}%</span>
                           </div>
                         </button>
                       );

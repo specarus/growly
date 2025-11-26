@@ -761,9 +761,9 @@ const PopularHabitsPage: React.FC = () => {
                           </span>
                         </div>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                          {safetyNet.map((item) => (
+                          {safetyNet.map((item, index) => (
                             <li
-                              key={item.title}
+                              key={`${selectedHabit.id}-${item.title}-${index}`}
                               className="rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-inner space-y-1"
                             >
                               <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.12em]">

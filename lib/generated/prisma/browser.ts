@@ -52,3 +52,8 @@ export type Collection = Prisma.CollectionModel
  * 
  */
 export type CollectionTodo = Prisma.CollectionTodoModel
+/**
+ * Model Habit
+ * 
+ */
+export type Habit = Prisma.HabitModel

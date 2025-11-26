@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   useTransition,
 } from "react";
 import type React from "react";
+import { createPortal } from "react-dom";
 import {
   type LucideIcon,
   BadgeCheck,
@@ -154,6 +156,31 @@ const toReminderOptionId = (value: string) =>
   toDropdownOptionId("reminder", value);
 const toRecurrenceOptionId = (value: string) =>
   toDropdownOptionId("recurrence", value);
+
+const updateDropdownDirection = (
+  toggleRef: React.RefObject<HTMLButtonElement | null>,
+  panelRef: React.RefObject<HTMLDivElement | null>,
+  setDirection: React.Dispatch<React.SetStateAction<"down" | "up">>
+) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  const toggleRect = toggleRef.current?.getBoundingClientRect();
+  if (!toggleRect) {
+    return;
+  }
+  const panelHeight = panelRef.current?.getBoundingClientRect().height ?? 0;
+  const spacing = 8;
+  const spaceBelow = window.innerHeight - toggleRect.bottom;
+  const spaceAbove = toggleRect.top;
+  if (spaceBelow >= panelHeight + spacing) {
+    setDirection("down");
+  } else if (spaceAbove >= panelHeight + spacing) {
+    setDirection("up");
+  } else {
+    setDirection("down");
+  }
+};
 
 const colorPalette = [
   { name: "Sky", value: "#BAE6FD" },
@@ -351,7 +378,7 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
     setViewDate(parsed ?? new Date());
   }, [selectedDate]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleDismiss = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node | null;
       if (
@@ -379,6 +406,27 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [anchorRef, onClose]);
+
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+
+  useLayoutEffect(() => {
+    const updateRect = () => {
+      if (!anchorRef.current) {
+        setAnchorRect(null);
+        return;
+      }
+      setAnchorRect(anchorRef.current.getBoundingClientRect());
+    };
+
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    window.addEventListener("scroll", updateRect, true);
+
+    return () => {
+      window.removeEventListener("resize", updateRect);
+      window.removeEventListener("scroll", updateRect, true);
+    };
+  }, [anchorRef]);
 
   const weeks = useMemo(() => {
     const matrix: Array<Array<{ date: Date; inMonth: boolean }>> = [];
@@ -411,12 +459,29 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
     onClose();
   };
 
-  return (
+  const isClient = typeof window !== "undefined";
+  const portalTarget = isClient ? document.body : null;
+  const scrollY = isClient ? window.scrollY : 0;
+  const scrollX = isClient ? window.scrollX : 0;
+  const minWidth = anchorRect ? Math.max(anchorRect.width, 240) : undefined;
+
+  if (!portalTarget || !anchorRect) {
+    return null;
+  }
+
+  return createPortal(
     <div
       ref={panelRef}
       role="dialog"
       aria-modal="true"
-      className="absolute left-0 top-full z-50 mt-2 w-full min-w-60 max-w-sm rounded-3xl border border-gray-100 bg-white px-5 py-4 shadow-xl"
+      className="rounded-3xl border border-gray-100 bg-white px-5 py-4 shadow-xl max-w-sm"
+      style={{
+        position: "absolute",
+        zIndex: 9999,
+        top: anchorRect.bottom + scrollY + 8,
+        left: anchorRect.left + scrollX,
+        minWidth,
+      }}
     >
       <div className="flex items-center justify-between">
         <div>
@@ -491,7 +556,8 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
           })
         )}
       </div>
-    </div>
+    </div>,
+    portalTarget
   );
 };
 
@@ -694,6 +760,15 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [reminderMenuOpen, setReminderMenuOpen] = useState(false);
   const [recurrenceMenuOpen, setRecurrenceMenuOpen] = useState(false);
+  const [categoryDropDirection, setCategoryDropDirection] = useState<
+    "down" | "up"
+  >("down");
+  const [reminderDropDirection, setReminderDropDirection] = useState<
+    "down" | "up"
+  >("down");
+  const [recurrenceDropDirection, setRecurrenceDropDirection] = useState<
+    "down" | "up"
+  >("down");
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const categoryToggleRef = useRef<HTMLButtonElement | null>(null);
   const categoryPanelRef = useRef<HTMLDivElement | null>(null);
@@ -850,6 +925,63 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
       document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [recurrenceMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!categoryMenuOpen) {
+      return undefined;
+    }
+    const update = () =>
+      updateDropdownDirection(
+        categoryToggleRef,
+        categoryPanelRef,
+        setCategoryDropDirection
+      );
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [categoryMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!reminderMenuOpen) {
+      return undefined;
+    }
+    const update = () =>
+      updateDropdownDirection(
+        reminderToggleRef,
+        reminderPanelRef,
+        setReminderDropDirection
+      );
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [reminderMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!recurrenceMenuOpen) {
+      return undefined;
+    }
+    const update = () =>
+      updateDropdownDirection(
+        recurrenceToggleRef,
+        recurrencePanelRef,
+        setRecurrenceDropDirection
+      );
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
     };
   }, [recurrenceMenuOpen]);
 
@@ -1203,7 +1335,11 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                 ? toCategoryOptionId(form.category)
                                 : undefined
                             }
-                            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
+                            className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg ${
+                              categoryDropDirection === "down"
+                                ? "top-full mt-2"
+                                : "bottom-full mb-2"
+                            }`}
                           >
                             {categoryOptions.map((category) => (
                               <button
@@ -1543,7 +1679,11 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                               ? toReminderOptionId(form.reminder)
                               : undefined
                           }
-                          className="absolute left-0 right-0 top-full z-20 mt-2 max-h-max rounded-2xl border border-gray-100 bg-white shadow-lg overflow-hidden"
+                          className={`absolute left-0 right-0 z-20 max-h-max overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                            reminderDropDirection === "down"
+                              ? "top-full mt-2"
+                              : "bottom-full mb-2"
+                          }`}
                         >
                           {reminderOptions.map((reminder) => (
                             <button
@@ -1612,7 +1752,11 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                               ? toRecurrenceOptionId(form.recurrence)
                               : undefined
                           }
-                          className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg"
+                          className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                            recurrenceDropDirection === "down"
+                              ? "top-full mt-2"
+                              : "bottom-full mb-2"
+                          }`}
                         >
                           {recurrenceOptions.map((recurrence) => (
                             <button
@@ -1676,7 +1820,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
             </div>
 
             <aside className="space-y-4">
-              <div className="relative overflow-hidden xl:rounded-2xl 2xl:rounded-3xl border border-gray-50 bg-linear-to-br from-light-yellow via-white to-green-soft/20 shadow-sm xl:p-4 2xl:p-6">
+              <div className="relative overflow-hidden xl:rounded-2xl 2xl:rounded-3xl border border-gray-50 bg-linear-to-br from-light-yellow via-white to-green-soft/20 shadow-sm xl:p-4 2xl:p-6 dark:border-gray-900 dark:bg-linear-to-br dark:from-analytics-dark/80 dark:via-analytics-dark/70 dark:to-analytics-dark/90">
                 <div className="absolute -right-10 -top-10 w-36 h-36 bg-primary/10 rounded-full" />
                 <div className="relative space-y-4">
                   <div className="flex items-center justify-between">
@@ -1706,7 +1850,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                       className="xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-2xl grid place-items-center border border-gray-200 shadow-sm"
                       style={{ backgroundColor: form.iconColor }}
                     >
-                      <SelectedIcon className="xl:w-5 xl:h-5 text-muted-foreground" />
+                      <SelectedIcon className="xl:w-5 xl:h-5 text-slate-600" />
                     </span>
                   </div>
 

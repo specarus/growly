@@ -1,12 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { useRouter } from "next/navigation";
 import {
   AlarmCheck,
   AlarmClockCheck,
   BadgeCheck,
   CalendarDays,
+  ChevronDown,
   Flame,
   Lightbulb,
   Hash,
@@ -20,6 +29,7 @@ import {
 import Button from "@/app/components/ui/button";
 
 type Cadence = "Daily" | "Weekly" | "Monthly";
+type UnitCategory = "Quantity" | "Time";
 
 interface HabitFormState {
   name: string;
@@ -28,17 +38,104 @@ interface HabitFormState {
   startDate: string;
   timeOfDay: string;
   reminder: string;
+  goalAmount: string;
+  goalUnit: string;
+  goalUnitCategory: UnitCategory;
 }
 
 interface HabitFormProps {
   mode?: "create" | "edit";
+  habitId?: string;
   initialHabit?: Partial<HabitFormState>;
 }
 
-const inputClassName =
-  "w-full rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-sm 2xl:text-base text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30";
+type HabitTemplate = {
+  title: string;
+  description: string;
+  cadence: Cadence;
+  trigger: string;
+  goalAmount: string;
+  goalUnit: string;
+  goalUnitCategory: UnitCategory;
+  startDate: string;
+  timeOfDay: string;
+  reminder: string;
+};
+const fieldButtonClassName =
+  "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0";
 
-const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHabit }) => {
+const inputClassName =
+  "w-full border-none bg-transparent px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none xl:text-sm 2xl:text-base";
+
+const dropdownSelectWrapperClassName =
+  "relative overflow-visible rounded-2xl border border-gray-100 bg-gradient-to-br from-white/95 to-white/70 shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
+
+const cadenceOptions: Cadence[] = ["Daily", "Weekly", "Monthly"];
+const reminderOptions = [
+  "No reminder",
+  "5 minutes before",
+  "15 minutes before",
+  "30 minutes before",
+  "1 hour before",
+];
+const sanitizeDropdownValue = (value: string) =>
+  value.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
+const cadenceDropdownOptionsId = "habit-cadence-dropdown-options";
+const reminderDropdownOptionsId = "habit-reminder-dropdown-options";
+
+const unitCategories: UnitCategory[] = ["Quantity", "Time"];
+const goalUnitsByCategory: Record<UnitCategory, string[]> = {
+  Quantity: ["count", "steps", "ml", "ounce", "Cal", "g", "mg", "drink"],
+  Time: ["seconds", "minutes", "hours"],
+};
+
+const buildTemplates = (today: string): HabitTemplate[] => [
+  {
+    title: "Hydrate & Thrive",
+    description:
+      "1.5L water before lunch keeps energy steady and reduces decision fatigue.",
+    cadence: "Daily",
+    trigger: "Fill two bottles in the morning",
+    goalAmount: "1500",
+    goalUnit: "ml",
+    goalUnitCategory: "Quantity",
+    startDate: today,
+    timeOfDay: "08:00",
+    reminder: "15 minutes before",
+  },
+  {
+    title: "Micro mobility",
+    description:
+      "7 minutes of targeted mobility after waking keeps joints loose and posture upright.",
+    cadence: "Daily",
+    trigger: "Post-coffee stretch",
+    goalAmount: "7",
+    goalUnit: "minutes",
+    goalUnitCategory: "Time",
+    startDate: today,
+    timeOfDay: "06:30",
+    reminder: "5 minutes before",
+  },
+  {
+    title: "Focus sprint",
+    description:
+      "60 minutes of focused work blocks each week protected from notifications.",
+    cadence: "Weekly",
+    trigger: "Calendar deep work block",
+    goalAmount: "60",
+    goalUnit: "minutes",
+    goalUnitCategory: "Time",
+    startDate: today,
+    timeOfDay: "09:00",
+    reminder: "30 minutes before",
+  },
+];
+
+const HabitCreatePage: React.FC<HabitFormProps> = ({
+  mode = "create",
+  habitId,
+  initialHabit,
+}) => {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const buildDefaultForm = useMemo(
@@ -49,6 +146,9 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
       startDate: today,
       timeOfDay: "07:00",
       reminder: "15 minutes before",
+      goalAmount: "1",
+      goalUnit: "count",
+      goalUnitCategory: "Quantity" as UnitCategory,
     }),
     [today]
   );
@@ -58,64 +158,188 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
     ...initialHabit,
   });
   const [saved, setSaved] = useState(false);
+  const [cadenceMenuOpen, setCadenceMenuOpen] = useState(false);
+  const [reminderMenuOpen, setReminderMenuOpen] = useState(false);
+  const [cadenceDropDirection, setCadenceDropDirection] = useState<
+    "down" | "up"
+  >("down");
+  const [reminderDropDirection, setReminderDropDirection] = useState<
+    "down" | "up"
+  >("down");
+  const cadenceToggleRef = useRef<HTMLButtonElement | null>(null);
+  const cadencePanelRef = useRef<HTMLDivElement | null>(null);
+  const reminderToggleRef = useRef<HTMLButtonElement | null>(null);
+  const reminderPanelRef = useRef<HTMLDivElement | null>(null);
 
-  const templates = [
-    {
-      title: "AM movement",
-      cadence: "Daily · 10m",
-      trigger: "After coffee",
-      notes: "3 rounds mobility + 10 push-ups",
-    },
-    {
-      title: "Focus block",
-      cadence: "Weekly · 4x",
-      trigger: "Start at 9:00a",
-      notes: "90m no-phone deep work",
-    },
-    {
-      title: "Sleep wind-down",
-      cadence: "Daily · 20m",
-      trigger: "10:30p",
-      notes: "Stretch + journal, lights out 11:00p",
-    },
-  ];
-
-  const safeguards = [
-    {
-      title: "Tiny win fallback",
-      label: "Rescue",
-      detail: "If the day slips, do one micro rep (1 minute) and keep the streak alive.",
-    },
-    {
-      title: "Night-before prep",
-      label: "Guardrail",
-      detail: "Lay out gear, water, and a note so the cue is ready when you wake.",
-    },
-    {
-      title: "Attach to routine",
-      label: "Anchor",
-      detail: "Pair this habit to something you already do (coffee, commute, shutdown).",
-    },
-  ];
+  const templates = useMemo(() => buildTemplates(today), [today]);
 
   useEffect(() => {
     setForm({ ...buildDefaultForm, ...initialHabit });
   }, [buildDefaultForm, initialHabit]);
 
+  const updateDropdownDirection = (
+    toggleRef: React.RefObject<HTMLButtonElement | null>,
+    panelRef: React.RefObject<HTMLDivElement | null>,
+    setDirection: React.Dispatch<React.SetStateAction<"down" | "up">>
+  ) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const toggleRect = toggleRef.current?.getBoundingClientRect();
+    if (!toggleRect) {
+      return;
+    }
+    const panelHeight = panelRef.current?.getBoundingClientRect().height ?? 0;
+    const spacing = 8;
+    const spaceBelow = window.innerHeight - toggleRect.bottom;
+    const spaceAbove = toggleRect.top;
+    if (spaceBelow >= panelHeight + spacing) {
+      setDirection("down");
+    } else if (spaceAbove >= panelHeight + spacing) {
+      setDirection("up");
+    } else {
+      setDirection("down");
+    }
+  };
+
+  useEffect(() => {
+    if (!cadenceMenuOpen) return undefined;
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (
+        cadencePanelRef.current?.contains(target) ||
+        cadenceToggleRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setCadenceMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [cadenceMenuOpen]);
+
+  useEffect(() => {
+    if (!reminderMenuOpen) return undefined;
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (
+        reminderPanelRef.current?.contains(target) ||
+        reminderToggleRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setReminderMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [reminderMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!cadenceMenuOpen) {
+      return undefined;
+    }
+    const update = () =>
+      updateDropdownDirection(
+        cadenceToggleRef,
+        cadencePanelRef,
+        setCadenceDropDirection
+      );
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [cadenceMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!reminderMenuOpen) {
+      return undefined;
+    }
+    const update = () =>
+      updateDropdownDirection(
+        reminderToggleRef,
+        reminderPanelRef,
+        setReminderDropDirection
+      );
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [reminderMenuOpen]);
+
   const handleChange =
     (field: keyof HabitFormState) =>
-    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    (
+      event: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
       setForm((prev) => ({ ...prev, [field]: event.target.value }));
       setSaved(false);
     };
 
+  const router = useRouter();
+  const [isSubmitting, startTransition] = useTransition();
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setSaved(true);
+    startTransition(async () => {
+      setSaved(false);
+      const payload = {
+        name: form.name,
+        description: form.description,
+        cadence: form.cadence,
+        startDate: form.startDate,
+        timeOfDay: form.timeOfDay,
+        reminder: form.reminder,
+        goalAmount: form.goalAmount,
+        goalUnit: form.goalUnit,
+        goalUnitCategory: form.goalUnitCategory,
+      };
+      const url =
+        mode === "edit" && habitId ? `/api/habits/${habitId}` : "/api/habits";
+      const method = mode === "edit" ? "PATCH" : "POST";
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          console.error("Failed to save habit", await response.text());
+          return;
+        }
+        setSaved(true);
+        if (mode === "edit") {
+          router.push("/dashboard/habits");
+        } else {
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Failed to save habit", error);
+      }
+    });
   };
 
+  const previewGoalUnit =
+    form.goalUnit || goalUnitsByCategory[form.goalUnitCategory][0] || "count";
+  const previewCadenceLabel = form.cadence.toLowerCase();
+
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10">
+    <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-10">
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -128,7 +352,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                 {mode === "edit" ? "Tune this habit" : "Design a new habit"}
               </h1>
               <p className="text-sm text-muted-foreground max-w-2xl">
-                Set the cadence, start small, and add the reminders that keep you honest.
+                Set the cadence, start small, and add the reminders that keep
+                you honest.
               </p>
             </div>
           </div>
@@ -145,7 +370,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
 
         {saved ? (
           <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 text-sm text-foreground">
-            Draft saved locally. Hook this form up to your API to persist it.
+            Habit saved. It is now synced to your dashboard.
           </div>
         ) : null}
 
@@ -158,7 +383,9 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-primary" />
                 <div>
-                  <h2 className="font-semibold xl:text-lg 2xl:text-xl">Habit basics</h2>
+                  <h2 className="font-semibold xl:text-lg 2xl:text-xl">
+                    Habit basics
+                  </h2>
                   <p className="text-sm text-muted-foreground">
                     Name the habit and define how often you want it to fire.
                   </p>
@@ -173,13 +400,15 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                   <Hash className="w-4 h-4 text-primary" />
                   <span>Habit name</span>
                 </div>
-                <input
-                  value={form.name}
-                  onChange={handleChange("name")}
-                  placeholder="e.g. Morning stretch"
-                  className={inputClassName}
-                  required
-                />
+                <div className={dropdownSelectWrapperClassName}>
+                  <input
+                    value={form.name}
+                    onChange={handleChange("name")}
+                    placeholder="e.g. Morning stretch"
+                    className={inputClassName}
+                    required
+                  />
+                </div>
               </label>
 
               <label className="space-y-2 block">
@@ -187,13 +416,102 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                   <ListChecks className="w-4 h-4 text-primary" />
                   <span>Description</span>
                 </div>
-                <textarea
-                  value={form.description}
-                  onChange={handleChange("description")}
-                  placeholder="Add a quick why, or the first steps you'll take."
-                  rows={3}
-                  className={`${inputClassName} resize-none leading-relaxed`}
-                />
+                <div className={dropdownSelectWrapperClassName}>
+                  <textarea
+                    value={form.description}
+                    onChange={handleChange("description")}
+                    placeholder="Add a quick why, or the first steps you'll take."
+                    rows={3}
+                    className={`${inputClassName} resize-none leading-relaxed`}
+                  />
+                </div>
+              </label>
+
+              <label className="space-y-3 block">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span>Goal value</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Set the amount and the unit that counts as a win, then pick
+                  whether it is a quantity or a duration.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {unitCategories.map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          goalUnitCategory: category,
+                        }))
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                        form.goalUnitCategory === category
+                          ? "border-primary bg-primary text-white shadow-sm"
+                          : "border-gray-200 bg-white text-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                  <div className={`${dropdownSelectWrapperClassName} pr-0`}>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.goalAmount}
+                      onChange={handleChange("goalAmount")}
+                      placeholder="1"
+                      className={`${inputClassName} text-left`}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      {goalUnitsByCategory[form.goalUnitCategory].map(
+                        (unit) => (
+                          <button
+                            key={unit}
+                            type="button"
+                            onClick={() =>
+                              setForm((prev) => ({
+                                ...prev,
+                                goalUnit: unit,
+                              }))
+                            }
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                              form.goalUnit === unit
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-gray-200 bg-white text-foreground hover:border-primary/40"
+                            }`}
+                          >
+                            {unit}
+                          </button>
+                        )
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm((prev) => ({ ...prev, goalUnit: "" }))
+                        }
+                        className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-foreground transition hover:border-primary/40"
+                      >
+                        Custom
+                      </button>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={form.goalUnit}
+                        onChange={handleChange("goalUnit")}
+                        placeholder="Describe unit"
+                        className={`${inputClassName} text-left`}
+                      />
+                    </div>
+                  </div>
+                </div>
               </label>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -202,17 +520,77 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                     <Recycle className="w-4 h-4 text-primary" />
                     <span>Cadence</span>
                   </div>
-                  <select
-                    value={form.cadence}
-                    onChange={handleChange("cadence")}
-                    className={`${inputClassName} cursor-pointer`}
-                  >
-                    {(["Daily", "Weekly", "Monthly"] as Cadence[]).map((cadence) => (
-                      <option key={cadence} value={cadence}>
-                        {cadence}
-                      </option>
-                    ))}
-                  </select>
+                  <div className={dropdownSelectWrapperClassName}>
+                    <button
+                      type="button"
+                      ref={cadenceToggleRef}
+                      onClick={() => {
+                        setCadenceMenuOpen((open) => !open);
+                        setReminderMenuOpen(false);
+                      }}
+                      aria-haspopup="listbox"
+                      aria-expanded={cadenceMenuOpen}
+                      aria-controls={cadenceDropdownOptionsId}
+                      className={fieldButtonClassName}
+                    >
+                      <span className="truncate">{form.cadence}</span>
+                      <ChevronDown
+                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                          cadenceMenuOpen
+                            ? "rotate-180 text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </button>
+                    {cadenceMenuOpen && (
+                      <div
+                        ref={cadencePanelRef}
+                        id={cadenceDropdownOptionsId}
+                        role="listbox"
+                        aria-activedescendant={
+                          form.cadence
+                            ? `cadence-option-${sanitizeDropdownValue(
+                                form.cadence
+                              )}`
+                            : undefined
+                        }
+                        className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                          cadenceDropDirection === "down"
+                            ? "top-full mt-2"
+                            : "bottom-full mb-2"
+                        }`}
+                      >
+                        {cadenceOptions.map((cadence) => {
+                          const optionId = `cadence-option-${sanitizeDropdownValue(
+                            cadence
+                          )}`;
+                          return (
+                            <button
+                              key={cadence}
+                              id={optionId}
+                              type="button"
+                              role="option"
+                              aria-selected={form.cadence === cadence}
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  cadence,
+                                }));
+                                setCadenceMenuOpen(false);
+                              }}
+                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
+                                form.cadence === cadence
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-primary/5"
+                              }`}
+                            >
+                              {cadence}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </label>
 
                 <label className="space-y-2 block">
@@ -220,12 +598,14 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                     <CalendarDays className="w-4 h-4 text-primary" />
                     <span>Start date</span>
                   </div>
-                  <input
-                    type="date"
-                    value={form.startDate}
-                    onChange={handleChange("startDate")}
-                    className={inputClassName}
-                  />
+                  <div className={dropdownSelectWrapperClassName}>
+                    <input
+                      type="date"
+                      value={form.startDate}
+                      onChange={handleChange("startDate")}
+                      className={`${inputClassName} text-left`}
+                    />
+                  </div>
                 </label>
 
                 <label className="space-y-2 block">
@@ -233,12 +613,14 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                     <AlarmClockCheck className="w-4 h-4 text-primary" />
                     <span>Preferred time</span>
                   </div>
-                  <input
-                    type="time"
-                    value={form.timeOfDay}
-                    onChange={handleChange("timeOfDay")}
-                    className={inputClassName}
-                  />
+                  <div className={dropdownSelectWrapperClassName}>
+                    <input
+                      type="time"
+                      value={form.timeOfDay}
+                      onChange={handleChange("timeOfDay")}
+                      className={`${inputClassName} text-left`}
+                    />
+                  </div>
                 </label>
 
                 <label className="space-y-2 block">
@@ -246,23 +628,77 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                     <AlarmCheck className="w-4 h-4 text-primary" />
                     <span>Reminder</span>
                   </div>
-                  <select
-                    value={form.reminder}
-                    onChange={handleChange("reminder")}
-                    className={`${inputClassName} cursor-pointer`}
-                  >
-                    {[
-                      "No reminder",
-                      "5 minutes before",
-                      "15 minutes before",
-                      "30 minutes before",
-                      "1 hour before",
-                    ].map((reminder) => (
-                      <option key={reminder} value={reminder}>
-                        {reminder}
-                      </option>
-                    ))}
-                  </select>
+                  <div className={dropdownSelectWrapperClassName}>
+                    <button
+                      type="button"
+                      ref={reminderToggleRef}
+                      onClick={() => {
+                        setReminderMenuOpen((open) => !open);
+                        setCadenceMenuOpen(false);
+                      }}
+                      aria-haspopup="listbox"
+                      aria-expanded={reminderMenuOpen}
+                      aria-controls={reminderDropdownOptionsId}
+                      className={fieldButtonClassName}
+                    >
+                      <span className="truncate">{form.reminder}</span>
+                      <ChevronDown
+                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                          reminderMenuOpen
+                            ? "rotate-180 text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </button>
+                    {reminderMenuOpen && (
+                      <div
+                        ref={reminderPanelRef}
+                        id={reminderDropdownOptionsId}
+                        role="listbox"
+                        aria-activedescendant={
+                          form.reminder
+                            ? `reminder-option-${sanitizeDropdownValue(
+                                form.reminder
+                              )}`
+                            : undefined
+                        }
+                        className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                          reminderDropDirection === "down"
+                            ? "top-full mt-2"
+                            : "bottom-full mb-2"
+                        }`}
+                      >
+                        {reminderOptions.map((reminder) => {
+                          const optionId = `reminder-option-${sanitizeDropdownValue(
+                            reminder
+                          )}`;
+                          return (
+                            <button
+                              key={reminder}
+                              id={optionId}
+                              type="button"
+                              role="option"
+                              aria-selected={form.reminder === reminder}
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  reminder,
+                                }));
+                                setReminderMenuOpen(false);
+                              }}
+                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
+                                form.reminder === reminder
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-primary/5"
+                              }`}
+                            >
+                              {reminder}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </label>
               </div>
             </div>
@@ -270,12 +706,17 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
             <div className="flex flex-wrap gap-3 pt-3">
               <Button
                 type="submit"
-                className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
+                className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                disabled={isSubmitting}
               >
-                {mode === "edit" ? "Update habit" : "Save habit draft"}
+                {isSubmitting
+                  ? "Saving habit..."
+                  : mode === "edit"
+                  ? "Update habit"
+                  : "Create habit"}
               </Button>
               <span className="text-xs text-muted-foreground self-center">
-                This currently saves locally. Connect to your backend to persist.
+                Habits now persist to your dashboard once the request succeeds.
               </span>
             </div>
           </form>
@@ -294,7 +735,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                   {form.name || "Untitled habit"}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {form.description || "Add a quick description so future you stays motivated."}
+                  {form.description ||
+                    "Add a quick description so future you stays motivated."}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3 text-sm mt-3">
@@ -313,6 +755,13 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
                 <div className="flex items-center gap-2">
                   <AlarmCheck className="w-4 h-4 text-primary" />
                   <span>{form.reminder}</span>
+                </div>
+                <div className="flex items-center gap-2 col-span-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-foreground">
+                    {form.goalAmount || "1"} {previewGoalUnit} per{" "}
+                    {previewCadenceLabel}
+                  </span>
                 </div>
               </div>
 
@@ -340,105 +789,73 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({ mode = "create", initialHab
           </aside>
         </div>
 
-        <div className="grid xl:grid-cols-3 gap-5">
-          <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <div className="px-6 pt-5 pb-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    Starter templates
-                  </p>
-                  <h2 className="text-xl font-semibold">Pick a pattern and tweak</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Hardcoded examples to speed you up. Wire to presets when you add persistence.
-                  </p>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                  <NotebookPen className="w-4 h-4" />
-                  Draft mode
-                </div>
+        <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+          <div className="px-6 pt-5 pb-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  Starter templates
+                </p>
+                <h2 className="text-xl font-semibold">
+                  Pick a pattern and tweak
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Hardcoded examples to speed you up. Wire to presets when you
+                  add persistence.
+                </p>
               </div>
-
-              <div className="grid md:grid-cols-3 gap-3">
-                {templates.map((template) => (
-                  <div
-                    key={template.title}
-                    className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3 shadow-inner space-y-2"
-                  >
-                    <div className="flex items-center justify-between text-sm font-semibold">
-                      <span>{template.title}</span>
-                      <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
-                        {template.cadence}
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Lightbulb className="w-3.5 h-3.5 text-primary" />
-                      Trigger: {template.trigger}
-                    </div>
-                    <p className="text-sm text-foreground">{template.notes}</p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForm((prev) => ({
-                          ...prev,
-                          name: template.title,
-                          description: template.notes,
-                          cadence: template.cadence.startsWith("Weekly") ? "Weekly" : "Daily",
-                        }));
-                        setSaved(false);
-                      }}
-                      className="text-xs font-semibold text-primary hover:underline"
-                    >
-                      Use as base
-                    </button>
-                  </div>
-                ))}
+              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
+                <NotebookPen className="w-4 h-4" />
+                Draft mode
               </div>
             </div>
-          </div>
 
-          <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <div className="px-6 pt-5 pb-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    Safety net
-                  </p>
-                  <h2 className="text-xl font-semibold">Keep it slipping-proof</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Plan the backup moves now so you do not lose a streak on a messy day. This list will be AI-generated later.
-                  </p>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                  <Flame className="w-4 h-4 text-primary" />
-                  Streak care
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {safeguards.map((item, index) => (
-                  <div
-                    key={item.title}
-                    className="rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-sm space-y-2"
-                  >
-                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.12em]">
-                      <span className="inline-flex items-center gap-2 font-semibold text-primary">
-                        <Sparkles className="w-4 h-4" />
-                        {item.label}
-                      </span>
-                      <span className="text-muted-foreground">Guardrail {index + 1}</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="font-semibold text-sm">{item.title}</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{item.detail}</p>
-                    </div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                      Add this to your routine checklist
-                    </div>
+            <div className="grid md:grid-cols-3 gap-3">
+              {templates.map((template) => (
+                <div
+                  key={template.title}
+                  className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3 shadow-inner space-y-2"
+                >
+                  <div className="flex items-center justify-between text-sm font-semibold">
+                    <span>{template.title}</span>
+                    <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
+                      {template.cadence}
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lightbulb className="w-3.5 h-3.5 text-primary" />
+                    Trigger: {template.trigger}
+                  </div>
+                  <p className="text-sm text-foreground">
+                    {template.description}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Goal: {template.goalAmount} {template.goalUnit} per{" "}
+                    {template.cadence.toLowerCase()}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        name: template.title,
+                        description: template.description,
+                        cadence: template.cadence,
+                        goalAmount: template.goalAmount,
+                        goalUnit: template.goalUnit,
+                        goalUnitCategory: template.goalUnitCategory,
+                        startDate: template.startDate,
+                        timeOfDay: template.timeOfDay,
+                        reminder: template.reminder,
+                      }));
+                      setSaved(false);
+                    }}
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    Use as base
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>

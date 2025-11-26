@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma query engine temp artifacts
+lib/generated/prisma/query_engine-windows.dll.node.bak
+lib/generated/prisma/query_engine-windows.dll.node.tmp*
