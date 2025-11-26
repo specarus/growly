@@ -363,547 +363,551 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     : "Tap to pick a date";
 
   return (
-    <main className="w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-10">
-      <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>{mode === "edit" ? "Edit habit" : "Create habit"}</span>
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">
-                {mode === "edit" ? "Tune this habit" : "Design a new habit"}
-              </h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Set the cadence, start small, and add the reminders that keep
-                you honest.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-2 sm:gap-3">
-            <Link
-              href="/dashboard/habits"
-              className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
-            >
-              Back to habits
-            </Link>
-          </div>
-        </div>
-
-        {saved ? (
-          <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 text-sm text-foreground">
-            Habit saved. It is now synced to your dashboard.
-          </div>
-        ) : null}
-
-        <div className="grid xl:grid-cols-[1.3fr_0.7fr] gap-6">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-5"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-primary" />
-                <div>
-                  <h2 className="font-semibold xl:text-lg 2xl:text-xl">
-                    Habit basics
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Name the habit and define how often you want it to fire.
-                  </p>
-                </div>
+    <main className="xl:px-8 2xl:px-28 pb-10 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl dark:hidden" />
+      <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl dark:hidden" />
+      <div className="relative z-10">
+        <div className="space-y-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+                <BadgeCheck className="w-4 h-4" />
+                <span>{mode === "edit" ? "Edit habit" : "Create habit"}</span>
               </div>
-              <span className="text-xs text-muted-foreground">Step 1</span>
+              <div className="space-y-1">
+                <h1 className="text-2xl md:text-3xl font-bold">
+                  {mode === "edit" ? "Tune this habit" : "Design a new habit"}
+                </h1>
+                <p className="text-sm text-muted-foreground max-w-2xl">
+                  Set the cadence, start small, and add the reminders that keep
+                  you honest.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <label className="space-y-2 block">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Hash className="w-4 h-4 text-primary" />
-                  <span>Habit name</span>
-                </div>
-                <div className={dropdownSelectWrapperClassName}>
-                  <input
-                    value={form.name}
-                    onChange={handleChange("name")}
-                    placeholder="e.g. Morning stretch"
-                    className={inputClassName}
-                    required
-                  />
-                </div>
-              </label>
+            <div className="flex flex-row gap-2 sm:gap-3">
+              <Link
+                href="/dashboard/habits"
+                className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+              >
+                Back to habits
+              </Link>
+            </div>
+          </div>
 
-              <label className="space-y-2 block">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <ListChecks className="w-4 h-4 text-primary" />
-                  <span>Description</span>
-                </div>
-                <div className={dropdownSelectWrapperClassName}>
-                  <textarea
-                    value={form.description}
-                    onChange={handleChange("description")}
-                    placeholder="Add a quick why, or the first steps you'll take."
-                    rows={3}
-                    className={`${inputClassName} resize-none leading-relaxed`}
-                  />
-                </div>
-              </label>
+          {saved ? (
+            <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 text-sm text-foreground">
+              Habit saved. It is now synced to your dashboard.
+            </div>
+          ) : null}
 
-              <label className="space-y-3 block">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span>Goal value</span>
+          <div className="grid xl:grid-cols-[1.3fr_0.7fr] gap-6">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-5"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-primary" />
+                  <div>
+                    <h2 className="font-semibold xl:text-lg 2xl:text-xl">
+                      Habit basics
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Name the habit and define how often you want it to fire.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Set the amount and the unit that counts as a win, then pick
-                  whether it is a quantity or a duration.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {unitCategories.map((category) => (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() =>
-                        setForm((prev) => ({
-                          ...prev,
-                          goalUnitCategory: category,
-                        }))
-                      }
-                      className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                        form.goalUnitCategory === category
-                          ? "border-primary bg-primary text-white shadow-sm"
-                          : "border-gray-200 bg-white text-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-                <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                  <div className={`${dropdownSelectWrapperClassName} pr-0`}>
+                <span className="text-xs text-muted-foreground">Step 1</span>
+              </div>
+
+              <div className="space-y-4">
+                <label className="space-y-2 block">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Hash className="w-4 h-4 text-primary" />
+                    <span>Habit name</span>
+                  </div>
+                  <div className={dropdownSelectWrapperClassName}>
                     <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.goalAmount}
-                      onChange={handleChange("goalAmount")}
-                      placeholder="1"
-                      className={`${inputClassName} text-left`}
+                      value={form.name}
+                      onChange={handleChange("name")}
+                      placeholder="e.g. Morning stretch"
+                      className={inputClassName}
+                      required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap gap-2">
-                      {goalUnitsByCategory[form.goalUnitCategory].map(
-                        (unit) => (
-                          <button
-                            key={unit}
-                            type="button"
-                            onClick={() =>
-                              setForm((prev) => ({
-                                ...prev,
-                                goalUnit: unit,
-                              }))
-                            }
-                            className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                              form.goalUnit === unit
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-gray-200 bg-white text-foreground hover:border-primary/40"
-                            }`}
-                          >
-                            {unit}
-                          </button>
-                        )
-                      )}
+                </label>
+
+                <label className="space-y-2 block">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <ListChecks className="w-4 h-4 text-primary" />
+                    <span>Description</span>
+                  </div>
+                  <div className={dropdownSelectWrapperClassName}>
+                    <textarea
+                      value={form.description}
+                      onChange={handleChange("description")}
+                      placeholder="Add a quick why, or the first steps you'll take."
+                      rows={3}
+                      className={`${inputClassName} resize-none leading-relaxed`}
+                    />
+                  </div>
+                </label>
+
+                <label className="space-y-3 block">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span>Goal value</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Set the amount and the unit that counts as a win, then pick
+                    whether it is a quantity or a duration.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {unitCategories.map((category) => (
                       <button
+                        key={category}
                         type="button"
                         onClick={() =>
-                          setForm((prev) => ({ ...prev, goalUnit: "" }))
+                          setForm((prev) => ({
+                            ...prev,
+                            goalUnitCategory: category,
+                          }))
                         }
-                        className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-foreground transition hover:border-primary/40"
+                        className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                          form.goalUnitCategory === category
+                            ? "border-primary bg-primary text-white shadow-sm"
+                            : "border-gray-200 bg-white text-foreground hover:border-primary/40"
+                        }`}
                       >
-                        Custom
+                        {category}
                       </button>
-                    </div>
-                    <div className={dropdownSelectWrapperClassName}>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                    <div className={`${dropdownSelectWrapperClassName} pr-0`}>
                       <input
-                        value={form.goalUnit}
-                        onChange={handleChange("goalUnit")}
-                        placeholder="Describe unit"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={form.goalAmount}
+                        onChange={handleChange("goalAmount")}
+                        placeholder="1"
                         className={`${inputClassName} text-left`}
                       />
                     </div>
-                  </div>
-                </div>
-              </label>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <label className="space-y-2 block">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Recycle className="w-4 h-4 text-primary" />
-                    <span>Cadence</span>
-                  </div>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <button
-                      type="button"
-                      ref={cadenceToggleRef}
-                      onClick={() => {
-                        setCadenceMenuOpen((open) => !open);
-                        setReminderMenuOpen(false);
-                      }}
-                      aria-haspopup="listbox"
-                      aria-expanded={cadenceMenuOpen}
-                      aria-controls={cadenceDropdownOptionsId}
-                      className={fieldButtonClassName}
-                    >
-                      <span className="truncate">{form.cadence}</span>
-                      <ChevronDown
-                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
-                          cadenceMenuOpen
-                            ? "rotate-180 text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </button>
-                    {cadenceMenuOpen && (
-                      <div
-                        ref={cadencePanelRef}
-                        id={cadenceDropdownOptionsId}
-                        role="listbox"
-                        aria-activedescendant={
-                          form.cadence
-                            ? `cadence-option-${sanitizeDropdownValue(
-                                form.cadence
-                              )}`
-                            : undefined
-                        }
-                        className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
-                          cadenceDropDirection === "down"
-                            ? "top-full mt-2"
-                            : "bottom-full mb-2"
-                        }`}
-                      >
-                        {cadenceOptions.map((cadence) => {
-                          const optionId = `cadence-option-${sanitizeDropdownValue(
-                            cadence
-                          )}`;
-                          return (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-2">
+                        {goalUnitsByCategory[form.goalUnitCategory].map(
+                          (unit) => (
                             <button
-                              key={cadence}
-                              id={optionId}
+                              key={unit}
                               type="button"
-                              role="option"
-                              aria-selected={form.cadence === cadence}
-                              onClick={() => {
+                              onClick={() =>
                                 setForm((prev) => ({
                                   ...prev,
-                                  cadence,
-                                }));
-                                setCadenceMenuOpen(false);
-                              }}
-                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
-                                form.cadence === cadence
-                                  ? "bg-primary/10 text-primary font-semibold"
-                                  : "text-foreground hover:bg-primary/5"
+                                  goalUnit: unit,
+                                }))
+                              }
+                              className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                                form.goalUnit === unit
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-gray-200 bg-white text-foreground hover:border-primary/40"
                               }`}
                             >
-                              {cadence}
+                              {unit}
                             </button>
-                          );
-                        })}
+                          )
+                        )}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm((prev) => ({ ...prev, goalUnit: "" }))
+                          }
+                          className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-foreground transition hover:border-primary/40"
+                        >
+                          Custom
+                        </button>
                       </div>
-                    )}
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.goalUnit}
+                          onChange={handleChange("goalUnit")}
+                          placeholder="Describe unit"
+                          className={`${inputClassName} text-left`}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </label>
 
-                <label className="space-y-2 block">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <CalendarDays className="w-4 h-4 text-primary" />
-                    <span>Start date</span>
-                  </div>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <button
-                      type="button"
-                      ref={startDateToggleRef}
-                      onClick={() => {
-                        setShowStartDateDropdown((open) => !open);
-                      }}
-                      aria-haspopup="dialog"
-                      aria-expanded={showStartDateDropdown}
-                      className={fieldButtonClassName}
-                    >
-                      <span className="flex flex-col items-start gap-1 text-left">
-                        <span className="xl:text-xs 2xl:text-sm font-semibold">
-                          {formattedStartDate}
-                        </span>
-                        <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
-                          {startDateHelperText}
-                        </span>
-                      </span>
-                      <ChevronDown
-                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
-                          showStartDateDropdown
-                            ? "rotate-180 text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </button>
-                    {showStartDateDropdown && (
-                      <CalendarDropdown
-                        selectedDate={form.startDate}
-                        onSelect={handleStartDateSelect}
-                        onClose={() => setShowStartDateDropdown(false)}
-                        anchorRef={startDateToggleRef}
-                      />
-                    )}
-                  </div>
-                </label>
-
-                <label className="space-y-2 block">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <AlarmClockCheck className="w-4 h-4 text-primary" />
-                    <span>Preferred time</span>
-                  </div>
-                  <TimeInput
-                    time={form.timeOfDay}
-                    onChange={handleTimeInputChange}
-                  />
-                </label>
-
-                <label className="space-y-2 block">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <AlarmCheck className="w-4 h-4 text-primary" />
-                    <span>Reminder</span>
-                  </div>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <button
-                      type="button"
-                      ref={reminderToggleRef}
-                      onClick={() => {
-                        setReminderMenuOpen((open) => !open);
-                        setCadenceMenuOpen(false);
-                      }}
-                      aria-haspopup="listbox"
-                      aria-expanded={reminderMenuOpen}
-                      aria-controls={reminderDropdownOptionsId}
-                      className={fieldButtonClassName}
-                    >
-                      <span className="truncate">{form.reminder}</span>
-                      <ChevronDown
-                        className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
-                          reminderMenuOpen
-                            ? "rotate-180 text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </button>
-                    {reminderMenuOpen && (
-                      <div
-                        ref={reminderPanelRef}
-                        id={reminderDropdownOptionsId}
-                        role="listbox"
-                        aria-activedescendant={
-                          form.reminder
-                            ? `reminder-option-${sanitizeDropdownValue(
-                                form.reminder
-                              )}`
-                            : undefined
-                        }
-                        className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
-                          reminderDropDirection === "down"
-                            ? "top-full mt-2"
-                            : "bottom-full mb-2"
-                        }`}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <label className="space-y-2 block">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Recycle className="w-4 h-4 text-primary" />
+                      <span>Cadence</span>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <button
+                        type="button"
+                        ref={cadenceToggleRef}
+                        onClick={() => {
+                          setCadenceMenuOpen((open) => !open);
+                          setReminderMenuOpen(false);
+                        }}
+                        aria-haspopup="listbox"
+                        aria-expanded={cadenceMenuOpen}
+                        aria-controls={cadenceDropdownOptionsId}
+                        className={fieldButtonClassName}
                       >
-                        {reminderOptions.map((reminder) => {
-                          const optionId = `reminder-option-${sanitizeDropdownValue(
-                            reminder
-                          )}`;
-                          return (
-                            <button
-                              key={reminder}
-                              id={optionId}
-                              type="button"
-                              role="option"
-                              aria-selected={form.reminder === reminder}
-                              onClick={() => {
-                                setForm((prev) => ({
-                                  ...prev,
-                                  reminder,
-                                }));
-                                setReminderMenuOpen(false);
-                              }}
-                              className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
-                                form.reminder === reminder
-                                  ? "bg-primary/10 text-primary font-semibold"
-                                  : "text-foreground hover:bg-primary/5"
-                              }`}
-                            >
-                              {reminder}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
+                        <span className="truncate">{form.cadence}</span>
+                        <ChevronDown
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            cadenceMenuOpen
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {cadenceMenuOpen && (
+                        <div
+                          ref={cadencePanelRef}
+                          id={cadenceDropdownOptionsId}
+                          role="listbox"
+                          aria-activedescendant={
+                            form.cadence
+                              ? `cadence-option-${sanitizeDropdownValue(
+                                  form.cadence
+                                )}`
+                              : undefined
+                          }
+                          className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                            cadenceDropDirection === "down"
+                              ? "top-full mt-2"
+                              : "bottom-full mb-2"
+                          }`}
+                        >
+                          {cadenceOptions.map((cadence) => {
+                            const optionId = `cadence-option-${sanitizeDropdownValue(
+                              cadence
+                            )}`;
+                            return (
+                              <button
+                                key={cadence}
+                                id={optionId}
+                                type="button"
+                                role="option"
+                                aria-selected={form.cadence === cadence}
+                                onClick={() => {
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    cadence,
+                                  }));
+                                  setCadenceMenuOpen(false);
+                                }}
+                                className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
+                                  form.cadence === cadence
+                                    ? "bg-primary/10 text-primary font-semibold"
+                                    : "text-foreground hover:bg-primary/5"
+                                }`}
+                              >
+                                {cadence}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+
+                  <label className="space-y-2 block">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <CalendarDays className="w-4 h-4 text-primary" />
+                      <span>Start date</span>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <button
+                        type="button"
+                        ref={startDateToggleRef}
+                        onClick={() => {
+                          setShowStartDateDropdown((open) => !open);
+                        }}
+                        aria-haspopup="dialog"
+                        aria-expanded={showStartDateDropdown}
+                        className={fieldButtonClassName}
+                      >
+                        <span className="flex flex-col items-start gap-1 text-left">
+                          <span className="xl:text-xs 2xl:text-sm font-semibold">
+                            {formattedStartDate}
+                          </span>
+                          <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
+                            {startDateHelperText}
+                          </span>
+                        </span>
+                        <ChevronDown
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            showStartDateDropdown
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {showStartDateDropdown && (
+                        <CalendarDropdown
+                          selectedDate={form.startDate}
+                          onSelect={handleStartDateSelect}
+                          onClose={() => setShowStartDateDropdown(false)}
+                          anchorRef={startDateToggleRef}
+                        />
+                      )}
+                    </div>
+                  </label>
+
+                  <label className="space-y-2 block">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <AlarmClockCheck className="w-4 h-4 text-primary" />
+                      <span>Preferred time</span>
+                    </div>
+                    <TimeInput
+                      time={form.timeOfDay}
+                      onChange={handleTimeInputChange}
+                    />
+                  </label>
+
+                  <label className="space-y-2 block">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <AlarmCheck className="w-4 h-4 text-primary" />
+                      <span>Reminder</span>
+                    </div>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <button
+                        type="button"
+                        ref={reminderToggleRef}
+                        onClick={() => {
+                          setReminderMenuOpen((open) => !open);
+                          setCadenceMenuOpen(false);
+                        }}
+                        aria-haspopup="listbox"
+                        aria-expanded={reminderMenuOpen}
+                        aria-controls={reminderDropdownOptionsId}
+                        className={fieldButtonClassName}
+                      >
+                        <span className="truncate">{form.reminder}</span>
+                        <ChevronDown
+                          className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+                            reminderMenuOpen
+                              ? "rotate-180 text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {reminderMenuOpen && (
+                        <div
+                          ref={reminderPanelRef}
+                          id={reminderDropdownOptionsId}
+                          role="listbox"
+                          aria-activedescendant={
+                            form.reminder
+                              ? `reminder-option-${sanitizeDropdownValue(
+                                  form.reminder
+                                )}`
+                              : undefined
+                          }
+                          className={`absolute left-0 right-0 z-20 max-h-60 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg ${
+                            reminderDropDirection === "down"
+                              ? "top-full mt-2"
+                              : "bottom-full mb-2"
+                          }`}
+                        >
+                          {reminderOptions.map((reminder) => {
+                            const optionId = `reminder-option-${sanitizeDropdownValue(
+                              reminder
+                            )}`;
+                            return (
+                              <button
+                                key={reminder}
+                                id={optionId}
+                                type="button"
+                                role="option"
+                                aria-selected={form.reminder === reminder}
+                                onClick={() => {
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    reminder,
+                                  }));
+                                  setReminderMenuOpen(false);
+                                }}
+                                className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
+                                  form.reminder === reminder
+                                    ? "bg-primary/10 text-primary font-semibold"
+                                    : "text-foreground hover:bg-primary/5"
+                                }`}
+                              >
+                                {reminder}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-3">
+                <Button
+                  type="submit"
+                  className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? "Saving habit..."
+                    : mode === "edit"
+                    ? "Update habit"
+                    : "Create habit"}
+                </Button>
+                <span className="text-xs text-muted-foreground self-center">
+                  Habits now persist to your dashboard once the request
+                  succeeds.
+                </span>
+              </div>
+            </form>
+
+            <aside className="space-y-4">
+              <div className="rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-[0_25px_60px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:shadow-[0_30px_80px_rgba(2,6,23,0.65)]">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-primary" />
+                    <span className="font-semibold text-sm">Habit preview</span>
                   </div>
-                </label>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 pt-3">
-              <Button
-                type="submit"
-                className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
-                disabled={isSubmitting}
-              >
-                {isSubmitting
-                  ? "Saving habit..."
-                  : mode === "edit"
-                  ? "Update habit"
-                  : "Create habit"}
-              </Button>
-              <span className="text-xs text-muted-foreground self-center">
-                Habits now persist to your dashboard once the request succeeds.
-              </span>
-            </div>
-          </form>
-
-          <aside className="space-y-4">
-            <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-sm px-4 py-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-sm">Habit preview</span>
+                  <span className="text-xs text-muted-foreground">Live</span>
                 </div>
-                <span className="text-xs text-muted-foreground">Live</span>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">
-                  {form.name || "Untitled habit"}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {form.description ||
-                    "Add a quick description so future you stays motivated."}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-sm mt-3">
-                <div className="flex items-center gap-2">
-                  <Recycle className="w-4 h-4 text-primary" />
-                  <span>{form.cadence}</span>
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    {form.name || "Untitled habit"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {form.description ||
+                      "Add a short description so future you remembers why this matters."}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="w-4 h-4 text-primary" />
-                  <span>{form.startDate || "Pick a date"}</span>
+                <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-3 py-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Cadence
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-semibold">
+                      <Recycle className="w-4 h-4 text-primary" />
+                      <span>{form.cadence}</span>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-3 py-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Start date
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-semibold">
+                      <CalendarDays className="w-4 h-4 text-primary" />
+                      <span>{formattedStartDate}</span>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-3 py-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Preferred time
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-semibold">
+                      <AlarmClockCheck className="w-4 h-4 text-primary" />
+                      <span>{form.timeOfDay || "--:--"}</span>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-3 py-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Reminder
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 font-semibold">
+                      <AlarmCheck className="w-4 h-4 text-primary" />
+                      <span>{form.reminder}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <AlarmClockCheck className="w-4 h-4 text-primary" />
-                  <span>{form.timeOfDay || "--:--"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <AlarmCheck className="w-4 h-4 text-primary" />
-                  <span>{form.reminder}</span>
-                </div>
-                <div className="flex items-center gap-2 col-span-2">
+                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-primary/30 bg-white/80 px-4 py-3 text-sm font-semibold text-foreground shadow-sm dark:border-primary/50 dark:bg-primary/10">
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-foreground">
+                  <span>
                     {form.goalAmount || "1"} {previewGoalUnit} per{" "}
                     {previewCadenceLabel}
                   </span>
                 </div>
               </div>
+            </aside>
+          </div>
 
-              <div className="mt-4 rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-3 space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 font-semibold text-foreground">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span>First three reps</span>
+          <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="px-6 pt-5 pb-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    Starter templates
+                  </p>
+                  <h2 className="text-xl font-semibold">
+                    Pick a pattern and tweak
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Hardcoded examples to speed you up. Wire to presets when you
+                    add persistence.
+                  </p>
                 </div>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Set a 5 minute timer and start.
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Track completion in your dashboard.
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Celebrate the streak, even if it is tiny.
-                  </li>
-                </ul>
+                <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
+                  <NotebookPen className="w-4 h-4" />
+                  Draft mode
+                </div>
               </div>
-            </div>
-          </aside>
-        </div>
 
-        <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
-          <div className="px-6 pt-5 pb-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                  Starter templates
-                </p>
-                <h2 className="text-xl font-semibold">
-                  Pick a pattern and tweak
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Hardcoded examples to speed you up. Wire to presets when you
-                  add persistence.
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                <NotebookPen className="w-4 h-4" />
-                Draft mode
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-3">
-              {templates.map((template) => (
-                <div
-                  key={template.title}
-                  className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3 shadow-inner space-y-2"
-                >
-                  <div className="flex items-center justify-between text-sm font-semibold">
-                    <span>{template.title}</span>
-                    <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
-                      {template.cadence}
-                    </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Lightbulb className="w-3.5 h-3.5 text-primary" />
-                    Trigger: {template.trigger}
-                  </div>
-                  <p className="text-sm text-foreground">
-                    {template.description}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Goal: {template.goalAmount} {template.goalUnit} per{" "}
-                    {template.cadence.toLowerCase()}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setForm((prev) => ({
-                        ...prev,
-                        name: template.title,
-                        description: template.description,
-                        cadence: template.cadence,
-                        goalAmount: template.goalAmount,
-                        goalUnit: template.goalUnit,
-                        goalUnitCategory: template.goalUnitCategory,
-                        startDate: template.startDate,
-                        timeOfDay: template.timeOfDay,
-                        reminder: template.reminder,
-                      }));
-                      setSaved(false);
-                    }}
-                    className="text-xs font-semibold text-primary hover:underline"
+              <div className="grid md:grid-cols-3 gap-3">
+                {templates.map((template) => (
+                  <div
+                    key={template.title}
+                    className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3 shadow-inner space-y-2"
                   >
-                    Use as base
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center justify-between text-sm font-semibold">
+                      <span>{template.title}</span>
+                      <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
+                        {template.cadence}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Lightbulb className="w-3.5 h-3.5 text-primary" />
+                      Trigger: {template.trigger}
+                    </div>
+                    <p className="text-sm text-foreground">
+                      {template.description}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Goal: {template.goalAmount} {template.goalUnit} per{" "}
+                      {template.cadence.toLowerCase()}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm((prev) => ({
+                          ...prev,
+                          name: template.title,
+                          description: template.description,
+                          cadence: template.cadence,
+                          goalAmount: template.goalAmount,
+                          goalUnit: template.goalUnit,
+                          goalUnitCategory: template.goalUnitCategory,
+                          startDate: template.startDate,
+                          timeOfDay: template.timeOfDay,
+                          reminder: template.reminder,
+                        }));
+                        setSaved(false);
+                      }}
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      Use as base
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
