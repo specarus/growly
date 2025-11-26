@@ -45,6 +45,9 @@ const montserrat = localFont({
 export const metadata: Metadata = {
   title: "Growly",
   description: "Habit Tracker App",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default async function RootLayout({
