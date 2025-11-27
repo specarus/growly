@@ -13,7 +13,7 @@ const getErrorStatus = (message: string) => {
 export async function POST(request: NextRequest) {
   try {
     const userId = await requireUserId();
-    const payload = parseHabitPayload(
+    const payload = await parseHabitPayload(
       (await request.json()) as Record<string, unknown>
     );
     const habit = await prisma.habit.create({

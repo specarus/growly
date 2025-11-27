@@ -84,3 +84,13 @@ export type CollectionTodo = Prisma.CollectionTodoModel
  * 
  */
 export type Habit = Prisma.HabitModel
+/**
+ * Model Routine
+ * 
+ */
+export type Routine = Prisma.RoutineModel
+/**
+ * Model RoutineHabit
+ * 
+ */
+export type RoutineHabit = Prisma.RoutineHabitModel

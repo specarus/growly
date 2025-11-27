@@ -38,9 +38,7 @@ const toOptionalString = (value: unknown) => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
-const normalizeCadence = (
-  value: unknown
-): HabitPayload["cadence"] => {
+const normalizeCadence = (value: unknown): HabitPayload["cadence"] => {
   if (value === "Weekly") return "Weekly";
   if (value === "Monthly") return "Monthly";
   return "Daily";
@@ -82,7 +80,9 @@ const parseStartDate = (value: unknown) => {
   return new Date();
 };
 
-export const parseHabitPayload = (payload: Record<string, unknown>): HabitPayload => {
+export const parseHabitPayload = async (
+  payload: Record<string, unknown>
+): Promise<HabitPayload> => {
   const name = typeof payload.name === "string" ? payload.name.trim() : "";
   if (!name) {
     throw new Error("Habit name is required.");

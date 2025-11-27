@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
   Clock3,
@@ -25,68 +25,15 @@ type Habit = {
 type Routine = {
   id: string;
   name: string;
-  anchor: string;
-  notes: string;
+  anchor: string | null;
+  notes: string | null;
   habits: Habit[];
 };
 
-const catalog: Habit[] = [
-  {
-    id: "habit-mobility",
-    name: "Morning mobility",
-    cadence: "Daily",
-    focus: "7:00a",
-  },
-  { id: "habit-water", name: "Hydrate 3L", cadence: "Daily", focus: "All day" },
-  {
-    id: "habit-strength",
-    name: "Strength training",
-    cadence: "Weekly x3",
-    focus: "Mon/Wed/Fri",
-  },
-  {
-    id: "habit-reading",
-    name: "Reading (20m)",
-    cadence: "Daily",
-    focus: "9:30p",
-  },
-  {
-    id: "habit-walk",
-    name: "Walk after lunch",
-    cadence: "Weekly x5",
-    focus: "1:00p",
-  },
-  {
-    id: "habit-screens",
-    name: "Low screen mornings",
-    cadence: "Daily",
-    focus: "6:00a-8:00a",
-  },
-];
-
-const initialRoutines: Routine[] = [
-  {
-    id: "sunrise",
-    name: "Sunrise launch",
-    anchor: "6:45a",
-    notes: "Wake body + mind before work.",
-    habits: [catalog[0], catalog[1]],
-  },
-  {
-    id: "evening",
-    name: "Wind-down",
-    anchor: "10:00p",
-    notes: "Park screens and land the day clean.",
-    habits: [catalog[3]],
-  },
-];
-
-const initialBacklog = catalog.filter(
-  (habit) =>
-    !initialRoutines.some((routine) =>
-      routine.habits.find((item) => item.id === habit.id)
-    )
-);
+type RoutinesPageProps = {
+  initialBacklog: Habit[];
+  initialRoutines: Routine[];
+};
 
 const tabClasses =
   "px-4 py-2 font-semibold transition whitespace-nowrap rounded-full border border-transparent";
@@ -94,9 +41,14 @@ const tabClasses =
 const dropClasses =
   "rounded-2xl border border-dashed transition shadow-sm bg-white/70 hover:border-primary/60";
 
-const RoutinesPage: React.FC = () => {
+const RoutinesPage: React.FC<RoutinesPageProps> = ({
+  initialBacklog,
+  initialRoutines,
+}) => {
   const [backlog, setBacklog] = useState<Habit[]>(initialBacklog);
   const [routines, setRoutines] = useState<Routine[]>(initialRoutines);
+  const hasMountedRef = useRef(false);
+  const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hoverTarget, setHoverTarget] = useState<string | null>(null);
 
   const moveHabit = (habitId: string, source: string, target: string) => {
@@ -133,7 +85,6 @@ const RoutinesPage: React.FC = () => {
       );
     }
 
-    // Delay the add to ensure the removal above is committed.
     requestAnimationFrame(() => {
       if (!pulled) return;
       if (target === "backlog") {
@@ -173,6 +124,49 @@ const RoutinesPage: React.FC = () => {
       event.dataTransfer.setData("source", source);
     };
 
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
+    if (persistTimerRef.current) {
+      clearTimeout(persistTimerRef.current);
+      persistTimerRef.current = null;
+    }
+
+    persistTimerRef.current = setTimeout(() => {
+      const payload = {
+        routines: routines.map((routine) => ({
+          id: routine.id,
+          habitIds: routine.habits.map((habit) => habit.id),
+        })),
+      };
+
+      (async () => {
+        try {
+          const response = await fetch("/api/routines", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            console.error("Failed to persist routines", await response.text());
+          }
+        } catch (error) {
+          console.error("Failed to persist routines", error);
+        }
+      })();
+    }, 450);
+
+    return () => {
+      if (persistTimerRef.current) {
+        clearTimeout(persistTimerRef.current);
+        persistTimerRef.current = null;
+      }
+    };
+  }, [routines, backlog]);
+
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-primary/30 via-slate-50 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
       <PageGradient />
@@ -184,20 +178,20 @@ const RoutinesPage: React.FC = () => {
               <span>Routines</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">
+              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
                 Group habits into routines
               </h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Drag habits into the routines that keep you steady. Use this as
-                a draft board until you hook up live data.
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                Drag habits into the routines that keep you steady. Changes now
+                sync directly to your saved layouts.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-row gap-2 sm:gap-3">
+          <div className="flex flex-row gap-3">
             <Link
               href="/dashboard/habits/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm hover:brightness-105 transition"
             >
               <ListPlus className="w-4 h-4" />
               Create habit
@@ -206,7 +200,7 @@ const RoutinesPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex gap-1 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+          <div className="inline-flex gap-1 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
             <Link
               href="/dashboard/habits"
               className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
@@ -226,7 +220,7 @@ const RoutinesPage: React.FC = () => {
               Popular
             </Link>
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
             Move habits between the backlog and your routines.
           </span>
         </div>
@@ -253,7 +247,6 @@ const RoutinesPage: React.FC = () => {
                   Drop habits here to pull them out of a routine.
                 </p>
               </div>
-              <Sparkles className="w-5 h-5 text-primary" />
             </div>
 
             <div className="space-y-3">
@@ -291,7 +284,7 @@ const RoutinesPage: React.FC = () => {
                   hoverTarget === routine.id
                     ? "border-primary/80 bg-primary/5"
                     : "border-gray-100 bg-white/80"
-                } p-5 flex flex-col gap-4`}
+                } xl:p-4 2xl:p-5 flex flex-col gap-4`}
                 onDragOver={(event) => event.preventDefault()}
                 onDragEnter={() => setHoverTarget(routine.id)}
                 onDragLeave={() => setHoverTarget(null)}
@@ -299,22 +292,23 @@ const RoutinesPage: React.FC = () => {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <div className="inline-flex items-center gap-2 xl:mb-2 2xl:mb-3 rounded-full bg-muted px-3 xl:py-1 2xl:py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       <Target className="w-4 h-4 text-primary" />
                       Routine
                     </div>
-                    <h3 className="text-lg font-semibold leading-tight">
+                    <h3 className="xl:text-base 2xl:text-lg font-semibold leading-tight">
                       {routine.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {routine.notes}
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                      {routine.notes ||
+                        "No notes yet. This is a great spot to describe why this routine matters."}
                     </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock3 className="w-4 h-4 text-primary" />
-                      <span>Anchor: {routine.anchor}</span>
+                      <span>{routine.anchor ?? "Not set"}</span>
                     </div>
                   </div>
-                  <div className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  <div className="flex items-center justify-center xl:text-[11px] 2xl:text-xs xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 py-1 rounded-full">
                     Drop habits here
                   </div>
                 </div>
@@ -347,25 +341,6 @@ const RoutinesPage: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="rounded-3xl border border-dashed border-primary/40 bg-light-yellow/50 px-5 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary text-white grid place-items-center shadow-sm">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="font-semibold">Drop to stage routines</p>
-              <p className="text-sm text-muted-foreground">
-                Wire this drag-and-drop board to your real habits and routines
-                when the API is ready.
-              </p>
-            </div>
-          </div>
-          <Button className="inline-flex items-center gap-2 bg-primary text-white hover:brightness-105">
-            <ListPlus className="w-4 h-4" />
-            Add a new routine
-          </Button>
         </div>
       </div>
     </main>

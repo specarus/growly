@@ -56,7 +56,9 @@ export const ModelName = {
   Todo: 'Todo',
   Collection: 'Collection',
   CollectionTodo: 'CollectionTodo',
-  Habit: 'Habit'
+  Habit: 'Habit',
+  Routine: 'Routine',
+  RoutineHabit: 'RoutineHabit'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -195,6 +197,30 @@ export const HabitScalarFieldEnum = {
 } as const
 
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
+
+
+export const RoutineScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  anchor: 'anchor',
+  notes: 'notes',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoutineScalarFieldEnum = (typeof RoutineScalarFieldEnum)[keyof typeof RoutineScalarFieldEnum]
+
+
+export const RoutineHabitScalarFieldEnum = {
+  id: 'id',
+  routineId: 'routineId',
+  habitId: 'habitId',
+  position: 'position',
+  createdAt: 'createdAt'
+} as const
+
+export type RoutineHabitScalarFieldEnum = (typeof RoutineHabitScalarFieldEnum)[keyof typeof RoutineHabitScalarFieldEnum]
 
 
 export const SortOrder = {

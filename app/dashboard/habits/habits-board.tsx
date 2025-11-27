@@ -90,7 +90,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
   }, [habits, searchParams]);
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-primary/30 via-slate-50 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex gap-4 flex-row items-center justify-between">
@@ -140,7 +140,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Active habits
                     </p>
                     <h2 className="xl:text-lg 2xl:text-xl font-semibold">
@@ -165,11 +165,11 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                   </div>
                   <div className="divide-y divide-gray-100">
                     {habits.length === 0 ? (
-                      <div className="px-4 py-10 text-center text-sm text-muted-foreground space-y-4">
+                      <div className="px-4 py-10 text-center xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
                         <p className="font-semibold text-foreground">
                           No habits yet
                         </p>
-                        <p>
+                        <p className="xl:text-xs 2xl:text-sm">
                           Start tracking a rhythm and this board will show your
                           streaks, completion, and cadence.
                         </p>
@@ -195,7 +195,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                           <button
                             key={habit.id}
                             onClick={() => setSelectedHabitId(habit.id)}
-                            className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center text-sm bg-white/60 hover:bg-primary/5 transition ${
+                            className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
                               isSelected ? "ring-2 ring-primary/30" : ""
                             }`}
                           >
@@ -203,7 +203,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                               <div className="font-semibold text-foreground">
                                 {habit.name}
                               </div>
-                              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-1">
                                 <Sparkles className="w-3 h-3 text-primary" />
                                 {focusLabel}
                               </div>
@@ -224,7 +224,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                                   style={{ width: `${completionValue}%` }}
                                 />
                               </div>
-                              <span className="text-sm font-semibold">
+                              <span className="xl:text-xs 2xl:text-sm font-semibold">
                                 {completionValue}%
                               </span>
                             </div>
@@ -241,13 +241,13 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Playbook
                     </p>
-                    <h2 className="text-xl font-semibold">
+                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                       Protect the streaks
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                       Guardrails, rescues, and weekly reviews that protect every
                       streak.
                     </p>
