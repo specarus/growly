@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
-import { safetyNets } from "../playbooks";
 import PageGradient from "@/app/components/ui/page-gradient";
 
 type Category =
@@ -49,17 +48,20 @@ type HabitIdea = {
 };
 
 const categoryStyles: Record<Category, { badge: string; dot: string }> = {
-  Movement: { badge: "bg-green-soft/40 text-green-700", dot: "bg-green-600" },
+  Movement: { badge: "bg-green-soft/30 text-green-soft", dot: "bg-green-soft" },
   Energy: {
-    badge: "bg-yellow-soft text-yellow-soft-foreground",
-    dot: "bg-amber-500",
+    badge: "bg-yellow-soft/30 text-yellow-soft",
+    dot: "bg-yellow-soft",
   },
-  Focus: { badge: "bg-primary/10 text-primary", dot: "bg-primary" },
-  Recovery: { badge: "bg-muted text-muted-foreground", dot: "bg-gray-500" },
-  Mindset: { badge: "bg-coral/15 text-coral", dot: "bg-coral" },
+  Focus: { badge: "bg-primary/30 text-primary", dot: "bg-primary" },
+  Recovery: {
+    badge: "bg-muted text-muted-foreground",
+    dot: "bg-muted-foreground",
+  },
+  Mindset: { badge: "bg-coral/30 text-coral", dot: "bg-coral" },
   Health: {
-    badge: "bg-analytics-dark/10 text-analytics-dark",
-    dot: "bg-analytics-dark",
+    badge: "bg-foreground/30 text-foreground",
+    dot: "bg-foreground",
   },
 };
 
@@ -388,9 +390,6 @@ const PopularHabitsPage: React.FC = () => {
     filteredHabits[0] ||
     habits[0];
 
-  const safetyNet =
-    (selectedHabit && safetyNets[selectedHabit.id]) || safetyNets.default;
-
   const shortlist = habits.slice(0, 3).map((habit) => ({
     title: habit.title,
     anchor: habit.anchor,
@@ -398,7 +397,7 @@ const PopularHabitsPage: React.FC = () => {
   }));
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-slate-100 via-green-soft/20 to-primary/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -416,22 +415,6 @@ const PopularHabitsPage: React.FC = () => {
                 fork it into your own plan.
               </p>
             </div>
-          </div>
-
-          <div className="flex flex-row gap-2 sm:gap-3">
-            <Link
-              href="/dashboard/habits"
-              className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
-            >
-              Back to habits
-            </Link>
-            <Link
-              href="/dashboard/habits/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
-            >
-              <Sparkles className="w-4 h-4" />
-              Start your own
-            </Link>
           </div>
         </div>
 
@@ -649,7 +632,7 @@ const PopularHabitsPage: React.FC = () => {
               </div>
             </div>
 
-            <aside className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <aside className="rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
               <div className="px-5 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -730,7 +713,7 @@ const PopularHabitsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-3">
+                    <div className="space-y-3">
                       <div className="rounded-2xl border border-dashed border-gray-200 bg-primary/5 px-4 py-4 space-y-2">
                         <div className="flex items-center justify-between text-sm font-semibold">
                           <span className="inline-flex items-center gap-2">
@@ -749,46 +732,6 @@ const PopularHabitsPage: React.FC = () => {
                             </li>
                           ))}
                         </ul>
-                      </div>
-                      <div className="rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-inner space-y-2">
-                        <div className="flex items-center justify-between text-sm font-semibold">
-                          <span className="inline-flex items-center gap-2">
-                            <HeartPulse className="w-4 h-4 text-primary" />
-                            Safety net
-                          </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            Streak care
-                          </span>
-                        </div>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                          {safetyNet.map((item, index) => (
-                            <li
-                              key={`${selectedHabit.id}-${item.title}-${index}`}
-                              className="rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-inner space-y-1"
-                            >
-                              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.12em]">
-                                <span className="inline-flex items-center gap-2 font-semibold text-primary">
-                                  {item.label}
-                                </span>
-                                <span className="text-muted-foreground">
-                                  {item.meta}
-                                </span>
-                              </div>
-                              <p className="font-semibold text-foreground">
-                                {item.title}
-                              </p>
-                              <p className="text-sm text-muted-foreground leading-relaxed">
-                                {item.detail}
-                              </p>
-                            </li>
-                          ))}
-                        </ul>
-                        <Link
-                          href={`/dashboard/habits?habitId=${selectedHabit.id}`}
-                          className="inline-flex items-center gap-2 text-xs font-semibold text-primary hover:underline"
-                        >
-                          Open protect the streaks
-                        </Link>
                       </div>
                     </div>
 
@@ -818,35 +761,6 @@ const PopularHabitsPage: React.FC = () => {
                 )}
               </div>
             </aside>
-          </div>
-
-          <div className="rounded-3xl border border-dashed border-primary/40 bg-light-yellow/60 px-5 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary text-white grid place-items-center shadow-sm">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-semibold">
-                  Shortlist three habits to start with
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Copy one of these into your board while you wire up the API.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {shortlist.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-sm text-left"
-                >
-                  <p className="text-sm font-semibold">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.cadence} / {item.anchor}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

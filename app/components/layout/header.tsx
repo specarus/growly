@@ -7,13 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/app/context/session-context";
 import { useTheme } from "@/app/context/theme-context";
 import { signOut } from "@/lib/actions/auth-actions";
-import {
-  ChevronDown,
-  Moon,
-  Sprout,
-  Sun,
-  User,
-} from "lucide-react";
+import { ChevronDown, Moon, Sprout, Sun, User } from "lucide-react";
 
 const formatSegment = (segment: string) =>
   segment
@@ -175,7 +169,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="inline-flex items-center justify-center rounded-full border border-muted/40 bg-card/80 p-2 text-foreground transition hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="inline-flex items-center justify-center rounded-full border border-muted/40 bg-card/80 p-2 text-foreground transition hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       {isDark ? (
         <Sun className="h-4 w-4 text-primary" />

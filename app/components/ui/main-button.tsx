@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTheme } from "@/app/context/theme-context";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type NextLinkProps = Omit<
@@ -32,7 +35,6 @@ const mainButtonStyles = `
   overflow: hidden;
   position: relative;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.05);
-  background-color: #fff;
   color: hsl(var(--primary));
   border: 1px solid hsl(var(--primary));
   cursor: pointer;
@@ -97,13 +99,29 @@ const mainButtonStyles = `
 .main-button:hover .button-decor {
   transform: translateX(0);
 }
+
+.main-button-light {
+  background-color: #fff;
+}
+
+.main-button-dark {
+  background-color: hsl(var(--card));
+}
 `;
 
 const isLinkButton = (props: MainButtonProps): props is MainButtonLinkProps =>
   typeof props.href !== "undefined";
 
-const getClassNames = (className?: string) =>
-  ["main-button", className].filter(Boolean).join(" ");
+type ThemeVariant = "light" | "dark";
+
+const getClassNames = (className?: string, variant: ThemeVariant = "light") =>
+  [
+    "main-button",
+    variant === "dark" ? "main-button-dark" : "main-button-light",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
 const renderContent = (label: string, icon?: ReactNode) => (
   <>
@@ -120,9 +138,12 @@ const renderContent = (label: string, icon?: ReactNode) => (
 );
 
 export default function MainButton(props: MainButtonProps) {
+  const { theme } = useTheme();
+  const variant: ThemeVariant = theme === "dark" ? "dark" : "light";
+
   if (isLinkButton(props)) {
     const { href, className, label, icon, ...linkRest } = props;
-    const classNames = getClassNames(className);
+    const classNames = getClassNames(className, variant);
 
     return (
       <>
@@ -137,7 +158,7 @@ export default function MainButton(props: MainButtonProps) {
   }
 
   const { className, label, icon, type, ...buttonRest } = props;
-  const classNames = getClassNames(className);
+  const classNames = getClassNames(className, variant);
 
   return (
     <>

@@ -3,17 +3,11 @@
 import Link from "next/link";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import {
-  BadgeCheck,
-  Clock3,
-  GripVertical,
-  ListPlus,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { BadgeCheck, Clock3, GripVertical, Plus, Target } from "lucide-react";
 
-import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
+import { useRouter } from "next/navigation";
+import MainButton from "@/app/components/ui/main-button";
 
 type Habit = {
   id: string;
@@ -39,7 +33,7 @@ const tabClasses =
   "px-4 py-2 font-semibold transition whitespace-nowrap rounded-full border border-transparent";
 
 const dropClasses =
-  "rounded-2xl border border-dashed transition shadow-sm bg-white/70 hover:border-primary/60";
+  "rounded-2xl border-2 border-dashed transition shadow-sm bg-white/70 hover:border-primary/60";
 
 const RoutinesPage: React.FC<RoutinesPageProps> = ({
   initialBacklog,
@@ -50,6 +44,8 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
   const hasMountedRef = useRef(false);
   const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hoverTarget, setHoverTarget] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const moveHabit = (habitId: string, source: string, target: string) => {
     if (!habitId || source === target) return;
@@ -167,8 +163,12 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
     };
   }, [routines, backlog]);
 
+  const handleNewRoutine = () => {
+    router.push("/dashboard/habits/routines/create");
+  };
+
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-primary/30 via-slate-50 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-t from-slate-100 via-primary/20 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -189,13 +189,12 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
           </div>
 
           <div className="flex flex-row gap-3">
-            <Link
-              href="/dashboard/habits/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm hover:brightness-105 transition"
-            >
-              <ListPlus className="w-4 h-4" />
-              Create habit
-            </Link>
+            <MainButton
+              label="Create routine"
+              icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
+              className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
+              onClick={handleNewRoutine}
+            />
           </div>
         </div>
 
@@ -251,7 +250,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
 
             <div className="space-y-3">
               {backlog.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                <div className="rounded-xl border-2 border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                   No loose habits. Drag one back from a routine to stash it
                   here.
                 </div>
@@ -261,7 +260,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                     key={habit.id}
                     draggable
                     onDragStart={handleDragStart(habit.id, "backlog")}
-                    className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-3 hover:border-primary/50 cursor-grab"
+                    className="rounded-xl border-2 border-gray-100 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-3 hover:border-primary/50 cursor-grab"
                   >
                     <div>
                       <p className="font-semibold">{habit.name}</p>
