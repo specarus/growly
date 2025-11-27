@@ -4,6 +4,7 @@ import Link from "next/link";
 import Button from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
+import PillButton from "@/app/components/ui/pill-button";
 
 type GreetingWidgetProps = Record<string, never>;
 
@@ -42,29 +43,40 @@ const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
     : null;
 
   return (
-    <div className="flex flex-col xl:gap-4 2xl:gap-6 xl:pt-2 2xl:pt-6 text-foreground">
-      <div>
-        <h1 className="xl:text-3xl 2xl:text-4xl font-bold mb-1">
-          Happy {dayName ?? "Day"}
-        </h1>
-        <p className="xl:text-sm 2xl:text-base text-muted-foreground">
-          {formattedDate && formattedTime
-            ? `${formattedDate}, ${formattedTime}`
-            : "Loading time..."}
-        </p>
-      </div>
+    <div>
+      <div className="flex flex-col xl:gap-4 2xl:gap-6 xl:pt-2 2xl:pt-6 text-foreground">
+        <div>
+          <h1 className="xl:text-3xl 2xl:text-4xl font-bold mb-1">
+            Happy {dayName ?? "Day"}
+          </h1>
+          <p className="xl:text-sm 2xl:text-base text-muted-foreground">
+            {formattedDate && formattedTime
+              ? `${formattedDate}, ${formattedTime}`
+              : "Loading time..."}
+          </p>
+        </div>
 
-      <div className="flex flex-col gap-1 xl:gap-2 2xl:gap-3">
-        <Link href="/dashboard/habits/create" className="w-full">
-          <Button className="w-full bg-primary hover:bg-primary/90 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base text-white transition-all duration-100">
-            <Plus className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
-            New Habits
+        <div className="flex flex-col gap-1 xl:gap-2 2xl:gap-3">
+          <Link href="/dashboard/habits/create" className="w-full">
+            <Button className="w-full bg-primary hover:bg-primary/90 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base text-white transition-all duration-100">
+              <Plus className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
+              New Habits
+            </Button>
+          </Link>
+
+          <Button className="border border-muted hover:text-foreground text-foreground hover:bg-muted/20 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base transition-all duration-100">
+            <Link href="/dashboard/habits/popular">Browse Popular Habits</Link>
           </Button>
-        </Link>
-
-        <Button className="border border-muted hover:text-foreground text-foreground hover:bg-muted/20 xl:h-10 2xl:h-12 xl:text-sm 2xl:text-base transition-all duration-100">
-          <Link href="/dashboard/habits/popular">Browse Popular Habits</Link>
-        </Button>
+        </div>
+      </div>
+      <div className="flex justify-end xl:mt-2 2xl:mt-3">
+        <PillButton
+          href="/dashboard/habits"
+          variant="ghost"
+          className="xl:w-24 2xl:w-28"
+        >
+          View Details
+        </PillButton>
       </div>
     </div>
   );

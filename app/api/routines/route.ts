@@ -9,6 +9,40 @@ type RoutinePayload = {
   habitIds: string[];
 };
 
+type CreateRoutinePayload = {
+  name: string;
+  anchor: string | null;
+  notes: string | null;
+  habitIds: string[];
+};
+
+const toOptionalString = (value: unknown) => {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+};
+
+const parseCreateRoutinePayload = (value: unknown): CreateRoutinePayload => {
+  const entry = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+  const name = typeof entry.name === "string" ? entry.name.trim() : "";
+  if (!name) {
+    throw new Error("Routine name is required.");
+  }
+  const rawHabitIds = Array.isArray(entry.habitIds) ? entry.habitIds : [];
+  const habitIds = rawHabitIds
+    .map((habitId) => (typeof habitId === "string" ? habitId : ""))
+    .filter((habitId) => habitId.length > 0);
+
+  return {
+    name,
+    anchor: toOptionalString(entry.anchor),
+    notes: toOptionalString(entry.notes),
+    habitIds,
+  };
+};
+
 const parseRoutinePayloads = (value: unknown): RoutinePayload[] => {
   if (!value || !Array.isArray(value)) {
     return [];
@@ -34,6 +68,55 @@ const parseRoutinePayloads = (value: unknown): RoutinePayload[] => {
 
   return routines;
 };
+
+export async function POST(request: NextRequest) {
+  try {
+    const userId = await requireUserId();
+    const body = await request.json();
+    const payload = parseCreateRoutinePayload(body);
+
+    const routine = await prisma.routine.create({
+      data: {
+        name: payload.name,
+        anchor: payload.anchor,
+        notes: payload.notes,
+        userId,
+      },
+    });
+
+    if (payload.habitIds.length > 0) {
+      const uniqueHabitIds = Array.from(new Set(payload.habitIds));
+      const validHabits = await prisma.habit.findMany({
+        where: {
+          userId,
+          id: { in: uniqueHabitIds },
+        },
+        select: { id: true },
+      });
+      const entries = validHabits.map((habit, index) => ({
+        routineId: routine.id,
+        habitId: habit.id,
+        position: index,
+      }));
+      if (entries.length > 0) {
+        await prisma.routineHabit.createMany({
+          data: entries,
+          skipDuplicates: true,
+        });
+      }
+    }
+
+    revalidatePath("/dashboard/habits/routines");
+
+    return NextResponse.json({ success: true, routineId: routine.id });
+  } catch (error) {
+    console.error("Unable to create routine", error);
+    return NextResponse.json(
+      { error: "Unable to create routine" },
+      { status: 400 }
+    );
+  }
+}
 
 export async function PATCH(request: NextRequest) {
   try {
