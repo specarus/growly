@@ -16,14 +16,14 @@ import {
   BadgeCheck,
   CalendarDays,
   ChevronDown,
-  Flame,
   Lightbulb,
   Hash,
   ListChecks,
   NotebookPen,
   Recycle,
-  Sparkles,
   Target,
+  Goal,
+  View,
 } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
@@ -67,7 +67,10 @@ const fieldButtonClassName =
   "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0";
 
 const inputClassName =
-  "w-full border-none bg-transparent px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none xl:text-sm 2xl:text-base";
+  "w-full border-none bg-transparent px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none";
+
+const countClassName =
+  "w-full border-none bg-transparent xl:px-6 2xl:px-8 xl:py-4 xl:text-3xl 2xl:text-4xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none";
 
 const dropdownSelectWrapperClassName =
   "relative overflow-visible rounded-2xl border border-gray-100 bg-gradient-to-br from-white/95 to-white/70 shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
@@ -363,7 +366,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     : "Tap to pick a date";
 
   return (
-    <main className="xl:px-8 2xl:px-28 pb-10 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl dark:hidden" />
       <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl dark:hidden" />
       <div className="relative z-10">
@@ -456,12 +459,11 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
 
                 <label className="space-y-3 block">
                   <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                    <Goal className="w-4 h-4 text-primary" />
                     <span>Goal value</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Set the amount and the unit that counts as a win, then pick
-                    whether it is a quantity or a duration.
+                    Set the amount and the unit that counts as a win.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {unitCategories.map((category) => (
@@ -493,7 +495,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                         value={form.goalAmount}
                         onChange={handleChange("goalAmount")}
                         placeholder="1"
-                        className={`${inputClassName} text-left`}
+                        className={`${countClassName} text-left`}
                       />
                     </div>
                     <div className="space-y-2">
@@ -766,19 +768,19 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     ? "Update habit"
                     : "Create habit"}
                 </Button>
-                <span className="text-xs text-muted-foreground self-center">
-                  Habits now persist to your dashboard once the request
-                  succeeds.
-                </span>
               </div>
             </form>
 
             <aside className="space-y-4">
-              <div className="rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-[0_25px_60px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:shadow-[0_30px_80px_rgba(2,6,23,0.65)]">
+              <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:shadow-[0_30px_80px_rgba(2,6,23,0.65)]">
+                <div className="pointer-events-none absolute -top-4 right-6 h-32 w-32 rounded-full bg-primary/20 blur-3xl dark:hidden" />
+                <div className="pointer-events-none absolute -bottom-10 left-6 h-36 w-36 rounded-[2.5rem] bg-green-soft/30 blur-[90px] dark:hidden" />
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-primary" />
-                    <span className="font-semibold text-sm">Habit preview</span>
+                    <span className="font-semibold xl:text-xs 2xl:text-sm bg-primary/20 text-primary xl:px-3 2xl:px-4 py-1 rounded-full flex gap-2 items-center">
+                      <View className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
+                      Habit preview
+                    </span>
                   </div>
                   <span className="text-xs text-muted-foreground">Live</span>
                 </div>
@@ -830,7 +832,6 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                   </div>
                 </div>
                 <div className="mt-4 flex items-center gap-2 rounded-2xl border border-primary/30 bg-white/80 px-4 py-3 text-sm font-semibold text-foreground shadow-sm dark:border-primary/50 dark:bg-primary/10">
-                  <Sparkles className="w-4 h-4 text-primary" />
                   <span>
                     {form.goalAmount || "1"} {previewGoalUnit} per{" "}
                     {previewCadenceLabel}

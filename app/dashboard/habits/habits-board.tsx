@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -16,8 +15,7 @@ import {
 import { useSearchParams } from "next/navigation";
 
 import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
-
-import { safetyNets } from "./playbooks";
+import PageGradient from "@/app/components/ui/page-gradient";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -37,6 +35,36 @@ type Props = {
   habits: Habit[];
 };
 
+const streakDefensePlaybook: PlaybookItem[] = [
+  {
+    title: "Anchor a reliable cue",
+    detail:
+      "Pair the habit with a fixed trigger so you start automatically and avoid the drift that breaks streaks.",
+    label: "Prevent",
+    meta: "Before start",
+    icon: "ShieldCheck",
+    accent: "text-green-soft bg-green-soft/20",
+  },
+  {
+    title: "Rescue with the smallest win",
+    detail:
+      "If you miss a session, do a short reset or partial rep to keep the streak intact and rebuild momentum.",
+    label: "Rescue",
+    meta: "If you slip",
+    icon: "LifeBuoy",
+    accent: "text-coral bg-coral/20",
+  },
+  {
+    title: "Review and adjust weekly",
+    detail:
+      "Reflect on what worked, tweak anchors, and plan the next week with realistic cues so streaks stay protected.",
+    label: "Review",
+    meta: "Weekly reset",
+    icon: "CalendarClock",
+    accent: "text-primary bg-primary/20",
+  },
+];
+
 const iconMap = {
   ShieldCheck,
   LifeBuoy,
@@ -45,24 +73,9 @@ const iconMap = {
 
 const HabitsBoard: React.FC<Props> = ({ habits }) => {
   const searchParams = useSearchParams();
-  const [selectedHabitId, setSelectedHabitId] = useState<string>(habits[0]?.id || "");
-
-  const selectedPlaybook = useMemo(() => {
-    const net = (selectedHabitId && safetyNets[selectedHabitId]) || safetyNets.default;
-    const labels: PlaybookItem["label"][] = ["Prevent", "Rescue", "Review"];
-    const metas = ["Before start", "If you slip", "Weekly reset"];
-    const icons: PlaybookItem["icon"][] = ["ShieldCheck", "LifeBuoy", "CalendarClock"];
-    const accents = ["text-green-700 bg-green-soft/25", "text-coral bg-coral/10", "text-primary bg-primary/10"];
-
-    return net.map((detail, index) => ({
-      title: detail,
-      detail,
-      label: labels[index % labels.length],
-      meta: metas[index % metas.length],
-      icon: icons[index % icons.length],
-      accent: accents[index % accents.length],
-    }));
-  }, [selectedHabitId]);
+  const [selectedHabitId, setSelectedHabitId] = useState<string>(
+    habits[0]?.id || ""
+  );
 
   const selectedHabit = useMemo(
     () => habits.find((habit) => habit.id === selectedHabitId),
@@ -77,58 +90,48 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
   }, [habits, searchParams]);
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+      <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex gap-4 flex-row items-center justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
               <BadgeCheck className="w-4 h-4" />
               <span>Your habits</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">Habit board</h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Hardcoded board that shows your current rhythm, streaks, and where you spend focus time. Swap in live data when ready.
+              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
+                Habit board
+              </h1>
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                This board shows your current rhythm, streaks, and where you
+                spend focus time.
               </p>
             </div>
           </div>
-
-          <div className="flex flex-row gap-2 sm:gap-3">
-            <Link
-              href="/dashboard/habits/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
-            >
-              <Plus className="w-4 h-4" />
-              New habit
-            </Link>
-          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
-            <Link
-              href="/dashboard/habits"
-              className="px-4 py-2 font-semibold bg-primary text-white"
+        <div>
+          <div className="inline-flex xl:gap-1 p-2 items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+            <span
+              className="px-4 py-2 font-semibold bg-primary text-white rounded-full cursor-pointer"
               aria-current="page"
             >
               Habits
-            </Link>
+            </span>
             <Link
               href="/dashboard/habits/routines"
-              className="px-4 py-2 font-semibold hover:text-primary transition"
+              className="px-4 py-2 font-semibold hover:text-primary transition rounded-full"
             >
               Routines
             </Link>
             <Link
               href="/dashboard/habits/popular"
-              className="px-4 py-2 font-semibold hover:text-primary transition"
+              className="px-4 py-2 font-semibold hover:text-primary transition rounded-full"
             >
               Popular
             </Link>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Select a habit to see its streak-saving playbook.
-          </span>
         </div>
 
         <div className="grid gap-5">
@@ -137,17 +140,16 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Active habits
                     </p>
-                    <h2 className="text-xl font-semibold">Manual list with sample stats</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Replace this table with your real habit store and detail links.
-                    </p>
+                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
+                      Habits and Statistics
+                    </h2>
                   </div>
                   <Link
                     href="/dashboard/habits/create"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-xs font-semibold hover:brightness-105 transition"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm font-semibold hover:brightness-105 transition"
                   >
                     <Plus className="w-4 h-4" />
                     Create habit
@@ -162,45 +164,74 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                     <span className="text-right">Completion</span>
                   </div>
                   <div className="divide-y divide-gray-100">
-                  {habits.map((habit) => {
-                    const isSelected = habit.id === selectedHabitId;
-                    const streakValue = habit.streak ?? 0;
-                    const completionValue = habit.completion ?? 0;
-                    const focusLabel =
-                      habit.description?.trim() ||
-                      `${habit.goalAmount} ${habit.goalUnit ?? "count"} per ${habit.cadence.toLowerCase()}`;
-                    return (
-                      <button
-                        key={habit.id}
-                        onClick={() => setSelectedHabitId(habit.id)}
-                        className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center text-sm bg-white/60 hover:bg-primary/5 transition ${
-                          isSelected ? "ring-2 ring-primary/30" : ""
-                        }`}
-                      >
-                          <div className="col-span-2 space-y-1">
-                            <div className="font-semibold text-foreground">{habit.name}</div>
-                            <div className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Sparkles className="w-3 h-3 text-primary" />
-                              {focusLabel}
+                    {habits.length === 0 ? (
+                      <div className="px-4 py-10 text-center text-sm text-muted-foreground space-y-4">
+                        <p className="font-semibold text-foreground">
+                          No habits yet
+                        </p>
+                        <p>
+                          Start tracking a rhythm and this board will show your
+                          streaks, completion, and cadence.
+                        </p>
+                        <Link
+                          href="/dashboard/habits/create"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-xs font-semibold text-primary hover:border-primary hover:bg-primary/5 transition"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Create your first habit
+                        </Link>
+                      </div>
+                    ) : (
+                      habits.map((habit) => {
+                        const isSelected = habit.id === selectedHabitId;
+                        const streakValue = habit.streak ?? 0;
+                        const completionValue = habit.completion ?? 0;
+                        const focusLabel =
+                          habit.description?.trim() ||
+                          `${habit.goalAmount} {
+                            habit.goalUnit ?? "count"
+                          } per ${habit.cadence.toLowerCase()}`;
+                        return (
+                          <button
+                            key={habit.id}
+                            onClick={() => setSelectedHabitId(habit.id)}
+                            className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center text-sm bg-white/60 hover:bg-primary/5 transition ${
+                              isSelected ? "ring-2 ring-primary/30" : ""
+                            }`}
+                          >
+                            <div className="col-span-2 space-y-1">
+                              <div className="font-semibold text-foreground">
+                                {habit.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                <Sparkles className="w-3 h-3 text-primary" />
+                                {focusLabel}
+                              </div>
                             </div>
-                          </div>
-                          <div className="text-muted-foreground">{habit.cadence}</div>
-                          <div className="flex items-center gap-2">
-                            <Flame className="w-4 h-4 text-primary" />
-                            <span className="font-semibold">{streakValue}d</span>
-                          </div>
-                          <div className="flex items-center justify-end gap-3">
-                            <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
-                              <div
-                                className="h-full bg-linear-to-r from-primary to-coral"
-                                style={{ width: `${completionValue}%` }}
-                              />
+                            <div className="text-muted-foreground">
+                              {habit.cadence}
                             </div>
-                            <span className="text-sm font-semibold">{completionValue}%</span>
-                          </div>
-                        </button>
-                      );
-                    })}
+                            <div className="flex items-center gap-2">
+                              <Flame className="w-4 h-4 text-primary" />
+                              <span className="font-semibold">
+                                {streakValue}d
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-end gap-3">
+                              <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
+                                <div
+                                  className="h-full bg-linear-to-r from-primary to-coral"
+                                  style={{ width: `${completionValue}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-semibold">
+                                {completionValue}%
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>
@@ -213,16 +244,15 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Playbook
                     </p>
-                    <h2 className="text-xl font-semibold">Protect the streaks</h2>
+                    <h2 className="text-xl font-semibold">
+                      Protect the streaks
+                    </h2>
                     <p className="text-sm text-muted-foreground">
-                      Guardrails, rescues, and weekly reviews tailored to the selected habit.
+                      Guardrails, rescues, and weekly reviews that protect every
+                      streak.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                      <Target className="w-4 h-4" />
-                      Routines
-                    </div>
                     {selectedHabit ? (
                       <Link
                         href={`/dashboard/habits/${selectedHabit.id}/edit`}
@@ -235,7 +265,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                 </div>
 
                 <div className="space-y-3">
-                  {(selectedPlaybook || []).map((item, index) => {
+                  {streakDefensePlaybook.map((item, index) => {
                     const Icon = iconMap[item.icon];
                     return (
                       <div
@@ -244,20 +274,18 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                       >
                         <div className="flex items-center justify-between">
                           <div
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${item.accent}`}
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] ${item.accent}`}
                           >
                             <Icon className="w-4 h-4" />
                             <span>{item.label}</span>
                           </div>
-                          <span className="text-[11px] text-muted-foreground">Move {index + 1}</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-muted text-primary">
-                            <Sparkles className="w-4 h-4" />
-                          </div>
                           <div className="space-y-1">
                             <p className="font-semibold">{item.title}</p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">{item.detail}</p>
+                            <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                              {item.detail}
+                            </p>
                             <div className="inline-flex items-center gap-2 text-xs font-semibold rounded-full bg-muted px-3 py-1 text-muted-foreground">
                               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                               {item.meta}
@@ -270,27 +298,6 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="rounded-3xl border border-dashed border-primary/40 bg-light-yellow/50 px-5 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary text-white grid place-items-center shadow-sm">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-semibold">Wire this board to your habit data</p>
-                <p className="text-sm text-muted-foreground">
-                  Replace the hardcoded arrays with live queries and add detail pages.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/dashboard/habits/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm hover:brightness-105 transition"
-            >
-              <Flame className="w-4 h-4" />
-              Add another habit
-            </Link>
           </div>
         </div>
       </div>

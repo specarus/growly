@@ -1,13 +1,7 @@
 "use client";
 
 import type React from "react";
-import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
@@ -127,8 +121,7 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
       if (!anchorRect) {
         return;
       }
-      const panelHeight =
-        panelRef.current?.getBoundingClientRect().height ?? 0;
+      const panelHeight = panelRef.current?.getBoundingClientRect().height ?? 0;
       const spacing = 8;
       const spaceBelow = window.innerHeight - anchorRect.bottom;
       const spaceAbove = anchorRect.top;
@@ -203,7 +196,7 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
       ref={panelRef}
       role="dialog"
       aria-modal="true"
-      className="rounded-3xl border border-gray-100 bg-white px-5 py-4 shadow-xl max-w-sm"
+      className="rounded-3xl border border-gray-100 bg-white xl:px-4 2xl:px-5 xl:py-3 2xl:py-4 shadow-xl max-w-sm"
       style={{
         position: "absolute",
         zIndex: 9999,
@@ -214,13 +207,13 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="xl:text-base 2xl:text-lg font-semibold text-foreground">
             {formatMonthLabel(viewDate)}
           </h3>
         </div>
       </div>
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center gap-3">
+      <div className="mt-2 flex items-center justify-between xl:text-[11px] 2xl:text-xs text-muted-foreground">
+        <div className="flex items-center xl:gap-2 2xl:gap-3">
           <button
             type="button"
             onClick={() =>
@@ -252,14 +245,14 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
           Today
         </button>
       </div>
-      <div className="mt-3 grid grid-cols-7 gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+      <div className="mt-3 grid grid-cols-7 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
         {WEEK_DAYS.map((day) => (
           <span key={day} className="text-center">
             {day}
           </span>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-7 gap-1 text-xs">
+      <div className="mt-3 grid grid-cols-7 xl:gap-1 xl:text-[11px] 2xl:text-xs">
         {weeks.map((week, weekIndex) =>
           week.map(({ date, inMonth }) => {
             const iso = date.toISOString().slice(0, 10);
@@ -271,7 +264,7 @@ const CalendarDropdown: React.FC<CalendarDropdownProps> = ({
                 key={`${weekIndex}-${iso}`}
                 type="button"
                 onClick={() => handleSelect(date)}
-                className={`h-8 w-8 rounded-full text-center text-xs font-semibold transition ${
+                className={`xl:h-7 xl:w-7 2xl:h-8 2xl:w-8 rounded-full text-center xl:text-[11px] 2xl:text-xs font-semibold transition ${
                   inMonth ? "text-foreground" : "text-muted-foreground"
                 } ${
                   isSelected

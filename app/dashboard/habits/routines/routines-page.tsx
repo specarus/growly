@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
+import PageGradient from "@/app/components/ui/page-gradient";
 
 type Habit = {
   id: string;
@@ -30,12 +31,37 @@ type Routine = {
 };
 
 const catalog: Habit[] = [
-  { id: "habit-mobility", name: "Morning mobility", cadence: "Daily", focus: "7:00a" },
+  {
+    id: "habit-mobility",
+    name: "Morning mobility",
+    cadence: "Daily",
+    focus: "7:00a",
+  },
   { id: "habit-water", name: "Hydrate 3L", cadence: "Daily", focus: "All day" },
-  { id: "habit-strength", name: "Strength training", cadence: "Weekly x3", focus: "Mon/Wed/Fri" },
-  { id: "habit-reading", name: "Reading (20m)", cadence: "Daily", focus: "9:30p" },
-  { id: "habit-walk", name: "Walk after lunch", cadence: "Weekly x5", focus: "1:00p" },
-  { id: "habit-screens", name: "Low screen mornings", cadence: "Daily", focus: "6:00a-8:00a" },
+  {
+    id: "habit-strength",
+    name: "Strength training",
+    cadence: "Weekly x3",
+    focus: "Mon/Wed/Fri",
+  },
+  {
+    id: "habit-reading",
+    name: "Reading (20m)",
+    cadence: "Daily",
+    focus: "9:30p",
+  },
+  {
+    id: "habit-walk",
+    name: "Walk after lunch",
+    cadence: "Weekly x5",
+    focus: "1:00p",
+  },
+  {
+    id: "habit-screens",
+    name: "Low screen mornings",
+    cadence: "Daily",
+    focus: "6:00a-8:00a",
+  },
 ];
 
 const initialRoutines: Routine[] = [
@@ -56,7 +82,10 @@ const initialRoutines: Routine[] = [
 ];
 
 const initialBacklog = catalog.filter(
-  (habit) => !initialRoutines.some((routine) => routine.habits.find((item) => item.id === habit.id))
+  (habit) =>
+    !initialRoutines.some((routine) =>
+      routine.habits.find((item) => item.id === habit.id)
+    )
 );
 
 const tabClasses =
@@ -97,7 +126,9 @@ const RoutinesPage: React.FC = () => {
             }
             return true;
           });
-          return remaining.length === routine.habits.length ? routine : { ...routine, habits: remaining };
+          return remaining.length === routine.habits.length
+            ? routine
+            : { ...routine, habits: remaining };
         })
       );
     }
@@ -116,7 +147,8 @@ const RoutinesPage: React.FC = () => {
       setRoutines((prev) =>
         prev.map((routine) => {
           if (routine.id !== target) return routine;
-          if (routine.habits.find((habit) => habit.id === pulled!.id)) return routine;
+          if (routine.habits.find((habit) => habit.id === pulled!.id))
+            return routine;
           return { ...routine, habits: [...routine.habits, pulled!] };
         })
       );
@@ -124,7 +156,8 @@ const RoutinesPage: React.FC = () => {
   };
 
   const handleDrop =
-    (target: string) => (event: React.DragEvent<HTMLDivElement | HTMLButtonElement>) => {
+    (target: string) =>
+    (event: React.DragEvent<HTMLDivElement | HTMLButtonElement>) => {
       event.preventDefault();
       const habitId = event.dataTransfer.getData("habitId");
       const source = event.dataTransfer.getData("source");
@@ -132,14 +165,17 @@ const RoutinesPage: React.FC = () => {
       moveHabit(habitId, source, target);
     };
 
-  const handleDragStart = (habitId: string, source: string) => (event: React.DragEvent<HTMLDivElement>) => {
-    event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("habitId", habitId);
-    event.dataTransfer.setData("source", source);
-  };
+  const handleDragStart =
+    (habitId: string, source: string) =>
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("habitId", habitId);
+      event.dataTransfer.setData("source", source);
+    };
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-primary/30 via-slate-50 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+      <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -148,9 +184,12 @@ const RoutinesPage: React.FC = () => {
               <span>Routines</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">Group habits into routines</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Group habits into routines
+              </h1>
               <p className="text-sm text-muted-foreground max-w-2xl">
-                Drag habits into the routines that keep you steady. Use this as a draft board until you hook up live data.
+                Drag habits into the routines that keep you steady. Use this as
+                a draft board until you hook up live data.
               </p>
             </div>
           </div>
@@ -167,23 +206,38 @@ const RoutinesPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
-            <Link href="/dashboard/habits" className={`${tabClasses} text-muted-foreground hover:text-primary`}>
+          <div className="inline-flex gap-1 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+            <Link
+              href="/dashboard/habits"
+              className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
+            >
               Habits
             </Link>
-            <span className={`${tabClasses} bg-primary text-white`} aria-current="page">
+            <span
+              className={`${tabClasses} bg-primary text-white rounded-full cursor-pointer`}
+              aria-current="page"
+            >
               Routines
             </span>
-            <Link href="/dashboard/habits/popular" className={`${tabClasses} text-muted-foreground hover:text-primary`}>
+            <Link
+              href="/dashboard/habits/popular"
+              className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
+            >
               Popular
             </Link>
           </div>
-          <span className="text-xs text-muted-foreground">Move habits between the backlog and your routines.</span>
+          <span className="text-xs text-muted-foreground">
+            Move habits between the backlog and your routines.
+          </span>
         </div>
 
         <div className="grid xl:grid-cols-[0.95fr_1.05fr] gap-5">
           <div
-            className={`${dropClasses} ${hoverTarget === "backlog" ? "border-primary/80 bg-primary/5" : "border-gray-100 bg-white/80"} p-5 h-full`}
+            className={`${dropClasses} ${
+              hoverTarget === "backlog"
+                ? "border-primary/80 bg-primary/5"
+                : "border-gray-100 bg-white/80"
+            } p-5 h-full`}
             onDragOver={(event) => event.preventDefault()}
             onDragEnter={() => setHoverTarget("backlog")}
             onDragLeave={() => setHoverTarget(null)}
@@ -191,9 +245,13 @@ const RoutinesPage: React.FC = () => {
           >
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Unassigned</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  Unassigned
+                </p>
                 <h2 className="text-lg font-semibold">Habit backlog</h2>
-                <p className="text-sm text-muted-foreground">Drop habits here to pull them out of a routine.</p>
+                <p className="text-sm text-muted-foreground">
+                  Drop habits here to pull them out of a routine.
+                </p>
               </div>
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
@@ -201,7 +259,8 @@ const RoutinesPage: React.FC = () => {
             <div className="space-y-3">
               {backlog.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                  No loose habits. Drag one back from a routine to stash it here.
+                  No loose habits. Drag one back from a routine to stash it
+                  here.
                 </div>
               ) : (
                 backlog.map((habit) => (
@@ -228,7 +287,11 @@ const RoutinesPage: React.FC = () => {
             {routines.map((routine) => (
               <div
                 key={routine.id}
-                className={`${dropClasses} ${hoverTarget === routine.id ? "border-primary/80 bg-primary/5" : "border-gray-100 bg-white/80"} p-5 flex flex-col gap-4`}
+                className={`${dropClasses} ${
+                  hoverTarget === routine.id
+                    ? "border-primary/80 bg-primary/5"
+                    : "border-gray-100 bg-white/80"
+                } p-5 flex flex-col gap-4`}
                 onDragOver={(event) => event.preventDefault()}
                 onDragEnter={() => setHoverTarget(routine.id)}
                 onDragLeave={() => setHoverTarget(null)}
@@ -240,8 +303,12 @@ const RoutinesPage: React.FC = () => {
                       <Target className="w-4 h-4 text-primary" />
                       Routine
                     </div>
-                    <h3 className="text-lg font-semibold leading-tight">{routine.name}</h3>
-                    <p className="text-sm text-muted-foreground">{routine.notes}</p>
+                    <h3 className="text-lg font-semibold leading-tight">
+                      {routine.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {routine.notes}
+                    </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock3 className="w-4 h-4 text-primary" />
                       <span>Anchor: {routine.anchor}</span>
@@ -255,7 +322,8 @@ const RoutinesPage: React.FC = () => {
                 <div className="space-y-3">
                   {routine.habits.length === 0 ? (
                     <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                      Empty slot. Drag a habit from the backlog to start this routine.
+                      Empty slot. Drag a habit from the backlog to start this
+                      routine.
                     </div>
                   ) : (
                     routine.habits.map((habit) => (
@@ -289,7 +357,8 @@ const RoutinesPage: React.FC = () => {
             <div>
               <p className="font-semibold">Drop to stage routines</p>
               <p className="text-sm text-muted-foreground">
-                Wire this drag-and-drop board to your real habits and routines when the API is ready.
+                Wire this drag-and-drop board to your real habits and routines
+                when the API is ready.
               </p>
             </div>
           </div>

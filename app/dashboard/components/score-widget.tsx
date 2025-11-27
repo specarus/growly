@@ -100,7 +100,7 @@ const ScoreWidget: React.FC = () => {
       </div>
       <div className="flex flex-col xl:gap-3 2xl:gap-4">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col items-center xl:px-3 xl:py-2 2xl:px-4 2xl:py-3 rounded-lg bg-secondary/50 text-primary select-none">
+          <div className="flex flex-col items-center xl:px-3 xl:py-2 2xl:px-4 2xl:py-3 rounded-lg bg-secondary/50 text-primary dark:text-white select-none">
             <span className="xl:text-lg 2xl:text-xl font-extrabold leading-none">
               {level}
             </span>

@@ -19,6 +19,7 @@ import {
 
 import Button from "@/app/components/ui/button";
 import { safetyNets } from "../playbooks";
+import PageGradient from "@/app/components/ui/page-gradient";
 
 type Category =
   | "Movement"
@@ -390,16 +391,15 @@ const PopularHabitsPage: React.FC = () => {
   const safetyNet =
     (selectedHabit && safetyNets[selectedHabit.id]) || safetyNets.default;
 
-  const shortlist = habits
-    .slice(0, 3)
-    .map((habit) => ({
-      title: habit.title,
-      anchor: habit.anchor,
-      cadence: habit.cadence,
-    }));
+  const shortlist = habits.slice(0, 3).map((habit) => ({
+    title: habit.title,
+    anchor: habit.anchor,
+    cadence: habit.cadence,
+  }));
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+      <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -436,21 +436,21 @@ const PopularHabitsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+          <div className="inline-flex items-center gap-1 p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
             <Link
               href="/dashboard/habits"
-              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition"
+              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition rounded-full"
             >
               Habits
             </Link>
             <Link
               href="/dashboard/habits/routines"
-              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition"
+              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition rounded-full"
             >
               Routines
             </Link>
             <span
-              className="px-4 py-2 font-semibold bg-primary text-white"
+              className="px-4 py-2 font-semibold bg-primary text-white rounded-full"
               aria-current="page"
             >
               Popular

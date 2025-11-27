@@ -1,14 +1,18 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import HabitCreatePage from "../../create/habit-create-page";
+import HabitCreatePage from "../../create/create-habit-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const formatIsoDate = (value?: Date | null) =>
   value ? value.toISOString().slice(0, 10) : "";
 
-export default async function EditHabit({ params }: { params: { id: string } }) {
+export default async function EditHabit({
+  params,
+}: {
+  params: { id: string };
+}) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
