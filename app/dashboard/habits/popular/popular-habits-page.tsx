@@ -132,6 +132,11 @@ const PopularHabitsPage: React.FC = () => {
             : entry
         )
       );
+      setLikedPostIds((current) => {
+        const next = new Set(current);
+        next.add(postId);
+        return next;
+      });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "Already liked.") {
@@ -142,6 +147,11 @@ const PopularHabitsPage: React.FC = () => {
                 : entry
             )
           );
+          setLikedPostIds((current) => {
+            const next = new Set(current);
+            next.add(postId);
+            return next;
+          });
           return;
         }
         setLikeError(error.message);
@@ -268,6 +278,12 @@ const PopularHabitsPage: React.FC = () => {
     }
   }, [selectedPost?.id, justAddedPostId]);
 
+  useEffect(() => {
+    setLikedPostIds(
+      new Set(posts.filter((post) => post.likedByCurrentUser).map((post) => post.id))
+    );
+  }, [posts]);
+
   const userHasAddedSelectedPost = selectedPost
     ? importedPostIds.has(selectedPost.id)
     : false;
@@ -316,6 +332,9 @@ const PopularHabitsPage: React.FC = () => {
   const isAddingSelectedPost = addingPostId === selectedPost?.id;
   const isAddedSelectedPost = userHasAddedSelectedPost;
   const showSuccessMessage = justAddedPostId === selectedPost?.id;
+  const userHasLikedSelectedPost = selectedPost
+    ? likedPostIds.has(selectedPost.id)
+    : false;
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
@@ -797,26 +816,31 @@ const PopularHabitsPage: React.FC = () => {
                         type="button"
                         onClick={() => handleLike(selectedPost.id)}
                         disabled={
-                          selectedPost.likedByCurrentUser ||
+                          userHasLikedSelectedPost ||
                           likingPostId === selectedPost.id
                         }
                         aria-label={
-                          selectedPost.likedByCurrentUser
+                          userHasLikedSelectedPost
                             ? "You already liked this post"
                             : `Like ${selectedPost.title}`
                         }
                         className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition ${
-                          selectedPost.likedByCurrentUser
+                          userHasLikedSelectedPost
                             ? "border-primary bg-primary text-white"
                             : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
                         }`}
                       >
                         <span>
-                          {selectedPost.likedByCurrentUser
+                          {userHasLikedSelectedPost
                             ? "Liked"
                             : "Like this post"}
                         </span>
                       </button>
+                      {userHasLikedSelectedPost ? (
+                        <p className="text-[11px] text-green-soft">
+                          You liked this post.
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 ) : (
