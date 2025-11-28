@@ -13,11 +13,12 @@ const getErrorStatus = (message: string) => {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = context;
+  const { id: postId } = await params;
   try {
     const userId = await requireUserId();
-    const postId = params.id;
     const post = await prisma.postHabit.findUnique({
       where: { id: postId },
       select: { id: true },

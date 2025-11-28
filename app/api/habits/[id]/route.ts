@@ -13,8 +13,10 @@ const getErrorStatus = (message: string) => {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = context;
+  const { id } = await params;
   try {
     const userId = await requireUserId();
     const payload = await parseHabitPayload(
@@ -23,7 +25,7 @@ export async function PATCH(
     const habit = await prisma.habit.update({
       where: {
         id_userId: {
-          id: params.id,
+          id,
           userId,
         },
       },

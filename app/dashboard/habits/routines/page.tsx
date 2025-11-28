@@ -8,10 +8,6 @@ import RoutinesPage from "./routines-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type RoutineHabitCard = {
-  habitId: string;
-  habit: PrismaHabit;
-};
 
 const formatTimeOfDay = (value: string) => {
   const [hourPart, minutePart] = value.split(":").map(Number);
@@ -93,7 +89,7 @@ export default async function Routines() {
     anchor: routine.anchor,
     notes: routine.notes,
     habits: routine.habits
-      .filter((item): item is RoutineHabitCard => Boolean(item.habit))
+      .filter((item) => Boolean(item.habit))
       .map((item) => ({ habitId: item.habitId, habit: item.habit! })),
   }));
 
