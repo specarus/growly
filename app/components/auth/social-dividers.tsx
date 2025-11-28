@@ -23,7 +23,7 @@ const SocialLoginDividers: React.FC = () => (
         height={100}
         width={100}
         alt="Google"
-        className="xl:w-6 xl:h-6 2xl:w-8 2xl:h-8"
+        className="xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
       />
       <p>Google</p>
     </Button>

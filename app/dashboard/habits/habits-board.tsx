@@ -13,7 +13,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
+import type { Habit as PrismaHabit } from "@prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "./components/habits-tabs";

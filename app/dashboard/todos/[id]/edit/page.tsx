@@ -6,7 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import CreateTodoPage from "../../create/create-todo-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import type { Todo } from "@/lib/generated/prisma/client";
+import type { Todo } from "@prisma/client";
 
 interface EditTodoPageProps {
   params: {
