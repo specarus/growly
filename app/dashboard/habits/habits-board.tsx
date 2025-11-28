@@ -10,9 +10,9 @@ import {
   Plus,
   ShieldCheck,
   Sparkles,
-  Target,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
@@ -73,6 +73,7 @@ const iconMap = {
 
 const HabitsBoard: React.FC<Props> = ({ habits }) => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [selectedHabitId, setSelectedHabitId] = useState<string>(
     habits[0]?.id || ""
   );
@@ -194,7 +195,11 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                         return (
                           <button
                             key={habit.id}
-                            onClick={() => setSelectedHabitId(habit.id)}
+                            type="button"
+                            onMouseEnter={() => setSelectedHabitId(habit.id)}
+                            onClick={() =>
+                              router.push(`/dashboard/habits/${habit.id}/edit`)
+                            }
                             className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
                               isSelected ? "ring-2 ring-primary/30" : ""
                             }`}
@@ -254,12 +259,9 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                   </div>
                   <div className="flex items-center gap-2">
                     {selectedHabit ? (
-                      <Link
-                        href={`/dashboard/habits/${selectedHabit.id}/edit`}
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
-                      >
-                        Edit {selectedHabit.name}
-                      </Link>
+                      <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                        Click a habit above to edit {selectedHabit.name}
+                      </span>
                     ) : null}
                   </div>
                 </div>

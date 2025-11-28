@@ -11,8 +11,9 @@ const formatIsoDate = (value?: Date | null) =>
 export default async function EditHabit({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -23,7 +24,7 @@ export default async function EditHabit({
 
   const habit = await prisma.habit.findFirst({
     where: {
-      id: params.id,
+      id,
       userId: session.user.id,
     },
   });

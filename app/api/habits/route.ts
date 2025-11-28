@@ -35,3 +35,35 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    const userId = await requireUserId();
+    const habits = await prisma.habit.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cadence: true,
+        timeOfDay: true,
+      },
+    });
+
+    return NextResponse.json({ habits });
+  } catch (error) {
+    if (error instanceof Error) {
+      const status = getErrorStatus(error.message);
+      return NextResponse.json({ error: error.message }, { status });
+    }
+    return NextResponse.json(
+      { error: "Unable to load habits. Try again later." },
+      { status: 500 }
+    );
+  }
+}
