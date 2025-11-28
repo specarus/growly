@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Clock3,
   Flame,
-  Heart,
   HeartPulse,
   Search,
   Sparkles,
@@ -62,41 +61,7 @@ const formatPostedDate = (value: string) => {
   }
 };
 
-const sortPosts = (items: PopularPost[]) =>
-  [...items].sort((a, b) => {
-    const popularityDiff = b.likesCount - a.likesCount;
-    if (popularityDiff !== 0) {
-      return popularityDiff;
-    }
-    return (
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  });
-
-const fallbackPosts = sortPosts(popularHabits);
-
-const normalizeCadence = (value: string) => {
-  const normalized = value.trim().toLowerCase();
-  if (normalized.includes("weekly") || normalized.includes("week")) {
-    return "Weekly";
-  }
-  if (normalized.includes("month")) {
-    return "Monthly";
-  }
-  return "Daily";
-};
-
-const buildHabitPayload = (post: PopularPost) => ({
-  name: post.title,
-  description: post.summary ?? post.highlight ?? "",
-  cadence: normalizeCadence(post.cadence),
-  startDate: new Date().toISOString().slice(0, 10),
-  timeOfDay: "",
-  reminder: "",
-  goalAmount: 1,
-  goalUnit: "count",
-  goalUnitCategory: "Quantity",
-});
+const fallbackPosts = popularHabits;
 
 const mergePosts = (communityPosts: PopularPost[]) => {
   const seen = new Set<string>();
@@ -113,7 +78,7 @@ const mergePosts = (communityPosts: PopularPost[]) => {
       joined.push(post);
     }
   });
-  return sortPosts(joined);
+  return joined;
 };
 
 const PopularHabitsPage: React.FC = () => {
@@ -126,14 +91,6 @@ const PopularHabitsPage: React.FC = () => {
   const [commitment, setCommitment] = useState<Commitment | "Any">("Any");
   const [timeWindow, setTimeWindow] = useState<TimeWindow | "Any">("Any");
   const [selectedPostId, setSelectedPostId] = useState("");
-  const [addingPostId, setAddingPostId] = useState<string | null>(null);
-  const [addError, setAddError] = useState<string | null>(null);
-  const [addSuccess, setAddSuccess] = useState<string | null>(null);
-  const [likingPostId, setLikingPostId] = useState<string | null>(null);
-  const [likeError, setLikeError] = useState<
-    { postId: string; message: string } | null
-  >(null);
-  const [poppingLikeId, setPoppingLikeId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -210,91 +167,6 @@ const PopularHabitsPage: React.FC = () => {
     filteredPosts.find((post) => post.id === selectedPostId) ||
     filteredPosts[0] ||
     null;
-
-  useEffect(() => {
-    setAddError(null);
-    setAddSuccess(null);
-    setLikeError(null);
-  }, [selectedPostId]);
-
-  const handleAddHabit = async (post: PopularPost) => {
-    setAddError(null);
-    setAddSuccess(null);
-    setAddingPostId(post.id);
-    try {
-      const response = await fetch("/api/habits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildHabitPayload(post)),
-      });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Unable to add habit.");
-      }
-      setAddSuccess("Habit added to your board.");
-    } catch (err) {
-      setAddError(err instanceof Error ? err.message : "Unable to add habit.");
-    } finally {
-      setAddingPostId(null);
-    }
-  };
-
-  const handleLikePost = async (post: PopularPost) => {
-    if (!post.isCommunityPost) {
-      setLikeError({
-        postId: post.id,
-        message: "Only community posts can be liked.",
-      });
-      return;
-    }
-    if (post.likedByCurrentUser) {
-      return;
-    }
-    setLikeError(null);
-    setLikingPostId(post.id);
-
-    try {
-      const response = await fetch(`/api/habits/posts/${post.id}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Unable to like habit.");
-      }
-
-      setPosts((current) =>
-        sortPosts(
-          current.map((existing) =>
-            existing.id === post.id
-              ? {
-                  ...existing,
-                  likesCount: existing.likesCount + 1,
-                  likedByCurrentUser: true,
-                }
-              : existing
-          )
-        )
-      );
-      setPoppingLikeId(post.id);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to like habit.";
-      setLikeError({ postId: post.id, message });
-    } finally {
-      setLikingPostId(null);
-    }
-  };
-
-  useEffect(() => {
-    if (!poppingLikeId) {
-      return;
-    }
-    const timer = setTimeout(() => {
-      setPoppingLikeId(null);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [poppingLikeId]);
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
@@ -535,57 +407,10 @@ const PopularHabitsPage: React.FC = () => {
                                 {formatPostedDate(post.createdAt)}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span
-                                role="button"
-                                tabIndex={
-                                  !post.isCommunityPost ||
-                                  post.likedByCurrentUser ||
-                                  likingPostId === post.id
-                                    ? -1
-                                    : 0
-                                }
-                                aria-pressed={post.likedByCurrentUser}
-                                aria-label={
-                                  post.likedByCurrentUser
-                                    ? "Already liked"
-                                    : "Like this community habit"
-                                }
-                                aria-disabled={
-                                  !post.isCommunityPost ||
-                                  post.likedByCurrentUser ||
-                                  likingPostId === post.id
-                                }
-                                onClick={() => handleLikePost(post)}
-                                onKeyDown={(event) => {
-                                  if (
-                                    event.key === "Enter" ||
-                                    event.key === " "
-                                  ) {
-                                    event.preventDefault();
-                                    handleLikePost(post);
-                                  }
-                                }}
-                                className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-muted-foreground/60 ${
-                                  poppingLikeId === post.id ? "scale-110" : "scale-100"
-                                }`}
-                              >
-                                <Heart className="w-4 h-4 text-primary" />
-                                <span>
-                                  {post.likesCount}{" "}
-                                  {post.likedByCurrentUser ? "Liked" : "Like"}
-                                </span>
-                              </span>
-                              <span className="font-semibold text-foreground">
-                                {post.anchor ?? post.timeWindow}
-                              </span>
-                            </div>
+                            <span className="font-semibold text-foreground">
+                              {post.anchor ?? post.timeWindow}
+                            </span>
                           </div>
-                          {likeError && likeError.postId === post.id ? (
-                            <p className="mt-1 text-[11px] text-rose-600">
-                              {likeError.message}
-                            </p>
-                          ) : null}
                         </button>
                       );
                     })
@@ -741,24 +566,13 @@ const PopularHabitsPage: React.FC = () => {
                       >
                         Share your version
                       </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleAddHabit(selectedPost!)}
-                      disabled={addingPostId !== null}
-                      className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition disabled:border-gray-200 disabled:text-muted-foreground/60"
-                    >
-                      <CalendarClock className="w-4 h-4" />
-                      Add to a habit
-                    </Button>
-                    {(addError || addSuccess) && (
-                      <p
-                        className={`text-xs ${
-                          addError ? "text-rose-600" : "text-emerald-600"
-                        }`}
+                      <Link
+                        href="/dashboard/habits"
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
                       >
-                        {addError ?? addSuccess}
-                      </p>
-                    )}
+                        <CalendarClock className="w-4 h-4" />
+                        Add to a habit
+                      </Link>
                       <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                         <Sparkles className="w-4 h-4" />
                         Swap after saving
