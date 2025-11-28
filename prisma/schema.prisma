@@ -32,6 +32,7 @@ model User {
   habits         Habit[]
   collections   Collection[]
   routines      Routine[]
+  postHabits    PostHabit[]
 
   @@unique([email])
   @@map("user")
@@ -150,10 +151,37 @@ model Habit {
   userId           String
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   routineHabits    RoutineHabit[]
+  postHabits       PostHabit[]
 
   @@unique([id, userId])
   @@index([userId])
   @@map("habit")
+}
+
+model PostHabit {
+  id         String               @id @default(uuid())
+  title      String
+  summary    String?
+  highlight  String?
+  anchor     String?
+  duration   String?
+  cadence    String
+  category   HabitCategory
+  timeWindow HabitTimeWindow     @default(Anytime)
+  commitment HabitCommitment
+  benefits   String[]             @default([])
+  steps      String[]             @default([])
+  guardrails String[]             @default([])
+  habitId    String
+  userId     String
+  habit      Habit                @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @default(now()) @updatedAt
+
+  @@index([habitId])
+  @@index([userId])
+  @@map("post_habit")
 }
 
 model Routine {
@@ -199,4 +227,26 @@ enum TodoStatus {
   IN_PROGRESS
   COMPLETED
   MISSED
+}
+
+enum HabitCategory {
+  Movement
+  Energy
+  Focus
+  Recovery
+  Mindset
+  Health
+}
+
+enum HabitCommitment {
+  Quick
+  Standard
+  Deep
+}
+
+enum HabitTimeWindow {
+  Anytime
+  Morning
+  Workday
+  Evening
 }

@@ -27,3 +27,34 @@ export const TodoStatus = {
 } as const
 
 export type TodoStatus = (typeof TodoStatus)[keyof typeof TodoStatus]
+
+
+export const HabitCategory = {
+  Movement: 'Movement',
+  Energy: 'Energy',
+  Focus: 'Focus',
+  Recovery: 'Recovery',
+  Mindset: 'Mindset',
+  Health: 'Health'
+} as const
+
+export type HabitCategory = (typeof HabitCategory)[keyof typeof HabitCategory]
+
+
+export const HabitCommitment = {
+  Quick: 'Quick',
+  Standard: 'Standard',
+  Deep: 'Deep'
+} as const
+
+export type HabitCommitment = (typeof HabitCommitment)[keyof typeof HabitCommitment]
+
+
+export const HabitTimeWindow = {
+  Anytime: 'Anytime',
+  Morning: 'Morning',
+  Workday: 'Workday',
+  Evening: 'Evening'
+} as const
+
+export type HabitTimeWindow = (typeof HabitTimeWindow)[keyof typeof HabitTimeWindow]

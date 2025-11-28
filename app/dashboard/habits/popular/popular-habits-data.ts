@@ -1,0 +1,226 @@
+import { PopularPost } from "./types";
+
+const today = new Date("2025-11-25T09:00:00.000Z");
+
+const createdDate = (offsetDays: number) =>
+  new Date(today.getTime() - offsetDays * 24 * 60 * 60 * 1000).toISOString();
+
+export const popularHabits: PopularPost[] = [
+  {
+    id: "sunrise-clarity-loop",
+    title: "Sunrise clarity loop",
+    summary:
+      "Six minutes of journaling and breathing that sets the day tone before opening the inbox.",
+    highlight: "Wins before notifications arrive",
+    cadence: "Daily",
+    category: "Mindset",
+    timeWindow: "Morning",
+    commitment: "Quick",
+    anchor: "First sip of coffee while light pours in",
+    duration: "6 minutes",
+    benefits: [
+      "Drops mental clutter with a three-line brain dump",
+      "Pairs breath work with fresh light to cue priority",
+      "Short enough to lead the day without dragging",
+    ],
+    steps: [
+      "Open your journal and jot three wins and three high-impact bets.",
+      "Close your eyes, inhale for four seconds, hold two, exhale six, repeat five times.",
+      "Drop a single theme for the day and close your journal before launching into work.",
+    ],
+    guardrails: [
+      "Keep it six minutes so it never competes with urgent pings.",
+      "If traveling, dictate the notes into a voice memo instead of paper.",
+      "Avoid checking email before the loop is finished.",
+    ],
+    createdAt: createdDate(5),
+    userName: "Growly team",
+    habitName: "Sunrise clarity loop",
+  },
+  {
+    id: "focused-launch-routine",
+    title: "Focused launch routine",
+    summary:
+      "90 minute block that closes distractions, sets a clear mission, then shields deep work.",
+    highlight: "Blocks with highest completion at 9 AM",
+    cadence: "Weekdays",
+    category: "Focus",
+    timeWindow: "Morning",
+    commitment: "Deep",
+    anchor: "After stand-up with focus playlist queued",
+    duration: "90 minutes",
+    benefits: [
+      "Protects prime energy before meetings multiply",
+      "Short ritual lowers friction to close inbox and start work",
+      "Predictable slot keeps teammates from scheduling in",
+    ],
+    steps: [
+      "Silence notifications, close chat tabs, and set a three-metric scoreboard.",
+      "Write a two-sentence game plan and start a 90 minute timer.",
+      "Work in 25 minute sprints, pause for micro breath resets, then review progress.",
+    ],
+    guardrails: [
+      "If context shifts, run a 45 minute sprint instead of skipping.",
+      "Mark your calendar as busy so others respect the block.",
+      "Pause and reset the timer if you get interrupted mid-session.",
+    ],
+    createdAt: createdDate(8),
+    userName: "Growly team",
+    habitName: "Focused launch routine",
+  },
+  {
+    id: "midday-oasis-pause",
+    title: "Midday oasis pause",
+    summary:
+      "Fifteen minute reset that pairs light movement, calm breathing, and fresh air.",
+    highlight: "Restores energy without derailing the day",
+    cadence: "Daily",
+    category: "Recovery",
+    timeWindow: "Workday",
+    commitment: "Standard",
+    anchor: "After lunch before the next meeting",
+    duration: "15 minutes",
+    benefits: [
+      "Shifts cortisol after lunch and before the afternoon slump",
+      "Mixes movement, breath, and hydration for a fuller break",
+      "Fits between two quick meetings",
+    ],
+    steps: [
+      "Walk outside or down the stairs with intentional breath to flush the blood.",
+      "Do three rounds of shoulder circles, hip openers, and gentle twists.",
+      "Sip water or herbal tea while setting an intention for the afternoon.",
+    ],
+    guardrails: [
+      "Cap it at 15 minutes so meetings don't creep back in.",
+      "If weather blocks stepping out, open a window and do the breaths indoors.",
+      "Avoid screens during the pause to let the nervous system settle.",
+    ],
+    createdAt: createdDate(12),
+    userName: "Growly team",
+    habitName: "Midday oasis pause",
+  },
+  {
+    id: "micro-movement-circuit",
+    title: "Micro-movement circuit",
+    summary:
+      "Sprinkle three short strength or mobility bursts throughout the workday.",
+    highlight: "Builds momentum without a gym stop",
+    cadence: "Daily",
+    category: "Movement",
+    timeWindow: "Workday",
+    commitment: "Quick",
+    anchor: "Top of the next three hours",
+    duration: "3 x 8 minutes",
+    benefits: [
+      "Breaks stiffness from long screens",
+      "Small bursts add up to 25 minutes of motion",
+      "Easy to scale as energy ebbs and flows",
+    ],
+    steps: [
+      "Pick two moves each hour (push-ups, rows, squat pulses).",
+      "Execute one set at the top of three different hours.",
+      "Log reps and add weight or reps every week.",
+    ],
+    guardrails: [
+      "Keep resistance light so you stay consistent daily.",
+      "If you miss an hour, squeeze a set into the next break.",
+      "Remember mobility work before pushing through the strength sets.",
+    ],
+    createdAt: createdDate(15),
+    userName: "Growly team",
+    habitName: "Micro-movement circuit",
+  },
+  {
+    id: "evening-detox-ritual",
+    title: "Evening detox ritual",
+    summary:
+      "A screens-off routine that dims lights, records wins, and primes tomorrow.",
+    highlight: "Members report shorter sleep latency",
+    cadence: "Daily",
+    category: "Recovery",
+    timeWindow: "Evening",
+    commitment: "Standard",
+    anchor: "45 minutes before bedtime after dishes",
+    duration: "20 minutes",
+    benefits: [
+      "Blocks late-night work creep",
+      "Makes the next day feel rehearsed",
+      "Low effort ritual that signals wind-down",
+    ],
+    steps: [
+      "Dim the lights, stash the phone, play soft music.",
+      "Write two achievements and one lesson from today.",
+      "Set a three-task todo for tomorrow and close the notebook.",
+    ],
+    guardrails: [
+      "If a meeting runs late, just complete the wins write-up.",
+      "Keep a physical timer so the phone stays tucked away.",
+      "Avoid caffeine after 2pm to let this sink in.",
+    ],
+    createdAt: createdDate(18),
+    userName: "Growly team",
+    habitName: "Evening detox ritual",
+  },
+  {
+    id: "team-step-sync",
+    title: "Team step sync",
+    summary:
+      "Weekly 30-minute walking huddle combines planning with daylight and movement.",
+    highlight: "Teams call it a creativity booster",
+    cadence: "Weekly",
+    category: "Energy",
+    timeWindow: "Workday",
+    commitment: "Standard",
+    anchor: "Friday planning huddle on foot",
+    duration: "30 minutes",
+    benefits: [
+      "Adds steps without losing face time",
+      "Natural change of scenery refreshes conversations",
+      "Pairs accountability with movement",
+    ],
+    steps: [
+      "Pick an agenda of two to three topics and share it before leaving.",
+      "Walk a loop near the office while keeping a notepad handy.",
+      "Wrap with two takeaways and assign next steps while still outside.",
+    ],
+    guardrails: [
+      "Avoid noisy routes; keep the voice quality clear for remote folks.",
+      "If someone cannot walk, keep them looped in digitally and recap later.",
+      "Respect weather - slide it indoors on storms and keep masks handy.",
+    ],
+    createdAt: createdDate(20),
+    userName: "Growly team",
+    habitName: "Team step sync",
+  },
+  {
+    id: "weekend-reset-rhythm",
+    title: "Weekend reset rhythm",
+    summary:
+      "A Saturday planning pass that maps wins, workouts, and rest before Monday.",
+    highlight: "Members start Monday quieter and clearer",
+    cadence: "Weekly",
+    category: "Focus",
+    timeWindow: "Anytime",
+    commitment: "Standard",
+    anchor: "Saturday morning coffee",
+    duration: "25 minutes",
+    benefits: [
+      "Clarifies three wins and prevents Monday scramble",
+      "Centers workouts around energy spikes instead of obligation",
+      "Surfaces blockers before they bottleneck the week",
+    ],
+    steps: [
+      "Review the prior week and capture one lesson learned.",
+      "Plan three priority outcomes and map deep work blocks.",
+      "Pick two recovery anchors and parade them on the calendar.",
+    ],
+    guardrails: [
+      "If time is tight, keep it to 10 minutes and revisit Sunday night.",
+      "Skip cleaning every file; keep focus on the outcomes list.",
+      "Share it with a partner to make it stick.",
+    ],
+    createdAt: createdDate(25),
+    userName: "Growly team",
+    habitName: "Weekend reset rhythm",
+  },
+];

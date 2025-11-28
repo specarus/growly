@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -10,42 +10,26 @@ import {
   Clock3,
   Flame,
   HeartPulse,
-  Layers,
   Search,
   Sparkles,
   Target,
   TrendingUp,
 } from "lucide-react";
 
+import { useRouter } from "next/navigation";
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
 
-type Category =
-  | "Movement"
-  | "Energy"
-  | "Focus"
-  | "Recovery"
-  | "Mindset"
-  | "Health";
-type Commitment = "Quick" | "Standard" | "Deep";
-type TimeWindow = "Anytime" | "Morning" | "Workday" | "Evening";
-
-type RoutineIdea = {
-  id: string;
-  title: string;
-  summary: string;
-  category: Category;
-  cadence: string;
-  timeOfDay: TimeWindow;
-  commitment: Commitment;
-  anchor: string;
-  duration: string;
-  adoption: number;
-  highlight: string;
-  benefits: string[];
-  steps: string[];
-  guardrails: string[];
-};
+import {
+  Category,
+  Commitment,
+  PopularPost,
+  categories,
+  commitmentCopy,
+  timeFilters,
+  TimeWindow,
+} from "./types";
+import { popularHabits } from "./popular-habits-data";
 
 const categoryStyles: Record<Category, { badge: string; dot: string }> = {
   Movement: { badge: "bg-green-soft/30 text-green-soft", dot: "bg-green-soft" },
@@ -65,277 +49,177 @@ const categoryStyles: Record<Category, { badge: string; dot: string }> = {
   },
 };
 
-const routines: RoutineIdea[] = [
-  {
-    id: "sunrise-clarity-loop",
-    title: "Sunrise clarity loop",
-    summary:
-      "Six minutes of journaling and breathing that sets the day tone before opening the inbox.",
-    category: "Mindset",
-    cadence: "Daily",
-    timeOfDay: "Morning",
-    commitment: "Quick",
-    anchor: "First sip of coffee while light pours in",
-    duration: "6 minutes",
-    adoption: 15800,
-    highlight: "Wins before notifications arrive",
-    benefits: [
-      "Drops mental clutter with a three-line brain dump",
-      "Pairs breath work with fresh light to cue priority",
-      "Short enough to lead the day without dragging",
-    ],
-    steps: [
-      "Open your journal and jot three wins and three high-impact bets.",
-      "Close your eyes, inhale for four seconds, hold two, exhale six, repeat five times.",
-      "Drop a single theme for the day and close your journal before launching into work.",
-    ],
-    guardrails: [
-      "Keep it six minutes so it never competes with urgent pings.",
-      "If traveling, dictate the notes into a voice memo instead of paper.",
-      "Avoid checking email before the loop is finished.",
-    ],
-  },
-  {
-    id: "focused-launch-routine",
-    title: "Focused launch routine",
-    summary:
-      "90 minute block that closes distractions, sets a clear mission, then shields deep work.",
-    category: "Focus",
-    cadence: "Weekdays",
-    timeOfDay: "Morning",
-    commitment: "Deep",
-    anchor: "After stand-up with focus playlist queued",
-    duration: "90 minutes",
-    adoption: 13200,
-    highlight: "Blocks with highest completion at 9 AM",
-    benefits: [
-      "Protects prime energy before meetings multiply",
-      "Short ritual lowers friction to close inbox and start work",
-      "Predictable slot keeps teammates from scheduling in",
-    ],
-    steps: [
-      "Silence notifications, close chat tabs, and set a three-metric scoreboard.",
-      "Write a two-sentence game plan and start a 90 minute timer.",
-      "Work in 25 minute sprints, pause for micro breath resets, then review progress.",
-    ],
-    guardrails: [
-      "If context shifts, run a 45 minute sprint instead of skipping.",
-      "Mark your calendar as busy so others respect the block.",
-      "Pause and reset the timer if you get interrupted mid-session.",
-    ],
-  },
-  {
-    id: "midday-oasis-pause",
-    title: "Midday oasis pause",
-    summary:
-      "Fifteen minute reset that pairs light movement, calm breathing, and fresh air.",
-    category: "Recovery",
-    cadence: "Daily",
-    timeOfDay: "Workday",
-    commitment: "Standard",
-    anchor: "After lunch before the next meeting",
-    duration: "15 minutes",
-    adoption: 11120,
-    highlight: "Restores energy without derailing the day",
-    benefits: [
-      "Shifts cortisol after lunch and before the afternoon slump",
-      "Mixes movement, breath, and hydration for a fuller break",
-      "Fits between two quick meetings",
-    ],
-    steps: [
-      "Walk outside or down the stairs with intentional breath to flush the blood.",
-      "Do three rounds of shoulder circles, hip openers, and gentle twists.",
-      "Sip water or herbal tea while setting an intention for the afternoon.",
-    ],
-    guardrails: [
-      "Cap it at 15 minutes so meetings don't creep back in.",
-      "If weather blocks stepping out, open a window and do the breaths indoors.",
-      "Avoid screens during the pause to let the nervous system settle.",
-    ],
-  },
-  {
-    id: "micro-movement-circuit",
-    title: "Micro-movement circuit",
-    summary:
-      "Sprinkle three short strength or mobility bursts throughout the workday.",
-    category: "Movement",
-    cadence: "Daily",
-    timeOfDay: "Workday",
-    commitment: "Quick",
-    anchor: "Top of the next three hours",
-    duration: "3 x 8 minutes",
-    adoption: 10100,
-    highlight: "Builds momentum without a gym stop",
-    benefits: [
-      "Breaks stiffness from long screens",
-      "Small bursts add up to 25 minutes of motion",
-      "Easy to scale as energy ebbs and flows",
-    ],
-    steps: [
-      "Pick two moves each hour (push-ups, rows, squat pulses).",
-      "Execute one set at the top of three different hours.",
-      "Log reps and add weight or reps every week.",
-    ],
-    guardrails: [
-      "Keep resistance light so you stay consistent daily.",
-      "If you miss an hour, squeeze a set into the next break.",
-      "Remember mobility work before pushing through the strength sets.",
-    ],
-  },
-  {
-    id: "evening-detox-ritual",
-    title: "Evening detox ritual",
-    summary:
-      "A screens-off routine that dims lights, records wins, and primes tomorrow.",
-    category: "Recovery",
-    cadence: "Daily",
-    timeOfDay: "Evening",
-    commitment: "Standard",
-    anchor: "45 minutes before bedtime after dishes",
-    duration: "20 minutes",
-    adoption: 10900,
-    highlight: "Members report shorter sleep latency",
-    benefits: [
-      "Blocks late-night work creep",
-      "Makes the next day feel rehearsed",
-      "Low effort ritual that signals wind-down",
-    ],
-    steps: [
-      "Dim the lights, stash the phone, play soft music.",
-      "Write two achievements and one lesson from today.",
-      "Set a three-task todo for tomorrow and close the notebook.",
-    ],
-    guardrails: [
-      "If a meeting runs late, just complete the wins write-up.",
-      "Keep a physical timer so the phone stays tucked away.",
-      "Avoid caffeine after 2pm to let this sink in.",
-    ],
-  },
-  {
-    id: "team-step-sync",
-    title: "Team step sync",
-    summary:
-      "Weekly 30-minute walking huddle combines planning with daylight and movement.",
-    category: "Energy",
-    cadence: "Weekly",
-    timeOfDay: "Workday",
-    commitment: "Standard",
-    anchor: "Friday planning huddle on foot",
-    duration: "30 minutes",
-    adoption: 8200,
-    highlight: "Teams call it a creativity booster",
-    benefits: [
-      "Adds steps without losing face time",
-      "Natural change of scenery refreshes conversations",
-      "Pairs accountability with movement",
-    ],
-    steps: [
-      "Pick an agenda of two to three topics and share it before leaving.",
-      "Walk a loop near the office while keeping a notepad handy.",
-      "Wrap with two takeaways and assign next steps while still outside.",
-    ],
-    guardrails: [
-      "Avoid noisy routes; keep the voice quality clear for remote folks.",
-      "If someone cannot walk, keep them looped in digitally and recap later.",
-      "Respect weather - slide it indoors on storms and keep masks handy.",
-    ],
-  },
-  {
-    id: "weekend-reset-rhythm",
-    title: "Weekend reset rhythm",
-    summary:
-      "A Saturday planning pass that maps wins, workouts, and rest before Monday.",
-    category: "Focus",
-    cadence: "Weekly",
-    timeOfDay: "Anytime",
-    commitment: "Standard",
-    anchor: "Saturday morning coffee",
-    duration: "25 minutes",
-    adoption: 8700,
-    highlight: "Members start Monday quieter and clearer",
-    benefits: [
-      "Clarifies three wins and prevents Monday scramble",
-      "Centers workouts around energy spikes instead of obligation",
-      "Surfaces blockers before they bottleneck the week",
-    ],
-    steps: [
-      "Review the prior week and capture one lesson learned.",
-      "Plan three priority outcomes and map deep work blocks.",
-      "Pick two recovery anchors and parade them on the calendar.",
-    ],
-    guardrails: [
-      "If time is tight, keep it to 10 minutes and revisit Sunday night.",
-      "Skip cleaning every file; keep focus on the outcomes list.",
-      "Share it with a partner to make it stick.",
-    ],
-  },
-];
-
-const commitmentCopy: Record<Commitment, string> = {
-  Quick: "10 minutes or less",
-  Standard: "15-45 minutes",
-  Deep: "60-90 minutes",
-};
-
-const timeFilters: { value: TimeWindow | "Any"; label: string }[] = [
-  { value: "Any", label: "Anytime" },
-  { value: "Morning", label: "Morning" },
-  { value: "Workday", label: "Workday" },
-  { value: "Evening", label: "Evening" },
-];
-
-const formatNumber = (value: number) => {
-  if (value >= 1000) {
-    const formatted = (value / 1000).toFixed(1);
-    return `${formatted.endsWith(".0") ? formatted.slice(0, -2) : formatted}k`;
+const formatPostedDate = (value: string) => {
+  try {
+    const date = new Date(value);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+    }).format(date);
+  } catch {
+    return value;
   }
-  return value.toString();
 };
 
-const PopularRoutinesPage: React.FC = () => {
+const fallbackPosts = popularHabits;
+
+const normalizeCadence = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  if (normalized.includes("weekly") || normalized.includes("week")) {
+    return "Weekly";
+  }
+  if (normalized.includes("month")) {
+    return "Monthly";
+  }
+  return "Daily";
+};
+
+const buildHabitPayload = (post: PopularPost) => ({
+  name: post.title,
+  description: post.summary ?? post.highlight ?? "",
+  cadence: normalizeCadence(post.cadence),
+  startDate: new Date().toISOString().slice(0, 10),
+  timeOfDay: "",
+  reminder: "",
+  goalAmount: 1,
+  goalUnit: "count",
+  goalUnitCategory: "Quantity",
+});
+
+const mergePosts = (communityPosts: PopularPost[]) => {
+  const seen = new Set<string>();
+  const joined: PopularPost[] = [];
+  communityPosts.forEach((post) => {
+    if (!seen.has(post.id)) {
+      seen.add(post.id);
+      joined.push(post);
+    }
+  });
+  fallbackPosts.forEach((post) => {
+    if (!seen.has(post.id)) {
+      seen.add(post.id);
+      joined.push(post);
+    }
+  });
+  return joined;
+};
+
+const PopularHabitsPage: React.FC = () => {
+  const router = useRouter();
+  const [posts, setPosts] = useState<PopularPost[]>(fallbackPosts);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category | "All">("All");
   const [commitment, setCommitment] = useState<Commitment | "Any">("Any");
-  const [timeOfDay, setTimeOfDay] = useState<TimeWindow | "Any">("Any");
-  const [selectedRoutineId, setSelectedRoutineId] = useState<string>(
-    routines[0]?.id ?? ""
-  );
+  const [timeWindow, setTimeWindow] = useState<TimeWindow | "Any">("Any");
+  const [selectedPostId, setSelectedPostId] = useState("");
+  const [addingPostId, setAddingPostId] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [addSuccess, setAddSuccess] = useState<string | null>(null);
 
-  const filteredRoutines = useMemo(() => {
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+    fetch("/api/habits/posts")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load posts.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!active) return;
+        const normalized = (data.posts ?? []).map((post: any) => {
+          const { user, habit, ...rest } = post;
+          return {
+            ...rest,
+            userName: user?.name ?? null,
+            habitName: habit?.name ?? null,
+          } as PopularPost;
+        });
+        setPosts(mergePosts(normalized));
+      })
+      .catch((fetchError: Error) => {
+        if (!active) return;
+        setError(fetchError.message);
+        setPosts(fallbackPosts);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const filteredPosts = useMemo(() => {
     const term = search.trim().toLowerCase();
-    return routines.filter((routine) => {
-      const matchesCategory =
-        category === "All" || routine.category === category;
+    return posts.filter((post) => {
+      const matchesCategory = category === "All" || post.category === category;
       const matchesCommitment =
-        commitment === "Any" || routine.commitment === commitment;
+        commitment === "Any" || post.commitment === commitment;
       const matchesTime =
-        timeOfDay === "Any" || routine.timeOfDay === timeOfDay;
+        timeWindow === "Any" || post.timeWindow === timeWindow;
       const matchesSearch =
         term.length === 0 ||
-        routine.title.toLowerCase().includes(term) ||
-        routine.summary.toLowerCase().includes(term) ||
-        routine.anchor.toLowerCase().includes(term) ||
-        routine.benefits.some((benefit) =>
-          benefit.toLowerCase().includes(term)
-        );
+        post.title.toLowerCase().includes(term) ||
+        (post.summary?.toLowerCase().includes(term) ?? false) ||
+        (post.anchor?.toLowerCase().includes(term) ?? false) ||
+        post.benefits.some((benefit) => benefit.toLowerCase().includes(term));
 
       return (
         matchesCategory && matchesCommitment && matchesTime && matchesSearch
       );
     });
-  }, [category, commitment, search, timeOfDay]);
+  }, [category, commitment, posts, search, timeWindow]);
 
   useEffect(() => {
-    if (filteredRoutines.length === 0) return;
-    if (filteredRoutines.some((routine) => routine.id === selectedRoutineId))
+    if (filteredPosts.length === 0) {
+      setSelectedPostId("");
       return;
-    setSelectedRoutineId(filteredRoutines[0].id);
-  }, [filteredRoutines, selectedRoutineId]);
+    }
+    if (
+      !selectedPostId ||
+      !filteredPosts.some((post) => post.id === selectedPostId)
+    ) {
+      setSelectedPostId(filteredPosts[0].id);
+    }
+  }, [filteredPosts, selectedPostId]);
 
-  const selectedRoutine =
-    filteredRoutines.find((routine) => routine.id === selectedRoutineId) ||
-    filteredRoutines[0] ||
-    routines[0];
+  const selectedPost =
+    filteredPosts.find((post) => post.id === selectedPostId) ||
+    filteredPosts[0] ||
+    null;
+
+  useEffect(() => {
+    setAddError(null);
+    setAddSuccess(null);
+  }, [selectedPostId]);
+
+  const handleAddHabit = async (post: PopularPost) => {
+    setAddError(null);
+    setAddSuccess(null);
+    setAddingPostId(post.id);
+    try {
+      const response = await fetch("/api/habits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildHabitPayload(post)),
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error ?? "Unable to add habit.");
+      }
+      setAddSuccess("Habit added to your board.");
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : "Unable to add habit.");
+    } finally {
+      setAddingPostId(null);
+    }
+  };
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
@@ -345,17 +229,31 @@ const PopularRoutinesPage: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
               <BadgeCheck className="w-4 h-4" />
-              <span>Popular routines</span>
+              <span>Community habits</span>
             </div>
             <div className="space-y-1">
               <h1 className="xl:text-xl 2xl:text-2xl md:text-3xl font-bold">
-                Browse routines people stick with
+                Browse habits people post for the crew
               </h1>
               <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                Pick a battle-tested routine, see the anchor and safety net,
-                then fork it into your own plan.
+                Open the blueprint, learn why it works, and riff back on a habit
+                that stuck.
               </p>
             </div>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Button
+              onClick={() => router.push("/dashboard/habits/popular/create")}
+              className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
+            >
+              Create a post
+            </Button>
+            <Link
+              href="/dashboard/habits"
+              className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              Back to your habits
+            </Link>
           </div>
         </div>
 
@@ -381,7 +279,8 @@ const PopularRoutinesPage: React.FC = () => {
             </span>
           </div>
           <span className="xl:text-xs text-muted-foreground">
-            Hover a card to preview. Click to open the playbook on the right.
+            Filter by category, cadence, or time window and click a card to see
+            the full post.
           </span>
         </div>
 
@@ -393,23 +292,27 @@ const PopularRoutinesPage: React.FC = () => {
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search by name, benefit, or anchor"
+                  placeholder="Search by habitual anchor, headline, or benefit"
                   className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-9 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                {(
-                  [
-                    "All",
-                    "Movement",
-                    "Energy",
-                    "Focus",
-                    "Recovery",
-                    "Mindset",
-                    "Health",
-                  ] as (Category | "All")[]
-                ).map((item) => (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategory("All");
+                    setCommitment("Any");
+                    setTimeWindow("Any");
+                  }}
+                  className="px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                >
+                  Reset filters
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {categories.map((item) => (
                   <button
                     key={item}
                     type="button"
@@ -434,8 +337,7 @@ const PopularRoutinesPage: React.FC = () => {
                     type="button"
                     onClick={() => setCommitment(item)}
                     className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
-                      commitment === item ||
-                      (commitment === "Any" && item === "Any")
+                      commitment === item
                         ? "bg-analytics-dark/90 text-white border-analytics-dark"
                         : "bg-white text-muted-foreground border-gray-200 hover:border-primary/40"
                     }`}
@@ -451,11 +353,11 @@ const PopularRoutinesPage: React.FC = () => {
                     key={item.value}
                     type="button"
                     onClick={() =>
-                      setTimeOfDay(item.value === "Any" ? "Any" : item.value)
+                      setTimeWindow(item.value === "Any" ? "Any" : item.value)
                     }
                     className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
-                      timeOfDay === item.value ||
-                      (timeOfDay === "Any" && item.value === "Any")
+                      timeWindow === item.value ||
+                      (timeWindow === "Any" && item.value === "Any")
                         ? "bg-muted text-foreground border-gray-200"
                         : "bg-white text-muted-foreground border-gray-200 hover:border-primary/40"
                     }`}
@@ -464,20 +366,6 @@ const PopularRoutinesPage: React.FC = () => {
                   </button>
                 ))}
               </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setCategory("All");
-                  setCommitment("Any");
-                  setTimeOfDay("Any");
-                  setSearch("");
-                }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-muted-foreground hover:border-primary/50 hover:text-primary transition"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                Reset filters
-              </button>
             </div>
           </div>
 
@@ -489,32 +377,42 @@ const PopularRoutinesPage: React.FC = () => {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Browse
                     </p>
-                    <h2 className="text-xl font-semibold">Popular patterns</h2>
+                    <h2 className="text-xl font-semibold">
+                      Popular habit posts
+                    </h2>
                     <p className="text-sm text-muted-foreground">
-                      Hover for anchors and safety nets. Click to see the
-                      playbook details.
+                      Hover or tap a card to preview its full why, steps, and
+                      guardrails.
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                     <TrendingUp className="w-4 h-4" />
-                    {routines.length} routines
+                    {posts.length} posts
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
-                  {filteredRoutines.length === 0 ? (
+                  {loading ? (
                     <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
-                      No matches yet. Clear filters or try another search term.
+                      Loading posts…
+                    </div>
+                  ) : error ? (
+                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm font-semibold text-rose-600">
+                      {error}
+                    </div>
+                  ) : filteredPosts.length === 0 ? (
+                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
+                      No posts match those filters yet. Try another combination.
                     </div>
                   ) : (
-                    filteredRoutines.map((routine) => {
-                      const styles = categoryStyles[routine.category];
-                      const isSelected = routine.id === selectedRoutineId;
+                    filteredPosts.map((post) => {
+                      const styles = categoryStyles[post.category];
+                      const isSelected = post.id === selectedPostId;
                       return (
                         <button
-                          key={routine.id}
+                          key={post.id}
                           type="button"
-                          onClick={() => setSelectedRoutineId(routine.id)}
+                          onClick={() => setSelectedPostId(post.id)}
                           className={`relative w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
                             isSelected
                               ? "border-primary/60 ring-2 ring-primary/20 bg-primary/5"
@@ -528,41 +426,42 @@ const PopularRoutinesPage: React.FC = () => {
                               <span
                                 className={`h-2 w-2 rounded-full ${styles.dot}`}
                               />
-                              {routine.category}
+                              {post.category}
                             </div>
                             <span className="text-[11px] text-muted-foreground">
-                              {routine.highlight}
+                              {post.highlight ?? "Community share"}
                             </span>
                           </div>
                           <div className="mt-2 space-y-1">
-                            <p className="font-semibold">{routine.title}</p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              {routine.summary}
+                            <p className="font-semibold">{post.title}</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                              {post.summary ?? "No summary provided."}
                             </p>
                           </div>
-                          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+                          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <Clock3 className="w-3.5 h-3.5 text-primary" />
-                              {routine.duration}
+                              {post.duration ?? "Flexible"}
                             </div>
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <CalendarClock className="w-3.5 h-3.5 text-primary" />
-                              {routine.cadence}
+                              {post.cadence}
                             </div>
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <HeartPulse className="w-3.5 h-3.5 text-primary" />
-                              {commitmentCopy[routine.commitment]}
+                              {commitmentCopy[post.commitment]}
                             </div>
                           </div>
                           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <Flame className="w-4 h-4 text-primary" />
                               <span>
-                                {formatNumber(routine.adoption)} teams use this
+                                {post.habitName ?? "Community habit"} • Posted{" "}
+                                {formatPostedDate(post.createdAt)}
                               </span>
                             </div>
                             <span className="font-semibold text-foreground">
-                              {routine.anchor}
+                              {post.anchor ?? post.timeWindow}
                             </span>
                           </div>
                         </button>
@@ -584,28 +483,29 @@ const PopularRoutinesPage: React.FC = () => {
                       Blueprint and safety net
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      Lift the structure, then tweak anchors before adding to
-                      your board.
+                      Copy the structure, tune the anchor, and pin it in your
+                      board.
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                     <Sparkles className="w-4 h-4" />
-                    Draft
+                    Community
                   </div>
                 </div>
 
-                {selectedRoutine ? (
+                {selectedPost ? (
                   <div className="space-y-4">
                     <div className="space-y-1">
                       <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
                         <Target className="w-4 h-4 text-primary" />
-                        {selectedRoutine.timeOfDay} - {selectedRoutine.anchor}
+                        {selectedPost.timeWindow} -{" "}
+                        {selectedPost.anchor ?? "No anchor yet"}
                       </div>
                       <h3 className="text-lg font-semibold">
-                        {selectedRoutine.title}
+                        {selectedPost.title}
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        {selectedRoutine.summary}
+                        {selectedPost.summary ?? "No summary available."}
                       </p>
                     </div>
 
@@ -616,10 +516,10 @@ const PopularRoutinesPage: React.FC = () => {
                           Duration
                         </div>
                         <p className="font-semibold">
-                          {selectedRoutine.duration}
+                          {selectedPost.duration ?? "Flexible"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {commitmentCopy[selectedRoutine.commitment]}
+                          {commitmentCopy[selectedPost.commitment]}
                         </p>
                       </div>
                       <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
@@ -627,11 +527,9 @@ const PopularRoutinesPage: React.FC = () => {
                           <CalendarClock className="w-4 h-4 text-primary" />
                           Cadence
                         </div>
-                        <p className="font-semibold">
-                          {selectedRoutine.cadence}
-                        </p>
+                        <p className="font-semibold">{selectedPost.cadence}</p>
                         <p className="text-xs text-muted-foreground">
-                          {selectedRoutine.highlight}
+                          {selectedPost.highlight ?? "Why it matters"}
                         </p>
                       </div>
                     </div>
@@ -644,15 +542,21 @@ const PopularRoutinesPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {selectedRoutine.benefits.map((benefit) => (
-                          <span
-                            key={benefit}
-                            className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground"
-                          >
-                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                            {benefit}
+                        {selectedPost.benefits.length > 0 ? (
+                          selectedPost.benefits.map((benefit) => (
+                            <span
+                              key={benefit}
+                              className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground"
+                            >
+                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                              {benefit}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            No benefit notes yet.
                           </span>
-                        ))}
+                        )}
                       </div>
                     </div>
 
@@ -668,38 +572,80 @@ const PopularRoutinesPage: React.FC = () => {
                           </span>
                         </div>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                          {selectedRoutine.steps.map((step) => (
-                            <li key={step} className="flex items-start gap-2">
-                              <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-                              <span>{step}</span>
-                            </li>
-                          ))}
+                          {selectedPost.steps.length > 0 ? (
+                            selectedPost.steps.map((step) => (
+                              <li key={step} className="flex items-start gap-2">
+                                <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+                                <span>{step}</span>
+                              </li>
+                            ))
+                          ) : (
+                            <li className="text-xs">No steps recorded yet.</li>
+                          )}
                         </ul>
                       </div>
                     </div>
 
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold">
+                          Guardrails
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedPost.guardrails.length > 0 ? (
+                          selectedPost.guardrails.map((guardrail) => (
+                            <div
+                              key={guardrail}
+                              className="rounded-2xl border border-gray-100 bg-muted/50 px-3 py-2 text-sm text-muted-foreground"
+                            >
+                              {guardrail}
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            No guardrails provided.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="flex flex-wrap items-center gap-3">
-                      <Button className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition">
-                        <Link href="/dashboard/habits/routines/create">
-                          Use this routine
-                        </Link>
-                      </Button>
-                      <Link
-                        href="/dashboard/habits/routines"
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                      <Button
+                        onClick={() =>
+                          router.push("/dashboard/habits/popular/create")
+                        }
+                        className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
                       >
-                        <CalendarClock className="w-4 h-4" />
-                        Add to a routine
-                      </Link>
+                        Share your version
+                      </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleAddHabit(selectedPost!)}
+                      disabled={addingPostId !== null}
+                      className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition disabled:border-gray-200 disabled:text-muted-foreground/60"
+                    >
+                      <CalendarClock className="w-4 h-4" />
+                      Add to a habit
+                    </Button>
+                    {(addError || addSuccess) && (
+                      <p
+                        className={`text-xs ${
+                          addError ? "text-rose-600" : "text-emerald-600"
+                        }`}
+                      >
+                        {addError ?? addSuccess}
+                      </p>
+                    )}
                       <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                         <Sparkles className="w-4 h-4" />
-                        Swap with your own copy after saving
+                        Swap after saving
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 text-sm text-muted-foreground">
-                    Select a routine on the left to see its blueprint.
+                    Select a post on the left to see its blueprint.
                   </div>
                 )}
               </div>
@@ -711,4 +657,4 @@ const PopularRoutinesPage: React.FC = () => {
   );
 };
 
-export default PopularRoutinesPage;
+export default PopularHabitsPage;

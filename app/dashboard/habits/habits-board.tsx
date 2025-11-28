@@ -200,7 +200,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                             onClick={() =>
                               router.push(`/dashboard/habits/${habit.id}/edit`)
                             }
-                            className={`grid w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
+                            className={`grid gap-1 w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
                               isSelected ? "ring-2 ring-primary/30" : ""
                             }`}
                           >
@@ -209,7 +209,6 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                                 {habit.name}
                               </div>
                               <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-1">
-                                <Sparkles className="w-3 h-3 text-primary" />
                                 {focusLabel}
                               </div>
                             </div>
@@ -242,7 +241,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -256,13 +255,6 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                       Guardrails, rescues, and weekly reviews that protect every
                       streak.
                     </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {selectedHabit ? (
-                      <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                        Click a habit above to edit {selectedHabit.name}
-                      </span>
-                    ) : null}
                   </div>
                 </div>
 

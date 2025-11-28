@@ -236,6 +236,57 @@ export type FloatWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatFilter<$PrismaModel>
 }
 
+export type EnumHabitCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCategory | Prisma.EnumHabitCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel> | $Enums.HabitCategory
+}
+
+export type EnumHabitTimeWindowFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitTimeWindow | Prisma.EnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel> | $Enums.HabitTimeWindow
+}
+
+export type EnumHabitCommitmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCommitment | Prisma.EnumHabitCommitmentFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel> | $Enums.HabitCommitment
+}
+
+export type EnumHabitCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCategory | Prisma.EnumHabitCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCategoryWithAggregatesFilter<$PrismaModel> | $Enums.HabitCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel>
+}
+
+export type EnumHabitTimeWindowWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitTimeWindow | Prisma.EnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitTimeWindowWithAggregatesFilter<$PrismaModel> | $Enums.HabitTimeWindow
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel>
+}
+
+export type EnumHabitCommitmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCommitment | Prisma.EnumHabitCommitmentFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCommitmentWithAggregatesFilter<$PrismaModel> | $Enums.HabitCommitment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -496,6 +547,57 @@ export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedFloatFilter<$PrismaModel>
   _min?: Prisma.NestedFloatFilter<$PrismaModel>
   _max?: Prisma.NestedFloatFilter<$PrismaModel>
+}
+
+export type NestedEnumHabitCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCategory | Prisma.EnumHabitCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel> | $Enums.HabitCategory
+}
+
+export type NestedEnumHabitTimeWindowFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitTimeWindow | Prisma.EnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel> | $Enums.HabitTimeWindow
+}
+
+export type NestedEnumHabitCommitmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCommitment | Prisma.EnumHabitCommitmentFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel> | $Enums.HabitCommitment
+}
+
+export type NestedEnumHabitCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCategory | Prisma.EnumHabitCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCategory[] | Prisma.ListEnumHabitCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCategoryWithAggregatesFilter<$PrismaModel> | $Enums.HabitCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitCategoryFilter<$PrismaModel>
+}
+
+export type NestedEnumHabitTimeWindowWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitTimeWindow | Prisma.EnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitTimeWindow[] | Prisma.ListEnumHabitTimeWindowFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitTimeWindowWithAggregatesFilter<$PrismaModel> | $Enums.HabitTimeWindow
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitTimeWindowFilter<$PrismaModel>
+}
+
+export type NestedEnumHabitCommitmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HabitCommitment | Prisma.EnumHabitCommitmentFieldRefInput<$PrismaModel>
+  in?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HabitCommitment[] | Prisma.ListEnumHabitCommitmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHabitCommitmentWithAggregatesFilter<$PrismaModel> | $Enums.HabitCommitment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHabitCommitmentFilter<$PrismaModel>
 }
 
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {

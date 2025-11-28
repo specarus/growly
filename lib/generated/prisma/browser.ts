@@ -58,6 +58,11 @@ export type CollectionTodo = Prisma.CollectionTodoModel
  */
 export type Habit = Prisma.HabitModel
 /**
+ * Model PostHabit
+ * 
+ */
+export type PostHabit = Prisma.PostHabitModel
+/**
  * Model Routine
  * 
  */

@@ -398,6 +398,7 @@ export const ModelName = {
   Collection: 'Collection',
   CollectionTodo: 'CollectionTodo',
   Habit: 'Habit',
+  PostHabit: 'PostHabit',
   Routine: 'Routine',
   RoutineHabit: 'RoutineHabit'
 } as const
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "todo" | "collection" | "collectionTodo" | "habit" | "routine" | "routineHabit"
+    modelProps: "user" | "session" | "account" | "verification" | "todo" | "collection" | "collectionTodo" | "habit" | "postHabit" | "routine" | "routineHabit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1011,6 +1012,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PostHabit: {
+      payload: Prisma.$PostHabitPayload<ExtArgs>
+      fields: Prisma.PostHabitFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PostHabitFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PostHabitFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        findFirst: {
+          args: Prisma.PostHabitFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PostHabitFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        findMany: {
+          args: Prisma.PostHabitFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>[]
+        }
+        create: {
+          args: Prisma.PostHabitCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        createMany: {
+          args: Prisma.PostHabitCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PostHabitCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>[]
+        }
+        delete: {
+          args: Prisma.PostHabitDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        update: {
+          args: Prisma.PostHabitUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        deleteMany: {
+          args: Prisma.PostHabitDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PostHabitUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PostHabitUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>[]
+        }
+        upsert: {
+          args: Prisma.PostHabitUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitPayload>
+        }
+        aggregate: {
+          args: Prisma.PostHabitAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePostHabit>
+        }
+        groupBy: {
+          args: Prisma.PostHabitGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostHabitGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PostHabitCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostHabitCountAggregateOutputType> | number
+        }
+      }
+    }
     Routine: {
       payload: Prisma.$RoutinePayload<ExtArgs>
       fields: Prisma.RoutineFieldRefs
@@ -1320,6 +1395,29 @@ export const HabitScalarFieldEnum = {
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
 
 
+export const PostHabitScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  summary: 'summary',
+  highlight: 'highlight',
+  anchor: 'anchor',
+  duration: 'duration',
+  cadence: 'cadence',
+  category: 'category',
+  timeWindow: 'timeWindow',
+  commitment: 'commitment',
+  benefits: 'benefits',
+  steps: 'steps',
+  guardrails: 'guardrails',
+  habitId: 'habitId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostHabitScalarFieldEnum = (typeof PostHabitScalarFieldEnum)[keyof typeof PostHabitScalarFieldEnum]
+
+
 export const RoutineScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1464,6 +1562,48 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
+
+/**
+ * Reference to a field of type 'HabitCategory'
+ */
+export type EnumHabitCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitCategory[]'
+ */
+export type ListEnumHabitCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitTimeWindow'
+ */
+export type EnumHabitTimeWindowFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitTimeWindow'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitTimeWindow[]'
+ */
+export type ListEnumHabitTimeWindowFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitTimeWindow[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitCommitment'
+ */
+export type EnumHabitCommitmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitCommitment'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitCommitment[]'
+ */
+export type ListEnumHabitCommitmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitCommitment[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1559,6 +1699,7 @@ export type GlobalOmitConfig = {
   collection?: Prisma.CollectionOmit
   collectionTodo?: Prisma.CollectionTodoOmit
   habit?: Prisma.HabitOmit
+  postHabit?: Prisma.PostHabitOmit
   routine?: Prisma.RoutineOmit
   routineHabit?: Prisma.RoutineHabitOmit
 }

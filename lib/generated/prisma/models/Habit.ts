@@ -282,6 +282,7 @@ export type HabitWhereInput = {
   userId?: Prisma.StringFilter<"Habit"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   routineHabits?: Prisma.RoutineHabitListRelationFilter
+  postHabits?: Prisma.PostHabitListRelationFilter
 }
 
 export type HabitOrderByWithRelationInput = {
@@ -300,6 +301,7 @@ export type HabitOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   routineHabits?: Prisma.RoutineHabitOrderByRelationAggregateInput
+  postHabits?: Prisma.PostHabitOrderByRelationAggregateInput
 }
 
 export type HabitWhereUniqueInput = Prisma.AtLeast<{
@@ -322,6 +324,7 @@ export type HabitWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"Habit"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   routineHabits?: Prisma.RoutineHabitListRelationFilter
+  postHabits?: Prisma.PostHabitListRelationFilter
 }, "id" | "id_userId">
 
 export type HabitOrderByWithAggregationInput = {
@@ -379,6 +382,7 @@ export type HabitCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  postHabits?: Prisma.PostHabitCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateInput = {
@@ -396,6 +400,7 @@ export type HabitUncheckedCreateInput = {
   updatedAt?: Date | string
   userId: string
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUpdateInput = {
@@ -413,6 +418,7 @@ export type HabitUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  postHabits?: Prisma.PostHabitUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateInput = {
@@ -430,6 +436,7 @@ export type HabitUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateManyInput = {
@@ -605,6 +612,20 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type HabitCreateNestedOneWithoutPostHabitsInput = {
+  create?: Prisma.XOR<Prisma.HabitCreateWithoutPostHabitsInput, Prisma.HabitUncheckedCreateWithoutPostHabitsInput>
+  connectOrCreate?: Prisma.HabitCreateOrConnectWithoutPostHabitsInput
+  connect?: Prisma.HabitWhereUniqueInput
+}
+
+export type HabitUpdateOneRequiredWithoutPostHabitsNestedInput = {
+  create?: Prisma.XOR<Prisma.HabitCreateWithoutPostHabitsInput, Prisma.HabitUncheckedCreateWithoutPostHabitsInput>
+  connectOrCreate?: Prisma.HabitCreateOrConnectWithoutPostHabitsInput
+  upsert?: Prisma.HabitUpsertWithoutPostHabitsInput
+  connect?: Prisma.HabitWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HabitUpdateToOneWithWhereWithoutPostHabitsInput, Prisma.HabitUpdateWithoutPostHabitsInput>, Prisma.HabitUncheckedUpdateWithoutPostHabitsInput>
+}
+
 export type HabitCreateNestedOneWithoutRoutineHabitsInput = {
   create?: Prisma.XOR<Prisma.HabitCreateWithoutRoutineHabitsInput, Prisma.HabitUncheckedCreateWithoutRoutineHabitsInput>
   connectOrCreate?: Prisma.HabitCreateOrConnectWithoutRoutineHabitsInput
@@ -633,6 +654,7 @@ export type HabitCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  postHabits?: Prisma.PostHabitCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutUserInput = {
@@ -649,6 +671,7 @@ export type HabitUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutUserInput = {
@@ -696,6 +719,90 @@ export type HabitScalarWhereInput = {
   userId?: Prisma.StringFilter<"Habit"> | string
 }
 
+export type HabitCreateWithoutPostHabitsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  cadence: string
+  startDate: Date | string
+  timeOfDay?: string | null
+  reminder?: string | null
+  goalAmount?: number
+  goalUnit?: string
+  goalUnitCategory?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutHabitsInput
+  routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+}
+
+export type HabitUncheckedCreateWithoutPostHabitsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  cadence: string
+  startDate: Date | string
+  timeOfDay?: string | null
+  reminder?: string | null
+  goalAmount?: number
+  goalUnit?: string
+  goalUnitCategory?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+}
+
+export type HabitCreateOrConnectWithoutPostHabitsInput = {
+  where: Prisma.HabitWhereUniqueInput
+  create: Prisma.XOR<Prisma.HabitCreateWithoutPostHabitsInput, Prisma.HabitUncheckedCreateWithoutPostHabitsInput>
+}
+
+export type HabitUpsertWithoutPostHabitsInput = {
+  update: Prisma.XOR<Prisma.HabitUpdateWithoutPostHabitsInput, Prisma.HabitUncheckedUpdateWithoutPostHabitsInput>
+  create: Prisma.XOR<Prisma.HabitCreateWithoutPostHabitsInput, Prisma.HabitUncheckedCreateWithoutPostHabitsInput>
+  where?: Prisma.HabitWhereInput
+}
+
+export type HabitUpdateToOneWithWhereWithoutPostHabitsInput = {
+  where?: Prisma.HabitWhereInput
+  data: Prisma.XOR<Prisma.HabitUpdateWithoutPostHabitsInput, Prisma.HabitUncheckedUpdateWithoutPostHabitsInput>
+}
+
+export type HabitUpdateWithoutPostHabitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timeOfDay?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  goalUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  goalUnitCategory?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
+  routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+}
+
+export type HabitUncheckedUpdateWithoutPostHabitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timeOfDay?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reminder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  goalUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  goalUnitCategory?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+}
+
 export type HabitCreateWithoutRoutineHabitsInput = {
   id?: string
   name: string
@@ -710,6 +817,7 @@ export type HabitCreateWithoutRoutineHabitsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
+  postHabits?: Prisma.PostHabitCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
@@ -726,6 +834,7 @@ export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutRoutineHabitsInput = {
@@ -758,6 +867,7 @@ export type HabitUpdateWithoutRoutineHabitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
+  postHabits?: Prisma.PostHabitUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
@@ -774,6 +884,7 @@ export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateManyUserInput = {
@@ -805,6 +916,7 @@ export type HabitUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  postHabits?: Prisma.PostHabitUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutUserInput = {
@@ -821,6 +933,7 @@ export type HabitUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateManyWithoutUserInput = {
@@ -845,10 +958,12 @@ export type HabitUncheckedUpdateManyWithoutUserInput = {
 
 export type HabitCountOutputType = {
   routineHabits: number
+  postHabits: number
 }
 
 export type HabitCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   routineHabits?: boolean | HabitCountOutputTypeCountRoutineHabitsArgs
+  postHabits?: boolean | HabitCountOutputTypeCountPostHabitsArgs
 }
 
 /**
@@ -868,6 +983,13 @@ export type HabitCountOutputTypeCountRoutineHabitsArgs<ExtArgs extends runtime.T
   where?: Prisma.RoutineHabitWhereInput
 }
 
+/**
+ * HabitCountOutputType without action
+ */
+export type HabitCountOutputTypeCountPostHabitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostHabitWhereInput
+}
+
 
 export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -885,6 +1007,7 @@ export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   routineHabits?: boolean | Prisma.Habit$routineHabitsArgs<ExtArgs>
+  postHabits?: boolean | Prisma.Habit$postHabitsArgs<ExtArgs>
   _count?: boolean | Prisma.HabitCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habit"]>
 
@@ -942,6 +1065,7 @@ export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type HabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   routineHabits?: boolean | Prisma.Habit$routineHabitsArgs<ExtArgs>
+  postHabits?: boolean | Prisma.Habit$postHabitsArgs<ExtArgs>
   _count?: boolean | Prisma.HabitCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HabitIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -956,6 +1080,7 @@ export type $HabitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     routineHabits: Prisma.$RoutineHabitPayload<ExtArgs>[]
+    postHabits: Prisma.$PostHabitPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1367,6 +1492,7 @@ export interface Prisma__HabitClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   routineHabits<T extends Prisma.Habit$routineHabitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$routineHabitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutineHabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  postHabits<T extends Prisma.Habit$postHabitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$postHabitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostHabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1826,6 +1952,30 @@ export type Habit$routineHabitsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.RoutineHabitScalarFieldEnum | Prisma.RoutineHabitScalarFieldEnum[]
+}
+
+/**
+ * Habit.postHabits
+ */
+export type Habit$postHabitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostHabit
+   */
+  select?: Prisma.PostHabitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostHabit
+   */
+  omit?: Prisma.PostHabitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostHabitInclude<ExtArgs> | null
+  where?: Prisma.PostHabitWhereInput
+  orderBy?: Prisma.PostHabitOrderByWithRelationInput | Prisma.PostHabitOrderByWithRelationInput[]
+  cursor?: Prisma.PostHabitWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostHabitScalarFieldEnum | Prisma.PostHabitScalarFieldEnum[]
 }
 
 /**
