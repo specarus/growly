@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
+import HabitsTabs from "./components/habits-tabs";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -129,26 +130,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
           titleClassName="xl:text-2xl 2xl:text-3xl"
         />
         <div>
-          <div className="inline-flex xl:gap-1 2xl:gap-2 p-2 items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
-            <span
-              className="px-4 py-2 font-semibold bg-primary text-white rounded-full cursor-pointer"
-              aria-current="page"
-            >
-              Habits
-            </span>
-            <Link
-              href="/dashboard/habits/routines"
-              className="px-4 py-2 font-semibold hover:text-primary transition rounded-full"
-            >
-              Routines
-            </Link>
-            <Link
-              href="/dashboard/habits/popular"
-              className="px-4 py-2 font-semibold hover:text-primary transition rounded-full"
-            >
-              Popular
-            </Link>
-          </div>
+          <HabitsTabs active="habits" containerClassName="xl:gap-1 2xl:gap-2" />
         </div>
 
         <div className="grid gap-5">

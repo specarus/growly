@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, Clock3, Plus, Search } from "lucide-react";
+import { CalendarDays, Clock3, Plus, Search, Trash2 } from "lucide-react";
 import type { DragEvent, FC } from "react";
 
 import { statusColors } from "../constants";
@@ -21,6 +21,8 @@ export interface CollectionCardProps {
   onDragEnter?: () => void;
   onDragLeave?: () => void;
   onDropTodo: (todoId: string) => void;
+  onDelete?: () => void;
+  deleting?: boolean;
 }
 
 const CollectionCard: FC<CollectionCardProps> = ({
@@ -37,6 +39,8 @@ const CollectionCard: FC<CollectionCardProps> = ({
   onDragEnter,
   onDragLeave,
   onDropTodo,
+  onDelete,
+  deleting = false,
 }) => {
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -94,15 +98,39 @@ const CollectionCard: FC<CollectionCardProps> = ({
               {assignedCount} todo{assignedCount === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onTogglePicker}
               className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-green-soft shadow-sm hover:border-green-soft/60 transition disabled:opacity-50"
-              disabled={assignmentPending}
+              disabled={assignmentPending || deleting}
               aria-label="Add todo to collection"
             >
               <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!onDelete) return;
+                if (
+                  typeof window !== "undefined" &&
+                  !window.confirm(
+                    `Delete "${collection.name}" and remove its todos?`
+                  )
+                ) {
+                  return;
+                }
+                onDelete();
+              }}
+              className="inline-flex items-center justify-center p-2 rounded-full border border-transparent bg-destructive/10 text-destructive shadow-sm hover:border-destructive/60 transition disabled:opacity-50"
+              disabled={assignmentPending || deleting}
+              aria-label="Delete collection"
+            >
+              <Trash2
+                className={`xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 ${
+                  deleting ? "animate-spin" : ""
+                }`}
+              />
             </button>
           </div>
         </div>

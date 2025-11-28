@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Clock3, GripVertical, Plus, Target, Trash2 } from "lucide-react";
@@ -9,6 +7,7 @@ import PageGradient from "@/app/components/ui/page-gradient";
 import { useRouter } from "next/navigation";
 import MainButton from "@/app/components/ui/main-button";
 import PageHeading from "@/app/components/page-heading";
+import HabitsTabs from "../components/habits-tabs";
 
 type Habit = {
   id: string;
@@ -29,9 +28,6 @@ type RoutinesPageProps = {
   initialBacklog: Habit[];
   initialRoutines: Routine[];
 };
-
-const tabClasses =
-  "px-4 py-2 font-semibold transition whitespace-nowrap rounded-full border border-transparent";
 
 const dropClasses =
   "rounded-2xl border-2 border-dashed transition shadow-sm bg-white/70 hover:border-primary/60";
@@ -237,26 +233,11 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
         />
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex xl:gap-1 2xl:gap-2 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
-            <Link
-              href="/dashboard/habits"
-              className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
-            >
-              Habits
-            </Link>
-            <span
-              className={`${tabClasses} bg-primary text-white rounded-full cursor-pointer`}
-              aria-current="page"
-            >
-              Routines
-            </span>
-            <Link
-              href="/dashboard/habits/popular"
-              className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
-            >
-              Popular
-            </Link>
-          </div>
+          <HabitsTabs
+            active="routines"
+            containerClassName="xl:gap-1 2xl:gap-2"
+            tabClassName="border border-transparent"
+          />
           <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
             Move habits between the backlog and your routines.
           </span>

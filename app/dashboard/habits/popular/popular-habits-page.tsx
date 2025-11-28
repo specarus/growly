@@ -1,13 +1,11 @@
 ﻿"use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Brain,
   CalendarClock,
   CheckCircle2,
   Clock3,
-  Flame,
   Heart,
   HeartPulse,
   Search,
@@ -19,6 +17,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
+import HabitsTabs from "../components/habits-tabs";
 
 import {
   Category,
@@ -280,7 +279,9 @@ const PopularHabitsPage: React.FC = () => {
 
   useEffect(() => {
     setLikedPostIds(
-      new Set(posts.filter((post) => post.likedByCurrentUser).map((post) => post.id))
+      new Set(
+        posts.filter((post) => post.likedByCurrentUser).map((post) => post.id)
+      )
     );
   }, [posts]);
 
@@ -358,26 +359,7 @@ const PopularHabitsPage: React.FC = () => {
         />
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center xl:gap-1 2xl:gap-2 p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
-            <Link
-              href="/dashboard/habits"
-              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition rounded-full"
-            >
-              Habits
-            </Link>
-            <Link
-              href="/dashboard/habits/routines"
-              className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition rounded-full"
-            >
-              Routines
-            </Link>
-            <span
-              className="px-4 py-2 font-semibold bg-primary text-white rounded-full"
-              aria-current="page"
-            >
-              Popular
-            </span>
-          </div>
+          <HabitsTabs active="popular" containerClassName="xl:gap-1 2xl:gap-2" />
           <span className="xl:text-xs text-muted-foreground">
             Filter by category, cadence, or time window and click a card to see
             the full post.
