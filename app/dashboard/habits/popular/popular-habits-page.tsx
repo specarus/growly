@@ -94,6 +94,7 @@ const PopularHabitsPage: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState("");
   const [likingPostId, setLikingPostId] = useState<string | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
+  const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
   const [addingPostId, setAddingPostId] = useState<string | null>(null);
   const [justAddedPostId, setJustAddedPostId] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
@@ -293,9 +294,7 @@ const PopularHabitsPage: React.FC = () => {
           errorBody && typeof errorBody === "object" && "error" in errorBody
             ? (errorBody as { error?: string }).error
             : null;
-        throw new Error(
-          message ?? "Unable to add this habit to your board."
-        );
+        throw new Error(message ?? "Unable to add this habit to your board.");
       }
       setImportedPostIds((current) => {
         const next = new Set(current);
@@ -779,17 +778,20 @@ const PopularHabitsPage: React.FC = () => {
                               ? "Adding..."
                               : "Add to habit board"}
                           </span>
+                          {showSuccessMessage ? (
+                            <p className="text-[11px] text-green-soft">
+                              Habit added to your board.
+                            </p>
+                          ) : null}
+                          {addError ? (
+                            <p
+                              className="text-[11px] text-rose-600"
+                              role="alert"
+                            >
+                              {addError}
+                            </p>
+                          ) : null}
                         </button>
-                        {showSuccessMessage ? (
-                          <p className="text-[11px] text-green-soft">
-                            Habit added to your board.
-                          </p>
-                        ) : null}
-                        {addError ? (
-                          <p className="text-[11px] text-rose-600" role="alert">
-                            {addError}
-                          </p>
-                        ) : null}
                       </div>
                       <button
                         type="button"

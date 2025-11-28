@@ -98,6 +98,13 @@ function AccountDropdown({ session }: AccountDropdownProps) {
           >
             Account
           </Link>
+          <Link
+            href="/dashboard/habits/posts"
+            className="block rounded-xl px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.4em] text-primary transition-colors hover:bg-primary/5"
+            onClick={() => setIsOpen(false)}
+          >
+            My posts
+          </Link>
           <button
             type="button"
             onClick={handleSignOut}
