@@ -9,7 +9,7 @@ import {
   LifeBuoy,
   Plus,
   ShieldCheck,
-  Sparkles,
+  Search,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -33,6 +33,19 @@ type PlaybookItem = {
 
 type Props = {
   habits: Habit[];
+};
+
+const getFocusLabel = (habit: Habit) => {
+  const description = habit.description?.trim();
+  if (description) {
+    return description;
+  }
+
+  const amount = habit.goalAmount ?? 0;
+  const unit = habit.goalUnit ?? "count";
+  const cadence = habit.cadence?.toLowerCase() ?? "";
+
+  return `${amount} ${unit} per ${cadence}`;
 };
 
 const streakDefensePlaybook: PlaybookItem[] = [
@@ -82,6 +95,21 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
     () => habits.find((habit) => habit.id === selectedHabitId),
     [habits, selectedHabitId]
   );
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredHabits = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return habits;
+    }
+
+    return habits.filter((habit) => {
+      const focusLabel = getFocusLabel(habit).toLowerCase();
+      return (
+        habit.name.toLowerCase().includes(query) || focusLabel.includes(query)
+      );
+    });
+  }, [habits, searchTerm]);
 
   useEffect(() => {
     const param = searchParams.get("habitId");
@@ -157,6 +185,24 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                   </Link>
                 </div>
 
+                <div>
+                  <label htmlFor="habit-search" className="sr-only">
+                    Search habits
+                  </label>
+                  <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/80 px-3 py-2 text-xs text-muted-foreground shadow-sm">
+                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <input
+                      id="habit-search"
+                      type="search"
+                      value={searchTerm}
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                      placeholder="Search habits or goals"
+                      className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+
                 <div className="rounded-2xl border border-gray-100 bg-muted/50 overflow-hidden">
                   <div className="grid grid-cols-5 px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     <span className="col-span-2">Habit</span>
@@ -182,16 +228,22 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                           Create your first habit
                         </Link>
                       </div>
+                    ) : filteredHabits.length === 0 ? (
+                      <div className="px-4 py-10 text-center xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
+                        <p className="font-semibold text-foreground">
+                          No habits match your search
+                        </p>
+                        <p className="xl:text-xs 2xl:text-sm">
+                          Try another keyword or clear the search to view
+                          everything.
+                        </p>
+                      </div>
                     ) : (
-                      habits.map((habit) => {
+                      filteredHabits.map((habit) => {
                         const isSelected = habit.id === selectedHabitId;
                         const streakValue = habit.streak ?? 0;
                         const completionValue = habit.completion ?? 0;
-                        const focusLabel =
-                          habit.description?.trim() ||
-                          `${habit.goalAmount} {
-                            habit.goalUnit ?? "count"
-                          } per ${habit.cadence.toLowerCase()}`;
+                        const focusLabel = getFocusLabel(habit);
                         return (
                           <button
                             key={habit.id}

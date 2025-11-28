@@ -265,8 +265,10 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                     className="rounded-xl border-2 border-gray-100 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-3 hover:border-primary/50 cursor-grab"
                   >
                     <div>
-                      <p className="font-semibold">{habit.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-semibold xl:text-sm 2xl:text-base">
+                        {habit.name}
+                      </p>
+                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                         {habit.cadence} · {habit.focus}
                       </p>
                     </div>
@@ -330,7 +332,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                       >
                         <div>
                           <p className="font-semibold">{habit.name}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             {habit.cadence} · {habit.focus}
                           </p>
                         </div>

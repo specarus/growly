@@ -179,7 +179,7 @@ const PopularHabitsPage: React.FC = () => {
               <span>Community habits</span>
             </div>
             <div className="space-y-1">
-              <h1 className="xl:text-xl 2xl:text-2xl md:text-3xl font-bold">
+              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
                 Browse habits people post for the crew
               </h1>
               <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
@@ -191,16 +191,10 @@ const PopularHabitsPage: React.FC = () => {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Button
               onClick={() => router.push("/dashboard/habits/popular/create")}
-              className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
+              className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
             >
               Create a post
             </Button>
-            <Link
-              href="/dashboard/habits"
-              className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              Back to your habits
-            </Link>
           </div>
         </div>
 
@@ -235,12 +229,12 @@ const PopularHabitsPage: React.FC = () => {
           <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-sm px-4 py-3 xl:py-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative max-w-xs flex-1 min-w-[220px]">
-                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search by habitual anchor, headline, or benefit"
-                  className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-9 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  placeholder="Search"
+                  className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-9 xl:text-xs text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
 
@@ -252,7 +246,7 @@ const PopularHabitsPage: React.FC = () => {
                     setCommitment("Any");
                     setTimeWindow("Any");
                   }}
-                  className="px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                  className="px-3 py-1.5 rounded-full border border-gray-200 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
                 >
                   Reset filters
                 </button>
@@ -264,7 +258,7 @@ const PopularHabitsPage: React.FC = () => {
                     key={item}
                     type="button"
                     onClick={() => setCategory(item)}
-                    className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
+                    className={`px-3 py-1.5 rounded-full border xl:text-xs font-semibold transition ${
                       category === item
                         ? "bg-primary text-white border-primary"
                         : "bg-white text-muted-foreground border-gray-200 hover:border-primary/40"
@@ -321,18 +315,18 @@ const PopularHabitsPage: React.FC = () => {
               <div className="px-5 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                       Browse
                     </p>
-                    <h2 className="text-xl font-semibold">
+                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                       Popular habit posts
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                       Hover or tap a card to preview its full why, steps, and
                       guardrails.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-2 2xl:px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                     <TrendingUp className="w-4 h-4" />
                     {posts.length} posts
                   </div>
@@ -340,15 +334,15 @@ const PopularHabitsPage: React.FC = () => {
 
                 <div className="grid sm:grid-cols-2 gap-3">
                   {loading ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
+                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm text-muted-foreground">
                       Loading posts…
                     </div>
                   ) : error ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm font-semibold text-rose-600">
+                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm font-semibold text-rose-600">
                       {error}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
+                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm text-muted-foreground">
                       No posts match those filters yet. Try another combination.
                     </div>
                   ) : (
@@ -360,7 +354,7 @@ const PopularHabitsPage: React.FC = () => {
                           key={post.id}
                           type="button"
                           onClick={() => setSelectedPostId(post.id)}
-                          className={`relative w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
+                          className={`relative flex flex-col justify-between w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
                             isSelected
                               ? "border-primary/60 ring-2 ring-primary/20 bg-primary/5"
                               : "border-gray-100 bg-white"
@@ -368,24 +362,23 @@ const PopularHabitsPage: React.FC = () => {
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div
-                              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold ${styles.badge}`}
+                              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold ${styles.badge}`}
                             >
                               <span
                                 className={`h-2 w-2 rounded-full ${styles.dot}`}
                               />
                               {post.category}
                             </div>
-                            <span className="text-[11px] text-muted-foreground">
-                              {post.highlight ?? "Community share"}
-                            </span>
                           </div>
                           <div className="mt-2 space-y-1">
-                            <p className="font-semibold">{post.title}</p>
-                            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                            <p className="xl:text-base 2xl:text-lg font-semibold">
+                              {post.title}
+                            </p>
+                            <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                               {post.summary ?? "No summary provided."}
                             </p>
                           </div>
-                          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
+                          <div className="mt-3 flex flex-wrap gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <Clock3 className="w-3.5 h-3.5 text-primary" />
                               {post.duration ?? "Flexible"}
@@ -399,17 +392,8 @@ const PopularHabitsPage: React.FC = () => {
                               {commitmentCopy[post.commitment]}
                             </div>
                           </div>
-                          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <Flame className="w-4 h-4 text-primary" />
-                              <span>
-                                {post.habitName ?? "Community habit"} • Posted{" "}
-                                {formatPostedDate(post.createdAt)}
-                              </span>
-                            </div>
-                            <span className="font-semibold text-foreground">
-                              {post.anchor ?? post.timeWindow}
-                            </span>
+                          <div className="mt-3 flex items-center xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                            • Posted {formatPostedDate(post.createdAt)}
                           </div>
                         </button>
                       );
@@ -423,19 +407,18 @@ const PopularHabitsPage: React.FC = () => {
               <div className="px-5 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                       Playbook
                     </p>
-                    <h2 className="text-xl font-semibold">
+                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                       Blueprint and safety net
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                       Copy the structure, tune the anchor, and pin it in your
                       board.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    <Sparkles className="w-4 h-4" />
+                  <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                     Community
                   </div>
                 </div>
@@ -443,39 +426,41 @@ const PopularHabitsPage: React.FC = () => {
                 {selectedPost ? (
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-                        <Target className="w-4 h-4 text-primary" />
+                      <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-3 xl:py-1 2xl:py-2 text-[11px] font-semibold text-muted-foreground">
+                        <Target className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
                         {selectedPost.timeWindow} -{" "}
                         {selectedPost.anchor ?? "No anchor yet"}
                       </div>
-                      <h3 className="text-lg font-semibold">
+                      <h3 className="xl:text-base 2xl:text-lg font-semibold xl:pt-2 2xl:pt-4">
                         {selectedPost.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
                         {selectedPost.summary ?? "No summary available."}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                          <Clock3 className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                          <Clock3 className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
                           Duration
                         </div>
-                        <p className="font-semibold">
+                        <p className="xl:text-sm 2xl:text-base font-semibold">
                           {selectedPost.duration ?? "Flexible"}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                           {commitmentCopy[selectedPost.commitment]}
                         </p>
                       </div>
                       <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                          <CalendarClock className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                          <CalendarClock className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
                           Cadence
                         </div>
-                        <p className="font-semibold">{selectedPost.cadence}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="xl:text-sm font-semibold">
+                          {selectedPost.cadence}
+                        </p>
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                           {selectedPost.highlight ?? "Why it matters"}
                         </p>
                       </div>
@@ -484,7 +469,7 @@ const PopularHabitsPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Brain className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-semibold">
+                        <span className="xl:text-sm 2xl:text-base font-semibold">
                           Why it works
                         </span>
                       </div>
@@ -493,14 +478,14 @@ const PopularHabitsPage: React.FC = () => {
                           selectedPost.benefits.map((benefit) => (
                             <span
                               key={benefit}
-                              className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground"
+                              className="inline-flex items-center gap-2 rounded-full bg-muted/30 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
                             >
                               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                               {benefit}
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-muted-foreground">
+                          <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             No benefit notes yet.
                           </span>
                         )}
@@ -510,15 +495,12 @@ const PopularHabitsPage: React.FC = () => {
                     <div className="space-y-3">
                       <div className="rounded-2xl border border-dashed border-gray-200 bg-primary/5 px-4 py-4 space-y-2">
                         <div className="flex items-center justify-between text-sm font-semibold">
-                          <span className="inline-flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-primary" />
+                          <span className="inline-flex items-center gap-2 xl:text-sm 2xl:text-base">
+                            <CheckCircle2 className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
                             First three reps
                           </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            Live soon
-                          </span>
                         </div>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-2 xl:text-xs 2xl:text-sm text-muted-foreground">
                           {selectedPost.steps.length > 0 ? (
                             selectedPost.steps.map((step) => (
                               <li key={step} className="flex items-start gap-2">
@@ -527,7 +509,9 @@ const PopularHabitsPage: React.FC = () => {
                               </li>
                             ))
                           ) : (
-                            <li className="text-xs">No steps recorded yet.</li>
+                            <li className="xl:text-[11px] 2xl:text-xs">
+                              No steps recorded yet.
+                            </li>
                           )}
                         </ul>
                       </div>
@@ -535,7 +519,7 @@ const PopularHabitsPage: React.FC = () => {
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">
+                        <span className="xl:text-sm 2xl:text-base font-semibold">
                           Guardrails
                         </span>
                       </div>
@@ -544,43 +528,29 @@ const PopularHabitsPage: React.FC = () => {
                           selectedPost.guardrails.map((guardrail) => (
                             <div
                               key={guardrail}
-                              className="rounded-2xl border border-gray-100 bg-muted/50 px-3 py-2 text-sm text-muted-foreground"
+                              className="rounded-2xl border border-muted bg-muted/30 px-3 py-2 xl:text-xs 2xl:text-sm text-muted-foreground"
                             >
                               {guardrail}
                             </div>
                           ))
                         ) : (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             No guardrails provided.
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Button
-                        onClick={() =>
-                          router.push("/dashboard/habits/popular/create")
-                        }
-                        className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
-                      >
-                        Share your version
-                      </Button>
-                      <Link
-                        href="/dashboard/habits"
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
-                      >
-                        <CalendarClock className="w-4 h-4" />
-                        Add to a habit
-                      </Link>
-                      <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                        <Sparkles className="w-4 h-4" />
-                        Swap after saving
-                      </div>
-                    </div>
+                    <Link
+                      href="/dashboard/habits"
+                      className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                    >
+                      <CalendarClock className="w-4 h-4" />
+                      Add to habit board
+                    </Link>
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 xl:text-xs 2xl:text-sm text-muted-foreground">
                     Select a post on the left to see its blueprint.
                   </div>
                 )}
