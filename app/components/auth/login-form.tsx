@@ -11,7 +11,6 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 import Label from "./label";
 import Input from "./input";
-import SocialLoginDividers from "./social-dividers";
 import Button from "../ui/button";
 
 type Session = typeof import("@/lib/auth").auth.$Infer.Session;
@@ -39,6 +38,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -51,7 +51,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
     setError("");
 
     try {
-      const result = await signIn(email, password);
+      const result = await signIn(email, password, rememberMe);
 
       if (!result.user) {
         setError("Invalid email or password");
@@ -128,15 +128,26 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 border-2 border-primary rounded-full cursor-pointer bg-white hover:bg-indigo-50" />
-            <label
-              htmlFor="remember"
-              className="xl:text-xs 2xl:text-sm text-muted-foreground cursor-pointer select-none"
-            >
+          <label
+            htmlFor="remember"
+            className="flex items-center gap-2 cursor-pointer select-none"
+          >
+            <input
+              id="remember"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+              className="sr-only peer"
+            />
+            <span
+              className={`xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 rounded-full border-2 transition-all duration-200 ${
+                rememberMe ? "border-primary bg-primary" : "border-primary bg-white"
+              }`}
+            />
+            <span className="xl:text-xs 2xl:text-sm text-muted-foreground">
               Remember me
-            </label>
-          </div>
+            </span>
+          </label>
           <a
             href="#"
             className="xl:text-xs 2xl:text-sm text-primary font-medium hover:underline transition-colors duration-150"
@@ -169,7 +180,6 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
             Create an account
           </button>
         </div>
-        <SocialLoginDividers />
       </form>
     </div>
   );

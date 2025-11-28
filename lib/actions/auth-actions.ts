@@ -16,12 +16,17 @@ export const signUp = async (email: string, password: string, name: string) => {
   return result;
 };
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (
+  email: string,
+  password: string,
+  rememberMe: boolean = true
+) => {
   const result = await auth.api.signInEmail({
     body: {
       email,
       password,
       callbackURL: "/dashboard",
+      rememberMe,
     },
   });
 

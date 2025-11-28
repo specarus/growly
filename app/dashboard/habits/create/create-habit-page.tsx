@@ -423,7 +423,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </p>
               <p className="text-lg font-semibold">{popularPost.title}</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {popularPost.summary ?? "No summary provided for this habit yet."}
+                {popularPost.summary ??
+                  "No summary provided for this habit yet."}
               </p>
               <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-muted-foreground">
                 <span className="rounded-full border border-white/30 bg-white/70 px-2 py-1">
@@ -437,9 +438,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Based on{" "}
-                {popularPost.userName ?? "a community blueprint"} shared with
-                the crew.
+                Based on {popularPost.userName ?? "a community blueprint"}{" "}
+                shared with the crew.
               </p>
             </div>
           ) : null}
@@ -805,45 +805,45 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </div>
 
               <div className="flex flex-wrap gap-3 pt-3">
-              <Button
-                type="submit"
-                className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
-                disabled={isSubmitting}
-              >
-                {isSubmitting
-                  ? "Saving habit..."
-                  : mode === "edit"
-                  ? "Update habit"
-                  : "Create habit"}
-              </Button>
-            </div>
-            {mode === "edit" && habitId ? (
-              <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4 space-y-2 text-sm text-rose-700">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-rose-600">
-                    Danger zone
-                  </p>
-                </div>
-                <p className="text-xs text-rose-700">
-                  Deleting this habit removes it from your board and routines.
-                  All associated data will be lost.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleDeleteHabit}
-                  disabled={isDeletingHabit}
-                  className="inline-flex items-center justify-center w-full rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 hover:border-rose-400 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                <Button
+                  type="submit"
+                  className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                  disabled={isSubmitting}
                 >
-                  {isDeletingHabit ? "Deleting..." : "Delete habit"}
-                </button>
-                {deleteError ? (
-                  <p className="text-[11px] text-rose-700" role="alert">
-                    {deleteError}
-                  </p>
-                ) : null}
+                  {isSubmitting
+                    ? "Saving habit..."
+                    : mode === "edit"
+                    ? "Update habit"
+                    : "Create habit"}
+                </Button>
               </div>
-            ) : null}
-          </form>
+              {mode === "edit" && habitId ? (
+                <div className="rounded-2xl border border-rose-100 bg-rose-50 dark:bg-rose-100/50 px-4 py-4 space-y-2 text-sm text-rose-700">
+                  <div className="flex items-center justify-between">
+                    <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.3em] dark:text-white text-rose-600">
+                      Danger zone
+                    </p>
+                  </div>
+                  <p className="xl:text-xs dark:text-white text-rose-700">
+                    Deleting this habit removes it from your board and routines.
+                    All associated data will be lost.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDeleteHabit}
+                    disabled={isDeletingHabit}
+                    className="cursor-pointer inline-flex items-center justify-center w-full rounded-full border border-rose-200 bg-rose-50 px-4 py-2 xl:text-xs 2xl:text-sm font-medium text-rose-600 hover:border-rose-400 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isDeletingHabit ? "Deleting..." : "Delete habit"}
+                  </button>
+                  {deleteError ? (
+                    <p className="text-[11px] text-rose-700" role="alert">
+                      {deleteError}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </form>
 
             <aside className="space-y-4">
               <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">

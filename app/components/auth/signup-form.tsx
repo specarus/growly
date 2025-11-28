@@ -13,7 +13,6 @@ import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 import Label from "./label";
 import Input from "./input";
-import SocialLoginDividers from "./social-dividers";
 
 interface FormProps {
   setIsLogin: (isLogin: boolean) => void;
@@ -168,8 +167,6 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
             Log in
           </button>
         </div>
-
-        <SocialLoginDividers />
       </form>
     </div>
   );
