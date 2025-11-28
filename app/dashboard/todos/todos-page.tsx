@@ -584,7 +584,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
 
   return (
     <>
-      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16 overflow-hidden bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
+      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16 overflow-hidden bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-6 left-12 h-56 w-56 rounded-full bg-green-soft/20 blur-3xl" />
         <div className="relative z-10">
@@ -1246,7 +1246,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 ) : null}
 
                 {!isCollectionView ? (
-                  <div className="rounded-3xl border border-gray-50 bg-linear-to-r from-primary/5 via-white to-green-soft/10 shadow-inner p-6 space-y-6 mt-6">
+                  <div className="rounded-3xl border border-gray-50 bg-linear-to-br from-primary/30 via-slate-200 to-green-soft/30 shadow-inner p-6 space-y-6 mt-6">
                     <div className="flex flex-row items-center justify-between gap-3">
                       <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] text-primary shadow-sm border border-primary/20">

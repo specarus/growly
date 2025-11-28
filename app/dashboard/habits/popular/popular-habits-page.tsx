@@ -30,7 +30,7 @@ type Category =
 type Commitment = "Quick" | "Standard" | "Deep";
 type TimeWindow = "Anytime" | "Morning" | "Workday" | "Evening";
 
-type HabitIdea = {
+type RoutineIdea = {
   id: string;
   title: string;
   summary: string;
@@ -65,266 +65,208 @@ const categoryStyles: Record<Category, { badge: string; dot: string }> = {
   },
 };
 
-const habits: HabitIdea[] = [
+const routines: RoutineIdea[] = [
   {
-    id: "sunrise-mobility",
-    title: "Sunrise mobility",
+    id: "sunrise-clarity-loop",
+    title: "Sunrise clarity loop",
     summary:
-      "10 minute flow to loosen joints, wake the nervous system, and cue the day to start.",
-    category: "Movement",
+      "Six minutes of journaling and breathing that sets the day tone before opening the inbox.",
+    category: "Mindset",
     cadence: "Daily",
     timeOfDay: "Morning",
     commitment: "Quick",
-    anchor: "Right after coffee on the mat",
-    duration: "10 minutes",
-    adoption: 14800,
-    highlight: "Median streak 18 days",
+    anchor: "First sip of coffee while light pours in",
+    duration: "6 minutes",
+    adoption: 15800,
+    highlight: "Wins before notifications arrive",
     benefits: [
-      "Gentle warmup before meetings",
-      "Pairs to a fixed anchor so it is automatic",
-      "Short enough to never skip",
+      "Drops mental clutter with a three-line brain dump",
+      "Pairs breath work with fresh light to cue priority",
+      "Short enough to lead the day without dragging",
     ],
     steps: [
-      "Lay a mat out before bed with water nearby.",
-      "3 rounds: cat-cow, world's greatest stretch, 10 slow squats.",
-      "Finish with 5 deep breaths and a sip of water.",
+      "Open your journal and jot three wins and three high-impact bets.",
+      "Close your eyes, inhale for four seconds, hold two, exhale six, repeat five times.",
+      "Drop a single theme for the day and close your journal before launching into work.",
     ],
     guardrails: [
-      "Cap it at 10 minutes to avoid perfectionism.",
-      "If late, do one round instead of skipping.",
-      "Track it next to your first calendar block.",
+      "Keep it six minutes so it never competes with urgent pings.",
+      "If traveling, dictate the notes into a voice memo instead of paper.",
+      "Avoid checking email before the loop is finished.",
     ],
   },
   {
-    id: "hydration-anchors",
-    title: "Hydration anchors",
+    id: "focused-launch-routine",
+    title: "Focused launch routine",
     summary:
-      "Front-load water early and place bottles where you work so you do not forget.",
-    category: "Health",
-    cadence: "Daily",
-    timeOfDay: "Anytime",
-    commitment: "Quick",
-    anchor: "Night-before prep and desk bottle",
-    duration: "5 minutes",
-    adoption: 12100,
-    highlight: "Daily completion 86 percent",
-    benefits: [
-      "Easy win that boosts energy",
-      "Uses placement instead of willpower",
-      "Works while traveling",
-    ],
-    steps: [
-      "Fill two 1L bottles at night and leave one at your desk.",
-      "Drink 500ml before noon with electrolytes on busy days.",
-      "Refill after lunch; set a reminder on your calendar.",
-    ],
-    guardrails: [
-      "Do not aim for perfection; a single refill still counts.",
-      "If noon is low, drink 300ml and schedule the next.",
-      "Avoid ice-cold water first thing if it slows you down.",
-    ],
-  },
-  {
-    id: "deep-work-ritual",
-    title: "Deep work start ritual",
-    summary:
-      "90 minute focus block with a short setup ritual to get into flow faster.",
+      "90 minute block that closes distractions, sets a clear mission, then shields deep work.",
     category: "Focus",
     cadence: "Weekdays",
     timeOfDay: "Morning",
     commitment: "Deep",
-    anchor: "Start of day after inbox sweep",
+    anchor: "After stand-up with focus playlist queued",
     duration: "90 minutes",
-    adoption: 9820,
-    highlight: "Members log 2.2 sessions per week",
+    adoption: 13200,
+    highlight: "Blocks with highest completion at 9 AM",
     benefits: [
-      "Protects the best energy of the day",
-      "Setup ritual lowers friction to start",
-      "Predictable slot keeps others aligned",
+      "Protects prime energy before meetings multiply",
+      "Short ritual lowers friction to close inbox and start work",
+      "Predictable slot keeps teammates from scheduling in",
     ],
     steps: [
-      "Clear inbox for 10 minutes then close mail and chat.",
-      "Write a 3-line game plan on paper; start timer.",
-      "Phone goes in another room; use noise canceling.",
+      "Silence notifications, close chat tabs, and set a three-metric scoreboard.",
+      "Write a two-sentence game plan and start a 90 minute timer.",
+      "Work in 25 minute sprints, pause for micro breath resets, then review progress.",
     ],
     guardrails: [
-      "If late, run a 45 minute version instead of skipping.",
-      "Block your calendar as busy to prevent collisions.",
-      "Pause if you get interrupted and restart with a timer.",
+      "If context shifts, run a 45 minute sprint instead of skipping.",
+      "Mark your calendar as busy so others respect the block.",
+      "Pause and reset the timer if you get interrupted mid-session.",
     ],
   },
   {
-    id: "evening-winddown",
-    title: "Evening wind-down",
+    id: "midday-oasis-pause",
+    title: "Midday oasis pause",
     summary:
-      "20 minute routine to lower arousal, park screens, and set up tomorrow.",
+      "Fifteen minute reset that pairs light movement, calm breathing, and fresh air.",
     category: "Recovery",
     cadence: "Daily",
-    timeOfDay: "Evening",
+    timeOfDay: "Workday",
     commitment: "Standard",
-    anchor: "10:15pm after dishes",
-    duration: "20 minutes",
-    adoption: 11240,
-    highlight: "Reported better sleep by day 10",
+    anchor: "After lunch before the next meeting",
+    duration: "15 minutes",
+    adoption: 11120,
+    highlight: "Restores energy without derailing the day",
     benefits: [
-      "Screens off without a fight",
-      "Small plan for tomorrow lowers stress",
-      "Pairs with consistent bedtime",
+      "Shifts cortisol after lunch and before the afternoon slump",
+      "Mixes movement, breath, and hydration for a fuller break",
+      "Fits between two quick meetings",
     ],
     steps: [
-      "Dim lights, put phone in another room, start a calm playlist.",
-      "Stretch or foam roll for 8-10 minutes.",
-      "Write a three-line plan for tomorrow and lights out.",
+      "Walk outside or down the stairs with intentional breath to flush the blood.",
+      "Do three rounds of shoulder circles, hip openers, and gentle twists.",
+      "Sip water or herbal tea while setting an intention for the afternoon.",
     ],
     guardrails: [
-      "If you are late, skip stretching and do two lines of planning.",
-      "Keep a physical alarm clock so the phone stays away.",
-      "Avoid caffeine after noon to make this stick.",
+      "Cap it at 15 minutes so meetings don't creep back in.",
+      "If weather blocks stepping out, open a window and do the breaths indoors.",
+      "Avoid screens during the pause to let the nervous system settle.",
     ],
   },
   {
-    id: "strength-microdoses",
-    title: "Strength microdoses",
+    id: "micro-movement-circuit",
+    title: "Micro-movement circuit",
     summary:
-      "Short strength movement spread through the day instead of a single block.",
+      "Sprinkle three short strength or mobility bursts throughout the workday.",
     category: "Movement",
     cadence: "Daily",
     timeOfDay: "Workday",
     commitment: "Quick",
-    anchor: "Top of each hour",
+    anchor: "Top of the next three hours",
     duration: "3 x 8 minutes",
-    adoption: 8740,
-    highlight: "Popular with remote teams",
+    adoption: 10100,
+    highlight: "Builds momentum without a gym stop",
     benefits: [
-      "Breaks desk stiffness",
-      "Adds up without gym time",
-      "Creates micro energy spikes",
+      "Breaks stiffness from long screens",
+      "Small bursts add up to 25 minutes of motion",
+      "Easy to scale as energy ebbs and flows",
     ],
     steps: [
-      "Pick two moves per hour (push-ups, rows, goblet squat).",
-      "Do one set at the top of three hours between meetings.",
-      "Log reps in a note; increase slowly next week.",
+      "Pick two moves each hour (push-ups, rows, squat pulses).",
+      "Execute one set at the top of three different hours.",
+      "Log reps and add weight or reps every week.",
     ],
     guardrails: [
-      "Keep weights light so you can repeat daily.",
-      "If you miss an hour, do a single set at the next one.",
-      "Stretch wrists and shoulders to avoid strain.",
+      "Keep resistance light so you stay consistent daily.",
+      "If you miss an hour, squeeze a set into the next break.",
+      "Remember mobility work before pushing through the strength sets.",
     ],
   },
   {
-    id: "walking-meetings",
-    title: "Walking meetings",
+    id: "evening-detox-ritual",
+    title: "Evening detox ritual",
     summary:
-      "Convert one or two calls into walks to get daylight and movement in.",
-    category: "Energy",
-    cadence: "2-3x weekly",
-    timeOfDay: "Workday",
-    commitment: "Standard",
-    anchor: "Non-critical 1:1s and project updates",
-    duration: "25-40 minutes",
-    adoption: 7680,
-    highlight: "Teams report higher creativity",
-    benefits: [
-      "Sunlight plus steps during work hours",
-      "Easier focus without screens",
-      "Pairs with after-lunch slump",
-    ],
-    steps: [
-      "Pick two calls that do not need a screen.",
-      "Charge headphones and pick a safe route.",
-      "Join the call from your phone and walk while taking light notes.",
-    ],
-    guardrails: [
-      "Avoid heavy rain or crowded routes that distract you.",
-      "Use noise cancellation to protect call quality.",
-      "If a call needs screen share, shift the walk to the next one.",
-    ],
-  },
-  {
-    id: "screen-curfew",
-    title: "Screen curfew",
-    summary:
-      "No blue light 45 minutes before bed with a simple offline replacement.",
-    category: "Mindset",
+      "A screens-off routine that dims lights, records wins, and primes tomorrow.",
+    category: "Recovery",
     cadence: "Daily",
     timeOfDay: "Evening",
     commitment: "Standard",
-    anchor: "45 minutes before target bedtime",
-    duration: "15-45 minutes",
-    adoption: 10320,
-    highlight: "Improves sleep onset within a week",
+    anchor: "45 minutes before bedtime after dishes",
+    duration: "20 minutes",
+    adoption: 10900,
+    highlight: "Members report shorter sleep latency",
     benefits: [
-      "Reduces late-night scrolling",
-      "Creates a hard stop for work",
-      "Supports deeper sleep",
+      "Blocks late-night work creep",
+      "Makes the next day feel rehearsed",
+      "Low effort ritual that signals wind-down",
     ],
     steps: [
-      "Set a recurring reminder and enable night mode at the same time.",
-      "Plug phone in another room; switch to a paperback or journal.",
-      "Keep a dim lamp or warm light instead of overhead lights.",
+      "Dim the lights, stash the phone, play soft music.",
+      "Write two achievements and one lesson from today.",
+      "Set a three-task todo for tomorrow and close the notebook.",
     ],
     guardrails: [
-      "If you must use screens, wear blue light blockers.",
-      "Let friends know you are offline to reduce pings.",
-      "Pair it with your wind-down plan to stay consistent.",
+      "If a meeting runs late, just complete the wins write-up.",
+      "Keep a physical timer so the phone stays tucked away.",
+      "Avoid caffeine after 2pm to let this sink in.",
     ],
   },
   {
-    id: "breath-reset",
-    title: "Breath reset",
+    id: "team-step-sync",
+    title: "Team step sync",
     summary:
-      "Short breathing break to downshift between meetings instead of doomscrolling.",
-    category: "Mindset",
-    cadence: "Workdays",
-    timeOfDay: "Anytime",
-    commitment: "Quick",
-    anchor: "Before joining the next meeting",
-    duration: "3-5 minutes",
-    adoption: 6920,
-    highlight: "Used by members who reduce stress spikes",
+      "Weekly 30-minute walking huddle combines planning with daylight and movement.",
+    category: "Energy",
+    cadence: "Weekly",
+    timeOfDay: "Workday",
+    commitment: "Standard",
+    anchor: "Friday planning huddle on foot",
+    duration: "30 minutes",
+    adoption: 8200,
+    highlight: "Teams call it a creativity booster",
     benefits: [
-      "Lowers heart rate quickly",
-      "Creates a predictable transition",
-      "Works at home or in an office",
+      "Adds steps without losing face time",
+      "Natural change of scenery refreshes conversations",
+      "Pairs accountability with movement",
     ],
     steps: [
-      "Sit tall, inhale for 4 seconds, hold for 2, exhale for 6.",
-      "Repeat for 8 rounds; close your eyes if you can.",
-      "Sip water and stand up once before sitting again.",
+      "Pick an agenda of two to three topics and share it before leaving.",
+      "Walk a loop near the office while keeping a notepad handy.",
+      "Wrap with two takeaways and assign next steps while still outside.",
     ],
     guardrails: [
-      "Skip coffee right before if it makes you jittery.",
-      "Use headphones if the room is noisy.",
-      "If rushed, do three rounds instead of skipping.",
+      "Avoid noisy routes; keep the voice quality clear for remote folks.",
+      "If someone cannot walk, keep them looped in digitally and recap later.",
+      "Respect weather - slide it indoors on storms and keep masks handy.",
     ],
   },
   {
-    id: "sunday-reset",
-    title: "Sunday reset",
+    id: "weekend-reset-rhythm",
+    title: "Weekend reset rhythm",
     summary:
-      "Light planning pass so Monday starts calm and the week has shape.",
+      "A Saturday planning pass that maps wins, workouts, and rest before Monday.",
     category: "Focus",
     cadence: "Weekly",
     timeOfDay: "Anytime",
     commitment: "Standard",
-    anchor: "Sunday afternoon",
+    anchor: "Saturday morning coffee",
     duration: "25 minutes",
-    adoption: 7340,
-    highlight: "Cuts Monday stress for most members",
+    adoption: 8700,
+    highlight: "Members start Monday quieter and clearer",
     benefits: [
-      "Clarifies the three wins for the week",
-      "Surfaces blockers early",
-      "Aligns your habits to the calendar",
+      "Clarifies three wins and prevents Monday scramble",
+      "Centers workouts around energy spikes instead of obligation",
+      "Surfaces blockers before they bottleneck the week",
     ],
     steps: [
-      "Review last week and note one lesson.",
-      "Pick the three outcomes for the coming week.",
-      "Place deep work blocks and workouts on the calendar.",
+      "Review the prior week and capture one lesson learned.",
+      "Plan three priority outcomes and map deep work blocks.",
+      "Pick two recovery anchors and parade them on the calendar.",
     ],
     guardrails: [
-      "If time is tight, do a 10 minute skim instead of skipping.",
-      "Keep it light; avoid cleaning every file or app.",
-      "Share the plan with a partner or teammate for accountability.",
+      "If time is tight, keep it to 10 minutes and revisit Sunday night.",
+      "Skip cleaning every file; keep focus on the outcomes list.",
+      "Share it with a partner to make it stick.",
     ],
   },
 ];
@@ -350,28 +292,32 @@ const formatNumber = (value: number) => {
   return value.toString();
 };
 
-const PopularHabitsPage: React.FC = () => {
+const PopularRoutinesPage: React.FC = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category | "All">("All");
   const [commitment, setCommitment] = useState<Commitment | "Any">("Any");
   const [timeOfDay, setTimeOfDay] = useState<TimeWindow | "Any">("Any");
-  const [selectedHabitId, setSelectedHabitId] = useState<string>(
-    habits[0]?.id ?? ""
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string>(
+    routines[0]?.id ?? ""
   );
 
-  const filteredHabits = useMemo(() => {
+  const filteredRoutines = useMemo(() => {
     const term = search.trim().toLowerCase();
-    return habits.filter((habit) => {
-      const matchesCategory = category === "All" || habit.category === category;
+    return routines.filter((routine) => {
+      const matchesCategory =
+        category === "All" || routine.category === category;
       const matchesCommitment =
-        commitment === "Any" || habit.commitment === commitment;
-      const matchesTime = timeOfDay === "Any" || habit.timeOfDay === timeOfDay;
+        commitment === "Any" || routine.commitment === commitment;
+      const matchesTime =
+        timeOfDay === "Any" || routine.timeOfDay === timeOfDay;
       const matchesSearch =
         term.length === 0 ||
-        habit.title.toLowerCase().includes(term) ||
-        habit.summary.toLowerCase().includes(term) ||
-        habit.anchor.toLowerCase().includes(term) ||
-        habit.benefits.some((benefit) => benefit.toLowerCase().includes(term));
+        routine.title.toLowerCase().includes(term) ||
+        routine.summary.toLowerCase().includes(term) ||
+        routine.anchor.toLowerCase().includes(term) ||
+        routine.benefits.some((benefit) =>
+          benefit.toLowerCase().includes(term)
+        );
 
       return (
         matchesCategory && matchesCommitment && matchesTime && matchesSearch
@@ -380,46 +326,41 @@ const PopularHabitsPage: React.FC = () => {
   }, [category, commitment, search, timeOfDay]);
 
   useEffect(() => {
-    if (filteredHabits.length === 0) return;
-    if (filteredHabits.some((habit) => habit.id === selectedHabitId)) return;
-    setSelectedHabitId(filteredHabits[0].id);
-  }, [filteredHabits, selectedHabitId]);
+    if (filteredRoutines.length === 0) return;
+    if (filteredRoutines.some((routine) => routine.id === selectedRoutineId))
+      return;
+    setSelectedRoutineId(filteredRoutines[0].id);
+  }, [filteredRoutines, selectedRoutineId]);
 
-  const selectedHabit =
-    filteredHabits.find((habit) => habit.id === selectedHabitId) ||
-    filteredHabits[0] ||
-    habits[0];
-
-  const shortlist = habits.slice(0, 3).map((habit) => ({
-    title: habit.title,
-    anchor: habit.anchor,
-    cadence: habit.cadence,
-  }));
+  const selectedRoutine =
+    filteredRoutines.find((routine) => routine.id === selectedRoutineId) ||
+    filteredRoutines[0] ||
+    routines[0];
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-slate-100 via-green-soft/20 to-primary/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
               <BadgeCheck className="w-4 h-4" />
-              <span>Popular habits</span>
+              <span>Popular routines</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">
-                Browse habits people stick with
+              <h1 className="xl:text-xl 2xl:text-2xl md:text-3xl font-bold">
+                Browse routines people stick with
               </h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Pick a battle-tested habit, see the anchor and safety net, then
-                fork it into your own plan.
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                Pick a battle-tested routine, see the anchor and safety net,
+                then fork it into your own plan.
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-1 p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+          <div className="inline-flex items-center xl:gap-1 2xl:gap-2 p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
             <Link
               href="/dashboard/habits"
               className="px-4 py-2 font-semibold text-muted-foreground hover:text-primary transition rounded-full"
@@ -439,7 +380,7 @@ const PopularHabitsPage: React.FC = () => {
               Popular
             </span>
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="xl:text-xs text-muted-foreground">
             Hover a card to preview. Click to open the playbook on the right.
           </span>
         </div>
@@ -556,24 +497,24 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                     <TrendingUp className="w-4 h-4" />
-                    {habits.length} habits
+                    {routines.length} routines
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
-                  {filteredHabits.length === 0 ? (
+                  {filteredRoutines.length === 0 ? (
                     <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
                       No matches yet. Clear filters or try another search term.
                     </div>
                   ) : (
-                    filteredHabits.map((habit) => {
-                      const styles = categoryStyles[habit.category];
-                      const isSelected = habit.id === selectedHabitId;
+                    filteredRoutines.map((routine) => {
+                      const styles = categoryStyles[routine.category];
+                      const isSelected = routine.id === selectedRoutineId;
                       return (
                         <button
-                          key={habit.id}
+                          key={routine.id}
                           type="button"
-                          onClick={() => setSelectedHabitId(habit.id)}
+                          onClick={() => setSelectedRoutineId(routine.id)}
                           className={`relative w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
                             isSelected
                               ? "border-primary/60 ring-2 ring-primary/20 bg-primary/5"
@@ -587,41 +528,41 @@ const PopularHabitsPage: React.FC = () => {
                               <span
                                 className={`h-2 w-2 rounded-full ${styles.dot}`}
                               />
-                              {habit.category}
+                              {routine.category}
                             </div>
                             <span className="text-[11px] text-muted-foreground">
-                              {habit.highlight}
+                              {routine.highlight}
                             </span>
                           </div>
                           <div className="mt-2 space-y-1">
-                            <p className="font-semibold">{habit.title}</p>
+                            <p className="font-semibold">{routine.title}</p>
                             <p className="text-sm text-muted-foreground leading-relaxed">
-                              {habit.summary}
+                              {routine.summary}
                             </p>
                           </div>
                           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <Clock3 className="w-3.5 h-3.5 text-primary" />
-                              {habit.duration}
+                              {routine.duration}
                             </div>
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <CalendarClock className="w-3.5 h-3.5 text-primary" />
-                              {habit.cadence}
+                              {routine.cadence}
                             </div>
                             <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
                               <HeartPulse className="w-3.5 h-3.5 text-primary" />
-                              {commitmentCopy[habit.commitment]}
+                              {commitmentCopy[routine.commitment]}
                             </div>
                           </div>
                           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <Flame className="w-4 h-4 text-primary" />
                               <span>
-                                {formatNumber(habit.adoption)} people use this
+                                {formatNumber(routine.adoption)} teams use this
                               </span>
                             </div>
                             <span className="font-semibold text-foreground">
-                              {habit.anchor}
+                              {routine.anchor}
                             </span>
                           </div>
                         </button>
@@ -653,18 +594,18 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {selectedHabit ? (
+                {selectedRoutine ? (
                   <div className="space-y-4">
                     <div className="space-y-1">
                       <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
                         <Target className="w-4 h-4 text-primary" />
-                        {selectedHabit.timeOfDay} - {selectedHabit.anchor}
+                        {selectedRoutine.timeOfDay} - {selectedRoutine.anchor}
                       </div>
                       <h3 className="text-lg font-semibold">
-                        {selectedHabit.title}
+                        {selectedRoutine.title}
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        {selectedHabit.summary}
+                        {selectedRoutine.summary}
                       </p>
                     </div>
 
@@ -675,10 +616,10 @@ const PopularHabitsPage: React.FC = () => {
                           Duration
                         </div>
                         <p className="font-semibold">
-                          {selectedHabit.duration}
+                          {selectedRoutine.duration}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {commitmentCopy[selectedHabit.commitment]}
+                          {commitmentCopy[selectedRoutine.commitment]}
                         </p>
                       </div>
                       <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
@@ -686,9 +627,11 @@ const PopularHabitsPage: React.FC = () => {
                           <CalendarClock className="w-4 h-4 text-primary" />
                           Cadence
                         </div>
-                        <p className="font-semibold">{selectedHabit.cadence}</p>
+                        <p className="font-semibold">
+                          {selectedRoutine.cadence}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {selectedHabit.highlight}
+                          {selectedRoutine.highlight}
                         </p>
                       </div>
                     </div>
@@ -701,7 +644,7 @@ const PopularHabitsPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {selectedHabit.benefits.map((benefit) => (
+                        {selectedRoutine.benefits.map((benefit) => (
                           <span
                             key={benefit}
                             className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground"
@@ -725,7 +668,7 @@ const PopularHabitsPage: React.FC = () => {
                           </span>
                         </div>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                          {selectedHabit.steps.map((step) => (
+                          {selectedRoutine.steps.map((step) => (
                             <li key={step} className="flex items-start gap-2">
                               <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
                               <span>{step}</span>
@@ -737,8 +680,8 @@ const PopularHabitsPage: React.FC = () => {
 
                     <div className="flex flex-wrap items-center gap-3">
                       <Button className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition">
-                        <Link href="/dashboard/habits/create">
-                          Use this habit
+                        <Link href="/dashboard/habits/routines/create">
+                          Use this routine
                         </Link>
                       </Button>
                       <Link
@@ -756,7 +699,7 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 text-sm text-muted-foreground">
-                    Select a habit on the left to see its blueprint.
+                    Select a routine on the left to see its blueprint.
                   </div>
                 )}
               </div>
@@ -768,4 +711,4 @@ const PopularHabitsPage: React.FC = () => {
   );
 };
 
-export default PopularHabitsPage;
+export default PopularRoutinesPage;

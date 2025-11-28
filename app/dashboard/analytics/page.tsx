@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { auth } from "@/lib/auth";
+import PageGradient from "@/app/components/ui/page-gradient";
 
 export default async function AnalyticsPage() {
   const session = await auth.api.getSession({
@@ -130,10 +131,13 @@ export default async function AnalyticsPage() {
     },
   ];
 
-  const maxWeeklyHabits = Math.max(...weeklyRhythm.map((item) => item.completed));
+  const maxWeeklyHabits = Math.max(
+    ...weeklyRhythm.map((item) => item.completed)
+  );
 
   return (
-    <main className="w-full min-h-screen xl:pt-20 2xl:pt-24 text-foreground pb-10">
+    <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tl from-white/90 via-light-yellow/55 to-green-soft/15">
+      <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -142,9 +146,12 @@ export default async function AnalyticsPage() {
               <span>Analytics</span>
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">Performance overview</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Performance overview
+              </h1>
               <p className="text-sm text-muted-foreground max-w-2xl">
-                Hardcoded snapshot that spotlights trends, streaks, and where your time is paying off. Wire up live data when ready.
+                Hardcoded snapshot that spotlights trends, streaks, and where
+                your time is paying off. Wire up live data when ready.
               </p>
             </div>
           </div>
@@ -179,7 +186,9 @@ export default async function AnalyticsPage() {
                         {card.change}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">{card.helper}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {card.helper}
+                    </p>
                   </div>
                 </div>
               );
@@ -196,7 +205,8 @@ export default async function AnalyticsPage() {
                     </p>
                     <h2 className="text-xl font-semibold">Habit momentum</h2>
                     <p className="text-sm text-muted-foreground">
-                      Steady Monday/Tuesday spikes with a soft landing on weekends.
+                      Steady Monday/Tuesday spikes with a soft landing on
+                      weekends.
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
@@ -209,14 +219,21 @@ export default async function AnalyticsPage() {
                   <div className="md:col-span-2">
                     <div className="flex items-end gap-3 h-40 px-2 border-b border-dashed border-muted/80 pb-4">
                       {weeklyRhythm.map((item) => (
-                        <div key={item.day} className="flex-1 flex flex-col items-center gap-2">
+                        <div
+                          key={item.day}
+                          className="flex-1 flex flex-col items-center gap-2"
+                        >
                           <div
                             className="w-full rounded-xl bg-linear-to-b from-primary/80 to-coral/80 shadow-inner"
                             style={{
-                              height: `${(item.completed / maxWeeklyHabits) * 100}%`,
+                              height: `${
+                                (item.completed / maxWeeklyHabits) * 100
+                              }%`,
                             }}
                           />
-                          <div className="text-[11px] text-muted-foreground">{item.day}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {item.day}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -251,8 +268,9 @@ export default async function AnalyticsPage() {
                         </div>
                       </div>
                       <div className="rounded-xl border border-dashed border-primary/40 bg-white/60 px-3 py-2 text-xs flex items-start gap-2">
-                        <Sparkles className="w-4 h-4 text-primary mt-[2px]" />
-                        Add heart rate and sleep data to tighten recovery signals.
+                        <Sparkles className="w-4 h-4 text-primary mt-0.5" />
+                        Add heart rate and sleep data to tighten recovery
+                        signals.
                       </div>
                     </div>
                   </div>
@@ -267,7 +285,9 @@ export default async function AnalyticsPage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Focus
                     </p>
-                    <h2 className="text-xl font-semibold">Where time converts</h2>
+                    <h2 className="text-xl font-semibold">
+                      Where time converts
+                    </h2>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                     <Focus className="w-4 h-4" />
@@ -280,7 +300,9 @@ export default async function AnalyticsPage() {
                     <div key={block.label} className="space-y-1">
                       <div className="flex items-center justify-between text-sm font-semibold">
                         <span>{block.label}</span>
-                        <span className="text-muted-foreground">{block.detail}</span>
+                        <span className="text-muted-foreground">
+                          {block.detail}
+                        </span>
                       </div>
                       <div className="h-3 rounded-full bg-muted overflow-hidden">
                         <div
@@ -326,12 +348,16 @@ export default async function AnalyticsPage() {
                         </div>
                         <div>
                           <p className="font-semibold">{habit.name}</p>
-                          <p className="text-sm text-muted-foreground">{habit.note}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {habit.note}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <p className="text-lg font-semibold">{habit.completion}%</p>
+                          <p className="text-lg font-semibold">
+                            {habit.completion}%
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {habit.streak}-day streak
                           </p>
@@ -355,7 +381,9 @@ export default async function AnalyticsPage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Experiments
                     </p>
-                    <h2 className="text-xl font-semibold">What moved the needle</h2>
+                    <h2 className="text-xl font-semibold">
+                      What moved the needle
+                    </h2>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
                     <ArrowUpRight className="w-4 h-4" />
@@ -379,7 +407,9 @@ export default async function AnalyticsPage() {
                         </span>
                       </div>
                       <p className="font-semibold">{experiment.title}</p>
-                      <p className="text-sm text-muted-foreground">{experiment.outcome}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {experiment.outcome}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -395,7 +425,8 @@ export default async function AnalyticsPage() {
               <div>
                 <p className="font-semibold">Ready for live analytics</p>
                 <p className="text-sm text-muted-foreground">
-                  Wire this page to your habit data source and swap the hardcoded sets.
+                  Wire this page to your habit data source and swap the
+                  hardcoded sets.
                 </p>
               </div>
             </div>

@@ -71,7 +71,7 @@ export default async function RootLayout({
                   {session ? (
                     <Link
                       href="/dashboard"
-                      className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-2xl shadow-primary/60 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      className="fixed bottom-5 right-5 z-50 grid place-items-center rounded-full bg-primary xl:p-3 2xl:p-4 font-semibold text-white shadow-[0_5px_20px_rgba(16,185,129,0.35)] transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                       aria-label="Open dashboard"
                     >
                       <LayoutPanelTop />

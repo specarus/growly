@@ -168,12 +168,12 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
   };
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-t from-slate-100 via-primary/20 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
               <BadgeCheck className="w-4 h-4" />
               <span>Routines</span>
             </div>
@@ -199,7 +199,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex gap-1 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
+          <div className="inline-flex xl:gap-1 2xl:gap-2 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
             <Link
               href="/dashboard/habits"
               className={`${tabClasses} text-muted-foreground hover:text-primary rounded-full`}
@@ -238,11 +238,13 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
           >
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   Unassigned
                 </p>
-                <h2 className="text-lg font-semibold">Habit backlog</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="xl:text-base 2xl:text-lg font-semibold mb-1">
+                  Habit backlog
+                </h2>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                   Drop habits here to pull them out of a routine.
                 </p>
               </div>
@@ -250,7 +252,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
 
             <div className="space-y-3">
               {backlog.length === 0 ? (
-                <div className="rounded-xl border-2 border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                <div className="rounded-xl border-2 border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-[13px] 2xl:text-sm text-muted-foreground">
                   No loose habits. Drag one back from a routine to stash it
                   here.
                 </div>

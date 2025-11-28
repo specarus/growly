@@ -4,7 +4,6 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Todos", href: "/dashboard/todos" },
-  { label: "New todo", href: "/dashboard/todos/create" },
 ];
 
 const legalLinks = [
@@ -22,7 +21,7 @@ export default function Footer() {
         <div className="grid xl:gap-6 2xl:gap-8 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="flex flex-col justify-between">
             <div className="flex items-center gap-3">
-              <div className="space-y-1 xl:text-xs 2xl:text-sm">
+              <div className="space-y-1 xl:text-sm 2xl:text-base">
                 <p className="font-semibold text-foreground">Growly</p>
                 <p className="text-sm text-muted-foreground">
                   Stay consistent, win the tiny moments.

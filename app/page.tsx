@@ -140,10 +140,10 @@ export default function LandingPage() {
                 </Link>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+              <div className="flex flex-row gap-4 items-center w-fit">
                 <Button
                   onClick={() => setShowModal(true)}
-                  className="xl:text-sm 2xl:text-base w-auto xl:px-5 2xl:px-6 xl:py-2 2xl:py-3 bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all"
+                  className="xl:text-sm 2xl:text-base xl:px-5 2xl:px-6 xl:py-2 2xl:py-3 bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all"
                 >
                   Start a streak
                   <ArrowRight className="h-4 w-4" />
@@ -384,12 +384,6 @@ export default function LandingPage() {
               Create my routine
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Link
-              href="/dashboard/todos"
-              className="xl:text-sm 2xl:text-base sm:w-auto xl:px-5 2xl:px-6 xl:py-2 2xl:py-3 rounded-full border border-muted text-foreground font-semibold hover:border-primary hover:text-primary transition-all bg-white/80 backdrop-blur"
-            >
-              See how tasks flow
-            </Link>
           </div>
         </div>
       </section>

@@ -56,7 +56,7 @@ const CheckedBox: FC<CheckedBoxProps> = ({ checked, onClick, disabled }) => {
       disabled={disabled}
       aria-label={checked ? "Completed" : "Mark complete"}
       className={`${
-        checked ? "bg-green-soft border-green-soft" : "border-primary bg-white"
+        checked ? "bg-green-soft border-green-soft" : "border-primary bg-transparent"
       } border shrink-0 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 rounded-full grid place-items-center transition hover:scale-105 disabled:opacity-60`}
     >
       {checked ? (
@@ -113,7 +113,7 @@ const Todo: FC<TodoProps> = ({
             <span
               className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
               style={{
-                backgroundColor: `${todo.statusColor}22`,
+                backgroundColor: `${todo.statusColor}20`,
                 color: todo.statusColor,
               }}
             >

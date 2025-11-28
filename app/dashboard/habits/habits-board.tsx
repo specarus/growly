@@ -90,7 +90,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
   }, [habits, searchParams]);
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-primary/30 via-slate-50 to-green-soft/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
         <div className="flex gap-4 flex-row items-center justify-between">
@@ -112,7 +112,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
         </div>
 
         <div>
-          <div className="inline-flex xl:gap-1 p-2 items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden text-sm">
+          <div className="inline-flex xl:gap-1 2xl:gap-2 p-2 items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
             <span
               className="px-4 py-2 font-semibold bg-primary text-white rounded-full cursor-pointer"
               aria-current="page"
@@ -175,7 +175,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                         </p>
                         <Link
                           href="/dashboard/habits/create"
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-xs font-semibold text-primary hover:border-primary hover:bg-primary/5 transition"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-primary hover:border-primary hover:bg-primary/5 transition"
                         >
                           <Plus className="w-3 h-3" />
                           Create your first habit

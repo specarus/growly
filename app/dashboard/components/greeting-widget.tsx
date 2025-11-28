@@ -69,7 +69,7 @@ const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
           </Button>
         </div>
       </div>
-      <div className="flex justify-end xl:mt-2 2xl:mt-3">
+      {/* <div className="flex justify-end xl:mt-2 2xl:mt-3">
         <PillButton
           href="/dashboard/habits"
           variant="ghost"
@@ -77,7 +77,7 @@ const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
         >
           View Details
         </PillButton>
-      </div>
+      </div> */}
     </div>
   );
 };

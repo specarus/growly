@@ -209,6 +209,7 @@ const WeatherWidget: FC = () => {
 
   useEffect(() => {
     const controller = new AbortController();
+    const intervalMs = 60_000;
 
     const loadWeather = async () => {
       setStatus("loading");
@@ -235,9 +236,21 @@ const WeatherWidget: FC = () => {
       }
     };
 
+    if (locationStatus === "error" || locationStatus === "disabled") {
+      setWeather(null);
+      setStatus("error");
+      setError("Weather unavailable");
+      return () => controller.abort();
+    }
+
     loadWeather();
-    return () => controller.abort();
-  }, [location]);
+    const intervalId = setInterval(loadWeather, intervalMs);
+
+    return () => {
+      clearInterval(intervalId);
+      controller.abort();
+    };
+  }, [location, locationStatus]);
 
   const activeSeason = getSeason(new Date().getMonth());
   const backgroundImage =
@@ -247,8 +260,11 @@ const WeatherWidget: FC = () => {
   const iconUrl = weather
     ? getWeatherIcon(weather.weatherCode, weather.isDay)
     : "/weather/sunny.png";
+  const isLocationUnavailable =
+    locationStatus === "disabled" || locationStatus === "error";
+
   const weatherLabel = error
-    ? "Weather unavailable"
+    ? error
     : weather
     ? getWeatherLabel(weather.weatherCode)
     : "Fetching current conditions...";
@@ -276,7 +292,7 @@ const WeatherWidget: FC = () => {
         className="relative text-foreground flex flex-col justify-top shadow-md xl:h-64 2xl:h-80 bg-cover bg-bottom bg-no-repeat xl:p-4 2xl:p-6 xl:rounded-xl 2xl:rounded-2xl"
         style={{ backgroundImage }}
       >
-        {status === "loading" && !weather && (
+        {status === "loading" && !weather && !isLocationUnavailable && (
           <div className="absolute inset-0 rounded-xl bg-card/90 flex flex-col items-center justify-center gap-2">
             <span className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-primary" />
             <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground/80">
@@ -284,52 +300,66 @@ const WeatherWidget: FC = () => {
             </p>
           </div>
         )}
-        <div className="absolute selecet-none pointer-events-none xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-card grid place-items-center">
-          <Image
-            src={iconUrl}
-            width={100}
-            height={100}
-            alt={weatherLabel}
-            className="xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 pointer-events-none"
-          />
-        </div>
+        {isLocationUnavailable ? (
+          <div className="flex flex-1 flex-col items-center justify-center text-center gap-2">
+            <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground/80">
+              Weather unavailable
+            </p>
+            <p className="text-sm text-muted-foreground/70 px-3">
+              Allow location access or check your connection to see local
+              conditions.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="absolute selecet-none pointer-events-none xl:top-3 xl:left-3 2xl:top-4 2xl:left-4 xl:rounded-xl 2xl:rounded-2xl xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-card grid place-items-center">
+              <Image
+                src={iconUrl}
+                width={100}
+                height={100}
+                alt={weatherLabel}
+                className="xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 pointer-events-none"
+              />
+            </div>
 
-        <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-3">
-          {temperatureDisplay}
-        </p>
-        <p className="text-right xl:text-sm 2xl:text-base uppercase tracking-[0.5em] text-muted-foreground/70">
-          {weatherLabel}
-        </p>
-        {error && (
-          <p className="text-right text-xs text-red-500/90 mt-1">{error}</p>
+            <p className="text-right xl:text-4xl 2xl:text-5xl font-bold xl:mb-3">
+              {temperatureDisplay}
+            </p>
+            <p className="text-right xl:text-sm 2xl:text-base uppercase tracking-[0.5em] text-muted-foreground/70">
+              {weatherLabel}
+            </p>
+            {error && (
+              <p className="text-right text-xs text-red-500/90 mt-1">{error}</p>
+            )}
+
+            <div className="flex items-center xl:gap-4 2xl:gap-6 mt-auto">
+              <div>
+                <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
+                  Feels like
+                </div>
+                <div className="font-semibold xl:text-xs 2xl:text-base">
+                  {feelsLikeDisplay}
+                </div>
+              </div>
+              <div>
+                <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
+                  Wind
+                </div>
+                <div className="font-semibold xl:text-xs 2xl:text-base flex items-center gap-1">
+                  <span className="whitespace-nowrap">{windDisplay}</span>
+                </div>
+              </div>
+              <div>
+                <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
+                  Precipitation
+                </div>
+                <div className="font-semibold xl:text-xs 2xl:text-base">
+                  {precipitationDisplay}
+                </div>
+              </div>
+            </div>
+          </>
         )}
-
-        <div className="flex items-center xl:gap-4 2xl:gap-6 mt-auto">
-          <div>
-            <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
-              Feels like
-            </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">
-              {feelsLikeDisplay}
-            </div>
-          </div>
-          <div>
-            <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
-              Wind
-            </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base flex items-center gap-1">
-              <span className="whitespace-nowrap">{windDisplay}</span>
-            </div>
-          </div>
-          <div>
-            <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
-              Precipitation
-            </div>
-            <div className="font-semibold xl:text-xs 2xl:text-base">
-              {precipitationDisplay}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -124,30 +124,66 @@ export default function Header() {
   const breadcrumb = segments.length > 0 ? segments : ["home"];
   const formatted = breadcrumb.map((segment) => formatSegment(segment));
 
+  const quickLinks = [
+    { label: "Habits", href: "/dashboard/habits" },
+    { label: "Analytics", href: "/dashboard/analytics" },
+  ];
+
+  const normalizedPathname = pathname ?? "";
+  const isLinkActive = (href: string) =>
+    normalizedPathname === href || normalizedPathname.startsWith(`${href}/`);
+
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
       <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 flex items-center justify-between">
-        <div className="flex items-center flex-1 min-w-0 xl:gap-4">
+        <div className="flex items-center flex-1 min-w-0 gap-4">
           <Sprout className="text-green-soft" />
 
-          <div className="flex items-center xl:gap-1.5 2xl:gap-2 xl:text-sm 2xl:text-base truncate">
-            {formatted.map((label, index) => (
-              <span
-                key={`${label}-${index}`}
-                className="flex items-center xl:gap-1 2xl:gap-1.5"
-              >
+          <div className="flex w-full flex-1 flex-col min-w-0 xl:flex-row xl:items-center xl:gap-20 2xl:gap-24">
+            <div className="flex items-center xl:gap-1.5 2xl:gap-2 xl:text-sm 2xl:text-base truncate">
+              {formatted.map((label, index) => (
                 <span
-                  className={`xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.3em] transition ${
-                    index === 0 ? "text-foreground" : "text-muted-foreground"
-                  }`}
+                  key={`${label}-${index}`}
+                  className="flex items-center xl:gap-1 2xl:gap-1.5"
                 >
-                  {label}
+                  <span
+                    className={`xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.3em] transition ${
+                      index === 0 ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                  {index < formatted.length - 1 && (
+                    <span className="hidden sm:inline">/</span>
+                  )}
                 </span>
-                {index < formatted.length - 1 && (
-                  <span className="hidden sm:inline">/</span>
-                )}
-              </span>
-            ))}
+              ))}
+            </div>
+
+            {session && (
+              <nav
+                aria-label="Dashboard shortcuts"
+                className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em]"
+              >
+                {quickLinks.map((link) => {
+                  const active = isLinkActive(link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`rounded-full xl:px-3 2xl:px-4 xl:py-1 xl:text-[10px] 2xl:text-[11px] font-semibold transition ${
+                        active
+                          ? "bg-primary text-white shadow-[0_2px_20px_rgba(16,185,129,0.35)]"
+                          : "border border-gray-100 text-muted-foreground hover:border-primary/60 hover:text-primary"
+                      } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
           </div>
         </div>
 

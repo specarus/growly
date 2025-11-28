@@ -29,6 +29,7 @@ import {
 import Button from "@/app/components/ui/button";
 import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
+import PageGradient from "@/app/components/ui/page-gradient";
 
 type Cadence = "Daily" | "Weekly" | "Monthly";
 type UnitCategory = "Quantity" | "Time";
@@ -366,9 +367,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     : "Tap to pick a date";
 
   return (
-    <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl dark:hidden" />
-      <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl dark:hidden" />
+    <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
+      <PageGradient />
       <div className="relative z-10">
         <div className="space-y-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -772,7 +772,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             </form>
 
             <aside className="space-y-4">
-              <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:shadow-[0_30px_80px_rgba(2,6,23,0.65)]">
+              <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
                 <div className="pointer-events-none absolute -top-4 right-6 h-32 w-32 rounded-full bg-primary/20 blur-3xl dark:hidden" />
                 <div className="pointer-events-none absolute -bottom-10 left-6 h-36 w-36 rounded-[2.5rem] bg-green-soft/30 blur-[90px] dark:hidden" />
                 <div className="flex items-center justify-between mb-3">
