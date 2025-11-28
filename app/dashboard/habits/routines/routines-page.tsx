@@ -3,11 +3,12 @@
 import Link from "next/link";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, Clock3, GripVertical, Plus, Target } from "lucide-react";
+import { Clock3, GripVertical, Plus, Target } from "lucide-react";
 
 import PageGradient from "@/app/components/ui/page-gradient";
 import { useRouter } from "next/navigation";
 import MainButton from "@/app/components/ui/main-button";
+import PageHeading from "@/app/components/page-heading";
 
 type Habit = {
   id: string;
@@ -171,32 +172,21 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>Routines</span>
+        <PageHeading
+          badgeLabel="Routines"
+          title="Group habits into routines"
+          description="Drag habits into the routines that keep you steady. Changes now sync directly to your saved layouts."
+          actions={
+            <div className="flex flex-row gap-3">
+              <MainButton
+                label="Create routine"
+                icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
+                className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
+                onClick={handleNewRoutine}
+              />
             </div>
-            <div className="space-y-1">
-              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                Group habits into routines
-              </h1>
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                Drag habits into the routines that keep you steady. Changes now
-                sync directly to your saved layouts.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-3">
-            <MainButton
-              label="Create routine"
-              icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
-              className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
-              onClick={handleNewRoutine}
-            />
-          </div>
-        </div>
+          }
+        />
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex xl:gap-1 2xl:gap-2 items-center p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">

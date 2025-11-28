@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BadgeCheck,
   CalendarDays,
   CheckCircle2,
   Clock3,
@@ -27,6 +26,7 @@ import { priorityDots, statusColors } from "./constants";
 import MainButton from "@/app/components/ui/main-button";
 import { useXP } from "@/app/context/xp-context";
 import { XP_PER_TODO } from "@/lib/xp";
+import PageHeading from "@/app/components/page-heading";
 
 interface TodosPageProps {
   initialTodos?: Array<{
@@ -183,6 +183,18 @@ const TodosPage: React.FC<TodosPageProps> = ({
   const isCollectionView = Boolean(collectionContext);
   const router = useRouter();
   const { addXP } = useXP();
+
+  const heroDescriptionHtml = (
+    isCollectionView
+      ? (
+          collectionContext?.description ??
+          "Manage the todos that live inside this collection. Items you assign here stay out of the main list."
+        ).replace(/\./g, ".<br/>")
+      : "Unassigned todos live here. Drag them between statuses, then drop them into a collection when you're ready to move them off the main list.".replace(
+          /\./g,
+          ".<br/>"
+        )
+  );
 
   const handleNewTodo = () => {
     router.push("/dashboard/todos/create");
@@ -593,41 +605,22 @@ const TodosPage: React.FC<TodosPageProps> = ({
               <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-primary/20 blur-2xl" />
               <div className="pointer-events-none absolute -bottom-12 left-6 h-48 w-48 rounded-full bg-green-soft/30 blur-3xl" />
               <div className="relative z-10 space-y-6">
-                <div className="flex gap-4 flex-row items-center justify-between">
-                  <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 rounded-full select-none bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-                      <BadgeCheck className="w-4 h-4" />
-                      <span>
-                        {isCollectionView
-                          ? "Collection overview"
-                          : "Todos overview"}
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      <h1 className="xl:text-xl 2xl:text-2xl font-bold">
-                        {isCollectionView
-                          ? `${collectionContext?.name || "Collection"} todos`
-                          : "Your todos"}
-                      </h1>
-                      <p
-                        className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-4xl"
-                        dangerouslySetInnerHTML={{
-                          __html: isCollectionView
-                            ? (
-                                collectionContext?.description ||
-                                "Manage the todos that live inside this collection. Items you assign here stay out of the main list."
-                              ).replace(/\./g, ".<br/>")
-                            : "Unassigned todos live here. Drag them between statuses, then drop them into a collection when you're ready to move them off the main board.".replace(
-                                /\./g,
-                                ".<br/>"
-                              ),
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row gap-3">
-                    {isCollectionView ? (
+                <PageHeading
+                  badgeLabel={isCollectionView ? "Collection overview" : "Todos overview"}
+                  title={
+                    isCollectionView
+                      ? `${collectionContext?.name || "Collection"} todos`
+                      : "Your todos"
+                  }
+                  titleClassName="xl:text-xl 2xl:text-2xl font-bold"
+                  description={
+                    <span
+                      dangerouslySetInnerHTML={{ __html: heroDescriptionHtml }}
+                    />
+                  }
+                  descriptionClassName="xl:text-xs 2xl:text-sm text-muted-foreground max-w-4xl"
+                  actions={
+                    isCollectionView ? (
                       <Link
                         href="/dashboard/todos"
                         className={`${buttonBase} xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40`}
@@ -637,16 +630,14 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     ) : (
                       <MainButton
                         label="New Todo"
-                        icon={
-                          <Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
-                        }
+                        icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
                         className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
                         onClick={handleNewTodo}
                       />
-                    )}
-                  </div>
-                </div>
-
+                    )
+                  }
+                />
+              </div>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
                     <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">

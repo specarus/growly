@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import {
   AlarmCheck,
   AlarmClockCheck,
-  BadgeCheck,
   CalendarDays,
   ChevronDown,
   Lightbulb,
@@ -30,6 +29,7 @@ import Button from "@/app/components/ui/button";
 import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
 import PageGradient from "@/app/components/ui/page-gradient";
+import PageHeading from "@/app/components/page-heading";
 
 type Cadence = "Daily" | "Weekly" | "Monthly";
 type UnitCategory = "Quantity" | "Time";
@@ -371,32 +371,22 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
       <PageGradient />
       <div className="relative z-10">
         <div className="space-y-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-                <BadgeCheck className="w-4 h-4" />
-                <span>{mode === "edit" ? "Edit habit" : "Create habit"}</span>
+          <PageHeading
+            badgeLabel={mode === "edit" ? "Edit habit" : "Create habit"}
+            title={mode === "edit" ? "Tune this habit" : "Design a new habit"}
+            titleClassName="text-2xl md:text-3xl"
+            description="Set the cadence, start small, and add the reminders that keep you honest."
+            actions={
+              <div className="flex flex-row gap-2 sm:gap-3">
+                <Link
+                  href="/dashboard/habits"
+                  className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+                >
+                  Back to habits
+                </Link>
               </div>
-              <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold">
-                  {mode === "edit" ? "Tune this habit" : "Design a new habit"}
-                </h1>
-                <p className="text-sm text-muted-foreground max-w-2xl">
-                  Set the cadence, start small, and add the reminders that keep
-                  you honest.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-2 sm:gap-3">
-              <Link
-                href="/dashboard/habits"
-                className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
-              >
-                Back to habits
-              </Link>
-            </div>
-          </div>
+            }
+          />
 
           {saved ? (
             <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 text-sm text-foreground">

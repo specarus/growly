@@ -23,6 +23,7 @@ export default async function PopularHabitPostCreatePage() {
       id: true,
       name: true,
       description: true,
+      cadence: true,
     },
   });
 

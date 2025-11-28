@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
-  BadgeCheck,
   CalendarClock,
   Flame,
   LifeBuoy,
@@ -16,6 +15,7 @@ import { useRouter } from "next/navigation";
 
 import type { Habit as PrismaHabit } from "@/lib/generated/prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
+import PageHeading from "@/app/components/page-heading";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -122,24 +122,12 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex gap-4 flex-row items-center justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>Your habits</span>
-            </div>
-            <div className="space-y-1">
-              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                Habit board
-              </h1>
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                This board shows your current rhythm, streaks, and where you
-                spend focus time.
-              </p>
-            </div>
-          </div>
-        </div>
-
+        <PageHeading
+          badgeLabel="Your habits"
+          title="Habit board"
+          description="This board shows your current rhythm, streaks, and where you spend focus time."
+          titleClassName="xl:text-2xl 2xl:text-3xl"
+        />
         <div>
           <div className="inline-flex xl:gap-1 2xl:gap-2 p-2 items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
             <span

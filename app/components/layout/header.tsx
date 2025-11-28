@@ -126,7 +126,7 @@ export default function Header() {
 
   const quickLinks = [
     { label: "Habits", href: "/dashboard/habits" },
-    { label: "Analytics", href: "/dashboard/analytics" },
+    // { label: "Analytics", href: "/dashboard/analytics" },
   ];
 
   const normalizedPathname = pathname ?? "";
@@ -163,7 +163,7 @@ export default function Header() {
             {session && (
               <nav
                 aria-label="Dashboard shortcuts"
-                className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em]"
+                className="flex flex-wrap items-center gap-3 xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em]"
               >
                 {quickLinks.map((link) => {
                   const active = isLinkActive(link.href);

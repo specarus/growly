@@ -15,7 +15,6 @@ import {
 import type React from "react";
 import {
   type LucideIcon,
-  BadgeCheck,
   Bell,
   CalendarDays,
   ChevronDown,
@@ -40,6 +39,7 @@ import type { TodoInput } from "@/lib/actions/todo-actions";
 import PlantBanner from "@/app/components/ui/plant-banner";
 import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
+import PageHeading from "@/app/components/page-heading";
 
 type PriorityLabel = "Low" | "Medium" | "High" | "Critical";
 type StatusLabel = "Planned" | "In Progress" | "Completed" | "Missed";
@@ -287,7 +287,6 @@ const parseDurationMinutes = (raw: string) => {
   const numeric = parseInt(raw, 10);
   return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
 };
-
 
 const CreateTodoPage: React.FC<TodoFormProps> = ({
   mode: modeProp = "create",
@@ -725,54 +724,47 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
         <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl" />
         <div className="relative z-10">
           <div className="space-y-8">
-            <div className="flex gap-4 flex-row items-center justify-between">
-              <div className="space-y-2 xl:mb-8 2xl:mb-10">
-                <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow select-none px-3 py-1 xl:text-[10px] 2xl:text-[11px] xl:font-semibold uppercase tracking-[0.18em] text-amber-700">
-                  <BadgeCheck className="w-4 h-4" />
-                  <span>{mode === "edit" ? "Edit todo" : "Create todo"}</span>
-                </div>
-                <div className="space-y-1">
-                  <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                    {mode === "edit"
-                      ? "Keep this todo moving"
-                      : "Bring a new todo to life"}
-                  </h1>
-                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                    Capture the essentials and set a realistic schedule so you
-                    can start fast.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-row gap-2 sm:gap-3">
-                <Button
-                  type="button"
-                  onClick={() => handleSubmit("Planned")}
-                  disabled={isPending}
-                  className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
-                >
-                  Save draft
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => handleSubmit()}
-                  disabled={isPending}
-                  className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
-                >
-                  {primaryCtaLabel}
-                </Button>
-                {mode === "edit" && todoId ? (
+            <PageHeading
+              badgeLabel={mode === "edit" ? "Edit todo" : "Create todo"}
+              title={
+                mode === "edit"
+                  ? "Keep this todo moving"
+                  : "Bring a new todo to life"
+              }
+              titleClassName="xl:text-2xl 2xl:text-3xl font-bold"
+              description="Capture the essentials and set a realistic schedule so you can start fast."
+              actions={
+                <div className="flex flex-row gap-2 sm:gap-3">
                   <Button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={() => handleSubmit("Planned")}
                     disabled={isPending}
-                    className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                    className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
                   >
-                    <Trash className="w-4 h-4" />
-                    Delete
+                    Save draft
                   </Button>
-                ) : null}
-              </div>
-            </div>
+                  <Button
+                    type="button"
+                    onClick={() => handleSubmit()}
+                    disabled={isPending}
+                    className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+                  >
+                    {primaryCtaLabel}
+                  </Button>
+                  {mode === "edit" && todoId ? (
+                    <Button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={isPending}
+                      className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                    >
+                      <Trash className="w-4 h-4" />
+                      Delete
+                    </Button>
+                  ) : null}
+                </div>
+              }
+            />
           </div>
 
           {(feedback || error) && (

@@ -5,7 +5,8 @@ import EditProfileForm from "./components/edit-profile-form";
 import SignOutButton from "./components/sign-out-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { BadgeCheck, CalendarDays, Flame, ShieldCheck } from "lucide-react";
+import { CalendarDays, Flame, ShieldCheck } from "lucide-react";
+import PageHeading from "@/app/components/page-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -70,20 +71,20 @@ export default async function AccountPage() {
       <div className="xl:px-48 2xl:px-80">
         <div className="mx-auto flex flex-col gap-10">
           <section className="space-y-8">
-            <div className="flex flex-col gap-3">
-              <div className="w-fit inline-flex items-center gap-2 rounded-full select-none bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-                <BadgeCheck className="w-4 h-4" />
-                <span>Account</span>
-              </div>
-              <h1 className="xl:text-2xl 2xl:text-3xl font-semibold text-foreground">
-                Keep your rituals tidy and your focus protected.
-              </h1>
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-3xl">
-                Everything starts with a calm overview.<br></br>Adjust
-                notifications, revisit weekly priorities, or glance at how
-                confident you feel about upcoming rituals.
-              </p>
-            </div>
+            <PageHeading
+              badgeLabel="Account"
+              title="Keep your rituals tidy and your focus protected."
+              titleClassName="xl:text-2xl 2xl:text-3xl font-semibold text-foreground"
+              description={
+                <>
+                  Everything starts with a calm overview.
+                  <br />
+                  Adjust notifications, revisit weekly priorities, or glance at
+                  how confident you feel about upcoming rituals.
+                </>
+              }
+              descriptionClassName="xl:text-xs 2xl:text-sm text-muted-foreground max-w-3xl"
+            />
 
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-6">

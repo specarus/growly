@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
-  BadgeCheck,
   Brain,
   CalendarClock,
   CheckCircle2,
   Clock3,
   Flame,
+  Heart,
   HeartPulse,
   Search,
-  Sparkles,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -19,6 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
+import PageHeading from "@/app/components/page-heading";
 
 import {
   Category,
@@ -91,6 +91,59 @@ const PopularHabitsPage: React.FC = () => {
   const [commitment, setCommitment] = useState<Commitment | "Any">("Any");
   const [timeWindow, setTimeWindow] = useState<TimeWindow | "Any">("Any");
   const [selectedPostId, setSelectedPostId] = useState("");
+  const [likingPostId, setLikingPostId] = useState<string | null>(null);
+  const [likeError, setLikeError] = useState<string | null>(null);
+
+  const handleLike = async (postId: string) => {
+    setLikeError(null);
+    const targetPost = posts.find((post) => post.id === postId);
+    if (!targetPost || targetPost.likedByCurrentUser) {
+      return;
+    }
+    setLikingPostId(postId);
+    try {
+      const response = await fetch(`/api/habits/posts/${postId}/like`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const message =
+          errorBody && typeof errorBody === "object" && "error" in errorBody
+            ? (errorBody as { error?: string }).error
+            : null;
+        throw new Error(message ?? "Unable to save your like.");
+      }
+      setPosts((current) =>
+        current.map((entry) =>
+          entry.id === postId
+            ? {
+                ...entry,
+                likesCount: entry.likesCount + 1,
+                likedByCurrentUser: true,
+              }
+            : entry
+        )
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Already liked.") {
+          setPosts((current) =>
+            current.map((entry) =>
+              entry.id === postId
+                ? { ...entry, likedByCurrentUser: true }
+                : entry
+            )
+          );
+          return;
+        }
+        setLikeError(error.message);
+      } else {
+        setLikeError("Unable to save your like. Try again later.");
+      }
+    } finally {
+      setLikingPostId(null);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -163,6 +216,10 @@ const PopularHabitsPage: React.FC = () => {
     }
   }, [filteredPosts, selectedPostId]);
 
+  useEffect(() => {
+    setLikeError(null);
+  }, [selectedPostId]);
+
   const selectedPost =
     filteredPosts.find((post) => post.id === selectedPostId) ||
     filteredPosts[0] ||
@@ -172,31 +229,22 @@ const PopularHabitsPage: React.FC = () => {
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>Community habits</span>
+        <PageHeading
+          badgeLabel="Community habits"
+          title="Browse habits people post for the crew"
+          titleClassName="xl:text-xl 2xl:text-2xl"
+          description="Open the blueprint, learn why it works, and riff back on a habit that stuck."
+          actions={
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button
+                onClick={() => router.push("/dashboard/habits/popular/create")}
+                className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
+              >
+                Create a post
+              </Button>
             </div>
-            <div className="space-y-1">
-              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                Browse habits people post for the crew
-              </h1>
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                Open the blueprint, learn why it works, and riff back on a habit
-                that stuck.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Button
-              onClick={() => router.push("/dashboard/habits/popular/create")}
-              className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
-            >
-              Create a post
-            </Button>
-          </div>
-        </div>
+          }
+        />
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center xl:gap-1 2xl:gap-2 p-2 rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden xl:text-xs 2xl:text-sm">
@@ -349,11 +397,20 @@ const PopularHabitsPage: React.FC = () => {
                     filteredPosts.map((post) => {
                       const styles = categoryStyles[post.category];
                       const isSelected = post.id === selectedPostId;
+                      const likeLabel =
+                        post.likesCount === 1 ? "like" : "likes";
                       return (
-                        <button
+                        <div
                           key={post.id}
-                          type="button"
+                          role="button"
+                          tabIndex={0}
                           onClick={() => setSelectedPostId(post.id)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              setSelectedPostId(post.id);
+                            }
+                          }}
                           className={`relative flex flex-col justify-between w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
                             isSelected
                               ? "border-primary/60 ring-2 ring-primary/20 bg-primary/5"
@@ -369,6 +426,9 @@ const PopularHabitsPage: React.FC = () => {
                               />
                               {post.category}
                             </div>
+                            <span className="text-[11px] font-semibold text-muted-foreground">
+                              {post.likesCount} {likeLabel}
+                            </span>
                           </div>
                           <div className="mt-2 space-y-1">
                             <p className="xl:text-base 2xl:text-lg font-semibold">
@@ -392,10 +452,48 @@ const PopularHabitsPage: React.FC = () => {
                               {commitmentCopy[post.commitment]}
                             </div>
                           </div>
-                          <div className="mt-3 flex items-center xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                            • Posted {formatPostedDate(post.createdAt)}
+                          <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+                            <span className="text-muted-foreground">
+                              • Posted {formatPostedDate(post.createdAt)}
+                            </span>
+                            <div className="flex flex-col items-end gap-1">
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleLike(post.id);
+                                }}
+                                disabled={
+                                  post.likedByCurrentUser ||
+                                  likingPostId === post.id
+                                }
+                                aria-label={
+                                  post.likedByCurrentUser
+                                    ? "You already liked this post"
+                                    : `Like ${post.title}`
+                                }
+                                className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                                  post.likedByCurrentUser
+                                    ? "border-primary bg-primary text-white"
+                                    : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                                } ${
+                                  likingPostId === post.id ? "opacity-80" : ""
+                                }`}
+                              >
+                                <Heart
+                                  className={`w-4 h-4 ${
+                                    post.likedByCurrentUser
+                                      ? "text-white"
+                                      : "text-primary"
+                                  }`}
+                                />
+                                <span className="whitespace-nowrap">
+                                  {post.likedByCurrentUser ? "Liked" : "Like"}
+                                </span>
+                              </button>
+                            </div>
                           </div>
-                        </button>
+                        </div>
                       );
                     })
                   )}
@@ -438,6 +536,30 @@ const PopularHabitsPage: React.FC = () => {
                         {selectedPost.summary ?? "No summary available."}
                       </p>
                     </div>
+
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                        <Heart
+                          className={`w-4 h-4 ${
+                            selectedPost.likedByCurrentUser
+                              ? "text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                        <span>
+                          {selectedPost.likesCount}{" "}
+                          {selectedPost.likesCount === 1 ? "like" : "likes"}
+                        </span>
+                      </div>
+                    </div>
+                    {likeError ? (
+                      <p
+                        className="text-[11px] 2xl:text-xs text-rose-600"
+                        role="alert"
+                      >
+                        {likeError}
+                      </p>
+                    ) : null}
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
@@ -541,13 +663,39 @@ const PopularHabitsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <Link
-                      href="/dashboard/habits"
-                      className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
-                    >
-                      <CalendarClock className="w-4 h-4" />
-                      Add to habit board
-                    </Link>
+                    <div className="flex items-center xl:gap-2 2xl:gap-3">
+                      <Link
+                        href="/dashboard/habits"
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                      >
+                        <CalendarClock className="w-4 h-4" />
+                        Add to habit board
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleLike(selectedPost.id)}
+                        disabled={
+                          selectedPost.likedByCurrentUser ||
+                          likingPostId === selectedPost.id
+                        }
+                        aria-label={
+                          selectedPost.likedByCurrentUser
+                            ? "You already liked this post"
+                            : `Like ${selectedPost.title}`
+                        }
+                        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                          selectedPost.likedByCurrentUser
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        <span>
+                          {selectedPost.likedByCurrentUser
+                            ? "Liked"
+                            : "Like this post"}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 xl:text-xs 2xl:text-sm text-muted-foreground">

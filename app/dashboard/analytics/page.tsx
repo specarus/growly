@@ -7,7 +7,6 @@ import Link from "next/link";
 import {
   Activity,
   ArrowUpRight,
-  BadgeCheck,
   BarChart3,
   CheckCircle2,
   Flame,
@@ -20,6 +19,7 @@ import {
 
 import { auth } from "@/lib/auth";
 import PageGradient from "@/app/components/ui/page-gradient";
+import PageHeading from "@/app/components/page-heading";
 
 export default async function AnalyticsPage() {
   const session = await auth.api.getSession({
@@ -139,30 +139,20 @@ export default async function AnalyticsPage() {
     <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tl from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>Analytics</span>
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold">
-                Performance overview
-              </h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Hardcoded snapshot that spotlights trends, streaks, and where
-                your time is paying off. Wire up live data when ready.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm hover:border-primary/40 transition"
-          >
-            Back to dashboard
-          </Link>
-        </div>
+        <PageHeading
+          badgeLabel="Analytics"
+          title="Performance overview"
+          titleClassName="text-2xl md:text-3xl"
+          description="Hardcoded snapshot that spotlights trends, streaks, and where your time is paying off. Wire up live data when ready."
+          actions={
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm hover:border-primary/40 transition"
+            >
+              Back to dashboard
+            </Link>
+          }
+        />
 
         <div className="grid gap-5">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">

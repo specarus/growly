@@ -3,18 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import {
-  BadgeCheck,
-  CalendarDays,
-  Check,
-  Clock3,
-  Search,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { CalendarDays, Check, Clock3, Search, Sparkles, Target } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
+import PageHeading from "@/app/components/page-heading";
 
 type RoutineHabit = {
   id: string;
@@ -158,32 +151,22 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-t from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
-      <div className="xl:px-8 2xl:px-28 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-light-yellow px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-              <BadgeCheck className="w-4 h-4" />
-              <span>Create routine</span>
-            </div>
-            <div className="space-y-1">
-              <h1 className="xl:text-2xl 2xl:text-3xl font-bold">
-                Design a routine that keeps you steady
-              </h1>
-              <p className="text-sm text-muted-foreground max-w-2xl">
-                Name the sequence, pick the anchor, and stack the habits that
-                keep your days calm.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-row gap-3">
-            <Link
-              href="/dashboard/habits/routines"
-              className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
-            >
-              Back to routines
-            </Link>
-          </div>
-        </div>
+        <div className="xl:px-8 2xl:px-28 space-y-8">
+          <PageHeading
+            badgeLabel="Create routine"
+            title="Design a routine that keeps you steady"
+            description="Name the sequence, pick the anchor, and stack the habits that keep your days calm."
+            actions={
+              <div className="flex flex-row gap-3">
+                <Link
+                  href="/dashboard/habits/routines"
+                  className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+                >
+                  Back to routines
+                </Link>
+              </div>
+            }
+          />
 
         <div className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6">
           <form
