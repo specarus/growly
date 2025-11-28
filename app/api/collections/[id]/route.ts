@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
@@ -17,11 +17,11 @@ const requireUserId = async () => {
 };
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id?: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const collectionId = params?.id;
+    const { id: collectionId } = await context.params;
     if (!collectionId) {
       return NextResponse.json(
         { error: "Collection ID is required" },

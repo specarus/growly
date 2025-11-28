@@ -1,5 +1,5 @@
 import type { PopularPost } from "./types";
-import type { HabitFormState } from "../create/types";
+import type { Cadence, HabitFormState } from "../create/types";
 
 const timeWindowDefaults: Record<PopularPost["timeWindow"], string> = {
   Anytime: "12:00",
@@ -8,7 +8,7 @@ const timeWindowDefaults: Record<PopularPost["timeWindow"], string> = {
   Evening: "19:00",
 };
 
-const normalizeCadenceValue = (value: string) => {
+const normalizeCadenceValue = (value: string): Cadence => {
   const normalized = value.trim().toLowerCase();
   if (normalized.includes("month")) {
     return "Monthly";
@@ -19,7 +19,7 @@ const normalizeCadenceValue = (value: string) => {
   return "Daily";
 };
 
-const buildBaseHabitData = (post: PopularPost) => {
+const buildBaseHabitData = (post: PopularPost): HabitFormState => {
   const cadence = normalizeCadenceValue(post.cadence);
   const timeOfDay =
     timeWindowDefaults[post.timeWindow] ?? timeWindowDefaults.Anytime;
