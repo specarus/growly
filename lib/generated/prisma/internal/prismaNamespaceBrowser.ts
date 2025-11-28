@@ -58,6 +58,7 @@ export const ModelName = {
   CollectionTodo: 'CollectionTodo',
   Habit: 'Habit',
   PostHabit: 'PostHabit',
+  PostHabitLike: 'PostHabitLike',
   Routine: 'Routine',
   RoutineHabit: 'RoutineHabit'
 } as const
@@ -216,11 +217,22 @@ export const PostHabitScalarFieldEnum = {
   guardrails: 'guardrails',
   habitId: 'habitId',
   userId: 'userId',
+  likesCount: 'likesCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PostHabitScalarFieldEnum = (typeof PostHabitScalarFieldEnum)[keyof typeof PostHabitScalarFieldEnum]
+
+
+export const PostHabitLikeScalarFieldEnum = {
+  id: 'id',
+  postHabitId: 'postHabitId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type PostHabitLikeScalarFieldEnum = (typeof PostHabitLikeScalarFieldEnum)[keyof typeof PostHabitLikeScalarFieldEnum]
 
 
 export const RoutineScalarFieldEnum = {

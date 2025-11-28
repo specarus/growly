@@ -20,8 +20,18 @@ export type PostHabitModel = runtime.Types.Result.DefaultSelection<Prisma.$PostH
 
 export type AggregatePostHabit = {
   _count: PostHabitCountAggregateOutputType | null
+  _avg: PostHabitAvgAggregateOutputType | null
+  _sum: PostHabitSumAggregateOutputType | null
   _min: PostHabitMinAggregateOutputType | null
   _max: PostHabitMaxAggregateOutputType | null
+}
+
+export type PostHabitAvgAggregateOutputType = {
+  likesCount: number | null
+}
+
+export type PostHabitSumAggregateOutputType = {
+  likesCount: number | null
 }
 
 export type PostHabitMinAggregateOutputType = {
@@ -37,6 +47,7 @@ export type PostHabitMinAggregateOutputType = {
   commitment: $Enums.HabitCommitment | null
   habitId: string | null
   userId: string | null
+  likesCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +65,7 @@ export type PostHabitMaxAggregateOutputType = {
   commitment: $Enums.HabitCommitment | null
   habitId: string | null
   userId: string | null
+  likesCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,11 +86,20 @@ export type PostHabitCountAggregateOutputType = {
   guardrails: number
   habitId: number
   userId: number
+  likesCount: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type PostHabitAvgAggregateInputType = {
+  likesCount?: true
+}
+
+export type PostHabitSumAggregateInputType = {
+  likesCount?: true
+}
 
 export type PostHabitMinAggregateInputType = {
   id?: true
@@ -93,6 +114,7 @@ export type PostHabitMinAggregateInputType = {
   commitment?: true
   habitId?: true
   userId?: true
+  likesCount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +132,7 @@ export type PostHabitMaxAggregateInputType = {
   commitment?: true
   habitId?: true
   userId?: true
+  likesCount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +153,7 @@ export type PostHabitCountAggregateInputType = {
   guardrails?: true
   habitId?: true
   userId?: true
+  likesCount?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -173,6 +197,18 @@ export type PostHabitAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inte
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: PostHabitAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: PostHabitSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: PostHabitMinAggregateInputType
@@ -203,6 +239,8 @@ export type PostHabitGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   _count?: PostHabitCountAggregateInputType | true
+  _avg?: PostHabitAvgAggregateInputType
+  _sum?: PostHabitSumAggregateInputType
   _min?: PostHabitMinAggregateInputType
   _max?: PostHabitMaxAggregateInputType
 }
@@ -223,9 +261,12 @@ export type PostHabitGroupByOutputType = {
   guardrails: string[]
   habitId: string
   userId: string
+  likesCount: number
   createdAt: Date
   updatedAt: Date
   _count: PostHabitCountAggregateOutputType | null
+  _avg: PostHabitAvgAggregateOutputType | null
+  _sum: PostHabitSumAggregateOutputType | null
   _min: PostHabitMinAggregateOutputType | null
   _max: PostHabitMaxAggregateOutputType | null
 }
@@ -264,10 +305,12 @@ export type PostHabitWhereInput = {
   guardrails?: Prisma.StringNullableListFilter<"PostHabit">
   habitId?: Prisma.StringFilter<"PostHabit"> | string
   userId?: Prisma.StringFilter<"PostHabit"> | string
+  likesCount?: Prisma.IntFilter<"PostHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
   habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  likes?: Prisma.PostHabitLikeListRelationFilter
 }
 
 export type PostHabitOrderByWithRelationInput = {
@@ -286,10 +329,12 @@ export type PostHabitOrderByWithRelationInput = {
   guardrails?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  likesCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   habit?: Prisma.HabitOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  likes?: Prisma.PostHabitLikeOrderByRelationAggregateInput
 }
 
 export type PostHabitWhereUniqueInput = Prisma.AtLeast<{
@@ -311,10 +356,12 @@ export type PostHabitWhereUniqueInput = Prisma.AtLeast<{
   guardrails?: Prisma.StringNullableListFilter<"PostHabit">
   habitId?: Prisma.StringFilter<"PostHabit"> | string
   userId?: Prisma.StringFilter<"PostHabit"> | string
+  likesCount?: Prisma.IntFilter<"PostHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
   habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  likes?: Prisma.PostHabitLikeListRelationFilter
 }, "id">
 
 export type PostHabitOrderByWithAggregationInput = {
@@ -333,11 +380,14 @@ export type PostHabitOrderByWithAggregationInput = {
   guardrails?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  likesCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PostHabitCountOrderByAggregateInput
+  _avg?: Prisma.PostHabitAvgOrderByAggregateInput
   _max?: Prisma.PostHabitMaxOrderByAggregateInput
   _min?: Prisma.PostHabitMinOrderByAggregateInput
+  _sum?: Prisma.PostHabitSumOrderByAggregateInput
 }
 
 export type PostHabitScalarWhereWithAggregatesInput = {
@@ -359,6 +409,7 @@ export type PostHabitScalarWhereWithAggregatesInput = {
   guardrails?: Prisma.StringNullableListFilter<"PostHabit">
   habitId?: Prisma.StringWithAggregatesFilter<"PostHabit"> | string
   userId?: Prisma.StringWithAggregatesFilter<"PostHabit"> | string
+  likesCount?: Prisma.IntWithAggregatesFilter<"PostHabit"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PostHabit"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PostHabit"> | Date | string
 }
@@ -377,10 +428,12 @@ export type PostHabitCreateInput = {
   benefits?: Prisma.PostHabitCreatebenefitsInput | string[]
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   habit: Prisma.HabitCreateNestedOneWithoutPostHabitsInput
   user: Prisma.UserCreateNestedOneWithoutPostHabitsInput
+  likes?: Prisma.PostHabitLikeCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitUncheckedCreateInput = {
@@ -399,8 +452,10 @@ export type PostHabitUncheckedCreateInput = {
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   habitId: string
   userId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  likes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitUpdateInput = {
@@ -417,10 +472,12 @@ export type PostHabitUpdateInput = {
   benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   habit?: Prisma.HabitUpdateOneRequiredWithoutPostHabitsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPostHabitsNestedInput
+  likes?: Prisma.PostHabitLikeUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitUncheckedUpdateInput = {
@@ -439,8 +496,10 @@ export type PostHabitUncheckedUpdateInput = {
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   habitId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  likes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitCreateManyInput = {
@@ -459,6 +518,7 @@ export type PostHabitCreateManyInput = {
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   habitId: string
   userId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -477,6 +537,7 @@ export type PostHabitUpdateManyMutationInput = {
   benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -497,6 +558,7 @@ export type PostHabitUncheckedUpdateManyInput = {
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   habitId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -535,8 +597,13 @@ export type PostHabitCountOrderByAggregateInput = {
   guardrails?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  likesCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PostHabitAvgOrderByAggregateInput = {
+  likesCount?: Prisma.SortOrder
 }
 
 export type PostHabitMaxOrderByAggregateInput = {
@@ -552,6 +619,7 @@ export type PostHabitMaxOrderByAggregateInput = {
   commitment?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  likesCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -569,8 +637,18 @@ export type PostHabitMinOrderByAggregateInput = {
   commitment?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  likesCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PostHabitSumOrderByAggregateInput = {
+  likesCount?: Prisma.SortOrder
+}
+
+export type PostHabitScalarRelationFilter = {
+  is?: Prisma.PostHabitWhereInput
+  isNot?: Prisma.PostHabitWhereInput
 }
 
 export type PostHabitCreateNestedManyWithoutUserInput = {
@@ -696,6 +774,28 @@ export type PostHabitUpdateguardrailsInput = {
   push?: string | string[]
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type PostHabitCreateNestedOneWithoutLikesInput = {
+  create?: Prisma.XOR<Prisma.PostHabitCreateWithoutLikesInput, Prisma.PostHabitUncheckedCreateWithoutLikesInput>
+  connectOrCreate?: Prisma.PostHabitCreateOrConnectWithoutLikesInput
+  connect?: Prisma.PostHabitWhereUniqueInput
+}
+
+export type PostHabitUpdateOneRequiredWithoutLikesNestedInput = {
+  create?: Prisma.XOR<Prisma.PostHabitCreateWithoutLikesInput, Prisma.PostHabitUncheckedCreateWithoutLikesInput>
+  connectOrCreate?: Prisma.PostHabitCreateOrConnectWithoutLikesInput
+  upsert?: Prisma.PostHabitUpsertWithoutLikesInput
+  connect?: Prisma.PostHabitWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostHabitUpdateToOneWithWhereWithoutLikesInput, Prisma.PostHabitUpdateWithoutLikesInput>, Prisma.PostHabitUncheckedUpdateWithoutLikesInput>
+}
+
 export type PostHabitCreateWithoutUserInput = {
   id?: string
   title: string
@@ -710,9 +810,11 @@ export type PostHabitCreateWithoutUserInput = {
   benefits?: Prisma.PostHabitCreatebenefitsInput | string[]
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   habit: Prisma.HabitCreateNestedOneWithoutPostHabitsInput
+  likes?: Prisma.PostHabitLikeCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitUncheckedCreateWithoutUserInput = {
@@ -730,8 +832,10 @@ export type PostHabitUncheckedCreateWithoutUserInput = {
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   habitId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  likes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitCreateOrConnectWithoutUserInput = {
@@ -779,6 +883,7 @@ export type PostHabitScalarWhereInput = {
   guardrails?: Prisma.StringNullableListFilter<"PostHabit">
   habitId?: Prisma.StringFilter<"PostHabit"> | string
   userId?: Prisma.StringFilter<"PostHabit"> | string
+  likesCount?: Prisma.IntFilter<"PostHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PostHabit"> | Date | string
 }
@@ -797,9 +902,11 @@ export type PostHabitCreateWithoutHabitInput = {
   benefits?: Prisma.PostHabitCreatebenefitsInput | string[]
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPostHabitsInput
+  likes?: Prisma.PostHabitLikeCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitUncheckedCreateWithoutHabitInput = {
@@ -817,8 +924,10 @@ export type PostHabitUncheckedCreateWithoutHabitInput = {
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   userId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  likes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostHabitCreateOrConnectWithoutHabitInput = {
@@ -847,6 +956,106 @@ export type PostHabitUpdateManyWithWhereWithoutHabitInput = {
   data: Prisma.XOR<Prisma.PostHabitUpdateManyMutationInput, Prisma.PostHabitUncheckedUpdateManyWithoutHabitInput>
 }
 
+export type PostHabitCreateWithoutLikesInput = {
+  id?: string
+  title: string
+  summary?: string | null
+  highlight?: string | null
+  anchor?: string | null
+  duration?: string | null
+  cadence: string
+  category: $Enums.HabitCategory
+  timeWindow?: $Enums.HabitTimeWindow
+  commitment: $Enums.HabitCommitment
+  benefits?: Prisma.PostHabitCreatebenefitsInput | string[]
+  steps?: Prisma.PostHabitCreatestepsInput | string[]
+  guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
+  likesCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  habit: Prisma.HabitCreateNestedOneWithoutPostHabitsInput
+  user: Prisma.UserCreateNestedOneWithoutPostHabitsInput
+}
+
+export type PostHabitUncheckedCreateWithoutLikesInput = {
+  id?: string
+  title: string
+  summary?: string | null
+  highlight?: string | null
+  anchor?: string | null
+  duration?: string | null
+  cadence: string
+  category: $Enums.HabitCategory
+  timeWindow?: $Enums.HabitTimeWindow
+  commitment: $Enums.HabitCommitment
+  benefits?: Prisma.PostHabitCreatebenefitsInput | string[]
+  steps?: Prisma.PostHabitCreatestepsInput | string[]
+  guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
+  habitId: string
+  userId: string
+  likesCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PostHabitCreateOrConnectWithoutLikesInput = {
+  where: Prisma.PostHabitWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostHabitCreateWithoutLikesInput, Prisma.PostHabitUncheckedCreateWithoutLikesInput>
+}
+
+export type PostHabitUpsertWithoutLikesInput = {
+  update: Prisma.XOR<Prisma.PostHabitUpdateWithoutLikesInput, Prisma.PostHabitUncheckedUpdateWithoutLikesInput>
+  create: Prisma.XOR<Prisma.PostHabitCreateWithoutLikesInput, Prisma.PostHabitUncheckedCreateWithoutLikesInput>
+  where?: Prisma.PostHabitWhereInput
+}
+
+export type PostHabitUpdateToOneWithWhereWithoutLikesInput = {
+  where?: Prisma.PostHabitWhereInput
+  data: Prisma.XOR<Prisma.PostHabitUpdateWithoutLikesInput, Prisma.PostHabitUncheckedUpdateWithoutLikesInput>
+}
+
+export type PostHabitUpdateWithoutLikesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  highlight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumHabitCategoryFieldUpdateOperationsInput | $Enums.HabitCategory
+  timeWindow?: Prisma.EnumHabitTimeWindowFieldUpdateOperationsInput | $Enums.HabitTimeWindow
+  commitment?: Prisma.EnumHabitCommitmentFieldUpdateOperationsInput | $Enums.HabitCommitment
+  benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
+  steps?: Prisma.PostHabitUpdatestepsInput | string[]
+  guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  habit?: Prisma.HabitUpdateOneRequiredWithoutPostHabitsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutPostHabitsNestedInput
+}
+
+export type PostHabitUncheckedUpdateWithoutLikesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  highlight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumHabitCategoryFieldUpdateOperationsInput | $Enums.HabitCategory
+  timeWindow?: Prisma.EnumHabitTimeWindowFieldUpdateOperationsInput | $Enums.HabitTimeWindow
+  commitment?: Prisma.EnumHabitCommitmentFieldUpdateOperationsInput | $Enums.HabitCommitment
+  benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
+  steps?: Prisma.PostHabitUpdatestepsInput | string[]
+  guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  habitId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PostHabitCreateManyUserInput = {
   id?: string
   title: string
@@ -862,6 +1071,7 @@ export type PostHabitCreateManyUserInput = {
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   habitId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -880,9 +1090,11 @@ export type PostHabitUpdateWithoutUserInput = {
   benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   habit?: Prisma.HabitUpdateOneRequiredWithoutPostHabitsNestedInput
+  likes?: Prisma.PostHabitLikeUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitUncheckedUpdateWithoutUserInput = {
@@ -900,8 +1112,10 @@ export type PostHabitUncheckedUpdateWithoutUserInput = {
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   habitId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  likes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitUncheckedUpdateManyWithoutUserInput = {
@@ -919,6 +1133,7 @@ export type PostHabitUncheckedUpdateManyWithoutUserInput = {
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   habitId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -938,6 +1153,7 @@ export type PostHabitCreateManyHabitInput = {
   steps?: Prisma.PostHabitCreatestepsInput | string[]
   guardrails?: Prisma.PostHabitCreateguardrailsInput | string[]
   userId: string
+  likesCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -956,9 +1172,11 @@ export type PostHabitUpdateWithoutHabitInput = {
   benefits?: Prisma.PostHabitUpdatebenefitsInput | string[]
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPostHabitsNestedInput
+  likes?: Prisma.PostHabitLikeUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitUncheckedUpdateWithoutHabitInput = {
@@ -976,8 +1194,10 @@ export type PostHabitUncheckedUpdateWithoutHabitInput = {
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  likes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostHabitUncheckedUpdateManyWithoutHabitInput = {
@@ -995,10 +1215,40 @@ export type PostHabitUncheckedUpdateManyWithoutHabitInput = {
   steps?: Prisma.PostHabitUpdatestepsInput | string[]
   guardrails?: Prisma.PostHabitUpdateguardrailsInput | string[]
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type PostHabitCountOutputType
+ */
+
+export type PostHabitCountOutputType = {
+  likes: number
+}
+
+export type PostHabitCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  likes?: boolean | PostHabitCountOutputTypeCountLikesArgs
+}
+
+/**
+ * PostHabitCountOutputType without action
+ */
+export type PostHabitCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostHabitCountOutputType
+   */
+  select?: Prisma.PostHabitCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PostHabitCountOutputType without action
+ */
+export type PostHabitCountOutputTypeCountLikesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostHabitLikeWhereInput
+}
 
 
 export type PostHabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1017,10 +1267,13 @@ export type PostHabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   guardrails?: boolean
   habitId?: boolean
   userId?: boolean
+  likesCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  likes?: boolean | Prisma.PostHabit$likesArgs<ExtArgs>
+  _count?: boolean | Prisma.PostHabitCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["postHabit"]>
 
 export type PostHabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1039,6 +1292,7 @@ export type PostHabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   guardrails?: boolean
   habitId?: boolean
   userId?: boolean
+  likesCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
@@ -1061,6 +1315,7 @@ export type PostHabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   guardrails?: boolean
   habitId?: boolean
   userId?: boolean
+  likesCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
@@ -1083,14 +1338,17 @@ export type PostHabitSelectScalar = {
   guardrails?: boolean
   habitId?: boolean
   userId?: boolean
+  likesCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PostHabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "summary" | "highlight" | "anchor" | "duration" | "cadence" | "category" | "timeWindow" | "commitment" | "benefits" | "steps" | "guardrails" | "habitId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["postHabit"]>
+export type PostHabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "summary" | "highlight" | "anchor" | "duration" | "cadence" | "category" | "timeWindow" | "commitment" | "benefits" | "steps" | "guardrails" | "habitId" | "userId" | "likesCount" | "createdAt" | "updatedAt", ExtArgs["result"]["postHabit"]>
 export type PostHabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  likes?: boolean | Prisma.PostHabit$likesArgs<ExtArgs>
+  _count?: boolean | Prisma.PostHabitCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PostHabitIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
@@ -1106,6 +1364,7 @@ export type $PostHabitPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     habit: Prisma.$HabitPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
+    likes: Prisma.$PostHabitLikePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1123,6 +1382,7 @@ export type $PostHabitPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     guardrails: string[]
     habitId: string
     userId: string
+    likesCount: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["postHabit"]>
@@ -1521,6 +1781,7 @@ export interface Prisma__PostHabitClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   habit<T extends Prisma.HabitDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HabitDefaultArgs<ExtArgs>>): Prisma.Prisma__HabitClient<runtime.Types.Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  likes<T extends Prisma.PostHabit$likesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PostHabit$likesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostHabitLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1565,6 +1826,7 @@ export interface PostHabitFieldRefs {
   readonly guardrails: Prisma.FieldRef<"PostHabit", 'String[]'>
   readonly habitId: Prisma.FieldRef<"PostHabit", 'String'>
   readonly userId: Prisma.FieldRef<"PostHabit", 'String'>
+  readonly likesCount: Prisma.FieldRef<"PostHabit", 'Int'>
   readonly createdAt: Prisma.FieldRef<"PostHabit", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PostHabit", 'DateTime'>
 }
@@ -1960,6 +2222,30 @@ export type PostHabitDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many PostHabits to delete.
    */
   limit?: number
+}
+
+/**
+ * PostHabit.likes
+ */
+export type PostHabit$likesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostHabitLike
+   */
+  select?: Prisma.PostHabitLikeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostHabitLike
+   */
+  omit?: Prisma.PostHabitLikeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostHabitLikeInclude<ExtArgs> | null
+  where?: Prisma.PostHabitLikeWhereInput
+  orderBy?: Prisma.PostHabitLikeOrderByWithRelationInput | Prisma.PostHabitLikeOrderByWithRelationInput[]
+  cursor?: Prisma.PostHabitLikeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostHabitLikeScalarFieldEnum | Prisma.PostHabitLikeScalarFieldEnum[]
 }
 
 /**

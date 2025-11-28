@@ -36,6 +36,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(5),
     userName: "Growly team",
     habitName: "Sunrise clarity loop",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "focused-launch-routine",
@@ -67,6 +70,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(8),
     userName: "Growly team",
     habitName: "Focused launch routine",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "midday-oasis-pause",
@@ -98,6 +104,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(12),
     userName: "Growly team",
     habitName: "Midday oasis pause",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "micro-movement-circuit",
@@ -129,6 +138,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(15),
     userName: "Growly team",
     habitName: "Micro-movement circuit",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "evening-detox-ritual",
@@ -160,6 +172,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(18),
     userName: "Growly team",
     habitName: "Evening detox ritual",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "team-step-sync",
@@ -191,6 +206,9 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(20),
     userName: "Growly team",
     habitName: "Team step sync",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
   {
     id: "weekend-reset-rhythm",
@@ -222,5 +240,8 @@ export const popularHabits: PopularPost[] = [
     createdAt: createdDate(25),
     userName: "Growly team",
     habitName: "Weekend reset rhythm",
+    likesCount: 0,
+    likedByCurrentUser: false,
+    isCommunityPost: false,
   },
 ];

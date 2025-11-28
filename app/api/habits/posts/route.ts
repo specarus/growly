@@ -13,24 +13,46 @@ const getErrorStatus = (message: string) => {
 
 export async function GET() {
   try {
-    const posts = await prisma.postHabit.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
+    const userId = await requireUserId();
+    const [posts, liked] = await Promise.all([
+      prisma.postHabit.findMany({
+        orderBy: [
+          { likesCount: "desc" },
+          { createdAt: "desc" },
+        ],
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          habit: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-        habit: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      }),
+      prisma.postHabitLike.findMany({
+        where: { userId },
+        select: { postHabitId: true },
+      }),
+    ]);
+    const likedSet = new Set(liked.map((entry) => entry.postHabitId));
+    const normalized = posts.map((post) => {
+      const { user, habit, ...rest } = post;
+      return {
+        ...rest,
+        userName: user?.name ?? null,
+        habitName: habit?.name ?? null,
+        likesCount: post.likesCount,
+        likedByCurrentUser: likedSet.has(post.id),
+        isCommunityPost: true,
+      };
     });
-    return NextResponse.json({ posts });
+    return NextResponse.json({ posts: normalized });
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(

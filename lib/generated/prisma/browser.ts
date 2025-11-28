@@ -63,6 +63,11 @@ export type Habit = Prisma.HabitModel
  */
 export type PostHabit = Prisma.PostHabitModel
 /**
+ * Model PostHabitLike
+ * 
+ */
+export type PostHabitLike = Prisma.PostHabitLikeModel
+/**
  * Model Routine
  * 
  */

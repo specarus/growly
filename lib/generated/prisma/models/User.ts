@@ -205,6 +205,7 @@ export type UserWhereInput = {
   collections?: Prisma.CollectionListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
   postHabits?: Prisma.PostHabitListRelationFilter
+  postHabitLikes?: Prisma.PostHabitLikeListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -222,6 +223,7 @@ export type UserOrderByWithRelationInput = {
   collections?: Prisma.CollectionOrderByRelationAggregateInput
   routines?: Prisma.RoutineOrderByRelationAggregateInput
   postHabits?: Prisma.PostHabitOrderByRelationAggregateInput
+  postHabitLikes?: Prisma.PostHabitLikeOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -242,6 +244,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   collections?: Prisma.CollectionListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
   postHabits?: Prisma.PostHabitListRelationFilter
+  postHabitLikes?: Prisma.PostHabitLikeListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -285,6 +288,7 @@ export type UserCreateInput = {
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -302,6 +306,7 @@ export type UserUncheckedCreateInput = {
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -319,6 +324,7 @@ export type UserUpdateInput = {
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -336,6 +342,7 @@ export type UserUncheckedUpdateInput = {
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -503,6 +510,20 @@ export type UserUpdateOneRequiredWithoutPostHabitsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostHabitsInput, Prisma.UserUpdateWithoutPostHabitsInput>, Prisma.UserUncheckedUpdateWithoutPostHabitsInput>
 }
 
+export type UserCreateNestedOneWithoutPostHabitLikesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostHabitLikesInput, Prisma.UserUncheckedCreateWithoutPostHabitLikesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostHabitLikesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPostHabitLikesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostHabitLikesInput, Prisma.UserUncheckedCreateWithoutPostHabitLikesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostHabitLikesInput
+  upsert?: Prisma.UserUpsertWithoutPostHabitLikesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostHabitLikesInput, Prisma.UserUpdateWithoutPostHabitLikesInput>, Prisma.UserUncheckedUpdateWithoutPostHabitLikesInput>
+}
+
 export type UserCreateNestedOneWithoutRoutinesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutRoutinesInput, Prisma.UserUncheckedCreateWithoutRoutinesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutRoutinesInput
@@ -531,6 +552,7 @@ export type UserCreateWithoutSessionsInput = {
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -547,6 +569,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -579,6 +602,7 @@ export type UserUpdateWithoutSessionsInput = {
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -595,6 +619,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -611,6 +636,7 @@ export type UserCreateWithoutAccountsInput = {
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -627,6 +653,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -659,6 +686,7 @@ export type UserUpdateWithoutAccountsInput = {
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -675,6 +703,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTodosInput = {
@@ -691,6 +720,7 @@ export type UserCreateWithoutTodosInput = {
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTodosInput = {
@@ -707,6 +737,7 @@ export type UserUncheckedCreateWithoutTodosInput = {
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTodosInput = {
@@ -739,6 +770,7 @@ export type UserUpdateWithoutTodosInput = {
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTodosInput = {
@@ -755,6 +787,7 @@ export type UserUncheckedUpdateWithoutTodosInput = {
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCollectionsInput = {
@@ -771,6 +804,7 @@ export type UserCreateWithoutCollectionsInput = {
   habits?: Prisma.HabitCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCollectionsInput = {
@@ -787,6 +821,7 @@ export type UserUncheckedCreateWithoutCollectionsInput = {
   habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCollectionsInput = {
@@ -819,6 +854,7 @@ export type UserUpdateWithoutCollectionsInput = {
   habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCollectionsInput = {
@@ -835,6 +871,7 @@ export type UserUncheckedUpdateWithoutCollectionsInput = {
   habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHabitsInput = {
@@ -851,6 +888,7 @@ export type UserCreateWithoutHabitsInput = {
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHabitsInput = {
@@ -867,6 +905,7 @@ export type UserUncheckedCreateWithoutHabitsInput = {
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHabitsInput = {
@@ -899,6 +938,7 @@ export type UserUpdateWithoutHabitsInput = {
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHabitsInput = {
@@ -915,6 +955,7 @@ export type UserUncheckedUpdateWithoutHabitsInput = {
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPostHabitsInput = {
@@ -931,6 +972,7 @@ export type UserCreateWithoutPostHabitsInput = {
   habits?: Prisma.HabitCreateNestedManyWithoutUserInput
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPostHabitsInput = {
@@ -947,6 +989,7 @@ export type UserUncheckedCreateWithoutPostHabitsInput = {
   habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPostHabitsInput = {
@@ -979,6 +1022,7 @@ export type UserUpdateWithoutPostHabitsInput = {
   habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPostHabitsInput = {
@@ -995,6 +1039,91 @@ export type UserUncheckedUpdateWithoutPostHabitsInput = {
   habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPostHabitLikesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  todos?: Prisma.TodoCreateNestedManyWithoutUserInput
+  habits?: Prisma.HabitCreateNestedManyWithoutUserInput
+  collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
+  routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
+  postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPostHabitLikesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  todos?: Prisma.TodoUncheckedCreateNestedManyWithoutUserInput
+  habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
+  collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
+  routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
+  postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPostHabitLikesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostHabitLikesInput, Prisma.UserUncheckedCreateWithoutPostHabitLikesInput>
+}
+
+export type UserUpsertWithoutPostHabitLikesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPostHabitLikesInput, Prisma.UserUncheckedUpdateWithoutPostHabitLikesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostHabitLikesInput, Prisma.UserUncheckedCreateWithoutPostHabitLikesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPostHabitLikesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPostHabitLikesInput, Prisma.UserUncheckedUpdateWithoutPostHabitLikesInput>
+}
+
+export type UserUpdateWithoutPostHabitLikesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  todos?: Prisma.TodoUpdateManyWithoutUserNestedInput
+  habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
+  collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
+  routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
+  postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPostHabitLikesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  todos?: Prisma.TodoUncheckedUpdateManyWithoutUserNestedInput
+  habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
+  collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
+  routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
+  postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRoutinesInput = {
@@ -1011,6 +1140,7 @@ export type UserCreateWithoutRoutinesInput = {
   habits?: Prisma.HabitCreateNestedManyWithoutUserInput
   collections?: Prisma.CollectionCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRoutinesInput = {
@@ -1027,6 +1157,7 @@ export type UserUncheckedCreateWithoutRoutinesInput = {
   habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
   collections?: Prisma.CollectionUncheckedCreateNestedManyWithoutUserInput
   postHabits?: Prisma.PostHabitUncheckedCreateNestedManyWithoutUserInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRoutinesInput = {
@@ -1059,6 +1190,7 @@ export type UserUpdateWithoutRoutinesInput = {
   habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
   collections?: Prisma.CollectionUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRoutinesInput = {
@@ -1075,6 +1207,7 @@ export type UserUncheckedUpdateWithoutRoutinesInput = {
   habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
   collections?: Prisma.CollectionUncheckedUpdateManyWithoutUserNestedInput
   postHabits?: Prisma.PostHabitUncheckedUpdateManyWithoutUserNestedInput
+  postHabitLikes?: Prisma.PostHabitLikeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1090,6 +1223,7 @@ export type UserCountOutputType = {
   collections: number
   routines: number
   postHabits: number
+  postHabitLikes: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1100,6 +1234,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   collections?: boolean | UserCountOutputTypeCountCollectionsArgs
   routines?: boolean | UserCountOutputTypeCountRoutinesArgs
   postHabits?: boolean | UserCountOutputTypeCountPostHabitsArgs
+  postHabitLikes?: boolean | UserCountOutputTypeCountPostHabitLikesArgs
 }
 
 /**
@@ -1161,6 +1296,13 @@ export type UserCountOutputTypeCountPostHabitsArgs<ExtArgs extends runtime.Types
   where?: Prisma.PostHabitWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPostHabitLikesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostHabitLikeWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1177,6 +1319,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   collections?: boolean | Prisma.User$collectionsArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
   postHabits?: boolean | Prisma.User$postHabitsArgs<ExtArgs>
+  postHabitLikes?: boolean | Prisma.User$postHabitLikesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1219,6 +1362,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   collections?: boolean | Prisma.User$collectionsArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
   postHabits?: boolean | Prisma.User$postHabitsArgs<ExtArgs>
+  postHabitLikes?: boolean | Prisma.User$postHabitLikesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1234,6 +1378,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     collections: Prisma.$CollectionPayload<ExtArgs>[]
     routines: Prisma.$RoutinePayload<ExtArgs>[]
     postHabits: Prisma.$PostHabitPayload<ExtArgs>[]
+    postHabitLikes: Prisma.$PostHabitLikePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1644,6 +1789,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   collections<T extends Prisma.User$collectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$collectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   routines<T extends Prisma.User$routinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$routinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   postHabits<T extends Prisma.User$postHabitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postHabitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostHabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  postHabitLikes<T extends Prisma.User$postHabitLikesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postHabitLikesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostHabitLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2233,6 +2379,30 @@ export type User$postHabitsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.PostHabitScalarFieldEnum | Prisma.PostHabitScalarFieldEnum[]
+}
+
+/**
+ * User.postHabitLikes
+ */
+export type User$postHabitLikesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostHabitLike
+   */
+  select?: Prisma.PostHabitLikeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostHabitLike
+   */
+  omit?: Prisma.PostHabitLikeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostHabitLikeInclude<ExtArgs> | null
+  where?: Prisma.PostHabitLikeWhereInput
+  orderBy?: Prisma.PostHabitLikeOrderByWithRelationInput | Prisma.PostHabitLikeOrderByWithRelationInput[]
+  cursor?: Prisma.PostHabitLikeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostHabitLikeScalarFieldEnum | Prisma.PostHabitLikeScalarFieldEnum[]
 }
 
 /**

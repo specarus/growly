@@ -26,6 +26,9 @@ export type PopularPost = {
   createdAt: string;
   userName: string | null;
   habitName: string | null;
+  likesCount: number;
+  likedByCurrentUser: boolean;
+  isCommunityPost: boolean;
 };
 
 export const categories: Category[] = [

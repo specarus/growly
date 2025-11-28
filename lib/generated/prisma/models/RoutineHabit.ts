@@ -453,14 +453,6 @@ export type RoutineHabitUncheckedUpdateManyWithoutRoutineNestedInput = {
   deleteMany?: Prisma.RoutineHabitScalarWhereInput | Prisma.RoutineHabitScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type RoutineHabitCreateWithoutHabitInput = {
   id?: string
   position?: number

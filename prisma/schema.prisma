@@ -33,6 +33,7 @@ model User {
   collections   Collection[]
   routines      Routine[]
   postHabits    PostHabit[]
+  postHabitLikes PostHabitLike[]
 
   @@unique([email])
   @@map("user")
@@ -176,12 +177,29 @@ model PostHabit {
   userId     String
   habit      Habit                @relation(fields: [habitId], references: [id], onDelete: Cascade)
   user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likesCount Int                  @default(0)
+  likes      PostHabitLike[]
   createdAt  DateTime             @default(now())
   updatedAt  DateTime             @default(now()) @updatedAt
 
   @@index([habitId])
   @@index([userId])
   @@map("post_habit")
+}
+
+model PostHabitLike {
+  id          String      @id @default(uuid())
+  postHabitId String
+  userId      String
+  createdAt   DateTime    @default(now())
+
+  post        PostHabit   @relation(fields: [postHabitId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postHabitId, userId])
+  @@index([postHabitId])
+  @@index([userId])
+  @@map("post_habit_like")
 }
 
 model Routine {

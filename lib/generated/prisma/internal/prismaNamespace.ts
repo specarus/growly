@@ -399,6 +399,7 @@ export const ModelName = {
   CollectionTodo: 'CollectionTodo',
   Habit: 'Habit',
   PostHabit: 'PostHabit',
+  PostHabitLike: 'PostHabitLike',
   Routine: 'Routine',
   RoutineHabit: 'RoutineHabit'
 } as const
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "todo" | "collection" | "collectionTodo" | "habit" | "postHabit" | "routine" | "routineHabit"
+    modelProps: "user" | "session" | "account" | "verification" | "todo" | "collection" | "collectionTodo" | "habit" | "postHabit" | "postHabitLike" | "routine" | "routineHabit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1086,6 +1087,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PostHabitLike: {
+      payload: Prisma.$PostHabitLikePayload<ExtArgs>
+      fields: Prisma.PostHabitLikeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PostHabitLikeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PostHabitLikeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        findFirst: {
+          args: Prisma.PostHabitLikeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PostHabitLikeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        findMany: {
+          args: Prisma.PostHabitLikeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>[]
+        }
+        create: {
+          args: Prisma.PostHabitLikeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        createMany: {
+          args: Prisma.PostHabitLikeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PostHabitLikeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>[]
+        }
+        delete: {
+          args: Prisma.PostHabitLikeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        update: {
+          args: Prisma.PostHabitLikeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        deleteMany: {
+          args: Prisma.PostHabitLikeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PostHabitLikeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PostHabitLikeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>[]
+        }
+        upsert: {
+          args: Prisma.PostHabitLikeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostHabitLikePayload>
+        }
+        aggregate: {
+          args: Prisma.PostHabitLikeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePostHabitLike>
+        }
+        groupBy: {
+          args: Prisma.PostHabitLikeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostHabitLikeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PostHabitLikeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostHabitLikeCountAggregateOutputType> | number
+        }
+      }
+    }
     Routine: {
       payload: Prisma.$RoutinePayload<ExtArgs>
       fields: Prisma.RoutineFieldRefs
@@ -1411,11 +1486,22 @@ export const PostHabitScalarFieldEnum = {
   guardrails: 'guardrails',
   habitId: 'habitId',
   userId: 'userId',
+  likesCount: 'likesCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PostHabitScalarFieldEnum = (typeof PostHabitScalarFieldEnum)[keyof typeof PostHabitScalarFieldEnum]
+
+
+export const PostHabitLikeScalarFieldEnum = {
+  id: 'id',
+  postHabitId: 'postHabitId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type PostHabitLikeScalarFieldEnum = (typeof PostHabitLikeScalarFieldEnum)[keyof typeof PostHabitLikeScalarFieldEnum]
 
 
 export const RoutineScalarFieldEnum = {
@@ -1700,6 +1786,7 @@ export type GlobalOmitConfig = {
   collectionTodo?: Prisma.CollectionTodoOmit
   habit?: Prisma.HabitOmit
   postHabit?: Prisma.PostHabitOmit
+  postHabitLike?: Prisma.PostHabitLikeOmit
   routine?: Prisma.RoutineOmit
   routineHabit?: Prisma.RoutineHabitOmit
 }
