@@ -199,7 +199,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
       </div>
 
       {hasTodos && remainingCount > 0 ? (
-        <div className="mt-3 text-xs text-muted-foreground">
+        <div className="mt-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
           +{remainingCount} more waiting -{" "}
           <Link
             href="/dashboard/todos"
@@ -212,11 +212,11 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
 
       {hasTodos ? (
         <>
-          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="mt-4 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
             <CalendarDays className="w-3 h-3" />
             <span className="truncate">Tap a todo to edit or reschedule.</span>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="mt-1 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
             <Clock3 className="w-3 h-3" />
             <span className="truncate">
               Need a new one? Start fresh in seconds.
@@ -224,7 +224,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
           </div>
         </>
       ) : (
-        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
           Add a todo to see it on your dashboard.
         </div>
       )}

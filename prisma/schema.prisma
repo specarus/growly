@@ -151,10 +151,12 @@ model Habit {
   updatedAt        DateTime @default(now()) @updatedAt
   userId           String
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourcePopularPostId String?
   routineHabits    RoutineHabit[]
   postHabits       PostHabit[]
 
   @@unique([id, userId])
+  @@unique([userId, sourcePopularPostId])
   @@index([userId])
   @@map("habit")
 }

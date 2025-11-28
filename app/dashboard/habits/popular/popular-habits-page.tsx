@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Brain,
   CalendarClock,
@@ -29,6 +29,7 @@ import {
   timeFilters,
   TimeWindow,
 } from "./types";
+import { buildHabitPayloadFromPost } from "./import-habit-utils";
 import { popularHabits } from "./popular-habits-data";
 
 const categoryStyles: Record<Category, { badge: string; dot: string }> = {
@@ -93,6 +94,12 @@ const PopularHabitsPage: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState("");
   const [likingPostId, setLikingPostId] = useState<string | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
+  const [addingPostId, setAddingPostId] = useState<string | null>(null);
+  const [justAddedPostId, setJustAddedPostId] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [importedPostIds, setImportedPostIds] = useState<Set<string>>(
+    new Set()
+  );
 
   const handleLike = async (postId: string) => {
     setLikeError(null);
@@ -149,6 +156,29 @@ const PopularHabitsPage: React.FC = () => {
     let active = true;
     setLoading(true);
     setError(null);
+
+    fetch("/api/habits")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load habits.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!active) return;
+        const ids = new Set<string>();
+        (data.habits ?? []).forEach((habit: any) => {
+          if (typeof habit.sourcePopularPostId === "string") {
+            ids.add(habit.sourcePopularPostId);
+          }
+        });
+        setImportedPostIds(ids);
+      })
+      .catch(() => {
+        if (!active) return;
+        setImportedPostIds(new Set());
+      });
+
     fetch("/api/habits/posts")
       .then((response) => {
         if (!response.ok) {
@@ -177,6 +207,7 @@ const PopularHabitsPage: React.FC = () => {
         if (!active) return;
         setLoading(false);
       });
+
     return () => {
       active = false;
     };
@@ -224,6 +255,68 @@ const PopularHabitsPage: React.FC = () => {
     filteredPosts.find((post) => post.id === selectedPostId) ||
     filteredPosts[0] ||
     null;
+
+  useEffect(() => {
+    setAddError(null);
+    if (!selectedPost?.id) {
+      setJustAddedPostId(null);
+      return;
+    }
+    if (justAddedPostId && justAddedPostId !== selectedPost.id) {
+      setJustAddedPostId(null);
+    }
+  }, [selectedPost?.id, justAddedPostId]);
+
+  const userHasAddedSelectedPost = selectedPost
+    ? importedPostIds.has(selectedPost.id)
+    : false;
+
+  const handleAddToBoard = useCallback(async () => {
+    if (!selectedPost || userHasAddedSelectedPost) {
+      if (selectedPost && userHasAddedSelectedPost) {
+        setAddError("You already added this habit.");
+      }
+      return;
+    }
+    setAddError(null);
+    setAddingPostId(selectedPost.id);
+    try {
+      const payload = buildHabitPayloadFromPost(selectedPost);
+      const response = await fetch("/api/habits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const message =
+          errorBody && typeof errorBody === "object" && "error" in errorBody
+            ? (errorBody as { error?: string }).error
+            : null;
+        throw new Error(
+          message ?? "Unable to add this habit to your board."
+        );
+      }
+      setImportedPostIds((current) => {
+        const next = new Set(current);
+        next.add(selectedPost.id);
+        return next;
+      });
+      setJustAddedPostId(selectedPost.id);
+    } catch (error) {
+      if (error instanceof Error) {
+        setAddError(error.message);
+      } else {
+        setAddError("Unable to add this habit to your board.");
+      }
+    } finally {
+      setAddingPostId(null);
+    }
+  }, [selectedPost, userHasAddedSelectedPost]);
+
+  const isAddingSelectedPost = addingPostId === selectedPost?.id;
+  const isAddedSelectedPost = userHasAddedSelectedPost;
+  const showSuccessMessage = justAddedPostId === selectedPost?.id;
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
@@ -664,13 +757,40 @@ const PopularHabitsPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center xl:gap-2 2xl:gap-3">
-                      <Link
-                        href="/dashboard/habits"
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
-                      >
-                        <CalendarClock className="w-4 h-4" />
-                        Add to habit board
-                      </Link>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleAddToBoard();
+                          }}
+                          disabled={
+                            !selectedPost ||
+                            isAddingSelectedPost ||
+                            isAddedSelectedPost
+                          }
+                          className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <CalendarClock className="w-4 h-4" />
+                          <span>
+                            {isAddedSelectedPost
+                              ? "Added"
+                              : isAddingSelectedPost
+                              ? "Adding..."
+                              : "Add to habit board"}
+                          </span>
+                        </button>
+                        {showSuccessMessage ? (
+                          <p className="text-[11px] text-green-soft">
+                            Habit added to your board.
+                          </p>
+                        ) : null}
+                        {addError ? (
+                          <p className="text-[11px] text-rose-600" role="alert">
+                            {addError}
+                          </p>
+                        ) : null}
+                      </div>
                       <button
                         type="button"
                         onClick={() => handleLike(selectedPost.id)}

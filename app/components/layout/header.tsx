@@ -135,8 +135,8 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
-      <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 flex items-center justify-between">
-        <div className="flex items-center flex-1 min-w-0 gap-4">
+      <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 grid grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,1fr)] items-center gap-4">
+        <div className="flex items-center min-w-0 gap-4">
           <Sprout className="text-green-soft" />
 
           <div className="flex w-full flex-1 flex-col min-w-0 xl:flex-row xl:items-center xl:gap-20 2xl:gap-24">
@@ -159,35 +159,37 @@ export default function Header() {
                 </span>
               ))}
             </div>
-
-            {session && (
-              <nav
-                aria-label="Dashboard shortcuts"
-                className="flex flex-wrap items-center gap-3 xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em]"
-              >
-                {quickLinks.map((link) => {
-                  const active = isLinkActive(link.href);
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      aria-current={active ? "page" : undefined}
-                      className={`rounded-full xl:px-3 2xl:px-4 xl:py-1 xl:text-[10px] 2xl:text-[11px] font-semibold transition ${
-                        active
-                          ? "bg-primary text-white shadow-[0_2px_20px_rgba(16,185,129,0.35)]"
-                          : "border border-gray-100 text-muted-foreground hover:border-primary/60 hover:text-primary"
-                      } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {session ? (
+          <nav
+            aria-label="Dashboard shortcuts"
+            className="flex flex-wrap items-center gap-3 xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em] justify-self-center"
+          >
+            {quickLinks.map((link) => {
+              const active = isLinkActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-full xl:px-3 2xl:px-4 xl:py-1 xl:text-[10px] 2xl:text-[11px] font-semibold transition ${
+                    active
+                      ? "bg-primary text-white shadow-[0_2px_20px_rgba(16,185,129,0.35)]"
+                      : "border border-gray-100 text-muted-foreground hover:border-primary/60 hover:text-primary"
+                  } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        ) : (
+          <div />
+        )}
+
+        <div className="flex items-center gap-3 justify-self-end">
           <ThemeToggle />
           {session && <AccountDropdown session={session} />}
         </div>

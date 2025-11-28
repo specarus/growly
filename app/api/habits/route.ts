@@ -16,6 +16,21 @@ export async function POST(request: NextRequest) {
     const payload = await parseHabitPayload(
       (await request.json()) as Record<string, unknown>
     );
+    if (payload.sourcePopularPostId) {
+      const existing = await prisma.habit.findFirst({
+        where: {
+          userId,
+          sourcePopularPostId: payload.sourcePopularPostId,
+        },
+        select: { id: true },
+      });
+      if (existing) {
+        return NextResponse.json(
+          { error: "You already added that popular habit." },
+          { status: 409 }
+        );
+      }
+    }
     const habit = await prisma.habit.create({
       data: {
         ...payload,
@@ -52,6 +67,7 @@ export async function GET() {
         description: true,
         cadence: true,
         timeOfDay: true,
+        sourcePopularPostId: true,
       },
     });
 

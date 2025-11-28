@@ -16,6 +16,7 @@ export interface HabitPayload {
   goalAmount: number;
   goalUnit: string;
   goalUnitCategory: UnitCategory;
+  sourcePopularPostId?: string | null;
 }
 
 export const requireUserId = async () => {
@@ -80,6 +81,14 @@ const parseStartDate = (value: unknown) => {
   return new Date();
 };
 
+const parseSourcePopularPostId = (value: unknown) => {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+  return null;
+};
+
 export const parseHabitPayload = async (
   payload: Record<string, unknown>
 ): Promise<HabitPayload> => {
@@ -98,5 +107,6 @@ export const parseHabitPayload = async (
     goalAmount: parseGoalAmount(payload.goalAmount),
     goalUnit: parseGoalUnit(payload.goalUnit),
     goalUnitCategory: parseUnitCategory(payload.goalUnitCategory),
+    sourcePopularPostId: parseSourcePopularPostId(payload.sourcePopularPostId),
   };
 };

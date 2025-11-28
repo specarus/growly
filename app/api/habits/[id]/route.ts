@@ -50,3 +50,40 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { params } = context;
+  const { id } = await params;
+  try {
+    const userId = await requireUserId();
+    await prisma.habit.delete({
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
+    });
+    revalidatePath("/dashboard/habits");
+    revalidatePath("/dashboard/habits/routines");
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "Habit not found" }, { status: 404 });
+    }
+    if (error instanceof Error) {
+      const status = getErrorStatus(error.message);
+      return NextResponse.json({ error: error.message }, { status });
+    }
+    return NextResponse.json(
+      { error: "Unable to delete habit. Try again later." },
+      { status: 500 }
+    );
+  }
+}

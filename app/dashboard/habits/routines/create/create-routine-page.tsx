@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { CalendarDays, Check, Clock3, Search, Sparkles, Target } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  Clock3,
+  Search,
+  Sparkles,
+  Target,
+} from "lucide-react";
 
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
@@ -151,22 +158,22 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-t from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
-        <div className="xl:px-8 2xl:px-28 space-y-8">
-          <PageHeading
-            badgeLabel="Create routine"
-            title="Design a routine that keeps you steady"
-            description="Name the sequence, pick the anchor, and stack the habits that keep your days calm."
-            actions={
-              <div className="flex flex-row gap-3">
-                <Link
-                  href="/dashboard/habits/routines"
-                  className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
-                >
-                  Back to routines
-                </Link>
-              </div>
-            }
-          />
+      <div className="xl:px-8 2xl:px-28 space-y-8">
+        <PageHeading
+          badgeLabel="Create routine"
+          title="Design a routine that keeps you steady"
+          description="Name the sequence, pick the anchor, and stack the habits that keep your days calm."
+          actions={
+            <div className="flex flex-row gap-3">
+              <Link
+                href="/dashboard/habits/routines"
+                className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+              >
+                Back to routines
+              </Link>
+            </div>
+          }
+        />
 
         <div className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6">
           <form
@@ -176,10 +183,10 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="space-y-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                     Routine basics
                   </p>
-                  <h2 className="text-xl font-semibold text-foreground">
+                  <h2 className="xl:text-lg 2xl:text-xl font-semibold text-foreground">
                     Set the stage
                   </h2>
                 </div>
@@ -194,7 +201,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                     value={form.name}
                     onChange={handleChange("name")}
                     placeholder="Daily launch sequence"
-                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     required
                   />
                 </label>
@@ -207,7 +214,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                     value={form.anchor}
                     onChange={handleChange("anchor")}
                     placeholder="Right after morning coffee"
-                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
                 <label className="space-y-2 block">
@@ -220,7 +227,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                     onChange={handleChange("notes")}
                     rows={3}
                     placeholder="Remind future you where this momentum is headed."
-                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                   />
                 </label>
               </div>
@@ -229,14 +236,14 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                     Focus window
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                     Pick when the routine should feel most alive.
                   </p>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                   {timeWindow}
                 </span>
               </div>
@@ -246,7 +253,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                     key={window}
                     type="button"
                     onClick={() => setTimeWindow(window)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-full border transition ${
+                    className={`px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold rounded-full border transition ${
                       timeWindow === window
                         ? "bg-primary text-white border-primary"
                         : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
@@ -260,7 +267,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
 
             {status ? (
               <div
-                className={`rounded-2xl border px-4 py-3 text-sm ${getStatusClasses(
+                className={`rounded-2xl border px-4 py-3 xl:text-xs 2xl:text-sm ${getStatusClasses(
                   status.tone
                 )}`}
               >
@@ -271,31 +278,31 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  <p className="2xl:text-sm xl:text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                     Habit stack
                   </p>
-                  <h3 className="text-lg font-semibold text-foreground">
+                  <h3 className="xl:text-lg 2xl:text-xl font-semibold text-foreground">
                     Pick what goes in the sequence
                   </h3>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                   {selectedHabitIds.length} selected • {habits.length} available
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
                 <div className="relative flex-1 min-w-[220px]">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 xl:h-3 2xl:h-4 xl:w-3 2xl:w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     value={filter}
                     onChange={(event) => setFilter(event.target.value)}
                     placeholder="Filter by habit name, focus, or cadence"
-                    className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-10 text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-10 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => setFilter("")}
-                  className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+                  className="xl:text-[11px] 2xl:text-xs font-semibold text-primary underline-offset-2 hover:underline"
                 >
                   Clear
                 </button>
@@ -323,12 +330,14 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="font-semibold">{habit.name}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="xl:text-sm 2xl:text-base font-semibold">
+                                {habit.name}
+                              </p>
+                              <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                                 {habit.cadence} • {habit.focus}
                               </p>
                             </div>
-                            <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-semibold text-muted-foreground">
+                            <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
                               <Check
                                 className={`h-3 w-3 ${
                                   isActive
@@ -350,7 +359,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
                 type="submit"
-                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 disabled:opacity-80"
+                className="rounded-full bg-primary px-6 py-3 xl:text-sm 2xl:text-base font-semibold text-white shadow-sm transition hover:brightness-110 disabled:opacity-80"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving routine…" : "Create routine"}
@@ -362,51 +371,53 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                     Routine preview
                   </p>
-                  <h2 className="text-xl font-semibold text-foreground">
+                  <h2 className="xl:text-lg 2xl:text-xl font-semibold text-foreground">
                     {form.name || "Untitled routine"}
                   </h2>
                 </div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                   Live
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">{previewFocus}</p>
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                {previewFocus}
+              </p>
               <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
                     Anchor
                   </div>
-                  <p className="mt-2 font-semibold text-foreground">
+                  <p className="xl:text-sm 2xl:text-base mt-2 font-semibold text-foreground">
                     {form.anchor || "Not set yet"}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
                     Focus window
                   </div>
-                  <p className="mt-2 font-semibold text-foreground">
+                  <p className="xl:text-sm 2xl:text-base mt-2 font-semibold text-foreground">
                     {timeWindow}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
                     Habits stacked
                   </div>
-                  <p className="mt-2 text-3xl font-semibold text-foreground">
+                  <p className="mt-2 xl:text-2xl 2xl:text-3xl font-semibold text-foreground">
                     {selectedHabitIds.length}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                     max {MAX_HABITS}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="xl:text-[10px] 2xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
                     Notes
                   </div>
-                  <p className="mt-2 text-sm text-foreground">
+                  <p className="mt-2 xl:text-xs 2xl:text-sm text-foreground">
                     {form.notes || "Add something that keeps you honest."}
                   </p>
                 </div>
@@ -415,10 +426,10 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
 
             <div className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                   Habit shortlist
                 </p>
-                <span className="text-xs font-semibold text-muted-foreground">
+                <span className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                   {selectedHabits.length === 0
                     ? "No habits yet"
                     : `${selectedHabits.length} chosen`}
@@ -426,22 +437,22 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
               </div>
               <div className="mt-4 space-y-3">
                 {selectedHabits.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                     Select habits on the left to see them build the stack.
                   </p>
                 ) : (
                   selectedHabits.map((habit) => (
                     <div
                       key={habit.id}
-                      className="flex items-start justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm shadow-sm"
+                      className="flex items-start justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 xl:text-sm 2xl:text-base shadow-sm"
                     >
                       <div className="space-y-1">
                         <p className="font-semibold">{habit.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                           {habit.cadence} • {habit.focus}
                         </p>
                       </div>
-                      <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-semibold text-primary">
+                      <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-primary">
                         <Check className="h-3 w-3" />
                         Included
                       </span>

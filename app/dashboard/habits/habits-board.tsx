@@ -7,8 +7,8 @@ import {
   Flame,
   LifeBuoy,
   Plus,
-  ShieldCheck,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -87,36 +87,36 @@ const iconMap = {
 const HabitsBoard: React.FC<Props> = ({ habits }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [localHabits, setLocalHabits] = useState(habits);
   const [selectedHabitId, setSelectedHabitId] = useState<string>(
     habits[0]?.id || ""
   );
-
-  const selectedHabit = useMemo(
-    () => habits.find((habit) => habit.id === selectedHabitId),
-    [habits, selectedHabitId]
-  );
-
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    setLocalHabits(habits);
+  }, [habits]);
+
   const filteredHabits = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) {
-      return habits;
+      return localHabits;
     }
 
-    return habits.filter((habit) => {
+    return localHabits.filter((habit) => {
       const focusLabel = getFocusLabel(habit).toLowerCase();
       return (
         habit.name.toLowerCase().includes(query) || focusLabel.includes(query)
       );
     });
-  }, [habits, searchTerm]);
+  }, [localHabits, searchTerm]);
 
   useEffect(() => {
     const param = searchParams.get("habitId");
-    if (param && habits.some((habit) => habit.id === param)) {
+    if (param && localHabits.some((habit) => habit.id === param)) {
       setSelectedHabitId(param);
     }
-  }, [habits, searchParams]);
+  }, [localHabits, searchParams]);
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
@@ -199,7 +199,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                     <span className="text-right">Completion</span>
                   </div>
                   <div className="divide-y divide-gray-100">
-                    {habits.length === 0 ? (
+                    {localHabits.length === 0 ? (
                       <div className="px-4 py-10 text-center xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
                         <p className="font-semibold text-foreground">
                           No habits yet

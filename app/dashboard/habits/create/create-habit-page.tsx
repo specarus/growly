@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -30,26 +31,14 @@ import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
-
-type Cadence = "Daily" | "Weekly" | "Monthly";
-type UnitCategory = "Quantity" | "Time";
-
-interface HabitFormState {
-  name: string;
-  description: string;
-  cadence: Cadence;
-  startDate: string;
-  timeOfDay: string;
-  reminder: string;
-  goalAmount: string;
-  goalUnit: string;
-  goalUnitCategory: UnitCategory;
-}
+import { Cadence, HabitFormState, UnitCategory } from "./types";
+import type { PopularPost } from "../popular/types";
 
 interface HabitFormProps {
   mode?: "create" | "edit";
   habitId?: string;
   initialHabit?: Partial<HabitFormState>;
+  popularPost?: PopularPost | null;
 }
 
 type HabitTemplate = {
@@ -141,6 +130,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   mode = "create",
   habitId,
   initialHabit,
+  popularPost,
 }) => {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -164,6 +154,8 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     ...initialHabit,
   });
   const [saved, setSaved] = useState(false);
+  const [isDeletingHabit, setIsDeletingHabit] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [cadenceMenuOpen, setCadenceMenuOpen] = useState(false);
   const [reminderMenuOpen, setReminderMenuOpen] = useState(false);
   const [cadenceDropDirection, setCadenceDropDirection] = useState<
@@ -353,6 +345,42 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     });
   };
 
+  const handleDeleteHabit = useCallback(async () => {
+    if (!habitId) {
+      return;
+    }
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm("Delete this habit? This cannot be undone.")
+    ) {
+      return;
+    }
+    setDeleteError(null);
+    setIsDeletingHabit(true);
+    try {
+      const response = await fetch(`/api/habits/${habitId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        const message =
+          payload && typeof payload === "object" && "error" in payload
+            ? (payload as { error?: string }).error
+            : null;
+        throw new Error(message ?? "Unable to delete this habit.");
+      }
+      router.push("/dashboard/habits");
+    } catch (error) {
+      if (error instanceof Error) {
+        setDeleteError(error.message);
+      } else {
+        setDeleteError("Unable to delete this habit.");
+      }
+    } finally {
+      setIsDeletingHabit(false);
+    }
+  }, [habitId, router]);
+
   const previewGoalUnit =
     form.goalUnit || goalUnitsByCategory[form.goalUnitCategory][0] || "count";
   const previewCadenceLabel = form.cadence.toLowerCase();
@@ -377,10 +405,10 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             titleClassName="text-2xl md:text-3xl"
             description="Set the cadence, start small, and add the reminders that keep you honest."
             actions={
-              <div className="flex flex-row gap-2 sm:gap-3">
+              <div className="flex flex-row xl:gap-2 2xl:gap-3">
                 <Link
                   href="/dashboard/habits"
-                  className="px-4 py-2 rounded-full text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+                  className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
                 >
                   Back to habits
                 </Link>
@@ -388,8 +416,36 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             }
           />
 
+          {popularPost ? (
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4 space-y-2 text-foreground shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-primary">
+                Importing blueprint
+              </p>
+              <p className="text-lg font-semibold">{popularPost.title}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {popularPost.summary ?? "No summary provided for this habit yet."}
+              </p>
+              <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-muted-foreground">
+                <span className="rounded-full border border-white/30 bg-white/70 px-2 py-1">
+                  {popularPost.category}
+                </span>
+                <span className="rounded-full border border-white/30 bg-white/70 px-2 py-1">
+                  {popularPost.cadence}
+                </span>
+                <span className="rounded-full border border-white/30 bg-white/70 px-2 py-1">
+                  {popularPost.timeWindow}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Based on{" "}
+                {popularPost.userName ?? "a community blueprint"} shared with
+                the crew.
+              </p>
+            </div>
+          ) : null}
+
           {saved ? (
-            <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 text-sm text-foreground">
+            <div className="rounded-2xl border border-green-soft/60 bg-green-soft/15 px-4 py-3 xl:text-xs 2xl:text-sm text-foreground">
               Habit saved. It is now synced to your dashboard.
             </div>
           ) : null}
@@ -406,17 +462,19 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     <h2 className="font-semibold xl:text-lg 2xl:text-xl">
                       Habit basics
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                       Name the habit and define how often you want it to fire.
                     </p>
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground">Step 1</span>
+                <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                  Step 1
+                </span>
               </div>
 
               <div className="space-y-4">
                 <label className="space-y-2 block">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
+                  <div className="flex items-center gap-2 xl:text-sm font-semibold">
                     <Hash className="w-4 h-4 text-primary" />
                     <span>Habit name</span>
                   </div>
@@ -747,19 +805,45 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </div>
 
               <div className="flex flex-wrap gap-3 pt-3">
-                <Button
-                  type="submit"
-                  className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
-                  disabled={isSubmitting}
+              <Button
+                type="submit"
+                className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "Saving habit..."
+                  : mode === "edit"
+                  ? "Update habit"
+                  : "Create habit"}
+              </Button>
+            </div>
+            {mode === "edit" && habitId ? (
+              <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4 space-y-2 text-sm text-rose-700">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-rose-600">
+                    Danger zone
+                  </p>
+                </div>
+                <p className="text-xs text-rose-700">
+                  Deleting this habit removes it from your board and routines.
+                  All associated data will be lost.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDeleteHabit}
+                  disabled={isDeletingHabit}
+                  className="inline-flex items-center justify-center w-full rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 hover:border-rose-400 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSubmitting
-                    ? "Saving habit..."
-                    : mode === "edit"
-                    ? "Update habit"
-                    : "Create habit"}
-                </Button>
+                  {isDeletingHabit ? "Deleting..." : "Delete habit"}
+                </button>
+                {deleteError ? (
+                  <p className="text-[11px] text-rose-700" role="alert">
+                    {deleteError}
+                  </p>
+                ) : null}
               </div>
-            </form>
+            ) : null}
+          </form>
 
             <aside className="space-y-4">
               <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -772,18 +856,20 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                       Habit preview
                     </span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Live</span>
+                  <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                    Live
+                  </span>
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  <h3 className="xl:text-base 2xl:text-lg font-semibold text-slate-900 dark:text-white">
                     {form.name || "Untitled habit"}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
                     {form.description ||
                       "Add a short description so future you remembers why this matters."}
                   </p>
                 </div>
-                <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                <div className="mt-4 grid gap-3 xl:text-xs 2xl:text-sm sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/60 bg-white/70 px-3 py-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
                     <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                       Cadence
@@ -823,7 +909,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                 </div>
                 <div className="mt-4 flex items-center gap-2 rounded-2xl border border-primary/30 bg-white/80 px-4 py-3 text-sm font-semibold text-foreground shadow-sm dark:border-primary/50 dark:bg-primary/10">
                   <span>
-                    {form.goalAmount || "1"} {previewGoalUnit} per{" "}
+                    {form.goalAmount || "1"} {previewGoalUnit}{" "}
                     {previewCadenceLabel}
                   </span>
                 </div>
@@ -835,19 +921,19 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             <div className="px-6 pt-5 pb-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                     Starter templates
                   </p>
-                  <h2 className="text-xl font-semibold">
+                  <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                     Pick a pattern and tweak
                   </h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
                     Hardcoded examples to speed you up. Wire to presets when you
                     add persistence.
                   </p>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground">
-                  <NotebookPen className="w-4 h-4" />
+                <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                  <NotebookPen className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
                   Draft mode
                 </div>
               </div>
@@ -858,21 +944,21 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     key={template.title}
                     className="rounded-2xl border border-gray-100 bg-muted/50 px-4 py-3 shadow-inner space-y-2"
                   >
-                    <div className="flex items-center justify-between text-sm font-semibold">
+                    <div className="flex items-center justify-between xl:text-sm 2xl:text-base font-semibold">
                       <span>{template.title}</span>
-                      <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
+                      <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground bg-white px-2 py-1 rounded-full border border-gray-100">
                         {template.cadence}
                       </span>
                     </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-1">
                       <Lightbulb className="w-3.5 h-3.5 text-primary" />
                       Trigger: {template.trigger}
                     </div>
-                    <p className="text-sm text-foreground">
+                    <p className="xl:text-xs 2xl:text-sm text-foreground">
                       {template.description}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Goal: {template.goalAmount} {template.goalUnit} per{" "}
+                    <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      Goal: {template.goalAmount} {template.goalUnit}{" "}
                       {template.cadence.toLowerCase()}
                     </p>
                     <button
@@ -892,7 +978,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                         }));
                         setSaved(false);
                       }}
-                      className="text-xs font-semibold text-primary hover:underline"
+                      className="xl:text-xs 2xl:text-sm font-semibold text-primary hover:underline"
                     >
                       Use as base
                     </button>

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
-import { Clock3, GripVertical, Plus, Target } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Clock3, GripVertical, Plus, Target, Trash2 } from "lucide-react";
 
 import PageGradient from "@/app/components/ui/page-gradient";
 import { useRouter } from "next/navigation";
@@ -42,6 +42,10 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
 }) => {
   const [backlog, setBacklog] = useState<Habit[]>(initialBacklog);
   const [routines, setRoutines] = useState<Routine[]>(initialRoutines);
+  const [deletingRoutineId, setDeletingRoutineId] = useState<string | null>(
+    null
+  );
+  const [routineError, setRoutineError] = useState<string | null>(null);
   const hasMountedRef = useRef(false);
   const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hoverTarget, setHoverTarget] = useState<string | null>(null);
@@ -168,6 +172,50 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
     router.push("/dashboard/habits/routines/create");
   };
 
+  const handleDeleteRoutine = useCallback(
+    async (routineId: string, routineHabits: Habit[]) => {
+      if (!routineId) {
+        return;
+      }
+      setRoutineError(null);
+      setDeletingRoutineId(routineId);
+      try {
+        const response = await fetch(`/api/routines/${routineId}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => null);
+          const message =
+            payload && typeof payload === "object" && "error" in payload
+              ? (payload as { error?: string }).error
+              : null;
+          throw new Error(message ?? "Unable to delete this routine.");
+        }
+        setRoutines((prev) =>
+          prev.filter((routine) => routine.id !== routineId)
+        );
+        setBacklog((prev) => {
+          const existingIds = new Set(prev.map((habit) => habit.id));
+          const additions = routineHabits.filter(
+            (habit) => !existingIds.has(habit.id)
+          );
+          return additions.length > 0 ? [...prev, ...additions] : prev;
+        });
+      } catch (error) {
+        if (error instanceof Error) {
+          setRoutineError(error.message);
+        } else {
+          setRoutineError("Unable to delete this routine.");
+        }
+      } finally {
+        setDeletingRoutineId((current) =>
+          current === routineId ? null : current
+        );
+      }
+    },
+    []
+  );
+
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
@@ -213,6 +261,11 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
             Move habits between the backlog and your routines.
           </span>
         </div>
+        {routineError ? (
+          <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700">
+            {routineError}
+          </div>
+        ) : null}
 
         <div className="grid xl:grid-cols-[0.95fr_1.05fr] gap-5">
           <div
@@ -292,17 +345,30 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                     <h3 className="xl:text-base 2xl:text-lg font-semibold leading-tight">
                       {routine.name}
                     </h3>
-                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
-                      {routine.notes ||
-                        "No notes yet. This is a great spot to describe why this routine matters."}
-                    </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock3 className="w-4 h-4 text-primary" />
                       <span>{routine.anchor ?? "Not set"}</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center xl:text-[11px] 2xl:text-xs xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 py-1 rounded-full">
-                    Drop habits here
+                  <div className="flex flex-col items-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDeleteRoutine(routine.id, routine.habits)
+                      }
+                      disabled={deletingRoutineId === routine.id}
+                      className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-rose-600 hover:border-rose-400 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>
+                        {deletingRoutineId === routine.id
+                          ? "Deleting..."
+                          : "Delete"}
+                      </span>
+                    </button>
+                    <div className="flex items-center justify-center xl:text-[11px] 2xl:text-xs xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 py-1 rounded-full">
+                      Drop habits here
+                    </div>
                   </div>
                 </div>
 

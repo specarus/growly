@@ -1464,7 +1464,8 @@ export const HabitScalarFieldEnum = {
   goalUnitCategory: 'goalUnitCategory',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  sourcePopularPostId: 'sourcePopularPostId'
 } as const
 
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
