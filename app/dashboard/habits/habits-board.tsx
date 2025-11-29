@@ -20,7 +20,7 @@ import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "./components/habits-tabs";
 import HabitsCalendar from "./components/habits-calendar";
 import GradientCircle from "@/app/components/ui/gradient-circle";
-import { ProgressByDayMap } from "@/lib/habit-progress";
+import { formatDayKey, ProgressByDayMap } from "@/lib/habit-progress";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -103,6 +103,54 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
     Record<string, string>
   >({});
   const quantityButtonRef = useRef<HTMLDivElement | null>(null);
+  const [progressMap, setProgressMap] =
+    useState<ProgressByDayMap>(progressByDay);
+
+  const refreshTodayProgress = (updatedHabits: Habit[]) => {
+    if (updatedHabits.length === 0) {
+      return;
+    }
+    const todayKey = formatDayKey(new Date());
+    const sum = updatedHabits.reduce((acc, habit) => {
+      const logged = habit.dailyProgress ?? 0;
+      const goal = habit.goalAmount ?? 1;
+      const normalizedGoal = goal > 0 ? goal : 1;
+      return acc + Math.min(1, logged / normalizedGoal);
+    }, 0);
+    setProgressMap((prev) => ({
+      ...prev,
+      [todayKey]: Math.min(1, sum / updatedHabits.length),
+    }));
+  };
+
+  const reloadProgressMap = async () => {
+    try {
+      const today = new Date();
+      const from = new Date(
+        Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)
+      ).toISOString();
+      const to = new Date(
+        Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)
+      ).toISOString();
+      const response = await fetch(
+        `/api/habits/daily-progress?from=${from}&to=${to}`,
+        { cache: "no-store" }
+      );
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = (await response.json()) as {
+        progressByDay: ProgressByDayMap;
+      };
+
+      if (data.progressByDay) {
+        setProgressMap(data.progressByDay);
+      }
+    } catch (error) {
+      console.error("Unable to reload progress map", error);
+    }
+  };
   const handleAddQuantity = async (habitId: string, amount: number) => {
     if (!Number.isFinite(amount) || amount <= 0) {
       return;
@@ -113,16 +161,18 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       [habitId]: "",
     }));
 
-    setLocalHabits((prev) =>
-      prev.map((habit) =>
+    setLocalHabits((prev) => {
+      const next = prev.map((habit) =>
         habit.id === habitId
           ? {
               ...habit,
               dailyProgress: (habit.dailyProgress ?? 0) + amount,
             }
           : habit
-      )
-    );
+      );
+      refreshTodayProgress(next);
+      return next;
+    });
 
     try {
       const response = await fetch(`/api/habits/${habitId}/progress`, {
@@ -140,16 +190,50 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       const data = await response.json();
 
       if (typeof data.dailyProgress === "number") {
-        setLocalHabits((prev) =>
-          prev.map((habit) =>
+        setLocalHabits((prev) => {
+          const next = prev.map((habit) =>
             habit.id === habitId
               ? { ...habit, dailyProgress: data.dailyProgress }
               : habit
-          )
-        );
+          );
+          refreshTodayProgress(next);
+          return next;
+        });
+        void reloadProgressMap();
       }
     } catch (error) {
       console.error("Unable to persist habit progress", error);
+    }
+  };
+
+  const handleReset = async (habitId: string) => {
+    setQuantityMenuOpen(null);
+    try {
+      const response = await fetch(`/api/habits/${habitId}/reset`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.json();
+
+      const nextProgress =
+        typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
+
+      setLocalHabits((prev) => {
+        const next = prev.map((habit) =>
+          habit.id === habitId
+            ? { ...habit, dailyProgress: nextProgress }
+            : habit
+        );
+        refreshTodayProgress(next);
+        return next;
+      });
+      void reloadProgressMap();
+    } catch (error) {
+      console.error("Unable to reset habit progress", error);
     }
   };
 
@@ -185,6 +269,10 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   useEffect(() => {
     setLocalHabits(habits);
   }, [habits]);
+
+  useEffect(() => {
+    setProgressMap(progressByDay);
+  }, [progressByDay]);
 
   const filteredHabits = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -362,15 +450,15 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 {streakValue}d
                               </span>
                             </div>
-                            <div className="flex items-center justify-end gap-3">
+                            <div className="flex items-center justify-center xl:gap-6 2xl:gap-8">
                               <div className="flex items-center gap-2">
                                 {isComplete ? (
-                                  <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm xl:pr-6 2xl:pr-16 font-semibold text-emerald-500">
+                                  <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
                                     <Check className="w-4 h-4" />
                                     <p>Completed</p>
                                   </span>
                                 ) : (
-                                  <>
+                                  <div className="flex items-center gap-3">
                                     <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
                                       <div
                                         className="h-full bg-linear-to-r from-primary to-coral"
@@ -382,7 +470,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                     <span className="xl:text-xs 2xl:text-sm font-semibold">
                                       {displayCompletion}%
                                     </span>
-                                  </>
+                                  </div>
                                 )}
                               </div>
                               <div
@@ -461,6 +549,16 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                           Add
                                         </button>
                                       </div>
+                                      <button
+                                        type="button"
+                                        className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                          void handleReset(habit.id);
+                                        }}
+                                      >
+                                        Reset progress
+                                      </button>
                                     </div>
                                   </div>
                                 )}
@@ -473,7 +571,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-green-soft/30 via-slate-100 to-primary/30">
+                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 to-white dark:from-card">
                   <div className="xl:p-5 2xl:p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -489,7 +587,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                         </p>
                       </div>
                     </div>
-                    <HabitsCalendar progressByDay={progressByDay} />
+                    <HabitsCalendar progressByDay={progressMap} />
                   </div>
                 </div>
               </div>

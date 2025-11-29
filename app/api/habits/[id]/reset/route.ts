@@ -6,21 +6,13 @@ import { prisma } from "@/lib/prisma";
 import { requireUserId } from "@/lib/actions/habit-actions";
 import { getUtcDayStart } from "@/lib/habit-progress";
 
-const parseAmount = (value: unknown) => {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return null;
-  }
-  return numeric;
-};
-
 const getErrorStatus = (message: string) => {
   if (message === "Unauthorized") return 401;
   if (message.includes("Habit")) return 400;
   return 500;
 };
 
-export async function PATCH(
+export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
@@ -29,18 +21,10 @@ export async function PATCH(
 
   try {
     const userId = await requireUserId();
-    const payload = (await request.json()) as { amount?: unknown };
-    const amount = parseAmount(payload.amount);
-    if (amount === null) {
-      return NextResponse.json(
-        { error: "Amount must be a positive number" },
-        { status: 400 }
-      );
-    }
 
     const progressDate = getUtcDayStart(new Date());
 
-    const progressEntry = await prisma.habitDailyProgress.upsert({
+    await prisma.habitDailyProgress.upsert({
       where: {
         habitId_date: {
           habitId: id,
@@ -48,14 +32,12 @@ export async function PATCH(
         },
       },
       update: {
-        progress: {
-          increment: amount,
-        },
+        progress: 0,
       },
       create: {
         habitId: id,
         date: progressDate,
-        progress: amount,
+        progress: 0,
       },
     });
 
@@ -67,14 +49,14 @@ export async function PATCH(
         },
       },
       data: {
-        dailyProgress: progressEntry.progress,
+        dailyProgress: 0,
       },
     });
 
     revalidatePath("/dashboard/habits");
     revalidatePath("/dashboard");
 
-    return NextResponse.json({ dailyProgress: progressEntry.progress });
+    return NextResponse.json({ dailyProgress: 0 });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -88,7 +70,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      { error: "Unable to update habit progress. Try again later." },
+      { error: "Unable to reset habit progress. Try again later." },
       { status: 500 }
     );
   }

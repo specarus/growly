@@ -140,7 +140,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
                   key={`day-${weekIndex}-${dayValue}`}
                   className={`relative shadow-sm shadow-primary/20 xl:w-24 2xl:w-28 xl:h-24 2xl:h-28 rounded-full grid place-items-center border border-primary/50 transition ${
                     progress >= 1 ? "bg-primary text-white" : "bg-muted/20"
-                  } ${isToday ? "ring-2 ring-primary/40" : ""}`}
+                  } ${isToday ? "xl:ring-3 2xl:ring-4 ring-primary/40" : ""}`}
                   title={`${getMonthName(
                     currentMonth
                   )} ${dayValue} - ${percent}% of habits completed`}

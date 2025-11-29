@@ -11,3 +11,8 @@ export const formatDayKey = (date: Date): string => padDate(date);
 
 export const buildDayKey = (year: number, month: number, day: number): string =>
   formatDayKey(new Date(Date.UTC(year, month, day)));
+
+export const getUtcDayStart = (date: Date): Date =>
+  new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  );
