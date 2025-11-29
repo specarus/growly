@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarClock,
+  Check,
   Flame,
   LifeBuoy,
   Plus,
@@ -17,7 +18,9 @@ import type { Habit as PrismaHabit } from "@prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "./components/habits-tabs";
+import HabitsCalendar from "./components/habits-calendar";
 import GradientCircle from "@/app/components/ui/gradient-circle";
+import { ProgressByDayMap } from "@/lib/habit-progress";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -35,6 +38,7 @@ type PlaybookItem = {
 
 type Props = {
   habits: Habit[];
+  progressByDay: ProgressByDayMap;
 };
 
 const getFocusLabel = (habit: Habit) => {
@@ -86,7 +90,7 @@ const iconMap = {
   CalendarClock,
 };
 
-const HabitsBoard: React.FC<Props> = ({ habits }) => {
+const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [localHabits, setLocalHabits] = useState(habits);
@@ -361,8 +365,9 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                             <div className="flex items-center justify-end gap-3">
                               <div className="flex items-center gap-2">
                                 {isComplete ? (
-                                  <span className="xl:text-xs 2xl:text-sm xl:pr-8 font-semibold text-emerald-600">
-                                    Completed
+                                  <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm xl:pr-6 2xl:pr-16 font-semibold text-emerald-500">
+                                    <Check className="w-4 h-4" />
+                                    <p>Completed</p>
                                   </span>
                                 ) : (
                                   <>
@@ -465,6 +470,26 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                         );
                       })
                     )}
+                  </div>
+                </div>
+
+                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-green-soft/30 via-slate-100 to-primary/30">
+                  <div className="xl:p-5 2xl:p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                          Calendar
+                        </p>
+                        <h2 className="xl:text-base 2xl:text-lg font-semibold">
+                          Habit rhythm
+                        </h2>
+                        <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                          Daily completion percentages help you spot where
+                          momentum is building.
+                        </p>
+                      </div>
+                    </div>
+                    <HabitsCalendar progressByDay={progressByDay} />
                   </div>
                 </div>
               </div>

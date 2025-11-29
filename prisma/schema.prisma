@@ -156,11 +156,28 @@ model Habit {
   sourcePopularPostId String?
   routineHabits    RoutineHabit[]
   postHabits       PostHabit[]
+  dailyProgressEntries HabitDailyProgress[]
 
   @@unique([id, userId])
   @@unique([userId, sourcePopularPostId])
   @@index([userId])
   @@map("habit")
+}
+
+model HabitDailyProgress {
+  id        String   @id @default(uuid())
+  habitId   String
+  date      DateTime
+  progress  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([habitId])
+  @@index([date])
+  @@map("habit_daily_progress")
 }
 
 model PostHabit {

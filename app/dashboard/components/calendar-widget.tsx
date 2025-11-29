@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, ClipboardCheck } from "lucide-react";
 import Button from "@/app/components/ui/button";
+import {
+  buildDayKey,
+  formatDayKey,
+  ProgressByDayMap,
+} from "@/lib/habit-progress";
 
 type DayName = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
 
@@ -35,10 +40,16 @@ const getMonthName = (monthIndex: number): string => {
   return new Date(2000, monthIndex).toLocaleString("en-US", { month: "long" });
 };
 
-const CalendarWidget: React.FC = () => {
-  const now = new Date();
+const clamp = (value: number) => Math.min(1, Math.max(0, value));
+
+interface CalendarWidgetProps {
+  progressByDay: ProgressByDayMap;
+}
+
+const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
+  const today = useMemo(() => new Date(), []);
   const [currentDate, setCurrentDate] = useState<Date>(
-    new Date(now.getFullYear(), now.getMonth(), 1)
+    new Date(today.getFullYear(), today.getMonth(), 1)
   );
 
   const currentYear = currentDate.getFullYear();
@@ -47,26 +58,18 @@ const CalendarWidget: React.FC = () => {
   const numDaysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDayIndex = getFirstDayOfMonth(currentYear, currentMonth);
 
-  const step = 0.1;
-  const max = 1;
-
-  const getDeterministicProgress = (
-    year: number,
-    monthIndex: number,
-    day: number
-  ) => {
-    const pseudoRandom =
-      Math.sin(year * 10000 + monthIndex * 100 + day) * 10000;
-    const normalized = pseudoRandom - Math.floor(pseudoRandom);
-    const buckets = max / step + 1;
-    const bucketValue = Math.floor(normalized * buckets) * step;
-    return Math.min(max, Number(bucketValue.toFixed(2)));
+  const getDayProgress = (day: number) => {
+    const key = buildDayKey(currentYear, currentMonth, day);
+    return clamp(progressByDay[key] ?? 0);
   };
 
-  const days: DayData[] = Array.from({ length: numDaysInMonth }, (_, i) => ({
-    day: i + 1,
-    progress: getDeterministicProgress(currentYear, currentMonth, i + 1),
-  }));
+  const days: DayData[] = Array.from(
+    { length: numDaysInMonth },
+    (_, index) => ({
+      day: index + 1,
+      progress: getDayProgress(index + 1),
+    })
+  );
 
   const paddedDays: (DayData | null)[] = [
     ...Array(firstDayIndex).fill(null),
@@ -86,6 +89,9 @@ const CalendarWidget: React.FC = () => {
       (prevDate) => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1)
     );
   };
+
+  const todayKey = formatDayKey(today);
+  const todayProgress = clamp(progressByDay[todayKey] ?? 0);
 
   return (
     <div className="border-none shadow-none xl:min-h-80 2xl:min-h-96">
@@ -138,8 +144,11 @@ const CalendarWidget: React.FC = () => {
               <div
                 key={day}
                 className={`${
-                  progress == 1 ? "text-white bg-primary" : ""
+                  progress === 1 ? "text-white bg-primary" : ""
                 } cursor-pointer relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center xl:text-xs 2xl:text-sm rounded-full`}
+                title={`${getMonthName(currentMonth)} ${day} - ${Math.round(
+                  progress * 100
+                )}% of habits completed`}
               >
                 {day}
                 <svg
@@ -175,8 +184,9 @@ const CalendarWidget: React.FC = () => {
         </div>
       ))}
 
-      <div className="xl:mt-2 2xl:mt-3 xl:text-xs 2xl:text-sm text-green-500 font-medium">
-        +3,2% from last month
+      <div className="flex items-center xl:gap-1 2xl:gap-2 xl:mt-2 2xl:mt-3 xl:text-xs 2xl:text-sm text-emerald-500 font-medium">
+        <ClipboardCheck className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
+        <p>Today {Math.round(todayProgress * 100)}% of habits completed</p>
       </div>
     </div>
   );

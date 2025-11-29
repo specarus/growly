@@ -9,8 +9,13 @@ import ShouldDoWidget from "./components/should-do-widget";
 import SyncWidget from "./components/sync-widget";
 import TodosWidget from "./components/todos-widget";
 import WeatherWidget from "./components/weather-widget";
+import { ProgressByDayMap } from "@/lib/habit-progress";
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  progressByDay: ProgressByDayMap;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ progressByDay }) => {
   return (
     <main className="relative w-full min-h-screen xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
       <GradientCircle
@@ -26,7 +31,7 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16">
         <div className="h-full col-span-2 grid xl:gap-4 2xl:gap-6">
           <GreetingWidget />
-          <CalendarWidget />
+          <CalendarWidget progressByDay={progressByDay} />
           <SyncWidget />
         </div>
 

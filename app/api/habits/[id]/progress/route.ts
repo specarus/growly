@@ -5,6 +5,12 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUserId } from "@/lib/actions/habit-actions";
 
+const getUtcDayStart = (date: Date) => {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  );
+};
+
 const parseAmount = (value: unknown) => {
   const numeric = Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) {
@@ -37,7 +43,28 @@ export async function PATCH(
       );
     }
 
-    const habit = await prisma.habit.update({
+    const progressDate = getUtcDayStart(new Date());
+
+    const progressEntry = await prisma.habitDailyProgress.upsert({
+      where: {
+        habitId_date: {
+          habitId: id,
+          date: progressDate,
+        },
+      },
+      update: {
+        progress: {
+          increment: amount,
+        },
+      },
+      create: {
+        habitId: id,
+        date: progressDate,
+        progress: amount,
+      },
+    });
+
+    await prisma.habit.update({
       where: {
         id_userId: {
           id,
@@ -45,19 +72,13 @@ export async function PATCH(
         },
       },
       data: {
-        dailyProgress: {
-          increment: amount,
-        },
-      },
-      select: {
-        id: true,
-        dailyProgress: true,
+        dailyProgress: progressEntry.progress,
       },
     });
 
     revalidatePath("/dashboard/habits");
 
-    return NextResponse.json({ dailyProgress: habit.dailyProgress });
+    return NextResponse.json({ dailyProgress: progressEntry.progress });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
