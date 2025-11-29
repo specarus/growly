@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import {
-  CalendarDays,
-  Check,
-  Clock3,
-  Search,
-  Target,
-} from "lucide-react";
+import { CalendarDays, Check, Clock3, Search, Target } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
@@ -65,9 +59,10 @@ const EditRoutinePage: React.FC<EditRoutinePageProps> = ({
   );
   const [filter, setFilter] = useState("");
   const [timeWindow, setTimeWindow] = useState(timeWindows[0]);
-  const [status, setStatus] = useState<{ text: string; tone: StatusTone } | null>(
-    null
-  );
+  const [status, setStatus] = useState<{
+    text: string;
+    tone: StatusTone;
+  } | null>(null);
   const [isSubmitting, startTransition] = useTransition();
 
   const filteredHabits = useMemo(() => {
@@ -90,7 +85,7 @@ const EditRoutinePage: React.FC<EditRoutinePageProps> = ({
     ? selectedHabits
         .slice(0, 3)
         .map((habit) => habit.focus)
-        .join(" �?� ")
+        .join(" - ")
     : "Stack habits to see a preview of your anchor";
 
   const toggleHabit = (habitId: string) => {
@@ -300,7 +295,7 @@ const EditRoutinePage: React.FC<EditRoutinePageProps> = ({
                   </h3>
                 </div>
                 <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                  {selectedHabitIds.length} selected �?� {habits.length} available
+                  {selectedHabitIds.length} selected - {habits.length} available
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -348,7 +343,7 @@ const EditRoutinePage: React.FC<EditRoutinePageProps> = ({
                                 {habit.name}
                               </p>
                               <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                                {habit.cadence} �?� {habit.focus}
+                                {habit.cadence} - {habit.focus}
                               </p>
                             </div>
                             <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
@@ -470,7 +465,7 @@ const EditRoutinePage: React.FC<EditRoutinePageProps> = ({
                       <div className="space-y-1">
                         <p className="font-semibold">{habit.name}</p>
                         <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                          {habit.cadence} �?� {habit.focus}
+                          {habit.cadence} - {habit.focus}
                         </p>
                       </div>
                       <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-primary">

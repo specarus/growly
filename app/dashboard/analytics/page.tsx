@@ -58,7 +58,7 @@ export default async function AnalyticsPage() {
     {
       title: "Momentum score",
       value: "74",
-      helper: "Out of 100 · trending up",
+      helper: "Out of 100 - trending up",
       change: "+9 pts after 6a starts",
       icon: Activity,
       accent: "from-primary/80 to-coral/80",

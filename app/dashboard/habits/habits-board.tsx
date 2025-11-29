@@ -424,9 +424,11 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 );
                               }
                             }}
-                            className={`grid gap-1 w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
-                              isSelected ? "ring-2 ring-primary/30" : ""
-                            }`}
+                          className={`grid gap-1 w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm transition ${
+                            isSelected
+                              ? "bg-primary/5"
+                              : "bg-white/60 hover:bg-primary/5"
+                          }`}
                           >
                             <div className="col-span-2 space-y-1">
                               <div className="font-semibold text-foreground">
@@ -571,11 +573,11 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 to-white dark:from-card">
+                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 dark:via-slate-400 to-white dark:from-card">
                   <div className="xl:p-5 2xl:p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                        <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                           Calendar
                         </p>
                         <h2 className="xl:text-base 2xl:text-lg font-semibold">

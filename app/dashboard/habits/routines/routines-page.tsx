@@ -301,8 +301,8 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                       <p className="font-semibold xl:text-sm 2xl:text-base">
                         {habit.name}
                       </p>
-                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                        {habit.cadence} · {habit.focus}
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        {habit.cadence} - {habit.focus}
                       </p>
                     </div>
                     <GripVertical className="w-4 h-4 text-muted-foreground" />
@@ -389,7 +389,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                             {habit.name}
                           </p>
                           <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                            {habit.cadence} · {habit.focus}
+                            {habit.cadence} - {habit.focus}
                           </p>
                         </div>
                         <GripVertical className="w-4 h-4 text-muted-foreground" />

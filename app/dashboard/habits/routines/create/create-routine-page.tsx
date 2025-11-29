@@ -287,7 +287,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                   </h3>
                 </div>
                 <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                  {selectedHabitIds.length} selected • {habits.length} available
+                  {selectedHabitIds.length} selected - {habits.length} available
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -335,7 +335,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                                 {habit.name}
                               </p>
                               <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                                {habit.cadence} • {habit.focus}
+                                {habit.cadence} - {habit.focus}
                               </p>
                             </div>
                             <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
@@ -457,7 +457,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
                       <div className="space-y-1">
                         <p className="font-semibold">{habit.name}</p>
                         <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                          {habit.cadence} • {habit.focus}
+                          {habit.cadence} - {habit.focus}
                         </p>
                       </div>
                       <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-primary">
