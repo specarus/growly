@@ -145,7 +145,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
                 key={day}
                 className={`${
                   progress === 1 ? "text-white bg-primary" : ""
-                } cursor-pointer relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center xl:text-xs 2xl:text-sm rounded-full`}
+                } relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center xl:text-xs 2xl:text-sm rounded-full`}
                 title={`${getMonthName(currentMonth)} ${day} - ${Math.round(
                   progress * 100
                 )}% of habits completed`}

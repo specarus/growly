@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import {
   CalendarClock,
   Check,
@@ -90,6 +92,37 @@ const iconMap = {
   CalendarClock,
 };
 
+const MENU_WIDTH = 192;
+
+type MenuPosition = {
+  top: number;
+  left: number;
+};
+
+const Portal = ({ children }: { children: ReactNode }) => {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const node = document.createElement("div");
+    document.body.appendChild(node);
+    setContainer(node);
+
+    return () => {
+      document.body.removeChild(node);
+    };
+  }, []);
+
+  if (!container) {
+    return null;
+  }
+
+  return createPortal(children, container);
+};
+
 const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -103,8 +136,26 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
     Record<string, string>
   >({});
   const quantityButtonRef = useRef<HTMLDivElement | null>(null);
+  const quantityMenuRef = useRef<HTMLDivElement | null>(null);
   const [progressMap, setProgressMap] =
     useState<ProgressByDayMap>(progressByDay);
+  const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null);
+
+  const updateMenuPosition = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const anchor = quantityButtonRef.current;
+    if (!anchor) {
+      return;
+    }
+
+    const rect = anchor.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.right - MENU_WIDTH + window.scrollX,
+    });
+  }, []);
 
   const refreshTodayProgress = (updatedHabits: Habit[]) => {
     if (updatedHabits.length === 0) {
@@ -240,16 +291,20 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   useEffect(() => {
     if (!quantityMenuOpen) {
       quantityButtonRef.current = null;
+      quantityMenuRef.current = null;
       return;
     }
 
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
-        quantityButtonRef.current &&
-        !quantityButtonRef.current.contains(event.target as Node)
+        (quantityButtonRef.current &&
+          quantityButtonRef.current.contains(target)) ||
+        (quantityMenuRef.current && quantityMenuRef.current.contains(target))
       ) {
-        setQuantityMenuOpen(null);
+        return;
       }
+      setQuantityMenuOpen(null);
     };
 
     const handleEscape = (event: KeyboardEvent) => {
@@ -265,6 +320,27 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       document.removeEventListener("keydown", handleEscape);
     };
   }, [quantityMenuOpen]);
+
+  useEffect(() => {
+    if (!quantityMenuOpen) {
+      quantityMenuRef.current = null;
+      setMenuPosition(null);
+      return;
+    }
+
+    updateMenuPosition();
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.addEventListener("scroll", updateMenuPosition, true);
+    window.addEventListener("resize", updateMenuPosition);
+    return () => {
+      window.removeEventListener("scroll", updateMenuPosition, true);
+      window.removeEventListener("resize", updateMenuPosition);
+    };
+  }, [quantityMenuOpen, updateMenuPosition]);
 
   useEffect(() => {
     setLocalHabits(habits);
@@ -318,7 +394,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                     <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Active habits
                     </p>
-                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
+                    <h2 className="xl:text-base 2xl:text-lg font-semibold">
                       Habits and Statistics
                     </h2>
                   </div>
@@ -349,12 +425,12 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-100 bg-muted/50">
-                  <div className="grid grid-cols-5 px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                <div className="overflow-hidden rounded-2xl border border-gray-100 bg-muted/50">
+                  <div className="grid grid-cols-6 px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     <span className="col-span-2">Habit</span>
                     <span>Cadence</span>
                     <span>Streak</span>
-                    <span>Completion</span>
+                    <span className="col-span-2">Completion</span>
                   </div>
                   <div className="divide-y divide-gray-100">
                     {localHabits.length === 0 ? (
@@ -424,11 +500,11 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 );
                               }
                             }}
-                          className={`grid gap-1 w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm transition ${
-                            isSelected
-                              ? "bg-primary/5"
-                              : "bg-white/60 hover:bg-primary/5"
-                          }`}
+                            className={`grid gap-1 w-full text-left grid-cols-6 px-4 py-3 items-center xl:text-xs 2xl:text-sm transition ${
+                              isSelected
+                                ? "bg-primary/5"
+                                : "bg-white/60 hover:bg-primary/5"
+                            }`}
                           >
                             <div className="col-span-2 space-y-1">
                               <div className="font-semibold text-foreground">
@@ -452,7 +528,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 {streakValue}d
                               </span>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="col-span-2 flex items-center justify-between">
                               <div className="flex items-center">
                                 {isComplete ? (
                                   <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
@@ -497,72 +573,81 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 >
                                   <Plus className="w-4 h-4" />
                                 </button>
-                                {quantityMenuOpen === habit.id && (
-                                  <div
-                                    className="absolute right-0 top-full z-10 mt-2 w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
-                                    onMouseDown={(event) =>
-                                      event.stopPropagation()
-                                    }
-                                  >
-                                    <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                                      Add quantity
-                                    </p>
-                                    <div className="space-y-1">
-                                      <div className="flex items-center gap-2">
-                                        <input
-                                          id={`custom-quantity-${habit.id}`}
-                                          type="number"
-                                          min="0"
-                                          step="0.1"
-                                          className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
-                                          value={
-                                            customQuantities[habit.id] ?? ""
-                                          }
-                                          onChange={(event) => {
-                                            event.stopPropagation();
-                                            setCustomQuantities((prev) => ({
-                                              ...prev,
-                                              [habit.id]: event.target.value,
-                                            }));
-                                          }}
-                                          onClick={(event) =>
-                                            event.stopPropagation()
-                                          }
-                                        />
+                                {quantityMenuOpen === habit.id && menuPosition && (
+                                  <Portal>
+                                    <div
+                                      ref={quantityMenuRef}
+                                      className="w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
+                                      onMouseDown={(event) =>
+                                        event.stopPropagation()
+                                      }
+                                      style={{
+                                        position: "absolute",
+                                        top: menuPosition.top,
+                                        left: menuPosition.left,
+                                        zIndex: 1100,
+                                      }}
+                                    >
+                                      <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                                        Add quantity
+                                      </p>
+                                      <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            id={`custom-quantity-${habit.id}`}
+                                            type="number"
+                                            min="0"
+                                            step="0.1"
+                                            className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
+                                            value={
+                                              customQuantities[habit.id] ?? ""
+                                            }
+                                            onChange={(event) => {
+                                              event.stopPropagation();
+                                              setCustomQuantities((prev) => ({
+                                                ...prev,
+                                                [habit.id]: event.target.value,
+                                              }));
+                                            }}
+                                            onClick={(event) =>
+                                              event.stopPropagation()
+                                            }
+                                          />
+                                          <button
+                                            type="button"
+                                            className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                            onClick={(event) => {
+                                              event.stopPropagation();
+                                              const value = Number.parseFloat(
+                                                customQuantities[habit.id] ?? ""
+                                              );
+                                              if (
+                                                Number.isFinite(value) &&
+                                                value > 0
+                                              ) {
+                                                void handleAddQuantity(
+                                                  habit.id,
+                                                  value
+                                                );
+                                              }
+                                            }}
+                                          >
+                                            Add
+                                          </button>
+                                        </div>
                                         <button
                                           type="button"
-                                          className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                          className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
                                           onClick={(event) => {
                                             event.stopPropagation();
-                                            const value = Number.parseFloat(
-                                              customQuantities[habit.id] ?? ""
-                                            );
-                                            if (
-                                              Number.isFinite(value) &&
-                                              value > 0
-                                            ) {
-                                              void handleAddQuantity(
-                                                habit.id,
-                                                value
-                                              );
-                                            }
+                                            void handleReset(habit.id);
                                           }}
                                         >
-                                          Add
+                                          Reset progress
                                         </button>
                                       </div>
-                                      <button
-                                        type="button"
-                                        className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          void handleReset(habit.id);
-                                        }}
-                                      >
-                                        Reset progress
-                                      </button>
                                     </div>
-                                  </div>
+                                  </Portal>
                                 )}
                               </div>
                             </div>
@@ -573,7 +658,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 dark:via-slate-400 to-white dark:from-card">
+                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 to-white">
                   <div className="xl:p-5 2xl:p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
