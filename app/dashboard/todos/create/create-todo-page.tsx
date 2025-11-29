@@ -123,6 +123,86 @@ const reminderDropdownOptionsId = "reminder-dropdown-options";
 const recurrenceOptions: Recurrence[] = ["None", "Daily", "Weekly", "Monthly"];
 const recurrenceDropdownOptionsId = "recurrence-dropdown-options";
 
+const curatedIconNames = [
+  // General / UI controls
+  "Check",
+  "CheckCircle",
+  "Circle",
+  "Square",
+  "SquareCheck",
+  "Plus",
+  "Minus",
+  "X",
+  "Trash2",
+  "Edit",
+  "Settings",
+  "Search",
+  "Filter",
+  "SortAsc",
+  "SortDesc",
+  "Calendar",
+  "Clock",
+  "AlarmClock",
+  "Tag",
+  "Hash",
+  "Folder",
+  "FolderOpen",
+
+  // Work & productivity
+  "Briefcase",
+  "ClipboardList",
+  "ListTodo",
+  "NotebookPen",
+  "CalendarCheck",
+  "FileText",
+  "Laptop",
+  "Presentation",
+
+  // Home & personal
+  "Home",
+  "ShoppingCart",
+  "Utensils",
+  "Bed",
+  "Shirt",
+  "Car",
+  "Wrench",
+
+  // Self-improvement / habits
+  "Brain",
+  "Heart",
+  "Dumbbell",
+  "BookOpen",
+  "Leaf",
+  "Smile",
+
+  // Communication
+  "Mail",
+  "Phone",
+  "MessageSquare",
+  "Bell",
+  "Megaphone",
+
+  // Creativity & hobbies
+  "Paintbrush",
+  "Camera",
+  "Music",
+  "Gamepad",
+  "Film",
+
+  // Lifestyle & travel
+  "Globe",
+  "MapPin",
+  "Plane",
+  "TreePalm",
+
+  // Priority / alerts
+  "AlertTriangle",
+  "AlertCircle",
+  "Star",
+  "Flag",
+  "Flame",
+] as const;
+
 const parseTagList = (raw?: string | null) => {
   const seen = new Set<string>();
   return (raw || "")
@@ -278,7 +358,7 @@ const buildDefaultForm = (
     recurrence: (initialTodo?.recurrence as Recurrence) || "None",
     tags: parseTagList(initialTodo?.tags),
     status: toStatusLabel(initialTodo?.status),
-    iconName: initialTodo?.iconName || "Notebook",
+    iconName: initialTodo?.iconName || "NotebookPen",
     iconColor: initialTodo?.iconColor || "#E5E7EB",
   };
 };
@@ -338,26 +418,31 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
       .trim();
   }, []);
 
-  const iconOptions = useMemo(
-    () =>
-      Object.entries(icons)
-        .filter(
-          ([name, component]) =>
-            (typeof component === "function" ||
-              typeof component === "object") &&
-            component !== null &&
-            /^[A-Z]/.test(name)
-        )
-        .map(
-          ([name, component]) =>
-            ({
-              name,
-              label: formatIconLabel(name),
-              Icon: component as LucideIcon,
-            } as const)
-        ),
-    [formatIconLabel]
-  );
+  const iconOptions = useMemo(() => {
+    return curatedIconNames
+      .map((name) => {
+        const candidate = (icons as Record<string, LucideIcon | undefined>)[
+          name
+        ];
+
+        if (!candidate) {
+          return null;
+        }
+
+        return {
+          name,
+          label: formatIconLabel(name),
+          Icon: candidate,
+        };
+      })
+      .filter(
+        (option): option is {
+          name: string;
+          label: string;
+          Icon: LucideIcon;
+        } => option !== null
+      );
+  }, [formatIconLabel]);
 
   const SelectedIcon = useMemo(() => {
     const candidate = (icons as Record<string, LucideIcon | undefined>)[
@@ -960,7 +1045,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                 {formatIconLabel(form.iconName)}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                Tap to browse all icons
+                                Tap to choose an icon
                               </span>
                             </div>
                           </div>
