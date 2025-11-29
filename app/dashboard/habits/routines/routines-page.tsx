@@ -363,7 +363,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
 
                 <div className="space-y-3">
                   {routine.habits.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                    <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
                       Empty slot. Drag a habit from the backlog to start this
                       routine.
                     </div>

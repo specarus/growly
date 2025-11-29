@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarClock,
   Flame,
@@ -94,6 +94,89 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
     habits[0]?.id || ""
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [quantityMenuOpen, setQuantityMenuOpen] = useState<string | null>(null);
+  const [customQuantities, setCustomQuantities] = useState<
+    Record<string, string>
+  >({});
+  const quantityButtonRef = useRef<HTMLDivElement | null>(null);
+  const handleAddQuantity = async (habitId: string, amount: number) => {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return;
+    }
+    setQuantityMenuOpen(null);
+    setCustomQuantities((prev) => ({
+      ...prev,
+      [habitId]: "",
+    }));
+
+    setLocalHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === habitId
+          ? {
+              ...habit,
+              dailyProgress: (habit.dailyProgress ?? 0) + amount,
+            }
+          : habit
+      )
+    );
+
+    try {
+      const response = await fetch(`/api/habits/${habitId}/progress`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.json();
+
+      if (typeof data.dailyProgress === "number") {
+        setLocalHabits((prev) =>
+          prev.map((habit) =>
+            habit.id === habitId
+              ? { ...habit, dailyProgress: data.dailyProgress }
+              : habit
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Unable to persist habit progress", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!quantityMenuOpen) {
+      quantityButtonRef.current = null;
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        quantityButtonRef.current &&
+        !quantityButtonRef.current.contains(event.target as Node)
+      ) {
+        setQuantityMenuOpen(null);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setQuantityMenuOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [quantityMenuOpen]);
 
   useEffect(() => {
     setLocalHabits(habits);
@@ -174,12 +257,12 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-100 bg-muted/50 overflow-hidden">
+                <div className="rounded-2xl border border-gray-100 bg-muted/50">
                   <div className="grid grid-cols-5 px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     <span className="col-span-2">Habit</span>
                     <span>Cadence</span>
                     <span>Streak</span>
-                    <span className="text-right">Completion</span>
+                    <span>Completion</span>
                   </div>
                   <div className="divide-y divide-gray-100">
                     {localHabits.length === 0 ? (
@@ -215,14 +298,40 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                         const streakValue = habit.streak ?? 0;
                         const completionValue = habit.completion ?? 0;
                         const focusLabel = getFocusLabel(habit);
+                        const loggedAmount = habit.dailyProgress ?? 0;
+                        const goalAmountValue = habit.goalAmount ?? 1;
+                        const additionalCompletion =
+                          goalAmountValue > 0
+                            ? (loggedAmount / goalAmountValue) * 100
+                            : 0;
+                        const displayCompletion = Math.min(
+                          100,
+                          Math.round(completionValue + additionalCompletion)
+                        );
+                        const isComplete = displayCompletion >= 100;
+                        const loggedLabel =
+                          loggedAmount > 0
+                            ? `+${loggedAmount}${
+                                habit.goalUnit ? ` ${habit.goalUnit}` : ""
+                              } logged`
+                            : "Tap + to log progress";
                         return (
-                          <button
+                          <div
                             key={habit.id}
-                            type="button"
+                            role="button"
+                            tabIndex={0}
                             onMouseEnter={() => setSelectedHabitId(habit.id)}
                             onClick={() =>
                               router.push(`/dashboard/habits/${habit.id}/edit`)
                             }
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                router.push(
+                                  `/dashboard/habits/${habit.id}/edit`
+                                );
+                              }
+                            }}
                             className={`grid gap-1 w-full text-left grid-cols-5 px-4 py-3 items-center xl:text-xs 2xl:text-sm bg-white/60 hover:bg-primary/5 transition ${
                               isSelected ? "ring-2 ring-primary/30" : ""
                             }`}
@@ -231,8 +340,13 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                               <div className="font-semibold text-foreground">
                                 {habit.name}
                               </div>
-                              <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-1">
-                                {focusLabel}
+                              <div className="space-y-1">
+                                <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                                  {focusLabel}
+                                </div>
+                                <p className="xl:text-[11px] 2xl:text-xs font-semibold text-primary">
+                                  {loggedLabel}
+                                </p>
                               </div>
                             </div>
                             <div className="text-muted-foreground">
@@ -245,17 +359,109 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                               </span>
                             </div>
                             <div className="flex items-center justify-end gap-3">
-                              <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
-                                <div
-                                  className="h-full bg-linear-to-r from-primary to-coral"
-                                  style={{ width: `${completionValue}%` }}
-                                />
+                              <div className="flex items-center gap-2">
+                                {isComplete ? (
+                                  <span className="xl:text-xs 2xl:text-sm xl:pr-8 font-semibold text-emerald-600">
+                                    Completed
+                                  </span>
+                                ) : (
+                                  <>
+                                    <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
+                                      <div
+                                        className="h-full bg-linear-to-r from-primary to-coral"
+                                        style={{
+                                          width: `${displayCompletion}%`,
+                                        }}
+                                      />
+                                    </div>
+                                    <span className="xl:text-xs 2xl:text-sm font-semibold">
+                                      {displayCompletion}%
+                                    </span>
+                                  </>
+                                )}
                               </div>
-                              <span className="xl:text-xs 2xl:text-sm font-semibold">
-                                {completionValue}%
-                              </span>
+                              <div
+                                className="relative"
+                                ref={(node) => {
+                                  if (quantityMenuOpen === habit.id) {
+                                    quantityButtonRef.current = node;
+                                  }
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
+                                  aria-haspopup="true"
+                                  aria-expanded={quantityMenuOpen === habit.id}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    setQuantityMenuOpen((current) =>
+                                      current === habit.id ? null : habit.id
+                                    );
+                                  }}
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                                {quantityMenuOpen === habit.id && (
+                                  <div
+                                    className="absolute right-0 top-full z-10 mt-2 w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
+                                    onMouseDown={(event) =>
+                                      event.stopPropagation()
+                                    }
+                                  >
+                                    <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                                      Add quantity
+                                    </p>
+                                    <div className="space-y-1">
+                                      <div className="flex items-center gap-2">
+                                        <input
+                                          id={`custom-quantity-${habit.id}`}
+                                          type="number"
+                                          min="0"
+                                          step="0.1"
+                                          className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
+                                          value={
+                                            customQuantities[habit.id] ?? ""
+                                          }
+                                          onChange={(event) => {
+                                            event.stopPropagation();
+                                            setCustomQuantities((prev) => ({
+                                              ...prev,
+                                              [habit.id]: event.target.value,
+                                            }));
+                                          }}
+                                          onClick={(event) =>
+                                            event.stopPropagation()
+                                          }
+                                        />
+                                        <button
+                                          type="button"
+                                          className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            const value = Number.parseFloat(
+                                              customQuantities[habit.id] ?? ""
+                                            );
+                                            if (
+                                              Number.isFinite(value) &&
+                                              value > 0
+                                            ) {
+                                              void handleAddQuantity(
+                                                habit.id,
+                                                value
+                                              );
+                                            }
+                                          }}
+                                        >
+                                          Add
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </button>
+                          </div>
                         );
                       })
                     )}

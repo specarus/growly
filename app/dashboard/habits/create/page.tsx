@@ -11,10 +11,12 @@ import { popularHabits } from "../popular/popular-habits-data";
 import type { PopularPost } from "../popular/types";
 import { buildHabitFormStateFromPost } from "../popular/import-habit-utils";
 
+type SearchParams = {
+  popularPostId?: string | string[];
+};
+
 type CreateHabitPageProps = {
-  searchParams?: {
-    popularPostId?: string | string[];
-  };
+  searchParams?: Promise<SearchParams | undefined> | SearchParams | undefined;
 };
 
 type PostWithRelations = PostHabit & {
@@ -81,7 +83,8 @@ export default async function CreateHabit({
   let popularPost: PopularPost | null = null;
   let initialHabit: Partial<HabitFormState> | undefined;
 
-  const rawPopularPostId = searchParams?.popularPostId;
+  const resolvedSearchParams = await searchParams;
+  const rawPopularPostId = resolvedSearchParams?.popularPostId;
   const normalizedPopularPostId =
     typeof rawPopularPostId === "string"
       ? rawPopularPostId

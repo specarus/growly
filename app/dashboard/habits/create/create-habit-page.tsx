@@ -334,11 +334,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
           return;
         }
         setSaved(true);
-        if (mode === "edit") {
-          router.push("/dashboard/habits");
-        } else {
-          router.refresh();
-        }
+        router.push("/dashboard/habits");
       } catch (error) {
         console.error("Failed to save habit", error);
       }
