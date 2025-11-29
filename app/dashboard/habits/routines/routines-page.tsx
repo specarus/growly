@@ -1,7 +1,8 @@
 "use client";
 import type React from "react";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Clock3, GripVertical, Plus, Target, Trash2 } from "lucide-react";
+import { Clock3, Edit, GripVertical, Plus, Target, Trash2 } from "lucide-react";
 
 import PageGradient from "@/app/components/ui/page-gradient";
 import { useRouter } from "next/navigation";
@@ -340,21 +341,29 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDeleteRoutine(routine.id, routine.habits)
-                      }
-                      disabled={deletingRoutineId === routine.id}
-                      className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-rose-600 hover:border-rose-400 disabled:cursor-not-allowed disabled:opacity-70"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>
-                        {deletingRoutineId === routine.id
-                          ? "Deleting..."
-                          : "Delete"}
-                      </span>
-                    </button>
+                    <div className="flex items-center xl:gap-2 2xl:gap-3">
+                      <Link
+                        href={`/dashboard/habits/routines/${routine.id}/edit`}
+                        className="text-muted-foreground hover:underline"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDeleteRoutine(routine.id, routine.habits)
+                        }
+                        disabled={deletingRoutineId === routine.id}
+                        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-rose-600 hover:border-rose-400 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>
+                          {deletingRoutineId === routine.id
+                            ? "Deleting..."
+                            : "Delete"}
+                        </span>
+                      </button>
+                    </div>
                     <div className="flex items-center justify-center xl:text-[11px] 2xl:text-xs xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 py-1 rounded-full">
                       Drop habits here
                     </div>

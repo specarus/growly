@@ -450,8 +450,8 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 {streakValue}d
                               </span>
                             </div>
-                            <div className="flex items-center justify-center xl:gap-6 2xl:gap-8">
-                              <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
                                 {isComplete ? (
                                   <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
                                     <Check className="w-4 h-4" />
