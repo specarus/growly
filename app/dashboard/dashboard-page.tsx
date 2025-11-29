@@ -1,4 +1,5 @@
 import CelebrationToast from "../components/celebration-toast";
+import GradientCircle from "../components/ui/gradient-circle";
 import AnalyticsWidget from "./components/analytics-widget";
 import CalendarWidget from "./components/calendar-widget";
 import GreetingWidget from "./components/greeting-widget";
@@ -12,6 +13,13 @@ import WeatherWidget from "./components/weather-widget";
 const Dashboard: React.FC = () => {
   return (
     <main className="relative w-full min-h-screen xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
+      <GradientCircle
+        size={210}
+        position={{ top: "-50px", right: "-50px" }}
+        color="rgba(135, 197, 161, 0.35)"
+        fadeColor="rgba(135, 197, 161, 0)"
+        className="scale-[1.2]"
+      />
       <div className="pointer-events-none absolute -left-24 -top-12 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 top-48 h-64 w-64 rounded-full bg-green-soft/20 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 bottom-10 h-48 w-48 -translate-x-1/2 rounded-full bg-yellow-soft/25 blur-3xl" />

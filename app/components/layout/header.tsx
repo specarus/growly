@@ -132,6 +132,7 @@ export default function Header() {
   const formatted = breadcrumb.map((segment) => formatSegment(segment));
 
   const quickLinks = [
+    { label: "Todos", href: "/dashboard/todos" },
     { label: "Habits", href: "/dashboard/habits" },
     // { label: "Analytics", href: "/dashboard/analytics" },
   ];
@@ -183,7 +184,7 @@ export default function Header() {
                   aria-current={active ? "page" : undefined}
                   className={`rounded-full xl:px-3 2xl:px-4 xl:py-1 xl:text-[10px] 2xl:text-[11px] font-semibold transition ${
                     active
-                      ? "bg-primary text-white shadow-[0_2px_20px_rgba(16,185,129,0.35)]"
+                      ? "bg-primary text-white shadow-[0_2px_20px_rgba(240,144,41,0.35)]"
                       : "border border-gray-100 text-muted-foreground hover:border-primary/60 hover:text-primary"
                   } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
                 >

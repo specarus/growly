@@ -4,7 +4,6 @@ import Link from "next/link";
 import Button from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
-import PillButton from "@/app/components/ui/pill-button";
 
 type GreetingWidgetProps = Record<string, never>;
 
@@ -69,15 +68,6 @@ const GreetingWidget: React.FC<GreetingWidgetProps> = () => {
           </Button>
         </div>
       </div>
-      {/* <div className="flex justify-end xl:mt-2 2xl:mt-3">
-        <PillButton
-          href="/dashboard/habits"
-          variant="ghost"
-          className="xl:w-24 2xl:w-28"
-        >
-          View Details
-        </PillButton>
-      </div> */}
     </div>
   );
 };

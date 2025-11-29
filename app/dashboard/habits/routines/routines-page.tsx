@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import MainButton from "@/app/components/ui/main-button";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "../components/habits-tabs";
+import GradientCircle from "@/app/components/ui/gradient-circle";
 
 type Habit = {
   id: string;
@@ -250,7 +251,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
 
         <div className="grid xl:grid-cols-[0.95fr_1.05fr] gap-5">
           <div
-            className={`${dropClasses} ${
+            className={`relative overflow-hidden ${dropClasses} ${
               hoverTarget === "backlog"
                 ? "border-primary/80 bg-primary/5"
                 : "border-gray-100 bg-white/80"
@@ -261,6 +262,13 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
             onDrop={handleDrop("backlog")}
           >
             <div className="flex items-center justify-between mb-3">
+              <GradientCircle
+                size={210}
+                position={{ top: "-50px", right: "-50px" }}
+                color="rgba(135, 197, 161, 0.35)"
+                fadeColor="rgba(135, 197, 161, 0)"
+                className="scale-[2]"
+              />
               <div>
                 <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   Unassigned

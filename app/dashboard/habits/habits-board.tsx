@@ -17,6 +17,7 @@ import type { Habit as PrismaHabit } from "@prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "./components/habits-tabs";
+import GradientCircle from "@/app/components/ui/gradient-circle";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -148,7 +149,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                   </div>
                   <Link
                     href="/dashboard/habits/create"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm font-semibold hover:brightness-105 transition"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm font-semibold transition hover:brightness-105 shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none"
                   >
                     <Plus className="w-4 h-4" />
                     Create habit
@@ -263,7 +264,21 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
+            <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
+              <GradientCircle
+                size={210}
+                position={{ bottom: "-50px", right: "-30px" }}
+                color="rgba(240,144,41,0.35)"
+                fadeColor="rgba(240,144,41,0)"
+                className="scale-[1.2]"
+              />
+              <GradientCircle
+                size={210}
+                position={{ top: "-50px", left: "-30px" }}
+                color="rgba(240,144,41,0.35)"
+                fadeColor="rgba(240,144,41,0)"
+                className="scale-[1.5]"
+              />
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -286,7 +301,7 @@ const HabitsBoard: React.FC<Props> = ({ habits }) => {
                     return (
                       <div
                         key={`${item.title}-${index}`}
-                        className="rounded-2xl border border-gray-100 bg-white px-4 py-3 space-y-2 shadow-sm"
+                        className="relative rounded-2xl border border-gray-50 bg-white px-4 py-3 space-y-2 shadow-lg"
                       >
                         <div className="flex items-center justify-between">
                           <div

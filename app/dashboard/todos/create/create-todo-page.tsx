@@ -1456,8 +1456,8 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     <span className="font-medium">{form.status}</span>
                   </div>
                 </div>
-                <div className="text-center rounded-xl bg-muted/80 xl:py-2 2xl:py-3 border border-gray-300">
-                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                <div className="text-center rounded-xl bg-muted/80 xl:py-3 border border-muted">
+                  <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                     {mode === "edit"
                       ? "Refine, ship, or reschedule. Progress beats perfection."
                       : "Small, clear todos are easier to start. Keep the scope tight and mark it done in one sitting."}
@@ -1465,7 +1465,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 </div>
                 <Link
                   href="/dashboard/todos"
-                  className="text-sm text-primary hover:underline"
+                  className="xl:text-xs 2xl:text-sm text-primary hover:underline"
                 >
                   Back to all todos
                 </Link>

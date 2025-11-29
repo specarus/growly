@@ -166,9 +166,9 @@ const TodosPage: React.FC<TodosPageProps> = ({
   );
   const [collectionError, setCollectionError] = useState<string | null>(null);
   const [collectionPending, setCollectionPending] = useState(false);
-  const [collectionDeletingId, setCollectionDeletingId] = useState<string | null>(
-    null
-  );
+  const [collectionDeletingId, setCollectionDeletingId] = useState<
+    string | null
+  >(null);
   const [assignmentPending, setAssignmentPending] = useState(false);
   const [deleteCompletedPending, setDeleteCompletedPending] = useState(false);
   const [deleteCompletedMessage, setDeleteCompletedMessage] = useState<
@@ -609,9 +609,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
       setTodos((prev) =>
         prev.map((todo) => ({
           ...todo,
-          collectionIds: todo.collectionIds.filter(
-            (id) => id !== collectionId
-          ),
+          collectionIds: todo.collectionIds.filter((id) => id !== collectionId),
         }))
       );
       setPickerOpenId((prev) => (prev === collectionId ? null : prev));
@@ -636,7 +634,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
 
   return (
     <>
-      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16 overflow-hidden bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16 overflow-hidden bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
         <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-6 left-12 h-56 w-56 rounded-full bg-green-soft/20 blur-3xl" />
         <div className="relative z-10">
@@ -683,7 +681,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 />
               </div>
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-lg xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <CheckCircle2 className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>
@@ -696,7 +694,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-lg xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <Timer className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>
@@ -709,7 +707,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-sm xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="rounded-2xl border border-gray-50 bg-white/90 shadow-lg xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <Target className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>

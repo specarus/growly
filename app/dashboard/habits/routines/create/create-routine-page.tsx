@@ -15,6 +15,7 @@ import {
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
+import GradientCircle from "@/app/components/ui/gradient-circle";
 
 type RoutineHabit = {
   id: string;
@@ -167,7 +168,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="flex flex-row gap-3">
               <Link
                 href="/dashboard/habits/routines"
-                className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition"
+                className="px-4 py-2 rounded-full xl:text-xs 2xl:text-sm border border-gray-200 bg-white hover:border-primary/40 transition shadow-[0_5px_10px_rgba(240,144,41,0.35)]"
               >
                 Back to routines
               </Link>
@@ -359,7 +360,7 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
                 type="submit"
-                className="rounded-full bg-primary px-6 py-3 xl:text-sm 2xl:text-base font-semibold text-white shadow-sm transition hover:brightness-110 disabled:opacity-80"
+                className="rounded-full bg-primary px-6 py-3 xl:text-sm 2xl:text-base font-semibold text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] transition hover:brightness-110 disabled:opacity-80"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving routine…" : "Create routine"}
@@ -368,7 +369,14 @@ const CreateRoutinePage: React.FC<CreateRoutinePageProps> = ({ habits }) => {
           </form>
 
           <aside className="space-y-5">
-            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+              <GradientCircle
+                size={210}
+                position={{ bottom: "-50px", right: "-50px" }}
+                color="rgba(135, 197, 161, 0.35)"
+                fadeColor="rgba(135, 197, 161, 0)"
+                className="scale-[1.2]"
+              />
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">

@@ -234,22 +234,25 @@ const AnalyticsWidget: React.FC = () => {
 
             <div
               ref={containerRef}
-              className="relative xl:h-80 2xl:h-[400px] flex justify-between pb-4"
+              className="relative xl:h-[330px] 2xl:h-[450px] flex justify-between"
             >
               {habits.map((habit) => {
                 const height = containerHeight
                   ? (habit.percentage / maxPercentage) * containerHeight
                   : 0;
                 return (
-                  <div key={habit.name} className="flex flex-col items-center">
-                    <div className="sm:text-xs xl:mt-1 2xl:mt-2 text-center truncate w-full px-1 font-medium">
+                  <div
+                    key={habit.name}
+                    className="flex flex-col items-center hover:bg-primary/20 transition h-full w-full xl:px-1 2xl:px-2"
+                  >
+                    <div className="sm:text-xs xl:mt-1 2xl:mt-2 text-center truncate w-full font-medium">
                       {habit.name}
                     </div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">
+                    <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">
                       {habit.percentage}%
                     </div>
                     <div
-                      className={`xl:w-16 2xl:w-20 ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
+                      className={`w-full ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
                       style={{ height: `${height}px` }}
                     ></div>
                   </div>
