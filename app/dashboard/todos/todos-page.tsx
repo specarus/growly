@@ -749,7 +749,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
             </div>
           </div>
           <div className="w-full h-auto xl:px-8 2xl:px-28">
-            <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
+            <div className="bg-white/90 border border-gray-50 shadow-sm rounded-3xl xl:p-4 2xl:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <ListChecks className="w-5 h-5 text-primary" />
@@ -1413,7 +1413,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     <div className="xl:col-span-2">
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
                         {collections.length === 0 ? (
-                          <div className="sm:col-span-2 lg:col-span-3 2xl:col-span-4 rounded-2xl border border-dashed border-gray-200 bg-white/60 px-4 py-6 text-sm text-muted-foreground">
+                          <div className="sm:col-span-2 lg:col-span-3 2xl:col-span-4 rounded-2xl border border-dashed border-gray-200 bg-white/60 px-4 py-6 xl:text-xs 2xl:text-sm text-muted-foreground">
                             No collections yet.<br></br>Add a name, description,
                             and select todos to start grouping.
                           </div>

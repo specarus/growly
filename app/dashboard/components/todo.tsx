@@ -144,7 +144,10 @@ const Todo: FC<TodoProps> = ({
         disabled={disabled}
       />
       {isCompleting ? (
-        <div className="absolute inset-0 rounded-2xl bg-white/30 pointer-events-none" />
+        <div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+        />
       ) : null}
     </div>
   );
