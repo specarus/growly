@@ -10,12 +10,6 @@ type Location = {
   longitude: number;
 };
 
-const DEFAULT_LOCATION: Location = {
-  name: "Seattle, WA",
-  latitude: 47.608013,
-  longitude: -122.335167,
-};
-
 const seasonalBackgrounds: Record<string, string> = {
   spring:
     "radial-gradient(circle at 20% 20%, #e3f9e5 0, #f6fff2 25%, transparent 40%), linear-gradient(135deg, #d4f4dd 0%, #a1e5b9 50%, #7fd1ae 100%)",
@@ -173,7 +167,7 @@ const WeatherWidget: FC = () => {
   const [weather, setWeather] = useState<WeatherState | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState<Location>(DEFAULT_LOCATION);
+  const [location, setLocation] = useState<Location | null>(null);
   const [locationStatus, setLocationStatus] = useState<
     "default" | "pending" | "resolved" | "error" | "disabled"
   >("default");
@@ -208,6 +202,20 @@ const WeatherWidget: FC = () => {
   }, []);
 
   useEffect(() => {
+    if (locationStatus === "error" || locationStatus === "disabled") {
+      setWeather(null);
+      setStatus("error");
+      setError("Weather unavailable");
+      return;
+    }
+
+    if (locationStatus !== "resolved" || !location) {
+      setWeather(null);
+      setStatus("loading");
+      setError(null);
+      return;
+    }
+
     const controller = new AbortController();
     const intervalMs = 60_000;
 
@@ -235,13 +243,6 @@ const WeatherWidget: FC = () => {
         setError("Unable to load weather right now.");
       }
     };
-
-    if (locationStatus === "error" || locationStatus === "disabled") {
-      setWeather(null);
-      setStatus("error");
-      setError("Weather unavailable");
-      return () => controller.abort();
-    }
 
     loadWeather();
     const intervalId = setInterval(loadWeather, intervalMs);

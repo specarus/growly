@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import DeleteAccountForm from "./components/delete-account-form";
 import EditProfileForm from "./components/edit-profile-form";
 import SignOutButton from "./components/sign-out-button";
 import { auth } from "@/lib/auth";
@@ -128,7 +129,7 @@ export default async function AccountPage() {
                   />
                 </div>
 
-                <div className="rounded-3xl border border-gray-100 bg-card p-6 shadow-sm">
+                <div className="rounded-3xl border border-gray-100 bg-card p-6 shadow-sm flex flex-col xl:gap-4 2xl:gap-5">
                   <div className="space-y-3">
                     <p className="xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                       Need a break?
@@ -138,6 +139,9 @@ export default async function AccountPage() {
                       landing page.
                     </p>
                     <SignOutButton />
+                  </div>
+                  <div className="rounded-3xl border border-destructive/40 bg-destructive/5 p-6">
+                    <DeleteAccountForm />
                   </div>
                 </div>
               </div>
