@@ -573,82 +573,85 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 >
                                   <Plus className="w-4 h-4" />
                                 </button>
-                                {quantityMenuOpen === habit.id && menuPosition && (
-                                  <Portal>
-                                    <div
-                                      ref={quantityMenuRef}
-                                      className="w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
-                                      onMouseDown={(event) =>
-                                        event.stopPropagation()
-                                      }
-                                      style={{
-                                        position: "absolute",
-                                        top: menuPosition.top,
-                                        left: menuPosition.left,
-                                        zIndex: 1100,
-                                      }}
-                                    >
-                                      <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                                        Add quantity
-                                      </p>
-                                      <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                          <input
-                                            id={`custom-quantity-${habit.id}`}
-                                            type="number"
-                                            min="0"
-                                            step="0.1"
-                                            className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
-                                            value={
-                                              customQuantities[habit.id] ?? ""
-                                            }
-                                            onChange={(event) => {
-                                              event.stopPropagation();
-                                              setCustomQuantities((prev) => ({
-                                                ...prev,
-                                                [habit.id]: event.target.value,
-                                              }));
-                                            }}
-                                            onClick={(event) =>
-                                              event.stopPropagation()
-                                            }
-                                          />
+                                {quantityMenuOpen === habit.id &&
+                                  menuPosition && (
+                                    <Portal>
+                                      <div
+                                        ref={quantityMenuRef}
+                                        className="w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
+                                        onMouseDown={(event) =>
+                                          event.stopPropagation()
+                                        }
+                                        style={{
+                                          position: "absolute",
+                                          top: menuPosition.top,
+                                          left: menuPosition.left,
+                                          zIndex: 1100,
+                                        }}
+                                      >
+                                        <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                                          Add quantity
+                                        </p>
+                                        <div className="space-y-1">
+                                          <div className="flex items-center gap-2">
+                                            <input
+                                              id={`custom-quantity-${habit.id}`}
+                                              type="number"
+                                              min="0"
+                                              step="0.1"
+                                              className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
+                                              value={
+                                                customQuantities[habit.id] ?? ""
+                                              }
+                                              onChange={(event) => {
+                                                event.stopPropagation();
+                                                setCustomQuantities((prev) => ({
+                                                  ...prev,
+                                                  [habit.id]:
+                                                    event.target.value,
+                                                }));
+                                              }}
+                                              onClick={(event) =>
+                                                event.stopPropagation()
+                                              }
+                                            />
+                                            <button
+                                              type="button"
+                                              className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                              onClick={(event) => {
+                                                event.stopPropagation();
+                                                const value = Number.parseFloat(
+                                                  customQuantities[habit.id] ??
+                                                    ""
+                                                );
+                                                if (
+                                                  Number.isFinite(value) &&
+                                                  value > 0
+                                                ) {
+                                                  void handleAddQuantity(
+                                                    habit.id,
+                                                    value
+                                                  );
+                                                }
+                                              }}
+                                            >
+                                              Add
+                                            </button>
+                                          </div>
                                           <button
                                             type="button"
-                                            className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                            className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
                                             onClick={(event) => {
                                               event.stopPropagation();
-                                              const value = Number.parseFloat(
-                                                customQuantities[habit.id] ?? ""
-                                              );
-                                              if (
-                                                Number.isFinite(value) &&
-                                                value > 0
-                                              ) {
-                                                void handleAddQuantity(
-                                                  habit.id,
-                                                  value
-                                                );
-                                              }
+                                              void handleReset(habit.id);
                                             }}
                                           >
-                                            Add
+                                            Reset progress
                                           </button>
                                         </div>
-                                        <button
-                                          type="button"
-                                          className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
-                                          onClick={(event) => {
-                                            event.stopPropagation();
-                                            void handleReset(habit.id);
-                                          }}
-                                        >
-                                          Reset progress
-                                        </button>
                                       </div>
-                                    </div>
-                                  </Portal>
-                                )}
+                                    </Portal>
+                                  )}
                               </div>
                             </div>
                           </div>
@@ -658,7 +661,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-slate-100 to-white">
+                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
                   <div className="xl:p-5 2xl:p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>

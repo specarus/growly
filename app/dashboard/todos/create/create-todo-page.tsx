@@ -40,6 +40,7 @@ import PlantBanner from "@/app/components/ui/plant-banner";
 import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
 import PageHeading from "@/app/components/page-heading";
+import { useUnsavedChangesGuard } from "@/app/hooks/use-unsaved-changes-guard";
 
 type PriorityLabel = "Low" | "Medium" | "High" | "Critical";
 type StatusLabel = "Planned" | "In Progress" | "Completed" | "Missed";
@@ -379,6 +380,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     buildDefaultForm(today, initialTodo)
   );
   const [tagInput, setTagInput] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
@@ -406,6 +408,10 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  const markDirty = useCallback(() => {
+    setIsDirty(true);
+  }, []);
+
   const formatIconLabel = useCallback((name: string) => {
     const withoutLeadingA =
       name.startsWith("A") && name[1] && /[A-Z]/.test(name[1])
@@ -417,6 +423,14 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
       .replace(/([A-Za-z])(\d+)/g, "$1 $2")
       .trim();
   }, []);
+
+  type CuratedIconName = (typeof curatedIconNames)[number];
+
+  type IconOption = {
+    name: CuratedIconName;
+    label: string;
+    Icon: LucideIcon;
+  };
 
   const iconOptions = useMemo(() => {
     return curatedIconNames
@@ -435,13 +449,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
           Icon: candidate,
         };
       })
-      .filter(
-        (option): option is {
-          name: string;
-          label: string;
-          Icon: LucideIcon;
-        } => option !== null
-      );
+      .filter((option): option is IconOption => option !== null);
   }, [formatIconLabel]);
 
   const SelectedIcon = useMemo(() => {
@@ -456,6 +464,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     const base = buildDefaultForm(today, initialTodo);
     setForm(base);
     setTagInput("");
+    setIsDirty(false);
   }, [initialTodo, today]);
 
   useEffect(() => {
@@ -623,33 +632,39 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     ) => {
       const value = event.target.value;
       setForm((prev) => ({ ...prev, [field]: value }));
+      markDirty();
     };
 
-  const handleAddTag = useCallback((tag: string) => {
-    const trimmedTag = tag.trim();
+  const handleAddTag = useCallback(
+    (tag: string) => {
+      const trimmedTag = tag.trim();
 
-    if (!trimmedTag) {
-      return;
-    }
-
-    setForm((prevForm) => {
-      const existingTags = prevForm.tags || [];
-      const normalizedNewTag = trimmedTag.toLowerCase();
-
-      const isDuplicate = existingTags.some(
-        (t) => t.toLowerCase() === normalizedNewTag
-      );
-
-      if (isDuplicate) {
-        return prevForm;
+      if (!trimmedTag) {
+        return;
       }
 
-      return {
-        ...prevForm,
-        tags: [...existingTags, trimmedTag],
-      };
-    });
-  }, []);
+      setForm((prevForm) => {
+        const existingTags = prevForm.tags || [];
+        const normalizedNewTag = trimmedTag.toLowerCase();
+
+        const isDuplicate = existingTags.some(
+          (t) => t.toLowerCase() === normalizedNewTag
+        );
+
+        if (isDuplicate) {
+          return prevForm;
+        }
+
+        markDirty();
+
+        return {
+          ...prevForm,
+          tags: [...existingTags, trimmedTag],
+        };
+      });
+    },
+    [markDirty]
+  );
 
   const handleTagInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -683,19 +698,25 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
     [tagInput, handleAddTag]
   );
 
-  const handleRemoveTag = useCallback((tagToRemove: string) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      tags: prevForm.tags.filter((tag) => tag !== tagToRemove),
-    }));
-  }, []);
+  const handleRemoveTag = useCallback(
+    (tagToRemove: string) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        tags: prevForm.tags.filter((tag) => tag !== tagToRemove),
+      }));
+      markDirty();
+    },
+    [markDirty]
+  );
 
   const handleDateSelect = (value: string) => {
     setForm((prev) => ({ ...prev, date: value }));
+    markDirty();
   };
 
   const handleTimeSelect = (value: string) => {
     setForm((prev) => ({ ...prev, time: value }));
+    markDirty();
   };
 
   const buildPayload = (statusOverride?: StatusLabel): TodoInput => ({
@@ -717,11 +738,17 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
   const todoId = initialTodo?.id;
 
-  const handleSubmit = (statusOverride?: StatusLabel) => {
-    setFeedback(null);
-    setError(null);
+  const submitTodo = useCallback(
+    async ({
+      statusOverride,
+      skipRedirect = false,
+    }: {
+      statusOverride?: StatusLabel;
+      skipRedirect?: boolean;
+    } = {}) => {
+      setFeedback(null);
+      setError(null);
 
-    startTransition(async () => {
       try {
         const payload = buildPayload(statusOverride);
         const endpoint =
@@ -743,20 +770,47 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
         const data = await response.json();
         const id = data.todo?.id || todoId;
 
+        setIsDirty(false);
+
         if (mode === "edit") {
           setFeedback("Todo updated");
         } else if (id) {
           setFeedback("Todo created");
-          router.push(`/dashboard/todos/${id}/edit`);
+          if (!skipRedirect) {
+            await router.push(`/dashboard/todos/${id}/edit`);
+          }
         }
 
         router.refresh();
+        return true;
       } catch (err) {
         console.error(err);
         setError("Something went wrong while saving this todo.");
+        return false;
       }
+    },
+    [buildPayload, mode, router, todoId]
+  );
+
+  const handleSubmit = (statusOverride?: StatusLabel) => {
+    startTransition(() => {
+      void submitTodo({ statusOverride });
     });
   };
+
+  const handleGuardSave = useCallback(
+    () => submitTodo({ skipRedirect: true }),
+    [submitTodo]
+  );
+  const handleGuardDiscard = useCallback(() => {
+    setIsDirty(false);
+  }, []);
+
+  const { guardDialog } = useUnsavedChangesGuard({
+    isDirty,
+    onSave: handleGuardSave,
+    onDiscard: handleGuardDiscard,
+  });
 
   const handleDelete = () => {
     if (!todoId) return;
@@ -804,11 +858,12 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
   return (
     <>
+      {guardDialog}
       <main className="xl:px-8 2xl:px-28 pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
         <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl" />
         <div className="relative z-10">
-          <div className="space-y-8">
+          <div className="space-y-8 xl:mb-8 2xl:mb-12">
             <PageHeading
               badgeLabel={mode === "edit" ? "Edit todo" : "Create todo"}
               title={
@@ -975,6 +1030,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                     ...prev,
                                     category,
                                   }));
+                                  markDirty();
                                   setCategoryMenuOpen(false);
                                 }}
                                 className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
@@ -1008,9 +1064,10 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                           <Button
                             key={priority}
                             type="button"
-                            onClick={() =>
-                              setForm((prev) => ({ ...prev, priority }))
-                            }
+                            onClick={() => {
+                              setForm((prev) => ({ ...prev, priority }));
+                              markDirty();
+                            }}
                             className={`xl:h-10 2xl:h-12 xl:text-xs 2xl:text-sm transition-all ${
                               pillByPriority[priority]
                             } ${
@@ -1065,6 +1122,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                       ...prev,
                                       iconName: name,
                                     }));
+                                    markDirty();
                                     setShowIconPicker(false);
                                   }}
                                   aria-label={label}
@@ -1127,6 +1185,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                       ...prev,
                                       iconColor: color.value,
                                     }));
+                                    markDirty();
                                     setShowColorPicker(false);
                                   }}
                                   className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-2 text-[11px] transition hover:border-primary/50 hover:bg-primary/5 ${
@@ -1319,6 +1378,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                   ...prev,
                                   reminder,
                                 }));
+                                markDirty();
                                 setReminderMenuOpen(false);
                               }}
                               className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
@@ -1392,6 +1452,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                   ...prev,
                                   recurrence,
                                 }));
+                                markDirty();
                                 setRecurrenceMenuOpen(false);
                               }}
                               className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${

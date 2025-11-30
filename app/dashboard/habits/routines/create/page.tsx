@@ -2,7 +2,7 @@ import type { Habit as PrismaHabit } from "@prisma/client";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import CreateRoutinePage from "./create-routine-page";
+import RoutineFormPage from "../routine-form-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -68,5 +68,5 @@ export default async function CreateRoutine() {
     focus: buildCalendarFocus(habit),
   }));
 
-  return <CreateRoutinePage habits={formattedHabits} />;
+  return <RoutineFormPage mode="create" habits={formattedHabits} />;
 }

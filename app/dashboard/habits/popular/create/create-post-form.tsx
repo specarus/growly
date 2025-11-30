@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -14,6 +15,7 @@ import { ChevronDown, X } from "lucide-react";
 import Button from "@/app/components/ui/button";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
+import { useUnsavedChangesGuard } from "@/app/hooks/use-unsaved-changes-guard";
 
 import {
   Category,
@@ -252,6 +254,10 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, startTransition] = useTransition();
   const router = useRouter();
+  const [isDirty, setIsDirty] = useState(false);
+  const markDirty = useCallback(() => {
+    setIsDirty(true);
+  }, []);
 
   const selectedHabit = habits.find((habit) => habit.id === form.habitId);
   const [benefitInput, setBenefitInput] = useState("");
@@ -271,6 +277,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
       if (isDuplicate) {
         return current;
       }
+      markDirty();
       return {
         ...current,
         [field]: [...existing, trimmed],
@@ -284,6 +291,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
     field: ListField
   ) => {
     const rawValue = event.target.value;
+    markDirty();
     if (!rawValue.includes(",")) {
       setInput(rawValue);
       return;
@@ -308,6 +316,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
   };
 
   const handleRemoveListEntry = (field: ListField, value: string) => {
+    markDirty();
     setForm((current) => ({
       ...current,
       [field]: current[field].filter((item) => item !== value),
@@ -335,19 +344,17 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
         ...current,
         [field]: event.target.value,
       }));
+      markDirty();
     };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!form.habitId) {
-      setServerError("Choose a habit to anchor this post.");
-      return;
-    }
-
-    startTransition(async () => {
+  const submitPost = useCallback(
+    async ({ skipRedirect = false } = {}) => {
+      if (!form.habitId) {
+        setServerError("Choose a habit to anchor this post.");
+        return false;
+      }
+      setServerError(null);
       try {
-        setServerError(null);
         const payload = {
           ...form,
           benefits: form.benefits.join("\n"),
@@ -363,17 +370,45 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
           const payload = await response.json().catch(() => null);
           throw new Error(payload?.error ?? "Unable to create post.");
         }
-        router.push("/dashboard/habits/popular");
+        setIsDirty(false);
+        if (!skipRedirect) {
+          router.push("/dashboard/habits/popular");
+        }
+        return true;
       } catch (error) {
         setServerError(
           error instanceof Error ? error.message : "Unable to create post."
         );
+        return false;
       }
+    },
+    [form, router]
+  );
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    startTransition(() => {
+      void submitPost();
     });
   };
 
+  const handleGuardSave = useCallback(
+    () => submitPost({ skipRedirect: true }),
+    [submitPost]
+  );
+  const handleGuardDiscard = useCallback(() => {
+    setIsDirty(false);
+  }, []);
+  const { guardDialog } = useUnsavedChangesGuard({
+    isDirty,
+    onSave: handleGuardSave,
+    onDiscard: handleGuardDiscard,
+  });
+
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15">
+    <>
+      {guardDialog}
+      <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
       <div className="relative z-10 xl:px-8 2xl:px-28 space-y-8">
         <PageHeading
@@ -418,9 +453,10 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                   }
                   value={form.habitId}
                   optionsId={habitDropdownOptionsId}
-                  onSelect={(value) =>
-                    setForm((current) => ({ ...current, habitId: value }))
-                  }
+                  onSelect={(value) => {
+                    markDirty();
+                    setForm((current) => ({ ...current, habitId: value }));
+                  }}
                 />
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Description</label>
@@ -523,24 +559,26 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     }))}
                     value={form.category}
                     optionsId={categoryDropdownOptionsId}
-                    onSelect={(value) =>
+                    onSelect={(value) => {
+                      markDirty();
                       setForm((current) => ({
                         ...current,
                         category: value as Category,
-                      }))
-                    }
+                      }));
+                    }}
                   />
                   <DropdownField
                     label="Time window"
                     options={timeWindowOptions}
                     value={form.timeWindow}
                     optionsId={timeWindowDropdownOptionsId}
-                    onSelect={(value) =>
+                    onSelect={(value) => {
+                      markDirty();
                       setForm((current) => ({
                         ...current,
                         timeWindow: value as TimeWindow,
-                      }))
-                    }
+                      }));
+                    }}
                   />
                   <DropdownField
                     label="Commitment"
@@ -552,12 +590,13 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     displayValue={form.commitment}
                     value={form.commitment}
                     optionsId={commitmentDropdownOptionsId}
-                    onSelect={(value) =>
+                    onSelect={(value) => {
+                      markDirty();
                       setForm((current) => ({
                         ...current,
                         commitment: value as Commitment,
-                      }))
-                    }
+                      }));
+                    }}
                   />
                 </div>
 
@@ -731,6 +770,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
         </div>
       </div>
     </main>
+    </>
   );
 };
 

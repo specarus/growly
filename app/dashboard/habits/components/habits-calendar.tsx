@@ -90,8 +90,8 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
   const todayProgress = clamp(progressByDay[todayKey] ?? 0);
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="xl:space-y-3 2xl:space-y-4">
+      <div className="flex items-center justify-between bg-white pl-6 pr-2 py-2 rounded-full shadow-inner">
         <h3 className="font-semibold xl:text-base 2xl:text-lg text-foreground">
           {getMonthName(currentMonth)}, {currentYear}
         </h3>
@@ -138,8 +138,8 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
               return (
                 <div
                   key={`day-${weekIndex}-${dayValue}`}
-                  className={`relative shadow-sm shadow-primary/20 xl:w-24 2xl:w-28 xl:h-24 2xl:h-28 rounded-full grid place-items-center border border-primary/50 transition ${
-                    progress >= 1 ? "bg-primary text-white" : "bg-muted/20"
+                  className={`relative shadow-inner shadow-primary/20 xl:w-20 2xl:w-24 xl:h-20 2xl:h-24 rounded-full grid place-items-center transition ${
+                    progress >= 1 ? "bg-primary text-white" : "bg-transparent"
                   } ${isToday ? "xl:ring-3 2xl:ring-4 ring-primary/40" : ""}`}
                   title={`${getMonthName(
                     currentMonth
@@ -178,7 +178,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
                       {dayValue}
                     </span>
                     <span
-                      className={`xl:text-xs 2xl:text-sm bg-primary/10 border border-muted shadow-sm px-2 py-1 rounded-full mt-1 ${
+                      className={`xl:text-[11px] 2xl:text-xs bg-primary/10 shadow-sm px-2 xl:py-0.5 2xl:py-1 rounded-full mt-1 ${
                         progress >= 1
                           ? "text-white/80"
                           : "text-muted-foreground"

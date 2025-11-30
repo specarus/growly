@@ -31,6 +31,7 @@ import CalendarDropdown from "@/app/components/ui/calendar-dropdown";
 import TimeInput from "@/app/components/ui/time-input";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
+import { useUnsavedChangesGuard } from "@/app/hooks/use-unsaved-changes-guard";
 import { Cadence, HabitFormState, UnitCategory } from "./types";
 import type { PopularPost } from "../popular/types";
 
@@ -154,6 +155,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     ...initialHabit,
   });
   const [saved, setSaved] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [isDeletingHabit, setIsDeletingHabit] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [cadenceMenuOpen, setCadenceMenuOpen] = useState(false);
@@ -171,10 +173,17 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   const [showStartDateDropdown, setShowStartDateDropdown] = useState(false);
   const startDateToggleRef = useRef<HTMLButtonElement | null>(null);
 
+  const markDirty = useCallback(() => {
+    setIsDirty(true);
+    setSaved(false);
+  }, []);
+
   const templates = useMemo(() => buildTemplates(today), [today]);
 
   useEffect(() => {
     setForm({ ...buildDefaultForm, ...initialHabit });
+    setIsDirty(false);
+    setSaved(false);
   }, [buildDefaultForm, initialHabit]);
 
   const updateDropdownDirection = (
@@ -288,27 +297,25 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
       >
     ) => {
       setForm((prev) => ({ ...prev, [field]: event.target.value }));
-      setSaved(false);
+      markDirty();
     };
 
   const handleStartDateSelect = (value: string) => {
     setForm((prev) => ({ ...prev, startDate: value }));
-    setSaved(false);
+    markDirty();
     setShowStartDateDropdown(false);
   };
 
   const handleTimeInputChange = (value: string) => {
     setForm((prev) => ({ ...prev, timeOfDay: value }));
-    setSaved(false);
+    markDirty();
   };
 
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    startTransition(async () => {
-      setSaved(false);
+  const submitHabit = useCallback(
+    async ({ skipRedirect = false } = {}) => {
       const payload = {
         name: form.name,
         description: form.description,
@@ -331,15 +338,42 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
         });
         if (!response.ok) {
           console.error("Failed to save habit", await response.text());
-          return;
+          return false;
         }
         setSaved(true);
-        router.push("/dashboard/habits");
+        setIsDirty(false);
+        if (!skipRedirect) {
+          router.push("/dashboard/habits");
+        }
+        return true;
       } catch (error) {
         console.error("Failed to save habit", error);
+        return false;
       }
+    },
+    [form, habitId, mode, router]
+  );
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    startTransition(() => {
+      void submitHabit();
     });
   };
+
+  const handleGuardSave = useCallback(
+    () => submitHabit({ skipRedirect: true }),
+    [submitHabit]
+  );
+  const handleGuardDiscard = useCallback(() => {
+    setIsDirty(false);
+  }, []);
+
+  const { guardDialog } = useUnsavedChangesGuard({
+    isDirty,
+    onSave: handleGuardSave,
+    onDiscard: handleGuardDiscard,
+  });
 
   const handleDeleteHabit = useCallback(async () => {
     if (!habitId) {
@@ -391,7 +425,9 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     : "Tap to pick a date";
 
   return (
-    <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
+    <>
+      {guardDialog}
+      <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
       <PageGradient />
       <div className="relative z-10">
         <div className="space-y-8">
@@ -514,12 +550,13 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                       <button
                         key={category}
                         type="button"
-                        onClick={() =>
+                        onClick={() => {
                           setForm((prev) => ({
                             ...prev,
                             goalUnitCategory: category,
-                          }))
-                        }
+                          }));
+                          markDirty();
+                        }}
                         className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
                           form.goalUnitCategory === category
                             ? "border-primary bg-primary text-white shadow-sm"
@@ -549,12 +586,13 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                             <button
                               key={unit}
                               type="button"
-                              onClick={() =>
+                              onClick={() => {
                                 setForm((prev) => ({
                                   ...prev,
                                   goalUnit: unit,
-                                }))
-                              }
+                                }));
+                                markDirty();
+                              }}
                               className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
                                 form.goalUnit === unit
                                   ? "border-primary bg-primary/10 text-primary"
@@ -567,9 +605,10 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                         )}
                         <button
                           type="button"
-                          onClick={() =>
-                            setForm((prev) => ({ ...prev, goalUnit: "" }))
-                          }
+                          onClick={() => {
+                            setForm((prev) => ({ ...prev, goalUnit: "" }));
+                            markDirty();
+                          }}
                           className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-foreground transition hover:border-primary/40"
                         >
                           Custom
@@ -649,6 +688,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                                     ...prev,
                                     cadence,
                                   }));
+                                  markDirty();
                                   setCadenceMenuOpen(false);
                                 }}
                                 className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 ${
@@ -781,6 +821,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                                     ...prev,
                                     reminder,
                                   }));
+                                  markDirty();
                                   setReminderMenuOpen(false);
                                 }}
                                 className={`w-full rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 ${
@@ -972,7 +1013,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                           timeOfDay: template.timeOfDay,
                           reminder: template.reminder,
                         }));
-                        setSaved(false);
+                        markDirty();
                       }}
                       className="xl:text-xs 2xl:text-sm font-semibold text-primary hover:underline"
                     >
@@ -986,6 +1027,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
         </div>
       </div>
     </main>
+    </>
   );
 };
 

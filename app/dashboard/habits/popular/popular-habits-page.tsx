@@ -359,7 +359,10 @@ const PopularHabitsPage: React.FC = () => {
         />
 
         <div className="flex flex-wrap items-center gap-3">
-          <HabitsTabs active="popular" containerClassName="xl:gap-1 2xl:gap-2" />
+          <HabitsTabs
+            active="popular"
+            containerClassName="xl:gap-1 2xl:gap-2"
+          />
           <span className="xl:text-xs text-muted-foreground">
             Filter by category, cadence, or time window and click a card to see
             the full post.
@@ -780,13 +783,13 @@ const PopularHabitsPage: React.FC = () => {
                               : "Add to habit board"}
                           </span>
                           {showSuccessMessage ? (
-                            <p className="text-[11px] text-green-soft">
+                            <p className="xl:text-xs text-green-soft">
                               Habit added to your board.
                             </p>
                           ) : null}
                           {addError ? (
                             <p
-                              className="text-[11px] text-rose-600"
+                              className="xl:text-xs text-rose-500"
                               role="alert"
                             >
                               {addError}
