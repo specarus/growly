@@ -4,7 +4,7 @@ import type { Habit as PrismaHabit } from "@prisma/client";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
-import RoutineFormPage from "../routine-form-page";
+import RoutineFormPage from "../../routine-form-page";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
