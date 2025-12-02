@@ -859,7 +859,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   return (
     <>
       {guardDialog}
-      <main className="xl:px-8 2xl:px-28 pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
+      <main className="xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16 relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
         <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-10 left-12 h-56 w-56 rounded-full bg-green-soft/30 blur-3xl" />
         <div className="relative z-10">

@@ -71,8 +71,6 @@ const AnalyticsWidget: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<number>(1);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [containerHeight, setContainerHeight] = useState<number>(0);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -85,17 +83,6 @@ const AnalyticsWidget: React.FC = () => {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    function updateHeight() {
-      if (containerRef.current) {
-        setContainerHeight(containerRef.current.offsetHeight);
-      }
-    }
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
   const maxPercentage = Math.max(...habits.map((h) => h.percentage));
@@ -215,8 +202,8 @@ const AnalyticsWidget: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-4 overflow-x-auto">
-            <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground dark:text-muted-foreground/70 mb-2 min-w-max sm:min-w-0">
+          <div className="space-y-4 overflow-x-auto flex flex-col h-full">
+            <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground dark:text-muted-foreground/70 mb-2 min-w-max sm:min-w-0 flex-none">
               {pastFiveDays.map((day, index) => (
                 <div
                   key={index}
@@ -232,29 +219,33 @@ const AnalyticsWidget: React.FC = () => {
               ))}
             </div>
 
-            <div
-              ref={containerRef}
-              className="relative xl:h-[330px] 2xl:h-[400px] flex justify-between"
-            >
+            <div className="relative flex flex-1 overflow-hidden">
               {habits.map((habit) => {
-                const height = containerHeight
-                  ? (habit.percentage / maxPercentage) * containerHeight
+                const heightPercent = maxPercentage
+                  ? (habit.percentage / maxPercentage) * 100
                   : 0;
                 return (
                   <div
                     key={habit.name}
-                    className="flex flex-col items-center hover:bg-primary/20 transition h-full w-full xl:px-1 2xl:px-2"
+                    className="group xl:h-10/12 2xl:h-4/5 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
                   >
-                    <div className="sm:text-xs xl:mt-1 2xl:mt-2 text-center truncate w-full font-medium">
-                      {habit.name}
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
+                        {habit.name}
+                      </div>
+                      <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">
+                        {habit.percentage}%
+                      </div>
                     </div>
-                    <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">
-                      {habit.percentage}%
+                    <div className="flex-1 w-full flex items-start">
+                      <div
+                        className={`w-full ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
+                        style={{
+                          height: `${heightPercent}%`,
+                          maxHeight: "100%",
+                        }}
+                      ></div>
                     </div>
-                    <div
-                      className={`w-full ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
-                      style={{ height: `${height}px` }}
-                    ></div>
                   </div>
                 );
               })}

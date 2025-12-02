@@ -333,7 +333,7 @@ const WeatherWidget: FC = () => {
               <p className="text-right text-xs text-red-500/90 mt-1">{error}</p>
             )}
 
-            <div className="flex items-center xl:gap-4 2xl:gap-6 mt-auto">
+            <div className="flex items-center xl:gap-3 2xl:gap-5 mt-auto">
               <div>
                 <div className="xl:text-xs 2xl:text-sm text-yellow-soft-foreground/70 mb-1">
                   Feels like

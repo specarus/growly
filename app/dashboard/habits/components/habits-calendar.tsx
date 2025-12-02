@@ -178,7 +178,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
                       {dayValue}
                     </span>
                     <span
-                      className={`xl:text-[11px] 2xl:text-xs bg-primary/10 shadow-sm px-2 xl:py-0.5 2xl:py-1 rounded-full mt-1 ${
+                      className={`xl:text-[11px] 2xl:text-xs text-white bg-primary/10 shadow-sm px-2 xl:py-0.5 2xl:py-1 rounded-full mt-1 ${
                         progress >= 1
                           ? "text-white/80"
                           : "text-muted-foreground"

@@ -66,7 +66,7 @@ export default function DeleteAccountForm() {
             {message}
           </p>
         )}
-        <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">
+        <label className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">
           Confirm by typing "{CONFIRMATION_TEXT}"
         </label>
         <input
@@ -81,7 +81,7 @@ export default function DeleteAccountForm() {
       <Button
         type="submit"
         disabled={!canSubmit}
-        className="bg-red-400 xl:text-sm 2xl:text-base text-white transition xl:py-2 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-red-400 xl:text-xs 2xl:text-sm text-white transition xl:py-2 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPending ? "Deleting…" : "Delete my account"}
       </Button>
