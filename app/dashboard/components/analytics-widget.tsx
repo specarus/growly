@@ -227,7 +227,7 @@ const AnalyticsWidget: React.FC = () => {
                 return (
                   <div
                     key={habit.name}
-                    className="group xl:h-10/12 2xl:h-4/5 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
+                    className="group h-10/12 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
                   >
                     <div className="flex flex-col items-center gap-1 text-center">
                       <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
