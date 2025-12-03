@@ -73,10 +73,9 @@ const FlipCard: React.FC<{
 
   return (
     <div
-      className="relative h-full"
+      className="relative h-full min-h-[200px]"
       style={{ perspective: 1200 }}
-      onMouseEnter={() => setFlipped(true)}
-      onMouseLeave={() => setFlipped(false)}
+      onClick={() => setFlipped((prev) => !prev)}
     >
       <div
         className="relative h-full w-full transition-transform duration-700"
@@ -86,13 +85,13 @@ const FlipCard: React.FC<{
         }}
       >
         <div
-          className="absolute inset-0 rounded-2xl bg-white/80 border border-gray-100 shadow-lg p-4 flex flex-col gap-3"
+          className="absolute inset-0 rounded-2xl bg-white/80 border border-gray-100 shadow-lg p-3 flex flex-col gap-3"
           style={{ backfaceVisibility: "hidden" }}
         >
           {front}
         </div>
         <div
-          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/90 via-orange-400 to-amber-300 text-white shadow-lg p-4 flex flex-col gap-3"
+          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/90 via-orange-400 to-amber-300 text-white shadow-lg p-3 flex flex-col gap-3"
           style={{
             transform: "rotateY(180deg)",
             backfaceVisibility: "hidden",
@@ -118,7 +117,7 @@ const AnalyticsClient: React.FC<Props> = ({
   },
 }) => {
   const chartWidth = 820;
-  const chartHeight = 340;
+  const chartHeight = 320;
   const marginLeft = 60;
   const marginRight = 20;
   const marginTop = 20;
@@ -181,8 +180,52 @@ const AnalyticsClient: React.FC<Props> = ({
     })
     .join(", ");
 
+  const todoCompletionPercent =
+    todoTotal > 0
+      ? Math.round(
+          ((todoStatusCounts.COMPLETED ?? 0) / todoTotal) * 100
+        )
+      : 0;
+
+  const statCards = [
+    {
+      id: "momentum",
+      title: "Momentum lift",
+      value: `${summary.averageCompletion}%`,
+      helper: "Average daily completion",
+      accent: "from-primary via-orange-400 to-amber-300",
+      detail: `${summary.averageSuccessRate}% consistency across ${summary.lookbackLabel}.`,
+    },
+    {
+      id: "streaks",
+      title: "Streak leader",
+      value: summary.topStreak?.name ?? "None yet",
+      helper: summary.topStreak ? `${summary.topStreak.streak} day streak` : "Log days to begin a streak",
+      accent: "from-emerald-400 via-green-500 to-green-700",
+      detail: `${summary.averageStreak} day average streak across ${summary.totalHabits} habits.`,
+    },
+    {
+      id: "todos",
+      title: "Todo throughput",
+      value: `${todoCompletionPercent}%`,
+      helper: "Completed todos",
+      accent: "from-indigo-400 via-blue-500 to-cyan-400",
+      detail: `${todoStatusCounts.IN_PROGRESS ?? 0} in progress • ${todoStatusCounts.PLANNED ?? 0} planned • ${todoStatusCounts.MISSED ?? 0} missed.`,
+    },
+  ];
+
+  const momentumTips = [
+    "Pair your hardest habit with a tiny starter action to keep streak friction low.",
+    "Schedule a weekly recovery day and log a micro-rep so momentum never fully stops.",
+    "Front-load your top habit in the morning when willpower is highest.",
+    "Keep a single visible trigger for each habit to avoid decision fatigue.",
+    "Cap active todos to five; finish one before adding another.",
+  ];
+
+  const [activeTab, setActiveTab] = useState<"insights" | "tips">("insights");
+
   return (
-    <main className="relative min-h-screen bg-linear-to-br from-white via-light-yellow/40 to-green-soft/20 text-foreground">
+    <main className="relative min-h-screen w-full max-w-full bg-linear-to-br from-white via-light-yellow/40 to-green-soft/20 text-foreground overflow-x-hidden">
       <GradientCircle
         size={260}
         position={{ top: "-70px", right: "-40px" }}
@@ -197,7 +240,7 @@ const AnalyticsClient: React.FC<Props> = ({
         fadeColor="rgba(76,215,180,0)"
         className="scale-110"
       />
-      <div className="xl:px-8 2xl:px-28 py-12 space-y-8">
+      <div className="xl:px-8 2xl:px-28 py-10 space-y-7">
         <PageHeading
           badgeLabel="Analytics"
           title="Momentum Observatory"
@@ -547,105 +590,107 @@ const AnalyticsClient: React.FC<Props> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                Habit cards
+                Insights
               </p>
               <h3 className="text-lg font-semibold">
-                Flip to see streak defenses and focus
+                Flip for deeper stats and momentum tips
               </h3>
+            </div>
+            <div className="inline-flex rounded-full border border-gray-200 bg-white shadow-sm">
+              <button
+                type="button"
+                onClick={() => setActiveTab("insights")}
+                className={`px-4 py-2 text-xs font-semibold rounded-full transition ${
+                  activeTab === "insights"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-muted-foreground"
+                }`}
+              >
+                Stats
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("tips")}
+                className={`px-4 py-2 text-xs font-semibold rounded-full transition ${
+                  activeTab === "tips"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-muted-foreground"
+                }`}
+              >
+                Tips
+              </button>
             </div>
           </div>
 
-          {habits.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-gray-200 bg-white/70 p-8 text-center space-y-3 shadow-sm">
-              <p className="text-base font-semibold text-foreground">
-                No habit data yet
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Create a habit and log a few days of progress to unlock your
-                analytics.
-              </p>
+          {activeTab === "tips" ? (
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                {momentumTips.map((tip, index) => (
+                  <div
+                    key={tip}
+                    className="rounded-2xl border border-primary/15 bg-primary/5 p-4 flex gap-3"
+                  >
+                    <div className="h-9 w-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                      {index + 1}
+                    </div>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {tip}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {habits.map((habit, index) => (
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+              {statCards.map((card) => (
                 <FlipCard
-                  key={habit.id}
+                  key={card.id}
                   front={
-                    <>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                            {habit.cadence}
-                          </p>
-                          <h4 className="text-lg font-semibold">
-                            {habit.name}
-                          </h4>
-                        </div>
-                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs font-semibold">
-                          #{index + 1}
-                        </div>
-                      </div>
+                    <div className="h-full space-y-3">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Flame className="w-4 h-4 text-primary" />
-                          <span className="text-sm font-semibold">
-                            {habit.streak} day streak
-                          </span>
-                        </div>
-                        <div className="text-xs font-semibold rounded-full bg-green-soft/30 text-green-700 px-3 py-1">
-                          {habit.successRate}% on time
-                        </div>
-                      </div>
-                      <div className="mt-2">
-                        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                          <div
-                            className="h-full bg-linear-to-r from-primary via-orange-400 to-amber-300"
-                            style={{ width: `${habit.averageCompletion}%` }}
-                          />
-                        </div>
-                        <div className="mt-1 text-[11px] text-muted-foreground flex justify-between">
-                          <span>Completion</span>
-                          <span>{habit.averageCompletion}%</span>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          {card.title}
+                        </p>
+                        <div
+                          className={`h-10 w-10 rounded-full bg-linear-to-br ${card.accent} text-white flex items-center justify-center font-bold text-sm shadow-sm`}
+                        >
+                          ⇆
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                        {habit.description ??
-                          "Flip to see the focus and guardrails for this habit."}
+                      <p className="text-2xl font-bold text-foreground">
+                        {card.value}
                       </p>
-                    </>
+                      <p className="text-sm text-muted-foreground">
+                        {card.helper}
+                      </p>
+                      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full bg-linear-to-r ${card.accent}`}
+                          style={{
+                            width: card.id === "todos" ? `${todoCompletionPercent}%` : "100%",
+                          }}
+                        />
+                      </div>
+                    </div>
                   }
                   back={
-                    <>
+                    <div className="h-full space-y-3 text-white">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-lg font-semibold">
-                          {habit.name}
-                        </h4>
-                        <div className="text-xs font-semibold uppercase tracking-[0.16em] bg-white/20 rounded-full px-3 py-1">
-                          Streak {habit.streak}d
-                        </div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em]">
+                          More insight
+                        </p>
+                        <Sparkles className="w-4 h-4" />
                       </div>
-                      <p className="text-sm opacity-90">
-                        Goal: {habit.goal}
+                      <p className="text-lg font-semibold leading-tight">
+                        {card.title}
                       </p>
-                      <p className="text-sm opacity-90">
-                        Rhythm: {habit.cadence}
+                      <p className="text-sm leading-relaxed opacity-90">
+                        {card.detail}
                       </p>
-                      <div className="flex items-center gap-3 text-sm">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 font-semibold">
-                          <Sparkles className="w-4 h-4" />
-                          {habit.successRate}% on time
-                        </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 font-semibold">
-                          <Activity className="w-4 h-4" />
-                          {habit.averageCompletion}% complete
-                        </span>
+                      <div className="rounded-2xl bg-white/20 px-3 py-2 text-sm font-semibold">
+                        Tap again to flip back
                       </div>
-                      <p className="text-sm opacity-90 leading-relaxed">
-                        Keep the streak alive with one small rep on tough days.
-                        Anchor the habit to a reliable cue and protect your
-                        cadence.
-                      </p>
-                    </>
+                    </div>
                   }
                 />
               ))}
