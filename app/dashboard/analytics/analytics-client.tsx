@@ -128,9 +128,9 @@ const AnalyticsClient: React.FC<Props> = ({
     MISSED: 0,
   },
 }) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartAreaRef = useRef<HTMLDivElement>(null);
   const [chartWidth, setChartWidth] = useState(820);
-  const chartHeight = 320;
+  const [chartHeight, setChartHeight] = useState(320);
   const marginLeft = 60;
   const marginRight = 20;
   const marginTop = 20;
@@ -138,6 +138,19 @@ const AnalyticsClient: React.FC<Props> = ({
   const innerWidth = chartWidth - marginLeft - marginRight;
   const innerHeight = chartHeight - marginTop - marginBottom;
   const yTicks = [0, 25, 50, 75, 100];
+  const xLabelOffset = 18;
+
+  const xPositions = useMemo(
+    () =>
+      trend.map(
+        (_, index) =>
+          marginLeft +
+          (trend.length > 1
+            ? (index / (trend.length - 1)) * innerWidth
+            : innerWidth / 2)
+      ),
+    [trend, innerWidth]
+  );
 
   const trendValues = trend.map((point) => point.value);
   const areaPath = useMemo(
@@ -146,15 +159,27 @@ const AnalyticsClient: React.FC<Props> = ({
   );
 
   useEffect(() => {
-    const updateWidth = () => {
-      if (chartContainerRef.current) {
-        const width = chartContainerRef.current.clientWidth;
-        setChartWidth(Math.max(320, width));
+    const updateSize = () => {
+      if (chartAreaRef.current) {
+        const { clientWidth, clientHeight } = chartAreaRef.current;
+        setChartWidth(Math.max(320, clientWidth));
+        setChartHeight(Math.max(260, clientHeight));
       }
     };
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
+
+    updateSize();
+
+    const resizeObserver = new ResizeObserver(() => updateSize());
+    const areaElement = chartAreaRef.current;
+    if (areaElement) {
+      resizeObserver.observe(areaElement);
+    }
+
+    window.addEventListener("resize", updateSize);
+    return () => {
+      window.removeEventListener("resize", updateSize);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   const gradientStops = ["#f8a84b", "#f7805c", "#4cd7b4"];
@@ -376,7 +401,7 @@ const AnalyticsClient: React.FC<Props> = ({
 
         <section className="grid grid-cols-3 gap-6 items-stretch">
           <div className="col-span-2 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                   Trend
@@ -394,141 +419,165 @@ const AnalyticsClient: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="relative flex-1 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-inner p-4">
-              <svg
-                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                xmlns="http://www.w3.org/2000/svg"
-                role="img"
-                aria-label="Completion trend area chart"
-                className="w-full h-[380px]"
-              >
-                <defs>
-                  <linearGradient
-                    id="trendGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor={gradientStops[0]}
-                      stopOpacity="0.35"
-                    />
-                    <stop
-                      offset="50%"
-                      stopColor={gradientStops[1]}
-                      stopOpacity="0.22"
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={gradientStops[2]}
-                      stopOpacity="0.1"
-                    />
-                  </linearGradient>
-                  <linearGradient
-                    id="strokeGradient"
-                    x1="0"
-                    y1="0"
-                    x2="1"
-                    y2="0"
-                  >
-                    <stop offset="0%" stopColor={gradientStops[0]} />
-                    <stop offset="50%" stopColor={gradientStops[1]} />
-                    <stop offset="100%" stopColor={gradientStops[2]} />
-                  </linearGradient>
-                </defs>
-
-                <line
-                  x1={marginLeft}
-                  y1={marginTop}
-                  x2={marginLeft}
-                  y2={chartHeight - marginBottom}
-                  stroke="#E5E7EB"
-                  strokeWidth="1.5"
-                />
-                {yTicks.map((tick) => {
-                  const y =
-                    marginTop + innerHeight - (tick / 100) * innerHeight;
-                  return (
-                    <g key={tick}>
-                      <line
-                        x1={marginLeft}
-                        x2={chartWidth - marginRight}
-                        y1={y}
-                        y2={y}
-                        stroke="#F1F5F9"
-                        strokeWidth="1"
+            <div className="relative flex-1 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-inner xl:p-8 flex flex-col gap-3">
+              <div ref={chartAreaRef} className="relative flex-1">
+                <svg
+                  viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Completion trend area chart"
+                  className="w-full h-full"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient
+                      id="trendGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor={gradientStops[0]}
+                        stopOpacity="0.35"
                       />
-                      <text
-                        x={marginLeft - 10}
-                        y={y + 4}
-                        textAnchor="end"
-                        className="text-[10px] fill-muted-foreground"
-                      >
-                        {tick}%
-                      </text>
-                    </g>
-                  );
-                })}
+                      <stop
+                        offset="50%"
+                        stopColor={gradientStops[1]}
+                        stopOpacity="0.22"
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={gradientStops[2]}
+                        stopOpacity="0.1"
+                      />
+                    </linearGradient>
+                    <linearGradient
+                      id="strokeGradient"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="0"
+                    >
+                      <stop offset="0%" stopColor={gradientStops[0]} />
+                      <stop offset="50%" stopColor={gradientStops[1]} />
+                      <stop offset="100%" stopColor={gradientStops[2]} />
+                    </linearGradient>
+                  </defs>
 
-                <g transform={`translate(${marginLeft} ${marginTop})`}>
-                  {areaPath ? (
-                    <path
-                      d={areaPath}
-                      fill="url(#trendGradient)"
-                      stroke="url(#strokeGradient)"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      className="drop-shadow-sm"
+                  <line
+                    x1={marginLeft}
+                    y1={chartHeight - marginBottom}
+                    x2={chartWidth - marginRight}
+                    y2={chartHeight - marginBottom}
+                    stroke="#E5E7EB"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1={marginLeft}
+                    y1={marginTop}
+                    x2={marginLeft}
+                    y2={chartHeight - marginBottom}
+                    stroke="#E5E7EB"
+                    strokeWidth="1.5"
+                  />
+                  {xPositions.map((x, index) => (
+                    <line
+                      key={`${trend[index]?.label ?? index}-grid`}
+                      x1={x}
+                      x2={x}
+                      y1={marginTop}
+                      y2={chartHeight - marginBottom}
+                      stroke="#F8FAFC"
+                      strokeWidth="1"
+                      strokeDasharray="4 4"
                     />
-                  ) : (
-                    <rect
-                      x="0"
-                      y="0"
-                      width={innerWidth}
-                      height={innerHeight}
-                      fill="url(#trendGradient)"
-                      opacity="0.35"
-                    />
-                  )}
-                </g>
+                  ))}
+                  {yTicks.map((tick) => {
+                    const y =
+                      marginTop + innerHeight - (tick / 100) * innerHeight;
+                    return (
+                      <g key={tick}>
+                        <line
+                          x1={marginLeft}
+                          x2={chartWidth - marginRight}
+                          y1={y}
+                          y2={y}
+                          stroke="#F1F5F9"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={marginLeft - 10}
+                          y={y + 4}
+                          textAnchor="end"
+                          className="text-[10px] fill-muted-foreground"
+                        >
+                          {tick}%
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                {trend.map((point, index) => {
-                  const x =
-                    marginLeft +
-                    (trend.length > 1
-                      ? (index / (trend.length - 1)) * innerWidth
-                      : innerWidth / 2);
-                  const y =
-                    marginTop + innerHeight - (point.value / 100) * innerHeight;
-                  return (
-                    <g key={point.label}>
-                      <circle
-                        cx={x}
-                        cy={y}
-                        r={6}
-                        fill="white"
+                  <g transform={`translate(${marginLeft} ${marginTop})`}>
+                    {areaPath ? (
+                      <path
+                        d={areaPath}
+                        fill="url(#trendGradient)"
                         stroke="url(#strokeGradient)"
                         strokeWidth="3"
+                        strokeLinecap="round"
+                        className="drop-shadow-sm"
                       />
-                      <text
-                        x={x}
-                        y={y - 12}
-                        textAnchor="middle"
-                        className="text-[10px] fill-muted-foreground"
-                      >
-                        {point.value}%
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
+                    ) : (
+                      <rect
+                        x="0"
+                        y="0"
+                        width={innerWidth}
+                        height={innerHeight}
+                        fill="url(#trendGradient)"
+                        opacity="0.35"
+                      />
+                    )}
+                  </g>
 
-              <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                {trend.map((point) => (
-                  <span key={point.label}>{point.label}</span>
-                ))}
+                  {trend.map((point, index) => {
+                    const x = xPositions[index];
+                    const y =
+                      marginTop +
+                      innerHeight -
+                      (point.value / 100) * innerHeight;
+                    return (
+                      <g key={point.label}>
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r={6}
+                          fill="white"
+                          stroke="url(#strokeGradient)"
+                          strokeWidth="3"
+                        />
+                        <text
+                          x={x}
+                          y={y - 12}
+                          textAnchor="middle"
+                          className="text-[10px] fill-muted-foreground"
+                        >
+                          {point.value}%
+                        </text>
+                        <text
+                          x={x}
+                          y={chartHeight - marginBottom + xLabelOffset}
+                          textAnchor="middle"
+                          dominantBaseline="hanging"
+                          className="text-[10px] fill-muted-foreground"
+                        >
+                          {point.label}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
               </div>
             </div>
           </div>
