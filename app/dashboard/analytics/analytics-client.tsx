@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useMemo, useState } from "react";
+import type { TodoStatus } from "@prisma/client";
 
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import PageHeading from "@/app/components/page-heading";
@@ -41,6 +42,7 @@ type Props = {
   trend: TrendPoint[];
   weekdayPerformance: TrendPoint[];
   habits: HabitInsight[];
+  todoStatusCounts: Record<TodoStatus, number>;
 };
 
 const buildAreaPath = (points: number[], width = 720, height = 200) => {
@@ -108,11 +110,27 @@ const AnalyticsClient: React.FC<Props> = ({
   trend,
   weekdayPerformance,
   habits,
+  todoStatusCounts = {
+    PLANNED: 0,
+    IN_PROGRESS: 0,
+    COMPLETED: 0,
+    MISSED: 0,
+  },
 }) => {
+  const chartWidth = 820;
+  const chartHeight = 340;
+  const marginLeft = 60;
+  const marginRight = 20;
+  const marginTop = 20;
+  const marginBottom = 28;
+  const innerWidth = chartWidth - marginLeft - marginRight;
+  const innerHeight = chartHeight - marginTop - marginBottom;
+  const yTicks = [0, 25, 50, 75, 100];
+
   const trendValues = trend.map((point) => point.value);
   const areaPath = useMemo(
-    () => buildAreaPath(trendValues, 780, 240),
-    [trendValues]
+    () => buildAreaPath(trendValues, innerWidth, innerHeight),
+    [trendValues, innerWidth, innerHeight]
   );
 
   const gradientStops = ["#f8a84b", "#f7805c", "#4cd7b4"];
@@ -120,6 +138,48 @@ const AnalyticsClient: React.FC<Props> = ({
   const activeHabit =
     habits.find((habit) => habit.streak === summary.topStreak?.streak) ??
     habits[0];
+
+  const todoStatusMeta: Record<
+    TodoStatus,
+    { label: string; color: string; subtle: string }
+  > = {
+    PLANNED: { label: "Planned", color: "#6366F1", subtle: "rgba(99,102,241,0.18)" },
+    IN_PROGRESS: {
+      label: "In Progress",
+      color: "#F59E0B",
+      subtle: "rgba(245,158,11,0.18)",
+    },
+    COMPLETED: {
+      label: "Completed",
+      color: "#10B981",
+      subtle: "rgba(16,185,129,0.18)",
+    },
+    MISSED: { label: "Missed", color: "#EF4444", subtle: "rgba(239,68,68,0.18)" },
+  };
+
+  const todoTotal = Object.values(todoStatusCounts).reduce(
+    (sum, count) => sum + (count ?? 0),
+    0
+  );
+
+  const todoSegments = (["PLANNED", "IN_PROGRESS", "COMPLETED", "MISSED"] as TodoStatus[]).map(
+    (status) => {
+      const count = todoStatusCounts[status] ?? 0;
+      const percent = todoTotal > 0 ? (count / todoTotal) * 100 : 0;
+      return { status, count, percent };
+    }
+  );
+
+  let cursor = 0;
+  const pieGradient = todoSegments
+    .filter((segment) => segment.percent > 0)
+    .map((segment) => {
+      const start = cursor;
+      const end = cursor + segment.percent;
+      cursor = end;
+      return `${todoStatusMeta[segment.status].color} ${start}% ${end}%`;
+    })
+    .join(", ");
 
   return (
     <main className="relative min-h-screen bg-linear-to-br from-white via-light-yellow/40 to-green-soft/20 text-foreground">
@@ -235,11 +295,11 @@ const AnalyticsClient: React.FC<Props> = ({
 
             <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-gradient-to-b from-white to-primary/5 p-4">
               <svg
-                viewBox="0 0 780 260"
+                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
                 aria-label="Completion trend area chart"
-                className="w-full h-64"
+                className="w-full h-[380px]"
               >
                 <defs>
                   <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
@@ -254,32 +314,69 @@ const AnalyticsClient: React.FC<Props> = ({
                   </linearGradient>
                 </defs>
 
-                {areaPath ? (
-                  <path
-                    d={areaPath}
-                    fill="url(#trendGradient)"
-                    stroke="url(#strokeGradient)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    className="drop-shadow-sm"
-                  />
-                ) : (
-                  <rect
-                    x="0"
-                    y="0"
-                    width="780"
-                    height="260"
-                    fill="url(#trendGradient)"
-                    opacity="0.35"
-                  />
-                )}
+                <line
+                  x1={marginLeft}
+                  y1={marginTop}
+                  x2={marginLeft}
+                  y2={chartHeight - marginBottom}
+                  stroke="#E5E7EB"
+                  strokeWidth="1.5"
+                />
+                {yTicks.map((tick) => {
+                  const y =
+                    marginTop + innerHeight - (tick / 100) * innerHeight;
+                  return (
+                    <g key={tick}>
+                      <line
+                        x1={marginLeft}
+                        x2={chartWidth - marginRight}
+                        y1={y}
+                        y2={y}
+                        stroke="#F1F5F9"
+                        strokeWidth="1"
+                      />
+                      <text
+                        x={marginLeft - 10}
+                        y={y + 4}
+                        textAnchor="end"
+                        className="text-[10px] fill-muted-foreground"
+                      >
+                        {tick}%
+                      </text>
+                    </g>
+                  );
+                })}
+
+                <g transform={`translate(${marginLeft} ${marginTop})`}>
+                  {areaPath ? (
+                    <path
+                      d={areaPath}
+                      fill="url(#trendGradient)"
+                      stroke="url(#strokeGradient)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      className="drop-shadow-sm"
+                    />
+                  ) : (
+                    <rect
+                      x="0"
+                      y="0"
+                      width={innerWidth}
+                      height={innerHeight}
+                      fill="url(#trendGradient)"
+                      opacity="0.35"
+                    />
+                  )}
+                </g>
 
                 {trend.map((point, index) => {
                   const x =
-                    trend.length > 1
-                      ? (index / (trend.length - 1)) * 780
-                      : 390;
-                  const y = 260 - (point.value / 100) * 200 - 20;
+                    marginLeft +
+                    (trend.length > 1
+                      ? (index / (trend.length - 1)) * innerWidth
+                      : innerWidth / 2);
+                  const y =
+                    marginTop + innerHeight - (point.value / 100) * innerHeight;
                   return (
                     <g key={point.label}>
                       <circle
@@ -311,60 +408,138 @@ const AnalyticsClient: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-6 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                  Cadence map
-                </p>
-                <h3 className="text-lg font-semibold">Weekday rhythm</h3>
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-6 flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                    Cadence map
+                  </p>
+                  <h3 className="text-lg font-semibold">Weekday rhythm</h3>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Rotate3D className="w-5 h-5 text-primary" />
+                </div>
               </div>
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Rotate3D className="w-5 h-5 text-primary" />
+
+              <div className="grid grid-cols-7 gap-3 mt-2">
+                {weekdayPerformance.map((day) => (
+                  <div
+                    key={day.label}
+                    className="flex flex-col items-center gap-2 text-center"
+                  >
+                    <div className="h-28 w-full rounded-full bg-muted overflow-hidden border border-gray-100 flex items-end">
+                      <div
+                        className="w-full rounded-full bg-linear-to-t from-primary via-orange-400 to-amber-300 shadow-sm"
+                        style={{ height: `${Math.round(day.value * 100)}%` }}
+                      />
+                    </div>
+                    <div className="text-[11px] font-semibold">{day.label}</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {Math.round(day.value * 100)}%
+                    </div>
+                  </div>
+                ))}
               </div>
+
+              {activeHabit && (
+                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 shadow-sm">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                    Spotlight
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold">{activeHabit.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {activeHabit.successRate}% on-time | {activeHabit.cadence}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold">
+                        {activeHabit.streak}d
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-7 gap-3 mt-2">
-              {weekdayPerformance.map((day) => (
-                <div
-                  key={day.label}
-                  className="flex flex-col items-center gap-2 text-center"
-                >
-                  <div className="h-28 w-full rounded-full bg-muted overflow-hidden border border-gray-100 flex items-end">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                    Todos overview
+                  </p>
+                  <h3 className="text-lg font-semibold">Status pie</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Completion vs in-flight tasks
+                  </p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-primary" />
+                </div>
+              </div>
+
+              {todoTotal === 0 ? (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-white/80 p-6 text-center text-sm text-muted-foreground">
+                  Log a few todos to see the breakdown.
+                </div>
+              ) : (
+                <div className="flex items-center gap-6">
+                  <div className="relative h-40 w-40 shrink-0">
                     <div
-                      className="w-full rounded-full bg-linear-to-t from-primary via-orange-400 to-amber-300 shadow-sm"
-                      style={{ height: `${Math.round(day.value * 100)}%` }}
+                      className="h-full w-full rounded-full shadow-inner"
+                      style={{
+                        background: pieGradient
+                          ? `conic-gradient(${pieGradient})`
+                          : "radial-gradient(circle, #f4f4f5 0%, #e5e7eb 100%)",
+                      }}
                     />
+                    <div className="absolute inset-4 rounded-full bg-white flex flex-col items-center justify-center text-center shadow-sm">
+                      <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                        Total
+                      </p>
+                      <p className="text-xl font-bold">{todoTotal}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        todos
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-[11px] font-semibold">{day.label}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {Math.round(day.value * 100)}%
-                  </div>
-                </div>
-              ))}
-            </div>
 
-            {activeHabit && (
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 shadow-sm">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                  Spotlight
-                </p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold">{activeHabit.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {activeHabit.successRate}% on-time | {activeHabit.cadence}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold">
-                      {activeHabit.streak}d
-                    </span>
+                  <div className="grid grid-cols-2 gap-3 flex-1">
+                    {todoSegments.map((segment) => {
+                      const meta = todoStatusMeta[segment.status];
+                      return (
+                        <div
+                          key={segment.status}
+                          className="rounded-xl border border-gray-100 bg-muted/40 p-3 flex items-center gap-3"
+                        >
+                          <div
+                            className="h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold"
+                            style={{
+                              background: meta.subtle,
+                              color: meta.color,
+                            }}
+                          >
+                            {Math.round(segment.percent)}%
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">
+                              {meta.label}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground">
+                              {segment.count} todo
+                              {segment.count === 1 ? "" : "s"}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </section>
 

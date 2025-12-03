@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import type { TodoStatus } from "@prisma/client";
 
 import AnalyticsClient from "./analytics-client";
 import { auth } from "@/lib/auth";
@@ -45,6 +46,24 @@ export default async function AnalyticsPage() {
 
   const { habitsWithStats, progressByDay, weekdayPerformance, lookbackDays } =
     buildHabitAnalytics(habits, progressEntries, HABIT_ANALYTICS_LOOKBACK_DAYS);
+
+  const todoGroups = await prisma.todo.groupBy({
+    by: ["status"],
+    where: { userId: session.user.id },
+    _count: true,
+  });
+
+  const todoStatusCounts: Record<TodoStatus, number> = {
+    PLANNED: 0,
+    IN_PROGRESS: 0,
+    COMPLETED: 0,
+    MISSED: 0,
+  };
+
+  todoGroups.forEach((group) => {
+    const status = group.status as TodoStatus;
+    todoStatusCounts[status] = group._count;
+  });
 
   const today = getUtcDayStart(new Date());
   const trend = [];
@@ -122,6 +141,7 @@ export default async function AnalyticsPage() {
       trend={trend}
       weekdayPerformance={weekdayPerformance}
       habits={habitsPayload}
+      todoStatusCounts={todoStatusCounts}
     />
   );
 }
