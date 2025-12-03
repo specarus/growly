@@ -777,7 +777,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
         } else if (id) {
           setFeedback("Todo created");
           if (!skipRedirect) {
-            await router.push(`/dashboard/todos/${id}/edit`);
+            await router.push("/dashboard/todos");
           }
         }
 

@@ -49,7 +49,7 @@ const Dashboard: React.FC<DashboardProps> = ({ progressByDay }) => {
         </div>
 
         <div className="col-span-6 flex flex-col xl:gap-4 2xl:gap-6">
-          <div className="grid grid-cols-5 xl:gap-4 xl:min-h-80 2xl:min-h-[400px]">
+          <div className="grid grid-cols-5 xl:gap-4 xl:min-h-[340x] 2xl:min-h-[400px]">
             <div className="col-span-3">
               <TodosWidget />
             </div>
