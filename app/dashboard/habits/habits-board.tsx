@@ -21,6 +21,7 @@ import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "./components/habits-tabs";
 import HabitsCalendar from "./components/habits-calendar";
+import HabitsWeekCalendar from "./components/habits-week-calendar";
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import { formatDayKey, ProgressByDayMap } from "@/lib/habit-progress";
 
@@ -661,7 +662,16 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-16 2xl:mt-20 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
+                <div className="xl:mt-10 2xl:mt-12 max-w-6xl rounded-3xl border border-gray-100 bg-white shadow-sm">
+                  <div className="xl:p-5 2xl:p-6">
+                    <HabitsWeekCalendar
+                      habits={localHabits}
+                      progressByDay={progressMap}
+                    />
+                  </div>
+                </div>
+
+                <div className="xl:mt-10 2xl:mt-12 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
                   <div className="xl:p-5 2xl:p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>

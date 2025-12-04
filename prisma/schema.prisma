@@ -35,6 +35,7 @@ model User {
   routines      Routine[]
   postHabits    PostHabit[]
   postHabitLikes PostHabitLike[]
+  streakGoalDays Int? @default(21)
 
   @@unique([email])
   @@map("user")

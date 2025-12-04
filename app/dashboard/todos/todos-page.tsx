@@ -634,7 +634,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
 
   return (
     <>
-      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground pb-16 overflow-hidden bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
+      <main className="relative w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 overflow-hidden bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
         <div className="pointer-events-none absolute -top-16 right-10 h-64 w-64 rounded-[2.5rem] bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-6 left-12 h-56 w-56 rounded-full bg-green-soft/20 blur-3xl" />
         <div className="relative z-10">

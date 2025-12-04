@@ -6,8 +6,10 @@ import EditProfileForm from "./components/edit-profile-form";
 import SignOutButton from "./components/sign-out-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { CalendarDays, Flame, ShieldCheck } from "lucide-react";
+import { CalendarDays, Flame, Goal, ShieldCheck } from "lucide-react";
 import PageHeading from "@/app/components/page-heading";
+import { prisma } from "@/lib/prisma";
+import StreakGoalForm from "./components/streak-goal-form";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +68,11 @@ export default async function AccountPage() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const userRecord = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { streakGoalDays: true },
+  });
+  const streakGoal = userRecord?.streakGoalDays ?? 21;
 
   return (
     <main className="relative min-h-screen bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 pb-16 pt-28">
@@ -140,9 +147,6 @@ export default async function AccountPage() {
                     </p>
                     <SignOutButton />
                   </div>
-                  <div className="rounded-3xl border border-destructive/40 bg-destructive/5 p-6">
-                    <DeleteAccountForm />
-                  </div>
                 </div>
               </div>
 
@@ -202,6 +206,35 @@ export default async function AccountPage() {
                 ))}
               </div>
             </div>
+
+            <div className="rounded-3xl border border-primary/30 dark:border-none bg-linear-to-r from-primary/10 via-white/85 dark:via-card/20 to-light-yellow/40 p-6 shadow-lg shadow-primary/15 space-y-5">
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-1.5">
+                  <p className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.4em] text-primary">
+                    Streak target
+                  </p>
+                  <h3 className="xl:text-lg 2xl:text-xl font-semibold text-foreground">
+                    Pick the streak length you're chasing
+                  </h3>
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                    Set a realistic stretch goal that will show up in analytics
+                    so you can see progress against it.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 self-start rounded-full bg-white/80 px-4 py-2 xl:text-[11px] 2xl:text-xs font-semibold text-primary border border-primary/30 shadow-sm">
+                  <Goal className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
+                  <p>{streakGoal} days</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-muted bg-card/90 p-5 shadow-inner shadow-primary/5 space-y-4">
+                <p className="xl:text-sm 2xl:text-base text-muted-foreground">
+                  Analytics will track how your best streak compares to this
+                  target.
+                </p>
+                <StreakGoalForm initialGoal={streakGoal} />
+              </div>
+            </div>
           </section>
 
           <section className="grid gap-6 rounded-3xl border border-gray-100 bg-card xl:p-6 2xl:p-8 shadow-sm shadow-foreground/5 backdrop-blur">
@@ -231,6 +264,10 @@ export default async function AccountPage() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            <div className="rounded-3xl border border-destructive/40 bg-destructive/5 p-6">
+              <DeleteAccountForm />
             </div>
           </section>
         </div>

@@ -22,6 +22,12 @@ export default async function AnalyticsPage() {
     redirect("/");
   }
 
+  const userRecord = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { streakGoalDays: true },
+  });
+  const streakGoalDays = userRecord?.streakGoalDays ?? null;
+
   const habits = await prisma.habit.findMany({
     where: {
       userId: session.user.id,
@@ -116,6 +122,15 @@ export default async function AnalyticsPage() {
     lookbackDays === 1
       ? "Last day"
       : `Last ${lookbackDays.toLocaleString()} days`;
+  const bestStreak = topStreak?.streak ?? 0;
+  const streakGoalProgress =
+    streakGoalDays && streakGoalDays > 0
+      ? Math.min(100, Math.round((bestStreak / streakGoalDays) * 100))
+      : 0;
+  const streakGoalGap =
+    streakGoalDays && streakGoalDays > 0
+      ? Math.max(0, streakGoalDays - bestStreak)
+      : null;
 
   const habitsPayload = habitsWithStats.map((habit) => ({
     id: habit.id,
@@ -137,6 +152,10 @@ export default async function AnalyticsPage() {
         averageSuccessRate,
         topStreak: topStreak ?? undefined,
         lookbackLabel,
+        streakGoalDays: streakGoalDays ?? undefined,
+        streakGoalProgress,
+        streakGoalGap,
+        bestStreak,
       }}
       trend={trend}
       weekdayPerformance={weekdayPerformance}

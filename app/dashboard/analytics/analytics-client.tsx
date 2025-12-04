@@ -11,7 +11,6 @@ import {
   Lightbulb,
   Rotate3D,
   Sparkles,
-  Target,
   Trophy,
   ChessQueen,
   ChartPie,
@@ -43,6 +42,10 @@ type Summary = {
   averageSuccessRate: number;
   topStreak?: { name: string; streak: number };
   lookbackLabel: string;
+  streakGoalDays?: number;
+  streakGoalProgress?: number;
+  streakGoalGap?: number | null;
+  bestStreak: number;
 };
 
 type Props = {
@@ -98,13 +101,13 @@ const FlipCard: React.FC<{
         }}
       >
         <div
-          className="absolute inset-0 rounded-3xl bg-white/90 border border-gray-100 shadow-lg p-4 flex flex-col gap-3"
+          className="absolute inset-0 rounded-3xl bg-white/90 border border-gray-100 p-4 flex flex-col gap-3"
           style={{ backfaceVisibility: "hidden" }}
         >
           {front}
         </div>
         <div
-          className={`absolute inset-0 rounded-3xl bg-linear-to-br ${accent} text-white shadow-xl p-4 flex flex-col gap-4`}
+          className={`absolute inset-0 rounded-3xl bg-linear-to-br ${accent} text-white p-4 flex flex-col gap-4`}
           style={{
             transform: "rotateY(180deg)",
             backfaceVisibility: "hidden",
@@ -268,25 +271,29 @@ const AnalyticsClient: React.FC<Props> = ({
     },
     {
       id: "streaks",
-      title: "Streak leader",
+      title: summary.streakGoalDays
+        ? `${summary.bestStreak}d vs ${summary.streakGoalDays}d target`
+        : "Streak leader",
       badge: "Consistency",
-      value: summary.topStreak
-        ? `${summary.topStreak.streak} days`
-        : "No leader yet",
-      helper: summary.topStreak
-        ? `${summary.topStreak.name}`
-        : "Log habits to surface a leader",
+      value: summary.topStreak?.name ?? "No leader yet",
+      helper: summary.streakGoalDays
+        ? summary.streakGoalGap && summary.streakGoalGap > 0
+          ? `${summary.streakGoalGap} days to target`
+          : "Goal met—keep it breathing"
+        : `${summary.averageStreak} day avg streak`,
       accent:
         "from-emerald-400 via-green-500 to-green-700 dark:from-green-500 dark:via-emerald-600 dark:to-emerald-700",
       icon: Trophy,
-      progress: summary.topStreak ? 100 : 40,
+      progress: summary.streakGoalProgress ?? (summary.topStreak ? 100 : 40),
       details: [
         `${summary.averageStreak} day avg streak`,
-        `${summary.averageCompletion}% completion base`,
+        summary.streakGoalDays
+          ? `${summary.streakGoalProgress ?? 0}% to goal`
+          : `${summary.averageCompletion}% completion base`,
       ],
       backTitle: "Protect streaks",
       backCopy:
-        "Use streak freeze days strategically. Pair your leader habit with a tiny starter to keep the streak breathing on chaotic days.",
+        "Use streak freeze days strategically. Pair your leader habit with a tiny starter to keep the streak breathing on chaotic days. Set or adjust your target in Account when you’re ready to stretch it.",
     },
     {
       id: "todos",
@@ -739,7 +746,7 @@ const AnalyticsClient: React.FC<Props> = ({
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="space-y-4 p-6 rounded-3xl shadow-sm border border-gray-100 bg-white/40">
           <p className="xl:text-sm 2xl:text-base font-semibold uppercase tracking-[0.16em] text-primary">
             Insights
           </p>
