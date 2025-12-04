@@ -21,8 +21,10 @@ type Props = {
 };
 
 const ShouldDoSection = ({ title, description, ideas }: Props) => (
-  <section className="rounded-3xl border border-gray-100 bg-white shadow-inner">
-    <div className="px-6 py-5 space-y-1">
+  <section className="relative overflow-hidden rounded-3xl border border-white/70 dark:border-white/10 bg-linear-to-br from-white via-white/90 to-secondary/10 dark:from-slate-900 dark:via-slate-950 dark:to-secondary/20 shadow-inner">
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.08),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_45%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.08),transparent_45%)] dark:bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_45%)]" />
+    <div className="relative px-6 py-5 space-y-1">
       <div className="flex items-center justify-between">
         <div>
           <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
@@ -32,25 +34,25 @@ const ShouldDoSection = ({ title, description, ideas }: Props) => (
             {description}
           </h2>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+        <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 text-secondary-foreground px-3 py-1 text-[11px] font-semibold dark:bg-secondary/25">
           <TrendingUp className="w-4 h-4" />
           {ideas.length} {ideas.length === 1 ? "idea" : "ideas"}
         </div>
       </div>
       <div className="space-y-4 pt-4">
         {ideas.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-6 xl:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-muted/50 dark:bg-slate-800/70 xl:px-4 xl:py-3 2xl:py-6 xl:text-xs 2xl:text-sm text-muted-foreground">
             No ideas yet.
           </div>
         ) : (
-          <div className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {ideas.map((idea) => (
               <article
                 key={idea.id}
-                className="rounded-2xl border border-gray-100 bg-muted/40 p-4 space-y-2"
+                className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white/80 dark:bg-slate-900/70 shadow-inner p-4 space-y-2"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.2em]">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-secondary/20 to-primary/20 dark:from-secondary/30 dark:to-primary/25 border border-white dark:border-white/10 px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-primary uppercase tracking-[0.2em] dark:text-white">
                     Should Do
                   </span>
                   <span className="xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
@@ -65,7 +67,7 @@ const ShouldDoSection = ({ title, description, ideas }: Props) => (
                 </p>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span>{idea.label}</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
                     <Heart className="w-3 h-3 text-primary" />
                     {idea.likesCount} {idea.likesCount === 1 ? "like" : "likes"}
                   </span>

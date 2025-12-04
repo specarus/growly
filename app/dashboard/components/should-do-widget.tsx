@@ -106,33 +106,35 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
   }, []);
 
   const sortedIdeas = useMemo(
-    () => [...ideas].sort((a, b) => b.likesCount - a.likesCount).slice(0, 6),
+    () => [...ideas].sort((a, b) => b.likesCount - a.likesCount).slice(0, 4),
     [ideas]
   );
 
   const handleLike = async (id: string) => {
     const target = ideas.find((idea) => idea.id === id);
-    if (!target || target.likedByCurrentUser || target.isSeed) {
+    if (!target || target.isSeed) {
       return;
     }
+    const nextLiked = !target.likedByCurrentUser;
+    const delta = nextLiked ? 1 : -1;
     setLikingId(id);
     setIdeas((current) =>
       current.map((idea) =>
         idea.id === id
           ? {
               ...idea,
-              likedByCurrentUser: true,
-              likesCount: idea.likesCount + 1,
+              likedByCurrentUser: nextLiked,
+              likesCount: Math.max(0, idea.likesCount + delta),
             }
           : idea
       )
     );
     try {
       const response = await fetch(`/api/should-dos/${id}/like`, {
-        method: "POST",
+        method: nextLiked ? "POST" : "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Unable to like this idea.");
+        throw new Error(nextLiked ? "Unable to like this idea." : "Unable to unlike this idea.");
       }
     } catch (likeError) {
       setIdeas((current) =>
@@ -140,8 +142,8 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
           idea.id === id
             ? {
                 ...idea,
-                likedByCurrentUser: false,
-                likesCount: Math.max(0, idea.likesCount - 1),
+                likedByCurrentUser: target.likedByCurrentUser,
+                likesCount: Math.max(0, target.likesCount),
               }
             : idea
         )
@@ -183,6 +185,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
           sortedIdeas.map((idea) => {
             const Icon = idea.icon ?? Sparkles;
             const isLiked = idea.likedByCurrentUser;
+            const isSeed = idea.isSeed;
             return (
               <div
                 key={idea.id}
@@ -204,27 +207,30 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
                     </div>
                   </div>
                 </div>
-                {idea.isSeed ? (
-                  <ChevronRight className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-muted-foreground shrink-0" />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleLike(idea.id)}
-                    disabled={isLiked || likingId === idea.id}
-                    className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
-                      isLiked
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                <button
+                  type="button"
+                  onClick={() => handleLike(idea.id)}
+                  disabled={likingId === idea.id || isSeed}
+                  className={`group inline-flex items-center justify-center rounded-full border px-2.5 py-2 transition-transform duration-200 ease-out active:scale-95 hover:-translate-y-0.5 shadow-sm ${
+                    isLiked
+                      ? "border-primary bg-primary text-white shadow-[0_10px_30px_-16px_rgba(59,130,246,0.8)]"
+                      : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40 hover:shadow-[0_10px_30px_-18px_rgba(59,130,246,0.7)]"
+                  } ${isSeed ? "opacity-60 cursor-not-allowed" : ""}`}
+                  aria-pressed={isLiked}
+                  aria-label={
+                    isSeed
+                      ? "Pinned idea"
+                      : isLiked
+                      ? "Liked"
+                      : "Like this idea"
+                  }
+                >
+                  <Heart
+                    className={`w-4 h-4 transition-transform duration-200 ease-out group-hover:scale-110 ${
+                      isLiked ? "text-white" : "text-primary"
                     }`}
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isLiked ? "text-white" : "text-primary"
-                      }`}
-                    />
-                    <span>{isLiked ? "Liked" : "Like"}</span>
-                  </button>
-                )}
+                  />
+                </button>
               </div>
             );
           })

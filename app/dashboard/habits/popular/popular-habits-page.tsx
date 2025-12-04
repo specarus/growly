@@ -8,6 +8,8 @@ import {
   Clock3,
   Heart,
   HeartPulse,
+  icons as lucideIcons,
+  LucideIcon,
   Pencil,
   Search,
   Sparkles,
@@ -93,6 +95,8 @@ type ShouldDoEntry = {
   ownedByCurrentUser: boolean;
   createdAt?: string;
   isSeed?: boolean;
+  iconKey?: string | null;
+  iconColor?: string | null;
 };
 
 const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
@@ -103,6 +107,8 @@ const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
   likedByCurrentUser: false,
   ownedByCurrentUser: false,
   isSeed: true,
+  iconKey: seed.icon?.name ?? null,
+  iconColor: seed.iconColor ?? null,
 }));
 
 const formatLikes = (value: number) => {
@@ -137,9 +143,37 @@ const PopularHabitsPage: React.FC = () => {
   const [shouldDos, setShouldDos] = useState<ShouldDoEntry[]>(seedShouldDos);
   const [shouldDoLoading, setShouldDoLoading] = useState(true);
   const [shouldDoError, setShouldDoError] = useState<string | null>(null);
+  const iconOptions = [
+    { key: "Flame", label: "Fire" },
+    { key: "Dumbbell", label: "Strength" },
+    { key: "HeartPulse", label: "Health" },
+    { key: "Brain", label: "Mind" },
+    { key: "MoonStar", label: "Night" },
+    { key: "Mountain", label: "Outdoors" },
+    { key: "Droplets", label: "Cold plunge" },
+    { key: "Target", label: "Focus" },
+  ];
+  const iconPalette: Record<string, string> = {
+    Flame: "#f97316",
+    Dumbbell: "#22c55e",
+    HeartPulse: "#ef4444",
+    Brain: "#6366f1",
+    MoonStar: "#c084fc",
+    Mountain: "#0ea5e9",
+    Droplets: "#06b6d4",
+    Target: "#f59e0b",
+  };
+  const defaultIconKey = iconOptions[0]?.key ?? "Sparkles";
+  const resolveIcon = (key?: string | null): LucideIcon => {
+    if (!key) return Sparkles;
+    const IconComp = (lucideIcons as Record<string, LucideIcon>)[key];
+    return IconComp ?? Sparkles;
+  };
+
   const [shouldDoForm, setShouldDoForm] = useState({
     title: "",
     description: "",
+    iconKey: defaultIconKey,
   });
   const [editingShouldDoId, setEditingShouldDoId] = useState<string | null>(
     null
@@ -159,6 +193,8 @@ const PopularHabitsPage: React.FC = () => {
     likedByCurrentUser?: boolean;
     ownedByCurrentUser?: boolean;
     createdAt?: string;
+    iconKey?: string | null;
+    iconColor?: string | null;
   };
 
   const normalizeShouldDo = useCallback(
@@ -171,6 +207,8 @@ const PopularHabitsPage: React.FC = () => {
       ownedByCurrentUser: Boolean(entry.ownedByCurrentUser),
       createdAt: entry.createdAt,
       isSeed: false,
+      iconKey: entry.iconKey ?? null,
+      iconColor: entry.iconColor ?? null,
     }),
     []
   );
@@ -471,7 +509,7 @@ const PopularHabitsPage: React.FC = () => {
   const hasShouldDoSearch = shouldDoSearch.trim().length > 0;
 
   const resetShouldDoForm = () => {
-    setShouldDoForm({ title: "", description: "" });
+    setShouldDoForm({ title: "", description: "", iconKey: defaultIconKey });
     setEditingShouldDoId(null);
   };
 
@@ -482,12 +520,15 @@ const PopularHabitsPage: React.FC = () => {
     setShouldDoForm({
       title: target.title,
       description: target.description ?? "",
+      iconKey: target.iconKey ?? defaultIconKey,
     });
   };
 
   const handleSubmitShouldDo = async () => {
     const title = shouldDoForm.title.trim();
     const description = shouldDoForm.description.trim();
+    const iconKey = shouldDoForm.iconKey || defaultIconKey;
+    const iconColor = iconPalette[iconKey] ?? "#6366f1";
     if (!title) {
       setShouldDoSubmitError("Add a title before posting.");
       return;
@@ -502,7 +543,7 @@ const PopularHabitsPage: React.FC = () => {
       const response = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({ title, description, iconKey, iconColor }),
       });
       const body = (await response.json().catch(() => null)) as {
         shouldDo?: ShouldDoApi;
@@ -515,13 +556,18 @@ const PopularHabitsPage: React.FC = () => {
         (body?.shouldDo ?? body ?? {}) as ShouldDoApi
       );
       setShouldDos((current) => {
+        const withIcon = {
+          ...normalized,
+          iconKey: normalized.iconKey ?? iconKey,
+          iconColor: normalized.iconColor ?? iconColor,
+        };
         const next = current.some((entry) => entry.id === normalized.id)
           ? current.map((entry) =>
               entry.id === normalized.id
-                ? { ...entry, ...normalized, isSeed: entry.isSeed }
+                ? { ...entry, ...withIcon, isSeed: entry.isSeed }
                 : entry
             )
-          : [...current, normalized];
+          : [...current, withIcon];
         return next;
       });
       resetShouldDoForm();
@@ -538,27 +584,31 @@ const PopularHabitsPage: React.FC = () => {
 
   const handleLikeShouldDo = async (id: string) => {
     const target = shouldDos.find((entry) => entry.id === id);
-    if (!target || target.likedByCurrentUser || target.isSeed) {
+    if (!target || target.isSeed) {
       return;
     }
+    const nextLiked = !target.likedByCurrentUser;
+    const delta = nextLiked ? 1 : -1;
     setLikingShouldDoId(id);
     setShouldDos((current) =>
       current.map((entry) =>
         entry.id === id
           ? {
               ...entry,
-              likedByCurrentUser: true,
-              likesCount: entry.likesCount + 1,
+              likedByCurrentUser: nextLiked,
+              likesCount: Math.max(0, entry.likesCount + delta),
             }
           : entry
       )
     );
     try {
       const response = await fetch(`/api/should-dos/${id}/like`, {
-        method: "POST",
+        method: nextLiked ? "POST" : "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Unable to like this idea.");
+        throw new Error(
+          nextLiked ? "Unable to like this idea." : "Unable to unlike this idea."
+        );
       }
     } catch (likeError) {
       setShouldDos((current) =>
@@ -566,8 +616,8 @@ const PopularHabitsPage: React.FC = () => {
           entry.id === id
             ? {
                 ...entry,
-                likedByCurrentUser: false,
-                likesCount: Math.max(0, entry.likesCount - 1),
+                likedByCurrentUser: target.likedByCurrentUser,
+                likesCount: target.likesCount,
               }
             : entry
         )
@@ -575,7 +625,9 @@ const PopularHabitsPage: React.FC = () => {
       setShouldDoError(
         likeError instanceof Error
           ? likeError.message
-          : "Unable to like this idea."
+          : nextLiked
+          ? "Unable to like this idea."
+          : "Unable to unlike this idea."
       );
     } finally {
       setLikingShouldDoId(null);
@@ -1132,9 +1184,27 @@ const PopularHabitsPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
-                          {idea.title}
-                        </h4>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="grid place-items-center w-8 h-8 rounded-full border border-gray-100 bg-muted"
+                            style={{
+                              backgroundColor:
+                                idea.iconColor ??
+                                iconPalette[idea.iconKey ?? ""] ??
+                                "#e2e8f0",
+                            }}
+                          >
+                            {(() => {
+                              const IconComp = resolveIcon(idea.iconKey);
+                              return (
+                                <IconComp className="w-4 h-4 text-slate-700" />
+                              );
+                            })()}
+                          </span>
+                          <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                            {idea.title}
+                          </h4>
+                        </div>
                         <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
                           {idea.description ?? "No extra details yet."}
                         </p>
@@ -1144,9 +1214,7 @@ const PopularHabitsPage: React.FC = () => {
                           type="button"
                           onClick={() => handleLikeShouldDo(idea.id)}
                           disabled={
-                            idea.isSeed ||
-                            idea.likedByCurrentUser ||
-                            likingShouldDoId === idea.id
+                            idea.isSeed || likingShouldDoId === idea.id
                           }
                           className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
                             idea.likedByCurrentUser
@@ -1167,7 +1235,7 @@ const PopularHabitsPage: React.FC = () => {
                             {idea.isSeed
                               ? "Pinned"
                               : idea.likedByCurrentUser
-                              ? "Liked"
+                              ? "Unlike"
                               : "Like"}
                           </span>
                         </button>
@@ -1204,6 +1272,54 @@ const PopularHabitsPage: React.FC = () => {
               </div>
 
               <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+                    Icon
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {iconOptions.map((option) => {
+                      const IconComp = resolveIcon(option.key);
+                      const selected = shouldDoForm.iconKey === option.key;
+                      const bg =
+                        iconPalette[option.key] ??
+                        iconPalette[defaultIconKey] ??
+                        "#e5e7eb";
+                      return (
+                        <button
+                          key={option.key}
+                          type="button"
+                          onClick={() =>
+                            setShouldDoForm((current) => ({
+                              ...current,
+                              iconKey: option.key,
+                            }))
+                          }
+                          className={`flex items-center gap-2 rounded-2xl border px-2 py-2 text-left transition hover:border-primary/40 ${
+                            selected
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 bg-white"
+                          }`}
+                        >
+                          <span
+                            className="grid place-items-center w-9 h-9 rounded-xl border border-white"
+                            style={{
+                              backgroundColor: selected ? bg : `${bg}20`,
+                            }}
+                          >
+                            <IconComp
+                              className={`w-4 h-4 ${
+                                selected ? "text-primary" : "text-slate-600"
+                              }`}
+                            />
+                          </span>
+                          <span className="xl:text-[11px] 2xl:text-xs font-semibold text-foreground">
+                            {option.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div className="space-y-1">
                   <label className="xl:text-xs 2xl:text-sm font-semibold">
                     Title

@@ -15,8 +15,10 @@ const formatDate = (value: string) => {
 };
 
 const Section = ({ title, description, posts }: SectionProps) => (
-  <section className="rounded-3xl border border-gray-100 bg-white shadow-inner">
-    <div className="px-6 py-5 space-y-1">
+  <section className="relative overflow-hidden rounded-3xl border border-white/70 dark:border-white/10 bg-linear-to-br from-white via-white/90 to-primary/5 dark:from-slate-900 dark:via-slate-950 dark:to-primary/15 shadow-inner">
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.08),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_45%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.08),transparent_45%)] dark:bg-[radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.2),transparent_45%)]" />
+    <div className="relative px-6 py-5 space-y-1">
       <div className="flex items-center justify-between">
         <div>
           <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
@@ -26,25 +28,25 @@ const Section = ({ title, description, posts }: SectionProps) => (
             {description}
           </h2>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-[11px] font-semibold dark:bg-primary/20 dark:text-primary-foreground">
           <TrendingUp className="w-4 h-4" />
           {posts.length} {posts.length === 1 ? "post" : "posts"}
         </div>
       </div>
       <div className="space-y-4 pt-4">
         {posts.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-6 xl:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-muted/50 dark:bg-slate-800/70 xl:px-4 xl:py-3 2xl:py-6 xl:text-xs 2xl:text-sm text-muted-foreground">
             No posts yet.
           </div>
         ) : (
-          <div className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="rounded-2xl border border-gray-100 bg-muted/40 p-4 space-y-2"
+                className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white/80 dark:bg-slate-900/70 shadow-inner p-4 space-y-2"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.2em]">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-primary/10 to-green-soft/30 dark:from-primary/25 dark:to-emerald-700/60 border border-white dark:border-white/10 px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-primary uppercase tracking-[0.2em] dark:text-white">
                     {post.category}
                   </span>
                   <span className="xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
@@ -58,22 +60,23 @@ const Section = ({ title, description, posts }: SectionProps) => (
                   {post.summary ?? post.highlight ?? "No additional details."}
                 </p>
                 <div className="flex flex-wrap items-center gap-3 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-800 px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em] shadow-sm">
                     <CalendarClock className="w-3 h-3 text-primary" />
                     {post.cadence}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-800 px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em] shadow-sm">
                     <Clock3 className="w-3 h-3 text-primary" />
                     {post.duration ?? "Flexible"}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-800 px-2 py-1 xl:text-[11px] 2xl:text-xs uppercase tracking-[0.15em] shadow-sm">
                     <HeartPulse className="w-3 h-3 text-primary" />
                     {post.commitment}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span>{post.label}</span>
-                  <span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
+                    <TrendingUp className="w-3 h-3 text-primary" />
                     {post.likesCount} {post.likesCount === 1 ? "like" : "likes"}
                   </span>
                 </div>

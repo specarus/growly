@@ -66,3 +66,58 @@ export async function POST(
     );
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { params } = context;
+  const { id: shouldDoId } = await params;
+
+  try {
+    const userId = await requireUserId();
+    const existing = await prisma.shouldDo.findUnique({
+      where: { id: shouldDoId },
+      select: { id: true },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const liked = await prisma.shouldDoLike.findFirst({
+      where: { shouldDoId, userId },
+      select: { id: true },
+    });
+    if (!liked) {
+      return NextResponse.json(
+        { error: "Not liked yet." },
+        { status: getErrorStatus("Already liked.") }
+      );
+    }
+
+    await prisma.$transaction([
+      prisma.shouldDoLike.deleteMany({
+        where: { shouldDoId, userId },
+      }),
+      prisma.shouldDo.update({
+        where: { id: shouldDoId },
+        data: {
+          likesCount: { decrement: 1 },
+        },
+      }),
+    ]);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: getErrorStatus(error.message) }
+      );
+    }
+    return NextResponse.json(
+      { error: "Unable to unlike this idea now." },
+      { status: 500 }
+    );
+  }
+}
