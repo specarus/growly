@@ -97,7 +97,7 @@ export default async function AccountPage() {
     day.setUTCDate(day.getUTCDate() - index);
     const key = formatDayKey(day);
     return (progressByDay[key] ?? 0) >= 1 ? 1 : 0;
-  }).reduce((sum, value) => sum + value, 0);
+  }).reduce<number>((sum, value) => sum + value, 0);
 
   const recoveryDays = Math.max(0, 7 - weeklyWins);
 
