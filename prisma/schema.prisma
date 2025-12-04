@@ -35,6 +35,8 @@ model User {
   routines      Routine[]
   postHabits    PostHabit[]
   postHabitLikes PostHabitLike[]
+  shouldDos     ShouldDo[]
+  shouldDoLikes ShouldDoLike[]
   streakGoalDays Int? @default(21)
 
   @@unique([email])
@@ -222,6 +224,36 @@ model PostHabitLike {
   @@index([postHabitId])
   @@index([userId])
   @@map("post_habit_like")
+}
+
+model ShouldDo {
+  id         String          @id @default(uuid())
+  title      String
+  description String?
+  likesCount Int             @default(0)
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes      ShouldDoLike[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @default(now()) @updatedAt
+
+  @@index([userId])
+  @@map("should_do")
+}
+
+model ShouldDoLike {
+  id         String    @id @default(uuid())
+  shouldDoId String
+  userId     String
+  createdAt  DateTime  @default(now())
+
+  shouldDo   ShouldDo  @relation(fields: [shouldDoId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([shouldDoId, userId])
+  @@index([shouldDoId])
+  @@index([userId])
+  @@map("should_do_like")
 }
 
 model Routine {

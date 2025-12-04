@@ -8,7 +8,9 @@ import {
   Clock3,
   Heart,
   HeartPulse,
+  Pencil,
   Search,
+  Sparkles,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -30,6 +32,7 @@ import {
 } from "./types";
 import { buildHabitPayloadFromPost } from "./import-habit-utils";
 import { popularHabits } from "./popular-habits-data";
+import { shouldDoSeeds } from "@/app/dashboard/components/should-do-seeds";
 
 const categoryStyles: Record<Category, { badge: string; dot: string }> = {
   Movement: { badge: "bg-green-soft/30 text-green-soft", dot: "bg-green-soft" },
@@ -81,6 +84,27 @@ const mergePosts = (communityPosts: PopularPost[]) => {
   return joined;
 };
 
+type ShouldDoEntry = {
+  id: string;
+  title: string;
+  description: string | null;
+  likesCount: number;
+  likedByCurrentUser: boolean;
+  ownedByCurrentUser: boolean;
+  createdAt?: string;
+  isSeed?: boolean;
+};
+
+const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
+  id: seed.id,
+  title: seed.title,
+  description: seed.description ?? null,
+  likesCount: seed.likesCount,
+  likedByCurrentUser: false,
+  ownedByCurrentUser: false,
+  isSeed: true,
+}));
+
 const PopularHabitsPage: React.FC = () => {
   const router = useRouter();
   const [posts, setPosts] = useState<PopularPost[]>(fallbackPosts);
@@ -99,6 +123,45 @@ const PopularHabitsPage: React.FC = () => {
   const [addError, setAddError] = useState<string | null>(null);
   const [importedPostIds, setImportedPostIds] = useState<Set<string>>(
     new Set()
+  );
+  const [shouldDos, setShouldDos] = useState<ShouldDoEntry[]>(seedShouldDos);
+  const [shouldDoLoading, setShouldDoLoading] = useState(true);
+  const [shouldDoError, setShouldDoError] = useState<string | null>(null);
+  const [shouldDoForm, setShouldDoForm] = useState({
+    title: "",
+    description: "",
+  });
+  const [editingShouldDoId, setEditingShouldDoId] = useState<string | null>(
+    null
+  );
+  const [savingShouldDo, setSavingShouldDo] = useState(false);
+  const [shouldDoSubmitError, setShouldDoSubmitError] = useState<string | null>(
+    null
+  );
+  const [likingShouldDoId, setLikingShouldDoId] = useState<string | null>(null);
+
+  type ShouldDoApi = {
+    id: string;
+    title?: string | null;
+    description?: string | null;
+    likesCount?: number;
+    likedByCurrentUser?: boolean;
+    ownedByCurrentUser?: boolean;
+    createdAt?: string;
+  };
+
+  const normalizeShouldDo = useCallback(
+    (entry: ShouldDoApi): ShouldDoEntry => ({
+      id: entry.id,
+      title: entry.title ?? "Untitled idea",
+      description: entry.description ?? null,
+      likesCount: entry.likesCount ?? 0,
+      likedByCurrentUser: Boolean(entry.likedByCurrentUser),
+      ownedByCurrentUser: Boolean(entry.ownedByCurrentUser),
+      createdAt: entry.createdAt,
+      isSeed: false,
+    }),
+    []
   );
 
   const handleLike = async (postId: string) => {
@@ -176,10 +239,13 @@ const PopularHabitsPage: React.FC = () => {
       })
       .then((data) => {
         if (!active) return;
+        type HabitApi = { sourcePopularPostId?: string | null };
         const ids = new Set<string>();
-        (data.habits ?? []).forEach((habit: any) => {
-          if (typeof habit.sourcePopularPostId === "string") {
-            ids.add(habit.sourcePopularPostId);
+        const habits = (data.habits ?? []) as HabitApi[];
+        habits.forEach((habit) => {
+          const sourceId = habit.sourcePopularPostId;
+          if (typeof sourceId === "string") {
+            ids.add(sourceId);
           }
         });
         setImportedPostIds(ids);
@@ -198,14 +264,20 @@ const PopularHabitsPage: React.FC = () => {
       })
       .then((data) => {
         if (!active) return;
-        const normalized = (data.posts ?? []).map((post: any) => {
-          const { user, habit, ...rest } = post;
-          return {
-            ...rest,
-            userName: user?.name ?? null,
-            habitName: habit?.name ?? null,
-          } as PopularPost;
-        });
+        type PopularPostApi = PopularPost & {
+          user?: { name?: string | null };
+          habit?: { name?: string | null };
+        };
+        const normalized = ((data.posts ?? []) as PopularPostApi[]).map(
+          (post) => {
+            const { user, habit, ...rest } = post;
+            return {
+              ...rest,
+              userName: user?.name ?? null,
+              habitName: habit?.name ?? null,
+            } as PopularPost;
+          }
+        );
         setPosts(mergePosts(normalized));
       })
       .catch((fetchError: Error) => {
@@ -218,10 +290,47 @@ const PopularHabitsPage: React.FC = () => {
         setLoading(false);
       });
 
+    fetch("/api/should-dos")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load ideas.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!active) return;
+        const normalized = ((data.shouldDos ?? []) as ShouldDoApi[]).map(
+          (entry) => normalizeShouldDo(entry)
+        );
+        const merged = (() => {
+          const seen = new Set<string>();
+          const combined: ShouldDoEntry[] = [];
+          seedShouldDos.forEach((seed) => {
+            seen.add(seed.id);
+            combined.push(seed);
+          });
+          normalized.forEach((entry) => {
+            if (seen.has(entry.id)) return;
+            combined.push({ ...entry, isSeed: false });
+          });
+          return combined;
+        })();
+        setShouldDos(merged);
+      })
+      .catch((fetchError: Error) => {
+        if (!active) return;
+        setShouldDoError(fetchError.message);
+        setShouldDos(seedShouldDos);
+      })
+      .finally(() => {
+        if (!active) return;
+        setShouldDoLoading(false);
+      });
+
     return () => {
       active = false;
     };
-  }, []);
+  }, [normalizeShouldDo]);
 
   const filteredPosts = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -336,6 +445,122 @@ const PopularHabitsPage: React.FC = () => {
   const userHasLikedSelectedPost = selectedPost
     ? likedPostIds.has(selectedPost.id)
     : false;
+  const sortedShouldDos = useMemo(
+    () => [...shouldDos].sort((a, b) => b.likesCount - a.likesCount),
+    [shouldDos]
+  );
+
+  const resetShouldDoForm = () => {
+    setShouldDoForm({ title: "", description: "" });
+    setEditingShouldDoId(null);
+  };
+
+  const handleEditShouldDo = (id: string) => {
+    const target = shouldDos.find((entry) => entry.id === id);
+    if (!target) return;
+    setEditingShouldDoId(id);
+    setShouldDoForm({
+      title: target.title,
+      description: target.description ?? "",
+    });
+  };
+
+  const handleSubmitShouldDo = async () => {
+    const title = shouldDoForm.title.trim();
+    const description = shouldDoForm.description.trim();
+    if (!title) {
+      setShouldDoSubmitError("Add a title before posting.");
+      return;
+    }
+    setShouldDoSubmitError(null);
+    setSavingShouldDo(true);
+    const endpoint = editingShouldDoId
+      ? `/api/should-dos/${editingShouldDoId}`
+      : "/api/should-dos";
+    const method = editingShouldDoId ? "PATCH" : "POST";
+    try {
+      const response = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description }),
+      });
+      const body = (await response.json().catch(() => null)) as {
+        shouldDo?: ShouldDoApi;
+        error?: string;
+      } | null;
+      if (!response.ok) {
+        throw new Error(body?.error ?? "Unable to save idea.");
+      }
+      const normalized = normalizeShouldDo(
+        (body?.shouldDo ?? body ?? {}) as ShouldDoApi
+      );
+      setShouldDos((current) => {
+        const next = current.some((entry) => entry.id === normalized.id)
+          ? current.map((entry) =>
+              entry.id === normalized.id
+                ? { ...entry, ...normalized, isSeed: entry.isSeed }
+                : entry
+            )
+          : [...current, normalized];
+        return next;
+      });
+      resetShouldDoForm();
+    } catch (submitError) {
+      setShouldDoSubmitError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to save idea."
+      );
+    } finally {
+      setSavingShouldDo(false);
+    }
+  };
+
+  const handleLikeShouldDo = async (id: string) => {
+    const target = shouldDos.find((entry) => entry.id === id);
+    if (!target || target.likedByCurrentUser || target.isSeed) {
+      return;
+    }
+    setLikingShouldDoId(id);
+    setShouldDos((current) =>
+      current.map((entry) =>
+        entry.id === id
+          ? {
+              ...entry,
+              likedByCurrentUser: true,
+              likesCount: entry.likesCount + 1,
+            }
+          : entry
+      )
+    );
+    try {
+      const response = await fetch(`/api/should-dos/${id}/like`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error("Unable to like this idea.");
+      }
+    } catch (likeError) {
+      setShouldDos((current) =>
+        current.map((entry) =>
+          entry.id === id
+            ? {
+                ...entry,
+                likedByCurrentUser: false,
+                likesCount: Math.max(0, entry.likesCount - 1),
+              }
+            : entry
+        )
+      );
+      setShouldDoError(
+        likeError instanceof Error
+          ? likeError.message
+          : "Unable to like this idea."
+      );
+    } finally {
+      setLikingShouldDoId(null);
+    }
+  };
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
@@ -837,6 +1062,201 @@ const PopularHabitsPage: React.FC = () => {
             </aside>
           </div>
         </div>
+
+        <section
+          id="should-do"
+          className="space-y-4 p-6 rounded-3xl shadow-sm border border-gray-100 bg-white/90"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                Should Do
+              </p>
+              <h3 className="xl:text-lg 2xl:text-xl font-semibold">
+                Drop wild ideas for everyone to try
+              </h3>
+              <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                Post, edit, or like community dares. Top liked ones surface on
+                the dashboard widget.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+              <Sparkles className="w-4 h-4 text-primary" />
+              {sortedShouldDos.length} ideas
+            </div>
+          </div>
+
+          <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-4 items-start">
+            <div className="space-y-3">
+              {shouldDoLoading ? (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Loading ideas...
+                </div>
+              ) : shouldDoError ? (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 xl:text-xs 2xl:text-sm font-semibold text-rose-600">
+                  {shouldDoError}
+                </div>
+              ) : sortedShouldDos.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                  No ideas yet. Be the first to post a Should Do.
+                </div>
+              ) : (
+                sortedShouldDos.map((idea) => (
+                  <article
+                    key={idea.id}
+                    className="rounded-2xl border border-gray-100 bg-white shadow-sm px-4 py-4 space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
+                        {idea.isSeed ? "Pinned" : "Community"}
+                      </div>
+                      <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                        <Heart className="w-4 h-4 text-primary" />
+                        {idea.likesCount}{" "}
+                        {idea.likesCount === 1 ? "like" : "likes"}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="xl:text-base 2xl:text-lg font-semibold text-foreground">
+                        {idea.title}
+                      </h4>
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                        {idea.description ?? "No extra details yet."}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleLikeShouldDo(idea.id)}
+                        disabled={
+                          idea.isSeed ||
+                          idea.likedByCurrentUser ||
+                          likingShouldDoId === idea.id
+                        }
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
+                          idea.likedByCurrentUser
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                        } ${
+                          idea.isSeed ? "opacity-60 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            idea.likedByCurrentUser
+                              ? "text-white"
+                              : "text-primary"
+                          }`}
+                        />
+                        <span>
+                          {idea.isSeed
+                            ? "Pinned"
+                            : idea.likedByCurrentUser
+                            ? "Liked"
+                            : "Like"}
+                        </span>
+                      </button>
+                      {idea.ownedByCurrentUser && !idea.isSeed ? (
+                        <button
+                          type="button"
+                          onClick={() => handleEditShouldDo(idea.id)}
+                          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                        >
+                          <Pencil className="w-4 h-4 text-primary" />
+                          Edit
+                        </button>
+                      ) : null}
+                    </div>
+                    {idea.createdAt ? (
+                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        Posted {formatPostedDate(idea.createdAt)}
+                      </p>
+                    ) : null}
+                  </article>
+                ))
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5 space-y-4">
+              <div className="space-y-1">
+                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                  {editingShouldDoId ? "Edit your idea" : "Post a Should Do"}
+                </p>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Keep it punchy. Crazy, hard, or weird ideas welcome.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+                    Title
+                  </label>
+                  <input
+                    value={shouldDoForm.title}
+                    onChange={(event) =>
+                      setShouldDoForm((current) => ({
+                        ...current,
+                        title: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g. Sunrise cold plunge accountability"
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+                    Details (optional)
+                  </label>
+                  <textarea
+                    value={shouldDoForm.description}
+                    onChange={(event) =>
+                      setShouldDoForm((current) => ({
+                        ...current,
+                        description: event.target.value,
+                      }))
+                    }
+                    rows={3}
+                    placeholder="What makes it fun, scary, or memorable?"
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  />
+                </div>
+              </div>
+
+              {shouldDoSubmitError ? (
+                <p className="xl:text-[11px] 2xl:text-xs text-rose-600">
+                  {shouldDoSubmitError}
+                </p>
+              ) : null}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  onClick={handleSubmitShouldDo}
+                  disabled={savingShouldDo}
+                  className="xl:h-9 2xl:h-10 xl:px-4 2xl:px-6 xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-70"
+                >
+                  {editingShouldDoId
+                    ? savingShouldDo
+                      ? "Updating..."
+                      : "Update idea"
+                    : savingShouldDo
+                    ? "Posting..."
+                    : "Post idea"}
+                </Button>
+                {editingShouldDoId ? (
+                  <button
+                    type="button"
+                    onClick={resetShouldDoForm}
+                    className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground underline-offset-4 hover:underline"
+                  >
+                    Cancel edit
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

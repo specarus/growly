@@ -19,3 +19,12 @@ export type SectionProps = {
   description: string;
   posts: DisplayPost[];
 };
+
+export type DisplayShouldDo = {
+  id: string;
+  title: string;
+  description: string | null;
+  createdAt: string;
+  likesCount: number;
+  label: string;
+};

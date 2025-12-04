@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 
 import { Prisma } from "@prisma/client";
 
-import { DisplayPost } from "./types";
+import { DisplayPost, DisplayShouldDo } from "./types";
 
 import Section from "./components/section";
+import ShouldDoSection from "./components/should-do-section";
 
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
@@ -56,6 +57,27 @@ const mapFallbackPost = (post: PopularPost, label: string): DisplayPost => ({
   label,
 });
 
+const mapShouldDo = (
+  idea: Prisma.ShouldDoGetPayload<{
+    select: {
+      id: true;
+      title: true;
+      description: true;
+      createdAt: true;
+      likesCount: true;
+      userId: true;
+    };
+  }>,
+  label: string
+): DisplayShouldDo => ({
+  id: idea.id,
+  title: idea.title,
+  description: idea.description,
+  createdAt: idea.createdAt.toISOString(),
+  likesCount: idea.likesCount,
+  label,
+});
+
 export default async function MyPostsPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -65,7 +87,13 @@ export default async function MyPostsPage() {
   }
 
   const userId = session.user.id;
-  const [ownedPosts, likedRecords, addedHabits] = await Promise.all([
+  const [
+    ownedPosts,
+    likedRecords,
+    addedHabits,
+    ownedShouldDos,
+    likedShouldDoRecords,
+  ] = await Promise.all([
     prisma.postHabit.findMany({
       where: { userId },
       include: {
@@ -85,6 +113,22 @@ export default async function MyPostsPage() {
       },
       select: { sourcePopularPostId: true },
     }),
+    prisma.shouldDo.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        likesCount: true,
+        createdAt: true,
+        userId: true,
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.shouldDoLike.findMany({
+      where: { userId },
+      select: { shouldDoId: true },
+    }),
   ]);
 
   const likedPostIds = likedRecords.map((record) => record.postHabitId);
@@ -94,6 +138,24 @@ export default async function MyPostsPage() {
         include: {
           user: { select: { name: true } },
           habit: { select: { name: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
+
+  const likedShouldDoIds = likedShouldDoRecords.map(
+    (record) => record.shouldDoId
+  );
+  const likedShouldDos = likedShouldDoIds.length
+    ? await prisma.shouldDo.findMany({
+        where: { id: { in: likedShouldDoIds } },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          likesCount: true,
+          createdAt: true,
+          userId: true,
         },
         orderBy: { createdAt: "desc" },
       })
@@ -139,6 +201,14 @@ export default async function MyPostsPage() {
     ),
   ];
 
+  const displayOwnedShouldDos = ownedShouldDos.map((idea) =>
+    mapShouldDo(idea, "Your Should Do")
+  );
+
+  const displayLikedShouldDos = likedShouldDos
+    .filter((idea) => idea.userId !== userId)
+    .map((idea) => mapShouldDo(idea, "Liked Should Do"));
+
   return (
     <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
@@ -163,6 +233,16 @@ export default async function MyPostsPage() {
             title="Added posts"
             description="Popular blueprints you added to your board"
             posts={displayAdded}
+          />
+          <ShouldDoSection
+            title="Your Should Do ideas"
+            description="Ideas you published in the Should Do board"
+            ideas={displayOwnedShouldDos}
+          />
+          <ShouldDoSection
+            title="Liked Should Dos"
+            description="Community ideas you liked"
+            ideas={displayLikedShouldDos}
           />
         </div>
       </div>
