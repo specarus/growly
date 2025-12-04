@@ -49,7 +49,8 @@ const TIMELINE_HEIGHT = HOURS_RANGE * HOUR_HEIGHT;
 const GRID_TEMPLATE_COLUMNS = "60px repeat(7, 1fr)";
 const HEADER_HEIGHT = 48;
 const FLOATING_HEIGHT = 44;
-const SCROLL_CUTOFF_HOUR = 16; // 4 PM
+const TIMELINE_PADDING = 20;
+const SCROLL_CUTOFF_HOUR = 14; // 2 PM viewport height, full day still scrolls
 const SCROLL_VIEW_HEIGHT =
   HEADER_HEIGHT +
   FLOATING_HEIGHT +
@@ -59,11 +60,11 @@ const SCROLL_VIEW_HEIGHT =
   ) /
     MINUTES_RANGE) *
     TIMELINE_HEIGHT;
+const TIMELINE_CONTAINER_HEIGHT = SCROLL_VIEW_HEIGHT + TIMELINE_PADDING * 2;
 const TIMELINE_SCROLL_HEIGHT = Math.max(
   SCROLL_VIEW_HEIGHT - HEADER_HEIGHT - FLOATING_HEIGHT,
   0
 );
-const TIMELINE_PADDING = 20;
 const EVENT_DURATION_MINUTES = 60;
 const OVERLAP_OFFSET = 8;
 
@@ -333,16 +334,9 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 shadow-inner bg-linear-to-br from-amber-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-900/40 opacity-95"
         />
-        <div
-          className="relative overflow-y-scroll"
-          style={{
-            maxHeight:
-              SCROLL_VIEW_HEIGHT + TIMELINE_PADDING * 2 + HEADER_HEIGHT,
-            scrollbarGutter: "stable",
-          }}
-        >
+        <div className="relative">
           <div
-            className="sticky top-0 z-20 grid gap-0 border-b border-gray-100 px-4 py-4 bg-white/90 backdrop-blur-sm"
+            className="grid gap-0 border-b border-gray-100 px-4 py-4 bg-white/90 backdrop-blur-sm"
             style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
           >
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground flex items-end">
@@ -394,115 +388,129 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
               );
             })}
           </div>
-
           <div
-            className="relative px-4"
+            className="relative overflow-y-auto"
             style={{
-              paddingTop: TIMELINE_PADDING,
-              paddingBottom: TIMELINE_PADDING,
+              height: TIMELINE_CONTAINER_HEIGHT,
+              maxHeight: "70vh",
+              scrollbarGutter: "stable",
             }}
           >
             <div
-              className="grid gap-0 relative"
+              className="relative px-4"
               style={{
-                gridTemplateColumns: GRID_TEMPLATE_COLUMNS,
-                height: TIMELINE_HEIGHT,
+                paddingTop: TIMELINE_PADDING,
+                paddingBottom: TIMELINE_PADDING,
               }}
             >
               <div
-                className="pointer-events-none absolute inset-0 grid gap-0"
-                style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
+                className="grid gap-0 relative"
+                style={{
+                  gridTemplateColumns: GRID_TEMPLATE_COLUMNS,
+                  height: TIMELINE_HEIGHT,
+                }}
               >
-                <div className="border-r border-dashed border-gray-200" />
-                {weekDays.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`border-r border-dashed border-gray-200 ${
-                      index === weekDays.length - 1 ? "border-r-0" : ""
-                    } `}
-                  />
-                ))}
-              </div>
-              <div className="relative text-[11px] text-muted-foreground">
-                {hourMarkers.map((marker) => (
-                  <div
-                    key={marker.hour}
-                    className="absolute left-0 right-0 flex items-center gap-1"
-                    style={{ top: marker.offset - 6 }}
-                  >
-                    <Clock3 className="h-3 w-3" />
-                    <span>{formatHour(marker.hour)}</span>
-                  </div>
-                ))}
-              </div>
-
-              {weekDays.map((day, dayIndex) => (
                 <div
-                  key={dayIndex}
-                  className={`relative h-full ${
-                    startOfDay(day.date).getTime() === today.getTime()
-                      ? "bg-primary/10"
-                      : ""
-                  }`}
-                  style={{ gridColumnStart: dayIndex + 2 }}
+                  className="pointer-events-none absolute inset-0 grid gap-0"
+                  style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
                 >
-                  <div className="absolute inset-0">
-                    {hourMarkers.map((marker) => (
-                      <div
-                        key={marker.hour}
-                        className="absolute inset-x-0 border-t border-dashed border-gray-200"
-                        style={{ top: marker.offset }}
-                      />
-                    ))}
-                  </div>
-                  <div className="relative" style={{ height: TIMELINE_HEIGHT }}>
-                    {day.timed.map((event) => {
-                      const leftOffset = 6;
-                      const rightOffset = 6;
-                      const isHoveredGroup = hoveredGroupKey === event.groupKey;
-                      const isHoveredEvent = hoveredEventId === event.habit.id;
-                      const isOtherInGroup = isHoveredGroup && !isHoveredEvent;
-                      const top =
-                        event.position + event.stackIndex * OVERLAP_OFFSET;
-                      return (
-                        <div
-                          key={event.habit.id}
-                          className={`absolute rounded-xl cursor-default border px-2 py-1 transition-opacity duration-200 ease-out ${
-                            event.colorClass
-                          } ${
-                            isOtherInGroup
-                              ? "opacity-0 pointer-events-none"
-                              : ""
-                          }`}
-                          style={{
-                            top,
-                            left: `${leftOffset}%`,
-                            right: `${rightOffset}%`,
-                          }}
-                          title={`${event.timeLabel} - ${describeHabit(
-                            event.habit
-                          )}`}
-                          onMouseEnter={() => {
-                            setHoveredGroupKey(event.groupKey);
-                            setHoveredEventId(event.habit.id);
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredGroupKey(null);
-                            setHoveredEventId(null);
-                          }}
-                        >
-                          <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
-                            {event.timeLabel}
-                          </p>
-                          <p className="xl:text-xs 2xl:text-sm font-semibold leading-tight">
-                            {event.habit.name}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <div className="border-r border-dashed border-gray-200" />
+                  {weekDays.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`border-r border-dashed border-gray-200 ${
+                        index === weekDays.length - 1 ? "border-r-0" : ""
+                      } `}
+                    />
+                  ))}
                 </div>
-              ))}
+                <div className="relative text-[11px] text-muted-foreground">
+                  {hourMarkers.map((marker) => (
+                    <div
+                      key={marker.hour}
+                      className="absolute left-0 right-0 flex items-center gap-1"
+                      style={{ top: marker.offset - 6 }}
+                    >
+                      <Clock3 className="h-3 w-3" />
+                      <span>{formatHour(marker.hour)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {weekDays.map((day, dayIndex) => (
+                  <div
+                    key={dayIndex}
+                    className={`relative h-full ${
+                      startOfDay(day.date).getTime() === today.getTime()
+                        ? "bg-primary/10"
+                        : ""
+                    }`}
+                    style={{ gridColumnStart: dayIndex + 2 }}
+                  >
+                    <div className="absolute inset-0">
+                      {hourMarkers.map((marker) => (
+                        <div
+                          key={marker.hour}
+                          className="absolute inset-x-0 border-t border-dashed border-gray-200"
+                          style={{ top: marker.offset }}
+                        />
+                      ))}
+                    </div>
+                    <div
+                      className="relative"
+                      style={{ height: TIMELINE_HEIGHT }}
+                    >
+                      {day.timed.map((event) => {
+                        const leftOffset = 6;
+                        const rightOffset = 6;
+                        const isHoveredGroup =
+                          hoveredGroupKey === event.groupKey;
+                        const isHoveredEvent =
+                          hoveredEventId === event.habit.id;
+                        const isOtherInGroup =
+                          isHoveredGroup && !isHoveredEvent;
+                        const top =
+                          event.position + event.stackIndex * OVERLAP_OFFSET;
+                        return (
+                          <div
+                            key={event.habit.id}
+                            className={`absolute rounded-xl cursor-default border px-2 py-1 transition-opacity duration-200 ease-out ${
+                              event.colorClass
+                            } ${
+                              isOtherInGroup
+                                ? "opacity-0 pointer-events-none"
+                                : ""
+                            }`}
+                            style={{
+                              top,
+                              left: `${leftOffset}%`,
+                              right: `${rightOffset}%`,
+                            }}
+                            title={`${event.timeLabel} - ${describeHabit(
+                              event.habit
+                            )}`}
+                            onMouseEnter={() => {
+                              setHoveredGroupKey(event.groupKey);
+                              setHoveredEventId(event.habit.id);
+                            }}
+                            onMouseLeave={() => {
+                              setHoveredGroupKey(null);
+                              setHoveredEventId(null);
+                            }}
+                          >
+                            <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
+                              {event.timeLabel}
+                            </p>
+                            <p className="xl:text-xs 2xl:text-sm font-semibold leading-tight">
+                              {event.habit.name}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

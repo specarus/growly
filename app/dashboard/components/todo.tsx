@@ -56,7 +56,9 @@ const CheckedBox: FC<CheckedBoxProps> = ({ checked, onClick, disabled }) => {
       disabled={disabled}
       aria-label={checked ? "Completed" : "Mark complete"}
       className={`${
-        checked ? "bg-green-soft border-green-soft" : "border-primary bg-transparent"
+        checked
+          ? "bg-green-soft border-green-soft"
+          : "border-primary bg-transparent"
       } border shrink-0 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 rounded-full grid place-items-center transition hover:scale-105 disabled:opacity-60`}
     >
       {checked ? (
@@ -76,7 +78,7 @@ const Todo: FC<TodoProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="relative flex items-start gap-3 select-none hover:opacity-80">
+    <div className="relative flex items-start gap-3 select-none hover:opacity-80 border border-muted-foreground/20 p-2 shadow-inner hover:shadow-none transition rounded-2xl">
       <Link
         href={href || "#"}
         className="flex items-start gap-3 flex-1 min-w-0 group"
@@ -94,7 +96,7 @@ const Todo: FC<TodoProps> = ({
         <div className="flex-1 min-w-0">
           <div className="relative mb-1">
             <div
-              className={`font-medium xl:text-sm 2xl:text-base truncate transition-colors ${
+              className={`font-medium xl:text-[13px] 2xl:text-[15px] truncate transition-colors ${
                 todo.completed || isCompleting
                   ? "text-muted-foreground"
                   : "text-foreground"
@@ -111,7 +113,7 @@ const Todo: FC<TodoProps> = ({
 
           <div className="flex items-center gap-2 mb-1">
             <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 xl:text-[10px] 2xl:text-[11px] font-semibold"
               style={{
                 backgroundColor: `${todo.statusColor}20`,
                 color: todo.statusColor,
@@ -124,7 +126,7 @@ const Todo: FC<TodoProps> = ({
               {todo.statusLabel}
             </span>
           </div>
-          <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
             <span className="flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
               <Clock className="w-3 h-3 shrink-0 text-slate-500" />
               {todo.time}

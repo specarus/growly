@@ -154,9 +154,9 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
             Open
           </PillButton>
         </div>
-        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600 dark:from-green-soft/70 dark:to-emerald-600">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-green-soft to-green-600 dark:from-green-soft/70 dark:to-emerald-600">
           <div className="flex items-center gap-2 mb-2">
-            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <TrendingUp className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
             </div>
             <span className="text-white/80 xl:text-xs 2xl:text-sm">
@@ -171,7 +171,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
           </p>
         </div>
 
-        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600 dark:from-slate-900 dark:to-blue-700">
+        <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600 dark:from-slate-900 dark:to-blue-700">
           <div className="flex items-center gap-2 mb-2">
             <div className="xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 sm:w-10 sm:h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <CheckCircle className="xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-white" />
