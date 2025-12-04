@@ -25,6 +25,8 @@ const mapShouldDo = (
     createdAt: Date;
     updatedAt: Date;
     user: { name: string | null } | null;
+    iconKey: string | null;
+    iconColor: string | null;
   },
   currentUserId: string,
   likedByCurrentUser: boolean
@@ -38,6 +40,8 @@ const mapShouldDo = (
   userName: entry.user?.name ?? null,
   createdAt: entry.createdAt.toISOString(),
   updatedAt: entry.updatedAt.toISOString(),
+  iconKey: entry.iconKey,
+  iconColor: entry.iconColor,
 });
 
 export async function GET(
@@ -107,6 +111,10 @@ export async function PATCH(
         ...(payload.title !== undefined ? { title: payload.title } : {}),
         ...(payload.description !== undefined
           ? { description: payload.description }
+          : {}),
+        ...(payload.iconKey !== undefined ? { iconKey: payload.iconKey } : {}),
+        ...(payload.iconColor !== undefined
+          ? { iconColor: payload.iconColor }
           : {}),
       },
       include: { user: { select: { name: true } } },

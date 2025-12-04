@@ -11,11 +11,15 @@ const toOptionalString = (value: unknown) => {
 export type ShouldDoPayload = {
   title: string;
   description: string | null;
+  iconKey: string | null;
+  iconColor: string | null;
 };
 
 export type ShouldDoUpdatePayload = {
   title?: string;
   description?: string | null;
+  iconKey?: string | null;
+  iconColor?: string | null;
 };
 
 export const parseShouldDoPayload = async (
@@ -29,7 +33,12 @@ export const parseShouldDoPayload = async (
     throw new Error("Title is required.");
   }
 
-  return { title: rawTitle, description: toOptionalString(payload.description) };
+  return {
+    title: rawTitle,
+    description: toOptionalString(payload.description),
+    iconKey: toOptionalString(payload.iconKey),
+    iconColor: toOptionalString(payload.iconColor),
+  };
 };
 
 export const parseShouldDoUpdate = async (
@@ -41,11 +50,15 @@ export const parseShouldDoUpdate = async (
   const titleValue =
     typeof payload.title === "string" ? payload.title.trim() : undefined;
   const descriptionValue = toOptionalString(payload.description);
+  const iconKeyValue = toOptionalString(payload.iconKey);
+  const iconColorValue = toOptionalString(payload.iconColor);
 
   if (
     titleValue === undefined &&
     payload.description === undefined &&
-    descriptionValue === null
+    descriptionValue === null &&
+    payload.iconKey === undefined &&
+    payload.iconColor === undefined
   ) {
     throw new Error("Nothing to update.");
   }
@@ -59,6 +72,12 @@ export const parseShouldDoUpdate = async (
   }
   if (payload.description !== undefined) {
     update.description = descriptionValue;
+  }
+  if (payload.iconKey !== undefined) {
+    update.iconKey = iconKeyValue;
+  }
+  if (payload.iconColor !== undefined) {
+    update.iconColor = iconColorValue;
   }
 
   return update;

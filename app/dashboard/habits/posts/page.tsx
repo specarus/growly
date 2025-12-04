@@ -67,6 +67,8 @@ const mapShouldDo = (
       createdAt: true;
       likesCount: true;
       userId: true;
+      iconKey: true;
+      iconColor: true;
     };
   }>,
   label: string
@@ -77,6 +79,8 @@ const mapShouldDo = (
   createdAt: idea.createdAt.toISOString(),
   likesCount: idea.likesCount,
   label,
+  iconKey: idea.iconKey,
+  iconColor: idea.iconColor,
 });
 
 const sumLikes = (items: { likesCount: number }[]) =>
@@ -151,6 +155,8 @@ export default async function MyPostsPage() {
         likesCount: true,
         createdAt: true,
         userId: true,
+        iconKey: true,
+        iconColor: true,
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -185,6 +191,8 @@ export default async function MyPostsPage() {
           likesCount: true,
           createdAt: true,
           userId: true,
+          iconKey: true,
+          iconColor: true,
         },
         orderBy: { createdAt: "desc" },
       })

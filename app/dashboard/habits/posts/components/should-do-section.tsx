@@ -1,6 +1,13 @@
-import { Heart, Sparkles, TrendingUp } from "lucide-react";
+import {
+  Heart,
+  Sparkles,
+  TrendingUp,
+  icons as lucideIcons,
+  LucideIcon,
+} from "lucide-react";
 
 import type { DisplayShouldDo } from "../types";
+import { shouldDoSeeds } from "@/app/dashboard/components/should-do-seeds";
 
 const formatDate = (value: string) => {
   try {
@@ -18,6 +25,19 @@ type Props = {
   title: string;
   description: string;
   ideas: DisplayShouldDo[];
+};
+
+const seedIconMap = new Map(
+  shouldDoSeeds.map((seed) => [
+    seed.id,
+    { iconKey: seed.icon?.name ?? null, iconColor: seed.iconColor ?? null },
+  ])
+);
+
+const resolveIcon = (key?: string | null): LucideIcon => {
+  if (!key) return Heart;
+  const IconComp = (lucideIcons as Record<string, LucideIcon>)[key];
+  return IconComp ?? Heart;
 };
 
 const ShouldDoSection = ({ title, description, ideas }: Props) => (
@@ -59,9 +79,35 @@ const ShouldDoSection = ({ title, description, ideas }: Props) => (
                     {formatDate(idea.createdAt)}
                   </span>
                 </div>
-                <h3 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
-                  {idea.title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="grid place-items-center w-8 h-8 rounded-full border border-white dark:border-white/10 bg-muted">
+                    {(() => {
+                      const seedIcon = seedIconMap.get(idea.id);
+                      const iconKey = idea.iconKey ?? seedIcon?.iconKey ?? null;
+                      const iconColor =
+                        idea.iconColor ?? seedIcon?.iconColor ?? undefined;
+                      const IconComp = resolveIcon(iconKey);
+                      const usesClass = (iconColor ?? "").includes("text-");
+                      return (
+                        <IconComp
+                          className={
+                            usesClass
+                              ? `${iconColor ?? "text-primary"} w-4 h-4`
+                              : "w-4 h-4 text-primary dark:text-white"
+                          }
+                          style={
+                            usesClass
+                              ? undefined
+                              : { color: iconColor ?? "var(--primary)" }
+                          }
+                        />
+                      );
+                    })()}
+                  </span>
+                  <h3 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                    {idea.title}
+                  </h3>
+                </div>
                 <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                   {idea.description ?? "No extra details."}
                 </p>

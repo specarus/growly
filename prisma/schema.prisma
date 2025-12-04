@@ -230,6 +230,8 @@ model ShouldDo {
   id         String          @id @default(uuid())
   title      String
   description String?
+  iconKey    String?
+  iconColor  String?
   likesCount Int             @default(0)
   userId     String
   user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)

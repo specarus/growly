@@ -28,6 +28,8 @@ const mapShouldDo = (
     createdAt: Date;
     updatedAt: Date;
     user: { name: string | null } | null;
+    iconKey: string | null;
+    iconColor: string | null;
   },
   currentUserId: string,
   likedSet: Set<string>
@@ -41,6 +43,8 @@ const mapShouldDo = (
   userName: entry.user?.name ?? null,
   createdAt: entry.createdAt.toISOString(),
   updatedAt: entry.updatedAt.toISOString(),
+  iconKey: entry.iconKey,
+  iconColor: entry.iconColor,
 });
 
 const parseLimit = (value: string | null) => {

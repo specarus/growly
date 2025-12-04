@@ -97,6 +97,7 @@ type ShouldDoEntry = {
   isSeed?: boolean;
   iconKey?: string | null;
   iconColor?: string | null;
+  icon?: LucideIcon;
 };
 
 const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
@@ -109,7 +110,18 @@ const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
   isSeed: true,
   iconKey: seed.icon?.name ?? null,
   iconColor: seed.iconColor ?? null,
+  icon: seed.icon,
 }));
+const seedIconMap = new Map(
+  shouldDoSeeds.map((seed) => [
+    seed.id,
+    {
+      iconKey: seed.icon?.name ?? null,
+      iconColor: seed.iconColor ?? null,
+      icon: seed.icon,
+    },
+  ])
+);
 
 const formatLikes = (value: number) => {
   if (value >= 1_000_000) {
@@ -165,9 +177,9 @@ const PopularHabitsPage: React.FC = () => {
   };
   const defaultIconKey = iconOptions[0]?.key ?? "Sparkles";
   const resolveIcon = (key?: string | null): LucideIcon => {
-    if (!key) return Sparkles;
+    if (!key) return Heart;
     const IconComp = (lucideIcons as Record<string, LucideIcon>)[key];
-    return IconComp ?? Sparkles;
+    return IconComp ?? Heart;
   };
 
   const [shouldDoForm, setShouldDoForm] = useState({
@@ -207,8 +219,10 @@ const PopularHabitsPage: React.FC = () => {
       ownedByCurrentUser: Boolean(entry.ownedByCurrentUser),
       createdAt: entry.createdAt,
       isSeed: false,
-      iconKey: entry.iconKey ?? null,
-      iconColor: entry.iconColor ?? null,
+      iconKey: entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey ?? null,
+      iconColor:
+        entry.iconColor ?? seedIconMap.get(entry.id)?.iconColor ?? null,
+      icon: seedIconMap.get(entry.id)?.icon,
     }),
     []
   );
@@ -607,7 +621,9 @@ const PopularHabitsPage: React.FC = () => {
       });
       if (!response.ok) {
         throw new Error(
-          nextLiked ? "Unable to like this idea." : "Unable to unlike this idea."
+          nextLiked
+            ? "Unable to like this idea."
+            : "Unable to unlike this idea."
         );
       }
     } catch (likeError) {
@@ -1168,95 +1184,105 @@ const PopularHabitsPage: React.FC = () => {
                 )
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredShouldDos.map((idea) => (
-                    <article
-                      key={idea.id}
-                      className="rounded-2xl border border-gray-100 bg-white shadow-sm px-3 py-3 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
-                          {idea.isSeed ? "Pinned" : "Community"}
+                  {filteredShouldDos.map((idea) => {
+                    const seedIcon = seedIconMap.get(idea.id);
+                    const iconKey = idea.iconKey ?? seedIcon?.iconKey ?? null;
+                    const iconColor =
+                      idea.iconColor ?? seedIcon?.iconColor ?? undefined;
+                    const IconComp = idea.icon ?? resolveIcon(iconKey);
+                    const usesClass = (iconColor ?? "").includes("text-");
+
+                    return (
+                      <article
+                        key={idea.id}
+                        className="rounded-2xl border border-gray-100 bg-white shadow-sm px-3 py-3 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
+                            {idea.isSeed ? "Pinned" : "Community"}
+                          </div>
+                          <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                            <Heart className="w-4 h-4 text-primary" />
+                            {formatLikes(idea.likesCount)}{" "}
+                            {idea.likesCount === 1 ? "like" : "likes"}
+                          </div>
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                          <Heart className="w-4 h-4 text-primary" />
-                          {formatLikes(idea.likesCount)}{" "}
-                          {idea.likesCount === 1 ? "like" : "likes"}
+
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="grid place-items-center w-8 h-8 rounded-full border border-gray-100 bg-muted">
+                              <IconComp
+                                className={
+                                  usesClass
+                                    ? `${iconColor ?? "text-primary"} w-4 h-4`
+                                    : "w-4 h-4 text-slate-700"
+                                }
+                                style={
+                                  usesClass
+                                    ? undefined
+                                    : { color: iconColor ?? "inherit" }
+                                }
+                              />
+                            </span>
+                            <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                              {idea.title}
+                            </h4>
+                          </div>
+                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
+                            {idea.description ?? "No extra details yet."}
+                          </p>
                         </div>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="grid place-items-center w-8 h-8 rounded-full border border-gray-100 bg-muted"
-                            style={{
-                              backgroundColor:
-                                idea.iconColor ??
-                                iconPalette[idea.iconKey ?? ""] ??
-                                "#e2e8f0",
-                            }}
-                          >
-                            {(() => {
-                              const IconComp = resolveIcon(idea.iconKey);
-                              return (
-                                <IconComp className="w-4 h-4 text-slate-700" />
-                              );
-                            })()}
-                          </span>
-                          <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
-                            {idea.title}
-                          </h4>
-                        </div>
-                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
-                          {idea.description ?? "No extra details yet."}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleLikeShouldDo(idea.id)}
-                          disabled={
-                            idea.isSeed || likingShouldDoId === idea.id
-                          }
-                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
-                            idea.likedByCurrentUser
-                              ? "border-primary bg-primary text-white"
-                              : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                          } ${
-                            idea.isSeed ? "opacity-60 cursor-not-allowed" : ""
-                          }`}
-                        >
-                          <Heart
-                            className={`w-4 h-4 ${
-                              idea.likedByCurrentUser
-                                ? "text-white"
-                                : "text-primary"
-                            }`}
-                          />
-                          <span>
-                            {idea.isSeed
-                              ? "Pinned"
-                              : idea.likedByCurrentUser
-                              ? "Unlike"
-                              : "Like"}
-                          </span>
-                        </button>
-                        {idea.ownedByCurrentUser && !idea.isSeed ? (
+
+                        <div className="flex flex-wrap items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => handleEditShouldDo(idea.id)}
-                            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                            onClick={() => handleLikeShouldDo(idea.id)}
+                            disabled={
+                              idea.isSeed || likingShouldDoId === idea.id
+                            }
+                            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
+                              idea.likedByCurrentUser
+                                ? "border-primary bg-primary text-white"
+                                : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                            } ${
+                              idea.isSeed ? "opacity-60 cursor-not-allowed" : ""
+                            }`}
                           >
-                            <Pencil className="w-4 h-4 text-primary" />
-                            Edit
+                            <Heart
+                              className={`w-4 h-4 ${
+                                idea.likedByCurrentUser
+                                  ? "text-white"
+                                  : "text-primary"
+                              }`}
+                            />
+                            <span>
+                              {idea.isSeed
+                                ? "Pinned"
+                                : idea.likedByCurrentUser
+                                ? "Unlike"
+                                : "Like"}
+                            </span>
                           </button>
+                          {idea.ownedByCurrentUser && !idea.isSeed ? (
+                            <button
+                              type="button"
+                              onClick={() => handleEditShouldDo(idea.id)}
+                              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                            >
+                              <Pencil className="w-4 h-4 text-primary" />
+                              Edit
+                            </button>
+                          ) : null}
+                        </div>
+
+                        {idea.createdAt ? (
+                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                            Posted {formatPostedDate(idea.createdAt)}
+                          </p>
                         ) : null}
-                      </div>
-                      {idea.createdAt ? (
-                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                          Posted {formatPostedDate(idea.createdAt)}
-                        </p>
-                      ) : null}
-                    </article>
-                  ))}
+                      </article>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1296,21 +1322,15 @@ const PopularHabitsPage: React.FC = () => {
                           }
                           className={`flex items-center gap-2 rounded-2xl border px-2 py-2 text-left transition hover:border-primary/40 ${
                             selected
-                              ? "border-primary bg-primary/5 shadow-sm"
+                              ? "border-primary shadow-sm"
                               : "border-gray-200 bg-white"
                           }`}
                         >
                           <span
                             className="grid place-items-center w-9 h-9 rounded-xl border border-white"
-                            style={{
-                              backgroundColor: selected ? bg : `${bg}20`,
-                            }}
+                            style={{ backgroundColor: `${bg}20` }}
                           >
-                            <IconComp
-                              className={`w-4 h-4 ${
-                                selected ? "text-primary" : "text-slate-600"
-                              }`}
-                            />
+                            <IconComp className="w-4 h-4 text-slate-700" />
                           </span>
                           <span className="xl:text-[11px] 2xl:text-xs font-semibold text-foreground">
                             {option.label}

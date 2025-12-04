@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, Heart, LucideIcon, Sparkles, Users } from "lucide-react";
+import {
+  Heart,
+  LucideIcon,
+  Sparkles,
+  Users,
+  icons as lucideIcons,
+} from "lucide-react";
 
 import PillButton from "@/app/components/ui/pill-button";
 import { shouldDoSeeds } from "./should-do-seeds";
@@ -14,11 +20,23 @@ type ShouldDoItem = {
   likedByCurrentUser: boolean;
   ownedByCurrentUser: boolean;
   icon?: LucideIcon;
+  iconKey?: string | null;
   iconColor?: string;
   isSeed?: boolean;
 };
 
 type ShouldDoWidgetProps = Record<string, never>;
+
+const seedIconMap = new Map(
+  shouldDoSeeds.map((seed) => [
+    seed.id,
+    {
+      iconKey: seed.icon?.name ?? null,
+      iconColor: seed.iconColor ?? null,
+      icon: seed.icon,
+    },
+  ])
+);
 
 const mapSeeds = (): ShouldDoItem[] =>
   shouldDoSeeds.map((entry) => ({
@@ -29,6 +47,7 @@ const mapSeeds = (): ShouldDoItem[] =>
     likedByCurrentUser: false,
     ownedByCurrentUser: false,
     icon: entry.icon,
+    iconKey: entry.icon?.name ?? null,
     iconColor: entry.iconColor,
     isSeed: true,
   }));
@@ -41,6 +60,12 @@ const formatLikes = (value: number) => {
     return `${(value / 1000).toFixed(1).replace(/\\.0$/, "")}k love this`;
   }
   return `${value} love this`;
+};
+
+const resolveIcon = (key?: string | null): LucideIcon => {
+  if (!key) return Heart;
+  const IconComp = (lucideIcons as Record<string, LucideIcon>)[key];
+  return IconComp ?? Heart;
 };
 
 const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
@@ -56,6 +81,8 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
     likesCount?: number;
     likedByCurrentUser?: boolean;
     ownedByCurrentUser?: boolean;
+    iconKey?: string | null;
+    iconColor?: string | null;
   };
 
   useEffect(() => {
@@ -81,6 +108,12 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
             likesCount: entry.likesCount ?? 0,
             likedByCurrentUser: Boolean(entry.likedByCurrentUser),
             ownedByCurrentUser: Boolean(entry.ownedByCurrentUser),
+            iconKey: entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey ?? null,
+            icon:
+              seedIconMap.get(entry.id)?.icon ??
+              resolveIcon(entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey),
+            iconColor:
+              entry.iconColor ?? seedIconMap.get(entry.id)?.iconColor ?? undefined,
           }))
           .filter((entry) => Boolean(entry.id));
 
@@ -186,6 +219,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
             const Icon = idea.icon ?? Sparkles;
             const isLiked = idea.likedByCurrentUser;
             const isSeed = idea.isSeed;
+            const usesClass = (idea.iconColor ?? "").includes("text-");
             return (
               <div
                 key={idea.id}
@@ -193,7 +227,18 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="xl:text-2xl 2xl:text-3xl shrink-0">
-                    <Icon className={idea.iconColor ?? "text-primary"} />
+                    <Icon
+                      className={
+                        usesClass
+                          ? `${idea.iconColor ?? "text-primary"} w-5 h-5`
+                          : "w-5 h-5"
+                      }
+                      style={
+                        usesClass
+                          ? undefined
+                          : { color: idea.iconColor ?? "var(--primary)" }
+                      }
+                    />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="font-medium xl:mb-0.5 2xl:mb-1 xl:text-sm 2xl:text-base truncate">

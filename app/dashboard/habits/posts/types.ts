@@ -27,4 +27,6 @@ export type DisplayShouldDo = {
   createdAt: string;
   likesCount: number;
   label: string;
+  iconKey?: string | null;
+  iconColor?: string | null;
 };
