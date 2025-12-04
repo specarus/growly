@@ -388,7 +388,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
 
         <div className="grid gap-5">
           <div className="grid xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-sm h-full">
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -662,53 +662,31 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-10 2xl:mt-12 max-w-6xl rounded-3xl border border-gray-100 bg-white shadow-sm">
-                  <div className="xl:p-5 2xl:p-6">
-                    <HabitsWeekCalendar
-                      habits={localHabits}
-                      progressByDay={progressMap}
-                    />
-                  </div>
-                </div>
-
-                <div className="xl:mt-10 2xl:mt-12 max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
-                  <div className="xl:p-5 2xl:p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                          Calendar
-                        </p>
-                        <h2 className="xl:text-base 2xl:text-lg font-semibold">
-                          Habit rhythm
-                        </h2>
-                        <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
-                          Daily completion percentages help you spot where
-                          momentum is building.
-                        </p>
-                      </div>
-                    </div>
-                    <HabitsCalendar progressByDay={progressMap} />
-                  </div>
+                <div className="xl:mt-8 2xl:mt-10">
+                  <HabitsWeekCalendar
+                    habits={localHabits}
+                    progressByDay={progressMap}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
-              <GradientCircle
-                size={210}
-                position={{ bottom: "-50px", right: "-30px" }}
-                color="rgba(240,144,41,0.35)"
-                fadeColor="rgba(240,144,41,0)"
-                className="scale-[1.2]"
-              />
-              <GradientCircle
-                size={210}
-                position={{ top: "-50px", left: "-30px" }}
-                color="rgba(240,144,41,0.35)"
-                fadeColor="rgba(240,144,41,0)"
-                className="scale-[1.5]"
-              />
-              <div className="px-6 pt-5 pb-6 space-y-4">
+            <div className="h-fit flex flex-col xl:gap-6">
+              <div className="relative px-6 pt-5 pb-6 space-y-4 rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+                <GradientCircle
+                  size={210}
+                  position={{ bottom: "-50px", right: "-30px" }}
+                  color="rgba(240,144,41,0.35)"
+                  fadeColor="rgba(240,144,41,0)"
+                  className="scale-[1.2]"
+                />
+                <GradientCircle
+                  size={210}
+                  position={{ top: "-50px", left: "-30px" }}
+                  color="rgba(240,144,41,0.35)"
+                  fadeColor="rgba(240,144,41,0)"
+                  className="scale-[1.5]"
+                />
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -755,6 +733,25 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+              <div className="max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
+                <div className="xl:p-5 2xl:p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                        Calendar
+                      </p>
+                      <h2 className="xl:text-base 2xl:text-lg font-semibold">
+                        Habit rhythm
+                      </h2>
+                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        Daily completion percentages help you spot where
+                        momentum is building.
+                      </p>
+                    </div>
+                  </div>
+                  <HabitsCalendar progressByDay={progressMap} />
                 </div>
               </div>
             </div>

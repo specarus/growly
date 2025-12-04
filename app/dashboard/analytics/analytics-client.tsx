@@ -89,12 +89,12 @@ const FlipCard: React.FC<{
 
   return (
     <div
-      className="group relative h-full min-h-[270px] cursor-pointer"
+      className="group relative h-full min-h-[270px] cursor-default"
       style={{ perspective: 1200 }}
       onClick={() => setFlipped((prev) => !prev)}
     >
       <div
-        className="relative h-full w-full transition-transform duration-700 group-hover:scale-[1.01]"
+        className="relative h-full w-full transition-transform duration-700"
         style={{
           transformStyle: "preserve-3d",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",

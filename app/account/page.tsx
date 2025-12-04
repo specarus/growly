@@ -10,18 +10,10 @@ import { CalendarDays, Flame, Goal, ShieldCheck } from "lucide-react";
 import PageHeading from "@/app/components/page-heading";
 import { prisma } from "@/lib/prisma";
 import StreakGoalForm from "./components/streak-goal-form";
+import { buildHabitAnalytics } from "@/lib/habit-analytics";
+import { formatDayKey } from "@/lib/habit-progress";
 
 export const dynamic = "force-dynamic";
-
-const stats = [
-  { label: "Current streak", value: "12 days", tone: "text-primary" },
-  { label: "Weekly wins", value: "7 / 7", tone: "text-green-soft" },
-  {
-    label: "Recovery days",
-    value: "2 scheduled",
-    tone: "text-yellow-soft-foreground",
-  },
-];
 
 const focusAreas = [
   {
@@ -68,11 +60,64 @@ export default async function AccountPage() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  const userRecord = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { streakGoalDays: true },
-  });
+  const [userRecord, habits, progressEntries] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { streakGoalDays: true },
+    }),
+    prisma.habit.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.habitDailyProgress.findMany({
+      where: {
+        habit: { userId: session.user.id },
+      },
+      select: {
+        habitId: true,
+        date: true,
+        progress: true,
+      },
+    }),
+  ]);
   const streakGoal = userRecord?.streakGoalDays ?? 21;
+
+  const { habitsWithStats, progressByDay } = buildHabitAnalytics(
+    habits,
+    progressEntries
+  );
+
+  const bestStreak = habitsWithStats.reduce(
+    (max, habit) => Math.max(max, habit.streak ?? 0),
+    0
+  );
+
+  const weeklyWins = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date();
+    day.setUTCDate(day.getUTCDate() - index);
+    const key = formatDayKey(day);
+    return (progressByDay[key] ?? 0) >= 1 ? 1 : 0;
+  }).reduce((sum, value) => sum + value, 0);
+
+  const recoveryDays = Math.max(0, 7 - weeklyWins);
+
+  const stats = [
+    {
+      label: "Current streak",
+      value: `${bestStreak} days`,
+      tone: bestStreak > 0 ? "text-primary" : "text-muted-foreground",
+    },
+    {
+      label: "Weekly wins",
+      value: `${weeklyWins} / 7`,
+      tone: weeklyWins >= 5 ? "text-green-soft" : "text-yellow-soft-foreground",
+    },
+    {
+      label: "Recovery days",
+      value: `${recoveryDays} open`,
+      tone: "text-yellow-soft-foreground",
+    },
+  ];
 
   return (
     <main className="relative min-h-screen bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 pb-16 pt-28">

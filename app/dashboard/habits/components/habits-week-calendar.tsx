@@ -249,41 +249,43 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
+          <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.24em] text-primary">
             Weekly view
           </p>
           <div className="flex items-center gap-2">
             <CalendarClock className="h-4 w-4 text-primary" />
-            <h3 className="text-base font-semibold text-foreground md:text-lg">
+            <h3 className="xl:text-base 2xl:text-lg font-semibold text-foreground">
               7-day calendar
             </h3>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
             Habits placed by preferred time, similar to a Google Calendar week.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">
+        <div className="flex  items-center gap-10">
+          <span className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
             {weekRangeLabel}
           </span>
-          <Button
-            onClick={() => setWeekStart((prev) => addDays(prev, -7))}
-            className="bg-white text-muted-foreground hover:bg-primary/90 hover:text-white"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            onClick={() => setWeekStart(startOfWeek(new Date()))}
-            className="bg-white text-foreground hover:bg-primary hover:text-white"
-          >
-            Today
-          </Button>
-          <Button
-            onClick={() => setWeekStart((prev) => addDays(prev, 7))}
-            className="bg-white text-muted-foreground hover:bg-primary/90 hover:text-white"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="flex flex-col items-center gap-2">
+            <Button
+              onClick={() => setWeekStart((prev) => addDays(prev, -7))}
+              className="bg-white text-muted-foreground hover:bg-primary/90 hover:text-white py-1"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={() => setWeekStart(startOfWeek(new Date()))}
+              className="bg-white text-foreground hover:bg-primary hover:text-white xl:text-sm 2xl:text-[15px] px-3 py-1"
+            >
+              Today
+            </Button>
+            <Button
+              onClick={() => setWeekStart((prev) => addDays(prev, 7))}
+              className="bg-white text-muted-foreground hover:bg-primary/90 hover:text-white py-1"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -307,9 +309,13 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
           ))}
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-gray-100 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15 shadow-inner">
+        <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-inner">
           <div
-            className="grid grid-cols-7 divide-x divide-gray-100"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-linear-to-br from-amber-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-900/40 opacity-95"
+          />
+          <div
+            className="grid grid-cols-7 divide-x divide-gray-200"
             style={{ height: "100%" }}
           >
             {weekDays.map((day, dayIndex) => {
@@ -318,7 +324,6 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                 month: "short",
                 day: "numeric",
               });
-              const progressPercent = Math.round(day.progress * 100);
               const isToday =
                 startOfDay(day.date).getTime() === today.getTime();
 
@@ -338,32 +343,16 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex flex-col">
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <span className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                           {day.date.toLocaleDateString("en-US", {
                             weekday: "short",
                           })}
                         </span>
-                        <span className="text-sm font-semibold text-foreground">
+                        <span className="xl:text-xs 2xl:text-sm font-semibold text-foreground">
                           {day.date.toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                           })}
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        {isToday ? (
-                          <span className="rounded-full bg-primary px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white shadow-sm">
-                            Today
-                          </span>
-                        ) : null}
-                        <span
-                          className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${
-                            isToday
-                              ? "border-primary/40 bg-white/70 text-primary"
-                              : "border-primary/20 bg-primary/5 text-primary"
-                          }`}
-                        >
-                          {progressPercent}% done
                         </span>
                       </div>
                     </div>
@@ -377,7 +366,7 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                       {day.floating.map((habit) => (
                         <span
                           key={habit.id}
-                          className="rounded-full border border-muted bg-white/70 px-2 py-1 text-[11px] font-semibold text-foreground shadow-sm"
+                          className="rounded-full border border-muted bg-white/70 px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground shadow-sm"
                           title={describeHabit(habit)}
                         >
                           {habit.name}
@@ -397,12 +386,10 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                       {hourMarkers.map((marker) => (
                         <div
                           key={marker.hour}
-                          className="absolute inset-x-0 border-t border-dashed border-muted/30"
+                          className="absolute inset-x-0 border-t border-dashed border-gray-200"
                           style={{
                             top:
-                              marker.position -
-                              HEADER_HEIGHT -
-                              FLOATING_HEIGHT,
+                              marker.position - HEADER_HEIGHT - FLOATING_HEIGHT,
                           }}
                         />
                       ))}
@@ -415,9 +402,12 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                         return (
                           <div
                             key={event.habit.id}
-                            className={`absolute rounded-xl border px-3 py-2 shadow-md shadow-primary/10 transition hover:translate-y-[-1px] ${event.colorClass}`}
+                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition hover:-translate-y-px ${event.colorClass}`}
                             style={{
-                              top: event.position - HEADER_HEIGHT - FLOATING_HEIGHT,
+                              top:
+                                event.position -
+                                HEADER_HEIGHT -
+                                FLOATING_HEIGHT,
                               height: event.height,
                               left: `${leftOffset}%`,
                               right: `${rightOffset}%`,
@@ -426,14 +416,11 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                               event.habit
                             )}`}
                           >
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
+                            <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
                               {event.timeLabel}
                             </p>
-                            <p className="text-sm font-semibold leading-tight">
+                            <p className="xl:text-xs 2xl:text-sm font-semibold leading-tight">
                               {event.habit.name}
-                            </p>
-                            <p className="text-[11px] opacity-80">
-                              {describeHabit(event.habit)}
                             </p>
                           </div>
                         );

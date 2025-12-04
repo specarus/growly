@@ -92,7 +92,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
   return (
     <div className="xl:space-y-3 2xl:space-y-4">
       <div className="flex items-center justify-between bg-white pl-6 pr-2 py-2 rounded-full shadow-inner">
-        <h3 className="font-semibold xl:text-base 2xl:text-lg text-foreground">
+        <h3 className="font-semibold xl:text-sm 2xl:text-base text-foreground">
           {getMonthName(currentMonth)}, {currentYear}
         </h3>
         <div className="flex gap-2">
@@ -111,7 +111,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="grid grid-cols-7 xl:gap-1 2xl:gap-2 xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {dayNames.map((dayName) => (
           <div key={dayName} className="text-center">
             {dayName}
@@ -138,7 +138,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
               return (
                 <div
                   key={`day-${weekIndex}-${dayValue}`}
-                  className={`relative shadow-inner shadow-primary/20 xl:w-20 2xl:w-24 xl:h-20 2xl:h-24 rounded-full grid place-items-center transition ${
+                  className={`relative shadow-inner shadow-primary/20 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 rounded-full grid place-items-center transition ${
                     progress >= 1 ? "bg-primary text-white" : "bg-transparent"
                   } ${isToday ? "xl:ring-3 2xl:ring-4 ring-primary/40" : ""}`}
                   title={`${getMonthName(
@@ -173,12 +173,12 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
                       </svg>
                     )}
                   </div>
-                  <div className="relative z-10 flex flex-col items-center justify-center text-center text-[10px]">
-                    <span className="xl:text-lg 2xl:text-xl font-semibold leading-none">
+                  <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                    <span className="xl:text-sm 2xl:text-base font-semibold leading-none">
                       {dayValue}
                     </span>
                     <span
-                      className={`xl:text-[11px] 2xl:text-xs text-white bg-primary/10 shadow-sm px-2 xl:py-0.5 2xl:py-1 rounded-full mt-1 ${
+                      className={`xl:text-[9px] 2xl:text-[11px] text-white rounded-full 2xl:mt-1 ${
                         progress >= 1
                           ? "text-white/80"
                           : "text-muted-foreground"
@@ -194,7 +194,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
         ))}
       </div>
 
-      <div className="text-xs text-muted-foreground xl:mt-6 2xl:mt-8">
+      <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground xl:mt-6 2xl:mt-8">
         Today {Math.round(todayProgress * 100)}% of habits completed
       </div>
     </div>
