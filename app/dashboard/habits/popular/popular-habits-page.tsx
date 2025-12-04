@@ -105,6 +105,16 @@ const seedShouldDos: ShouldDoEntry[] = shouldDoSeeds.map((seed) => ({
   isSeed: true,
 }));
 
+const formatLikes = (value: number) => {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1).replace(/\\.0$/, "")}m`;
+  }
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1).replace(/\\.0$/, "")}k`;
+  }
+  return `${value}`;
+};
+
 const PopularHabitsPage: React.FC = () => {
   const router = useRouter();
   const [posts, setPosts] = useState<PopularPost[]>(fallbackPosts);
@@ -748,7 +758,7 @@ const PopularHabitsPage: React.FC = () => {
                               {post.category}
                             </div>
                             <span className="text-[11px] font-semibold text-muted-foreground">
-                              {post.likesCount} {likeLabel}
+                              {formatLikes(post.likesCount)} {likeLabel}
                             </span>
                           </div>
                           <div className="mt-2 space-y-1">
@@ -1112,7 +1122,7 @@ const PopularHabitsPage: React.FC = () => {
                       </div>
                       <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                         <Heart className="w-4 h-4 text-primary" />
-                        {idea.likesCount}{" "}
+                        {formatLikes(idea.likesCount)}{" "}
                         {idea.likesCount === 1 ? "like" : "likes"}
                       </div>
                     </div>
