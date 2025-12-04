@@ -28,27 +28,38 @@ export default async function AnalyticsPage() {
   });
   const streakGoalDays = userRecord?.streakGoalDays ?? null;
 
-  const habits = await prisma.habit.findMany({
-    where: {
-      userId: session.user.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  const progressEntries = await prisma.habitDailyProgress.findMany({
-    where: {
-      habit: {
+  const [habits, progressEntries, routines] = await Promise.all([
+    prisma.habit.findMany({
+      where: {
         userId: session.user.id,
       },
-    },
-    select: {
-      habitId: true,
-      date: true,
-      progress: true,
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.habitDailyProgress.findMany({
+      where: {
+        habit: {
+          userId: session.user.id,
+        },
+      },
+      select: {
+        habitId: true,
+        date: true,
+        progress: true,
+      },
+    }),
+    prisma.routine.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "asc" },
+      include: {
+        habits: {
+          include: { habit: true },
+          orderBy: { position: "asc" },
+        },
+      },
+    }),
+  ]);
 
   const { habitsWithStats, progressByDay, weekdayPerformance, lookbackDays } =
     buildHabitAnalytics(habits, progressEntries, HABIT_ANALYTICS_LOOKBACK_DAYS);
@@ -143,6 +154,36 @@ export default async function AnalyticsPage() {
     description: habit.description,
   }));
 
+  const habitStatsById = new Map(
+    habitsWithStats.map((habit) => [habit.id, habit])
+  );
+
+  const routinePerformance = routines
+    .map((routine) => {
+      const routineHabits = routine.habits
+        .map((entry) => habitStatsById.get(entry.habitId))
+        .filter(Boolean);
+
+      const completion =
+        routineHabits.length > 0
+          ? Math.round(
+              routineHabits.reduce(
+                (sum, habit) => sum + (habit?.averageCompletion ?? 0),
+                0
+              ) / routineHabits.length
+            )
+          : 0;
+
+      return {
+        id: routine.id,
+        name: routine.name,
+        anchor: routine.anchor,
+        habitCount: routineHabits.length,
+        completion,
+      };
+    })
+    .filter((routine) => routine.habitCount > 0);
+
   return (
     <AnalyticsClient
       summary={{
@@ -161,6 +202,7 @@ export default async function AnalyticsPage() {
       weekdayPerformance={weekdayPerformance}
       habits={habitsPayload}
       todoStatusCounts={todoStatusCounts}
+      routinePerformance={routinePerformance}
     />
   );
 }

@@ -37,7 +37,9 @@ const buildCalendarFocus = (habit: PrismaHabit) => {
     return habit.reminder;
   }
   if (habit.goalUnit) {
-    return `${habit.goalAmount.toFixed(1).replace(/\.0$/, "")} ${habit.goalUnit}`;
+    return `${habit.goalAmount.toFixed(1).replace(/\.0$/, "")} ${
+      habit.goalUnit
+    }`;
   }
   return habit.cadence;
 };

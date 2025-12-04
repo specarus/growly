@@ -409,367 +409,370 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
     <>
       {guardDialog}
       <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15">
-      <PageGradient />
-      <div className="relative z-10 xl:px-8 2xl:px-28 space-y-8">
-        <PageHeading
-          badgeLabel="Create a post"
-          title="Share a habit you love"
-          titleClassName="xl:text-xl 2xl:text-2xl md:text-3xl"
-          description="Pick one of your habits, fill in the missing storytelling bits, and share the playbook with the crew."
-          actions={
-            <Link
-              href="/dashboard/habits/popular"
-              className="xl:text-xs 2xl:text-sm font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              Back to popular habits
-            </Link>
-          }
-        />
-
-        <div className="xl:max-w-5xl 2xl:max-w-6xl">
-          {habits.length === 0 ? (
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm px-6 py-8 space-y-3 text-sm text-muted-foreground">
-              <p>
-                You'll need to create a habit before you can publish a post.
-              </p>
+        <PageGradient />
+        <div className="relative z-10 xl:px-8 2xl:px-28 space-y-8">
+          <PageHeading
+            badgeLabel="Create a post"
+            title="Share a habit you love"
+            titleClassName="xl:text-xl 2xl:text-2xl md:text-3xl"
+            description="Pick one of your habits, fill in the missing storytelling bits, and share the playbook with the crew."
+            actions={
               <Link
-                href="/dashboard/habits/create"
-                className="font-semibold text-primary hover:underline"
+                href="/dashboard/habits/popular"
+                className="xl:text-xs 2xl:text-sm font-semibold text-primary underline-offset-4 hover:underline"
               >
-                Create a habit first
+                Back to popular habits
               </Link>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="rounded-3xl border border-gray-100 bg-white shadow-sm px-6 py-6 space-y-6">
-                <DropdownField
-                  label="Habit to share"
-                  options={habits.map((habit) => ({
-                    value: habit.id,
-                    label: habit.name,
-                  }))}
-                  displayValue={
-                    selectedHabit?.name ?? habits[0]?.name ?? "Choose a habit"
-                  }
-                  value={form.habitId}
-                  optionsId={habitDropdownOptionsId}
-                  onSelect={(value) => {
-                    markDirty();
-                    setForm((current) => ({ ...current, habitId: value }));
-                  }}
-                />
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Description</label>
-                  {selectedHabit?.description ? (
-                    <p className="text-xs text-muted-foreground">
-                      {selectedHabit.description}
-                    </p>
-                  ) : null}
-                </div>
+            }
+          />
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Post title</label>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      value={form.title}
-                      onChange={handleChange("title")}
-                      placeholder="e.g. Sunrise energy loop"
-                      className={inputControlClassName}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">
-                    Why it matters
-                  </label>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <textarea
-                      value={form.summary}
-                      onChange={handleChange("summary")}
-                      rows={3}
-                      placeholder="Share what keeps you showing up."
-                      className={textareaControlClassName}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Highlight</label>
-                    <div className={dropdownSelectWrapperClassName}>
-                      <input
-                        value={form.highlight}
-                        onChange={handleChange("highlight")}
-                        placeholder="What gets your teammates curious?"
-                        className={inputControlClassName}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Anchor</label>
-                    <div className={dropdownSelectWrapperClassName}>
-                      <input
-                        value={form.anchor}
-                        onChange={handleChange("anchor")}
-                        placeholder="Pair it with a trigger, e.g. after lunch"
-                        className={inputControlClassName}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Duration</label>
-                    <div className={dropdownSelectWrapperClassName}>
-                      <input
-                        value={form.duration}
-                        onChange={handleChange("duration")}
-                        placeholder="e.g. 12 minutes"
-                        className={inputControlClassName}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Cadence</label>
-                    <div className={dropdownSelectWrapperClassName}>
-                      <input
-                        value={form.cadence}
-                        placeholder="Daily / Weekly"
-                        className={`${inputControlClassName} cursor-not-allowed`}
-                        readOnly
-                        aria-readonly="true"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Pulled from the selected habit and locked in for this
-                      post.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                  <DropdownField
-                    label="Category"
-                    options={categories.map((category) => ({
-                      value: category,
-                      label: category,
-                    }))}
-                    value={form.category}
-                    optionsId={categoryDropdownOptionsId}
-                    onSelect={(value) => {
-                      markDirty();
-                      setForm((current) => ({
-                        ...current,
-                        category: value as Category,
-                      }));
-                    }}
-                  />
-                  <DropdownField
-                    label="Time window"
-                    options={timeWindowOptions}
-                    value={form.timeWindow}
-                    optionsId={timeWindowDropdownOptionsId}
-                    onSelect={(value) => {
-                      markDirty();
-                      setForm((current) => ({
-                        ...current,
-                        timeWindow: value as TimeWindow,
-                      }));
-                    }}
-                  />
-                  <DropdownField
-                    label="Commitment"
-                    helper={commitmentCopy[form.commitment]}
-                    options={commitmentOptions.map((option) => ({
-                      value: option,
-                      label: option,
-                    }))}
-                    displayValue={form.commitment}
-                    value={form.commitment}
-                    optionsId={commitmentDropdownOptionsId}
-                    onSelect={(value) => {
-                      markDirty();
-                      setForm((current) => ({
-                        ...current,
-                        commitment: value as Commitment,
-                      }));
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Why it works</label>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      value={benefitInput}
-                      onChange={(event) =>
-                        handleListInputChange(
-                          event,
-                          setBenefitInput,
-                          "benefits"
-                        )
-                      }
-                      onKeyDown={(event) =>
-                        handleListInputKeyDown(
-                          event,
-                          benefitInput,
-                          setBenefitInput,
-                          "benefits"
-                        )
-                      }
-                      placeholder="Type a benefit and press Enter"
-                      className={inputControlClassName}
-                    />
-                    {form.benefits.length > 0 && (
-                      <div className="flex flex-wrap gap-2 m-2">
-                        {form.benefits.map((benefit) => (
-                          <span
-                            key={benefit}
-                            className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
-                          >
-                            {benefit}
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveListEntry("benefits", benefit)
-                              }
-                              className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
-                              aria-label={`Remove benefit ${benefit}`}
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    List each reason on its own line.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Steps</label>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      value={stepInput}
-                      onChange={(event) =>
-                        handleListInputChange(event, setStepInput, "steps")
-                      }
-                      onKeyDown={(event) =>
-                        handleListInputKeyDown(
-                          event,
-                          stepInput,
-                          setStepInput,
-                          "steps"
-                        )
-                      }
-                      placeholder="Type a step and press Enter"
-                      className={inputControlClassName}
-                    />
-                    {form.steps.length > 0 && (
-                      <div className="flex flex-wrap gap-2 m-2">
-                        {form.steps.map((step) => (
-                          <span
-                            key={step}
-                            className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
-                          >
-                            {step}
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveListEntry("steps", step)
-                              }
-                              className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
-                              aria-label={`Remove step ${step}`}
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Short, actionable steps keep it repeatable.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Guardrails</label>
-                  <div className={dropdownSelectWrapperClassName}>
-                    <input
-                      value={guardrailInput}
-                      onChange={(event) =>
-                        handleListInputChange(
-                          event,
-                          setGuardrailInput,
-                          "guardrails"
-                        )
-                      }
-                      onKeyDown={(event) =>
-                        handleListInputKeyDown(
-                          event,
-                          guardrailInput,
-                          setGuardrailInput,
-                          "guardrails"
-                        )
-                      }
-                      placeholder="Type a guardrail and press Enter"
-                      className={inputControlClassName}
-                    />
-                    {form.guardrails.length > 0 && (
-                      <div className="flex flex-wrap gap-2 m-2">
-                        {form.guardrails.map((guardrail) => (
-                          <span
-                            key={guardrail}
-                            className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
-                          >
-                            {guardrail}
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveListEntry("guardrails", guardrail)
-                              }
-                              className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
-                              aria-label={`Remove guardrail ${guardrail}`}
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Share hard boundaries or conditions that protect the habit.
-                  </p>
-                </div>
-
-                {serverError ? (
-                  <div className="rounded-2xl border border-rose-400 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600">
-                    {serverError}
-                  </div>
-                ) : null}
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !form.habitId}
-                    className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
-                  >
-                    {isSubmitting ? "Sharing post..." : "Share this habit"}
-                  </Button>
-                </div>
+          <div className="xl:max-w-5xl 2xl:max-w-6xl">
+            {habits.length === 0 ? (
+              <div className="rounded-3xl border border-gray-100 bg-white shadow-inner px-6 py-8 space-y-3 text-sm text-muted-foreground">
+                <p>
+                  You'll need to create a habit before you can publish a post.
+                </p>
+                <Link
+                  href="/dashboard/habits/create"
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Create a habit first
+                </Link>
               </div>
-            </form>
-          )}
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="rounded-3xl border border-gray-100 bg-white shadow-inner px-6 py-6 space-y-6">
+                  <DropdownField
+                    label="Habit to share"
+                    options={habits.map((habit) => ({
+                      value: habit.id,
+                      label: habit.name,
+                    }))}
+                    displayValue={
+                      selectedHabit?.name ?? habits[0]?.name ?? "Choose a habit"
+                    }
+                    value={form.habitId}
+                    optionsId={habitDropdownOptionsId}
+                    onSelect={(value) => {
+                      markDirty();
+                      setForm((current) => ({ ...current, habitId: value }));
+                    }}
+                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Description</label>
+                    {selectedHabit?.description ? (
+                      <p className="text-xs text-muted-foreground">
+                        {selectedHabit.description}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Post title</label>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={form.title}
+                        onChange={handleChange("title")}
+                        placeholder="e.g. Sunrise energy loop"
+                        className={inputControlClassName}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">
+                      Why it matters
+                    </label>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <textarea
+                        value={form.summary}
+                        onChange={handleChange("summary")}
+                        rows={3}
+                        placeholder="Share what keeps you showing up."
+                        className={textareaControlClassName}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Highlight</label>
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.highlight}
+                          onChange={handleChange("highlight")}
+                          placeholder="What gets your teammates curious?"
+                          className={inputControlClassName}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Anchor</label>
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.anchor}
+                          onChange={handleChange("anchor")}
+                          placeholder="Pair it with a trigger, e.g. after lunch"
+                          className={inputControlClassName}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Duration</label>
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.duration}
+                          onChange={handleChange("duration")}
+                          placeholder="e.g. 12 minutes"
+                          className={inputControlClassName}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Cadence</label>
+                      <div className={dropdownSelectWrapperClassName}>
+                        <input
+                          value={form.cadence}
+                          placeholder="Daily / Weekly"
+                          className={`${inputControlClassName} cursor-not-allowed`}
+                          readOnly
+                          aria-readonly="true"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Pulled from the selected habit and locked in for this
+                        post.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <DropdownField
+                      label="Category"
+                      options={categories.map((category) => ({
+                        value: category,
+                        label: category,
+                      }))}
+                      value={form.category}
+                      optionsId={categoryDropdownOptionsId}
+                      onSelect={(value) => {
+                        markDirty();
+                        setForm((current) => ({
+                          ...current,
+                          category: value as Category,
+                        }));
+                      }}
+                    />
+                    <DropdownField
+                      label="Time window"
+                      options={timeWindowOptions}
+                      value={form.timeWindow}
+                      optionsId={timeWindowDropdownOptionsId}
+                      onSelect={(value) => {
+                        markDirty();
+                        setForm((current) => ({
+                          ...current,
+                          timeWindow: value as TimeWindow,
+                        }));
+                      }}
+                    />
+                    <DropdownField
+                      label="Commitment"
+                      helper={commitmentCopy[form.commitment]}
+                      options={commitmentOptions.map((option) => ({
+                        value: option,
+                        label: option,
+                      }))}
+                      displayValue={form.commitment}
+                      value={form.commitment}
+                      optionsId={commitmentDropdownOptionsId}
+                      onSelect={(value) => {
+                        markDirty();
+                        setForm((current) => ({
+                          ...current,
+                          commitment: value as Commitment,
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">
+                      Why it works
+                    </label>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={benefitInput}
+                        onChange={(event) =>
+                          handleListInputChange(
+                            event,
+                            setBenefitInput,
+                            "benefits"
+                          )
+                        }
+                        onKeyDown={(event) =>
+                          handleListInputKeyDown(
+                            event,
+                            benefitInput,
+                            setBenefitInput,
+                            "benefits"
+                          )
+                        }
+                        placeholder="Type a benefit and press Enter"
+                        className={inputControlClassName}
+                      />
+                      {form.benefits.length > 0 && (
+                        <div className="flex flex-wrap gap-2 m-2">
+                          {form.benefits.map((benefit) => (
+                            <span
+                              key={benefit}
+                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                            >
+                              {benefit}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveListEntry("benefits", benefit)
+                                }
+                                className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
+                                aria-label={`Remove benefit ${benefit}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      List each reason on its own line.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Steps</label>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={stepInput}
+                        onChange={(event) =>
+                          handleListInputChange(event, setStepInput, "steps")
+                        }
+                        onKeyDown={(event) =>
+                          handleListInputKeyDown(
+                            event,
+                            stepInput,
+                            setStepInput,
+                            "steps"
+                          )
+                        }
+                        placeholder="Type a step and press Enter"
+                        className={inputControlClassName}
+                      />
+                      {form.steps.length > 0 && (
+                        <div className="flex flex-wrap gap-2 m-2">
+                          {form.steps.map((step) => (
+                            <span
+                              key={step}
+                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                            >
+                              {step}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveListEntry("steps", step)
+                                }
+                                className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
+                                aria-label={`Remove step ${step}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Short, actionable steps keep it repeatable.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Guardrails</label>
+                    <div className={dropdownSelectWrapperClassName}>
+                      <input
+                        value={guardrailInput}
+                        onChange={(event) =>
+                          handleListInputChange(
+                            event,
+                            setGuardrailInput,
+                            "guardrails"
+                          )
+                        }
+                        onKeyDown={(event) =>
+                          handleListInputKeyDown(
+                            event,
+                            guardrailInput,
+                            setGuardrailInput,
+                            "guardrails"
+                          )
+                        }
+                        placeholder="Type a guardrail and press Enter"
+                        className={inputControlClassName}
+                      />
+                      {form.guardrails.length > 0 && (
+                        <div className="flex flex-wrap gap-2 m-2">
+                          {form.guardrails.map((guardrail) => (
+                            <span
+                              key={guardrail}
+                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                            >
+                              {guardrail}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveListEntry("guardrails", guardrail)
+                                }
+                                className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
+                                aria-label={`Remove guardrail ${guardrail}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Share hard boundaries or conditions that protect the
+                      habit.
+                    </p>
+                  </div>
+
+                  {serverError ? (
+                    <div className="rounded-2xl border border-rose-400 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600">
+                      {serverError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !form.habitId}
+                      className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                    >
+                      {isSubmitting ? "Sharing post..." : "Share this habit"}
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
     </>
   );
 };

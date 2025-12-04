@@ -35,6 +35,14 @@ type HabitInsight = {
   description?: string | null;
 };
 
+type RoutinePerformance = {
+  id: string;
+  name: string;
+  anchor?: string | null;
+  habitCount: number;
+  completion: number;
+};
+
 type Summary = {
   totalHabits: number;
   averageStreak: number;
@@ -54,6 +62,7 @@ type Props = {
   weekdayPerformance: TrendPoint[];
   habits: HabitInsight[];
   todoStatusCounts: Record<TodoStatus, number>;
+  routinePerformance: RoutinePerformance[];
 };
 
 const buildAreaPath = (points: number[], width = 720, height = 200) => {
@@ -131,14 +140,23 @@ const AnalyticsClient: React.FC<Props> = ({
     COMPLETED: 0,
     MISSED: 0,
   },
+  routinePerformance,
 }) => {
   const chartAreaRef = useRef<HTMLDivElement>(null);
   const [chartWidth, setChartWidth] = useState(820);
   const [chartHeight, setChartHeight] = useState(320);
+  const routineChartRef = useRef<HTMLDivElement>(null);
+  const [routineChartWidth, setRoutineChartWidth] = useState(820);
   const marginLeft = 60;
   const marginRight = 20;
   const marginTop = 20;
   const marginBottom = 28;
+  const routineMarginLeft = 170;
+  const routineMarginRight = 36;
+  const routineMarginTop = 24;
+  const routineMarginBottom = 40;
+  const routineBarHeight = 30;
+  const routineBarGap = 18;
   const innerWidth = chartWidth - marginLeft - marginRight;
   const innerHeight = chartHeight - marginTop - marginBottom;
   const yTicks = [0, 25, 50, 75, 100];
@@ -164,6 +182,43 @@ const AnalyticsClient: React.FC<Props> = ({
     () => buildAreaPath(trendValues, innerWidth, innerHeight),
     [trendValues, innerWidth, innerHeight]
   );
+  const routineInnerWidth = Math.max(
+    320,
+    routineChartWidth - routineMarginLeft - routineMarginRight
+  );
+  const routineXTicks = [0, 25, 50, 75, 100];
+  const sortedRoutinePerformance = useMemo(
+    () => [...routinePerformance].sort((a, b) => b.completion - a.completion),
+    [routinePerformance]
+  );
+  const routineChartHeight = useMemo(() => {
+    const barArea =
+      sortedRoutinePerformance.length > 0
+        ? sortedRoutinePerformance.length * (routineBarHeight + routineBarGap) -
+          routineBarGap
+        : 140;
+    return routineMarginTop + routineMarginBottom + Math.max(barArea, 180);
+  }, [
+    sortedRoutinePerformance.length,
+    routineBarHeight,
+    routineBarGap,
+    routineMarginTop,
+    routineMarginBottom,
+  ]);
+  const averageRoutineCompletion =
+    sortedRoutinePerformance.length > 0
+      ? Math.round(
+          sortedRoutinePerformance.reduce(
+            (sum, routine) => sum + routine.completion,
+            0
+          ) / sortedRoutinePerformance.length
+        )
+      : 0;
+  const totalRoutineHabits = sortedRoutinePerformance.reduce(
+    (sum, routine) => sum + routine.habitCount,
+    0
+  );
+  const topRoutine = sortedRoutinePerformance[0];
 
   useEffect(() => {
     const updateSize = () => {
@@ -189,7 +244,30 @@ const AnalyticsClient: React.FC<Props> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const updateRoutineWidth = () => {
+      if (routineChartRef.current) {
+        setRoutineChartWidth(
+          Math.max(360, routineChartRef.current.clientWidth)
+        );
+      }
+    };
+
+    updateRoutineWidth();
+
+    const resizeObserver = new ResizeObserver(() => updateRoutineWidth());
+    const routineElement = routineChartRef.current;
+    if (routineElement) {
+      resizeObserver.observe(routineElement);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   const gradientStops = ["#f8a84b", "#f7805c", "#4cd7b4"];
+  const routineGradientStops = ["#6366f1", "#a855f7", "#14b8a6"];
 
   const activeHabit =
     habits.find((habit) => habit.streak === summary.topStreak?.streak) ??
@@ -597,7 +675,7 @@ const AnalyticsClient: React.FC<Props> = ({
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm p-6 flex flex-col gap-4">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
@@ -746,8 +824,212 @@ const AnalyticsClient: React.FC<Props> = ({
           </div>
         </section>
 
-        <section className="space-y-4 p-6 rounded-3xl shadow-sm border border-gray-100 bg-white/40">
-          <p className="xl:text-sm 2xl:text-base font-semibold uppercase tracking-[0.16em] text-primary">
+        <section className="grid xl:grid-cols-3 gap-6 items-start">
+          <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-inner p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  Routine momentum
+                </p>
+                <h3 className="xl:text-lg 2xl:text-xl font-semibold">
+                  Completion by routine
+                </h3>
+                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  Which stacks are carrying your consistency right now.
+                </p>
+              </div>
+            </div>
+
+            <div
+              ref={routineChartRef}
+              className="relative w-full overflow-hidden rounded-2xl border border-gray-100 bg-linear-to-br from-slate-50 via-white to-emerald-50/40 p-4 shadow-inner"
+            >
+              {sortedRoutinePerformance.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-white/80 px-4 py-8 text-center text-sm text-muted-foreground">
+                  Add a routine and complete a few habits to light up this
+                  chart.
+                </div>
+              ) : (
+                <svg
+                  viewBox={`0 0 ${routineChartWidth} ${routineChartHeight}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Routine completion bars"
+                  className="w-full h-full"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient
+                      id="routineBarGradient"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="0"
+                    >
+                      <stop offset="0%" stopColor={routineGradientStops[0]} />
+                      <stop offset="50%" stopColor={routineGradientStops[1]} />
+                      <stop offset="100%" stopColor={routineGradientStops[2]} />
+                    </linearGradient>
+                  </defs>
+
+                  {routineXTicks.map((tick) => {
+                    const x =
+                      routineMarginLeft +
+                      (tick / 100) * Math.max(routineInnerWidth, 1);
+                    return (
+                      <g key={tick}>
+                        <line
+                          x1={x}
+                          x2={x}
+                          y1={routineMarginTop}
+                          y2={routineChartHeight - routineMarginBottom}
+                          stroke="rgba(148,163,184,0.35)"
+                          strokeWidth="1.5"
+                          strokeDasharray="4 4"
+                        />
+                        <text
+                          x={x}
+                          y={routineChartHeight - routineMarginBottom + 18}
+                          textAnchor="middle"
+                          className="text-[10px] fill-muted-foreground"
+                        >
+                          {tick}%
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  {sortedRoutinePerformance.map((routine, index) => {
+                    const clamped = Math.max(
+                      0,
+                      Math.min(100, Math.round(routine.completion))
+                    );
+                    const y =
+                      routineMarginTop +
+                      index * (routineBarHeight + routineBarGap);
+                    const barWidth =
+                      (clamped / 100) * Math.max(routineInnerWidth, 1);
+                    const labelY = y + routineBarHeight / 2 + 4;
+                    const textInside = barWidth > 120;
+
+                    return (
+                      <g key={routine.id}>
+                        <text
+                          x={routineMarginLeft - 12}
+                          y={labelY - 6}
+                          textAnchor="end"
+                          className="text-[11px] font-semibold fill-slate-800"
+                        >
+                          {routine.name}
+                        </text>
+                        <text
+                          x={routineMarginLeft - 12}
+                          y={labelY + 8}
+                          textAnchor="end"
+                          className="text-[10px] fill-muted-foreground"
+                        >
+                          {" • " +
+                            `${routine.habitCount} habit${
+                              routine.habitCount === 1 ? "" : "s"
+                            }`}
+                        </text>
+
+                        <rect
+                          x={routineMarginLeft}
+                          y={y}
+                          width={Math.max(routineInnerWidth, 1)}
+                          height={routineBarHeight}
+                          rx={12}
+                          fill="rgba(148,163,184,0.18)"
+                        />
+                        <rect
+                          x={routineMarginLeft}
+                          y={y}
+                          width={Math.max(barWidth, 4)}
+                          height={routineBarHeight}
+                          rx={12}
+                          fill="url(#routineBarGradient)"
+                          className="drop-shadow-sm"
+                        />
+
+                        <text
+                          x={
+                            textInside
+                              ? routineMarginLeft + Math.max(barWidth, 4) - 14
+                              : routineMarginLeft + Math.max(barWidth, 4) + 12
+                          }
+                          y={labelY - 2}
+                          textAnchor={textInside ? "end" : "start"}
+                          className={`text-[11px] font-semibold ${
+                            textInside ? "fill-white" : "fill-slate-800"
+                          }`}
+                        >
+                          {clamped}% complete
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    Routine pulse
+                  </p>
+                  <h3 className="xl:text-base 2xl:text-lg font-semibold">
+                    {averageRoutineCompletion}% avg completion
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Across {sortedRoutinePerformance.length} routine
+                    {sortedRoutinePerformance.length === 1 ? "" : "s"} and{" "}
+                    {totalRoutineHabits} mapped habit
+                    {totalRoutineHabits === 1 ? "" : "s"}.
+                  </p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                </div>
+              </div>
+
+              {topRoutine ? (
+                <div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">{topRoutine.name}</p>
+                    <span className="text-sm font-bold text-primary">
+                      {topRoutine.completion}% hit rate
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {topRoutine.anchor ?? "No anchor set"} •{" "}
+                    {topRoutine.habitCount} habit
+                    {topRoutine.habitCount === 1 ? "" : "s"}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/60 px-4 py-3 text-sm text-muted-foreground">
+                  Group habits into a routine to unlock the leaderboard.
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-muted px-3 py-2 text-[11px] font-semibold text-foreground">
+                  {summary.averageCompletion}% daily completion baseline
+                </div>
+                <div className="rounded-xl bg-muted px-3 py-2 text-[11px] font-semibold text-foreground">
+                  {summary.totalHabits} total habits tracked
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4 p-6 rounded-3xl shadow-inner border border-gray-100 bg-white">
+          <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
             Insights
           </p>
 

@@ -22,7 +22,7 @@ export default function SignOutButton() {
     <Button
       onClick={handleSignOut}
       disabled={isPending}
-      className="w-full rounded-full border border-primary px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-foreground bg-card/90 hover:bg-card/70 dark:bg-card/80 dark:hover:bg-card/70 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full rounded-full border border-primary px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-primary bg-card/90 hover:bg-card/70 dark:bg-card/80 dark:hover:bg-card/70 transition disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isPending ? "Signing out..." : "Log out"}
     </Button>

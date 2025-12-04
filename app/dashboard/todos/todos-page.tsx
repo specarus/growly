@@ -639,7 +639,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
         <div className="pointer-events-none absolute bottom-6 left-12 h-56 w-56 rounded-full bg-green-soft/20 blur-3xl" />
         <div className="relative z-10">
           <div className="xl:px-8 2xl:px-28 pb-8 space-y-8">
-            <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white/90 px-6 py-6 shadow-sm space-y-6">
+            <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white/90 px-6 py-6 shadow-inner space-y-6">
               <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-primary/20 blur-2xl" />
               <div className="pointer-events-none absolute -bottom-12 left-6 h-48 w-48 rounded-full bg-green-soft/30 blur-3xl" />
               <div className="relative z-10 space-y-6">
@@ -749,7 +749,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
             </div>
           </div>
           <div className="w-full h-auto xl:px-8 2xl:px-28">
-            <div className="bg-white/90 border border-gray-50 shadow-sm rounded-3xl xl:p-4 2xl:p-6 space-y-4">
+            <div className="bg-white/90 border border-gray-50 shadow-inner rounded-3xl xl:p-4 2xl:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <ListChecks className="w-5 h-5 text-primary" />

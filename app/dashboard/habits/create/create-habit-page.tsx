@@ -397,7 +397,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             />
 
             {popularPost ? (
-              <div className="rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4 space-y-2 text-foreground shadow-sm">
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4 space-y-2 text-foreground shadow-inner">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-primary">
                   Importing blueprint
                 </p>
@@ -433,7 +433,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             <div className="grid xl:grid-cols-[1.3fr_0.7fr] gap-6">
               <form
                 onSubmit={handleSubmit}
-                className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-5"
+                className="bg-white/90 border border-gray-50 shadow-inner xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-5"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -831,7 +831,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </form>
 
               <aside className="space-y-4">
-                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-sm dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 p-5 shadow-inner dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
                   <div className="pointer-events-none absolute -top-4 right-6 h-32 w-32 rounded-full bg-primary/20 blur-3xl dark:hidden" />
                   <div className="pointer-events-none absolute -bottom-10 left-6 h-36 w-36 rounded-[2.5rem] bg-green-soft/30 blur-[90px] dark:hidden" />
                   <div className="flex items-center justify-between mb-3">
@@ -902,7 +902,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </aside>
             </div>
 
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner">
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>

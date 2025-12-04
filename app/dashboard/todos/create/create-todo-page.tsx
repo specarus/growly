@@ -921,7 +921,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
           <div className="grid xl:grid-cols-3 gap-6">
             <div className="xl:col-span-2 space-y-8">
-              <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6">
+              <div className="bg-white/90 border border-gray-50 shadow-inner xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <Target className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
@@ -1251,7 +1251,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 </form>
               </div>
 
-              <div className="bg-white/90 border border-gray-50 shadow-sm xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
+              <div className="bg-white/90 border border-gray-50 shadow-inner xl:rounded-2xl 2xl:rounded-3xl xl:p-4 2xl:p-6 space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <CalendarDays className="xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
@@ -1503,7 +1503,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
             </div>
 
             <aside className="space-y-4">
-              <div className="relative overflow-hidden xl:rounded-2xl 2xl:rounded-3xl border border-gray-50 bg-linear-to-br from-light-yellow via-white to-green-soft/20 shadow-sm xl:p-4 2xl:p-6 dark:border-gray-900 dark:bg-linear-to-br dark:from-analytics-dark/80 dark:via-analytics-dark/70 dark:to-analytics-dark/90">
+              <div className="relative overflow-hidden xl:rounded-2xl 2xl:rounded-3xl border border-gray-50 bg-linear-to-br from-light-yellow via-white to-green-soft/20 shadow-inner xl:p-4 2xl:p-6 dark:border-gray-900 dark:bg-linear-to-br dark:from-analytics-dark/80 dark:via-analytics-dark/70 dark:to-analytics-dark/90">
                 <div className="absolute -right-10 -top-10 w-36 h-36 bg-primary/10 rounded-full" />
                 <div className="relative space-y-4">
                   <div className="flex items-center justify-between">
@@ -1566,7 +1566,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-gray-100 bg-white px-4 py-5 shadow-sm space-y-4">
+              <div className="rounded-2xl border border-gray-100 bg-white px-4 py-5 shadow-inner space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock3 className="w-4 h-4 text-primary" />

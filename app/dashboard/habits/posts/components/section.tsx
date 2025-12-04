@@ -15,7 +15,7 @@ const formatDate = (value: string) => {
 };
 
 const Section = ({ title, description, posts }: SectionProps) => (
-  <section className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+  <section className="rounded-3xl border border-gray-100 bg-white shadow-inner">
     <div className="px-6 py-5 space-y-1">
       <div className="flex items-center justify-between">
         <div>

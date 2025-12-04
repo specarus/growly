@@ -595,7 +595,7 @@ const PopularHabitsPage: React.FC = () => {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <Button
                 onClick={() => router.push("/dashboard/habits/popular/create")}
-                className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition"
+                className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-xss 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition"
               >
                 Create a post
               </Button>
@@ -710,9 +710,9 @@ const PopularHabitsPage: React.FC = () => {
                     <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                       Popular habit posts
                     </h2>
-                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
-                        Hover or tap a card to preview its full why and steps.
-                      </p>
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                      Hover or tap a card to preview its full why and steps.
+                    </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-2 2xl:px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                     <TrendingUp className="w-4 h-4" />

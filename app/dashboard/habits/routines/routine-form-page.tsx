@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { CalendarDays, Check, Clock3, Search, Target } from "lucide-react";
 
 import Button from "@/app/components/ui/button";
@@ -99,12 +105,20 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
     setForm(initialFormState);
   }, [initialFormState]);
 
-  const initialHabitSelection = useMemo(() => initialHabitIds ?? [], [initialHabitIds]);
-  const [selectedHabitIds, setSelectedHabitIds] = useState(initialHabitSelection);
+  const initialHabitSelection = useMemo(
+    () => initialHabitIds ?? [],
+    [initialHabitIds]
+  );
+  const [selectedHabitIds, setSelectedHabitIds] = useState(
+    initialHabitSelection
+  );
 
   const [filter, setFilter] = useState("");
   const [timeWindow, setTimeWindow] = useState(timeWindows[0]);
-  const [status, setStatus] = useState<{ text: string; tone: StatusTone } | null>(null);
+  const [status, setStatus] = useState<{
+    text: string;
+    tone: StatusTone;
+  } | null>(null);
   const [isSubmitting, startTransition] = useTransition();
   const [isDirty, setIsDirty] = useState(false);
   const markDirty = useCallback(() => setIsDirty(true), []);
@@ -205,9 +219,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
       }
 
       const endpoint =
-        mode === "create"
-          ? "/api/routines"
-          : `/api/routines/${routineId}`;
+        mode === "create" ? "/api/routines" : `/api/routines/${routineId}`;
       const method = mode === "create" ? "POST" : "PATCH";
 
       try {
@@ -297,7 +309,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
           <div className="grid xl:grid-cols-[1.2fr_0.8fr] gap-6">
             <form
               onSubmit={handleSubmit}
-              className="space-y-6 rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5"
+              className="space-y-6 rounded-3xl border border-white/70 bg-white/90 p-6 shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5"
             >
               <div className="space-y-5">
                 <div className="flex items-center justify-between gap-3">
@@ -405,7 +417,8 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
                     </h3>
                   </div>
                   <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                    {selectedHabitIds.length} selected - {habits.length} available
+                    {selectedHabitIds.length} selected - {habits.length}{" "}
+                    available
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -459,7 +472,9 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
                               <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground">
                                 <Check
                                   className={`h-3 w-3 ${
-                                    isActive ? "text-primary" : "text-muted-foreground"
+                                    isActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground"
                                   }`}
                                 />
                                 {isActive ? "Included" : "Add"}
@@ -485,7 +500,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
             </form>
 
             <aside className="space-y-5">
-              <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+              <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5">
                 <GradientCircle
                   size={210}
                   position={{ bottom: "-50px", right: "-50px" }}
@@ -548,7 +563,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+              <div className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5">
                 <div className="flex items-center justify-between">
                   <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                     Habit shortlist
