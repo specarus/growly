@@ -438,7 +438,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
 
         <div className="grid gap-5">
           <div className="grid xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-sm h-full">
+            <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-inner h-full">
               <div className="px-6 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -722,7 +722,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
             </div>
 
             <div className="h-fit flex flex-col xl:gap-6">
-              <div className="relative px-6 pt-5 pb-6 space-y-4 rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+              <div className="relative px-6 pt-5 pb-6 space-y-4 rounded-3xl border border-gray-100 bg-white shadow-inner overflow-hidden">
                 <GradientCircle
                   size={210}
                   position={{ bottom: "-50px", right: "-30px" }}

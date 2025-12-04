@@ -46,9 +46,24 @@ const MINUTES_RANGE = DAY_END_MINUTES - DAY_START_MINUTES;
 const HOURS_RANGE = MINUTES_RANGE / 60;
 const HOUR_HEIGHT = 56;
 const TIMELINE_HEIGHT = HOURS_RANGE * HOUR_HEIGHT;
+const GRID_TEMPLATE_COLUMNS = "60px repeat(7, 1fr)";
 const HEADER_HEIGHT = 48;
 const FLOATING_HEIGHT = 44;
-const TOTAL_HEIGHT = HEADER_HEIGHT + FLOATING_HEIGHT + TIMELINE_HEIGHT;
+const SCROLL_CUTOFF_HOUR = 16; // 4 PM
+const SCROLL_VIEW_HEIGHT =
+  HEADER_HEIGHT +
+  FLOATING_HEIGHT +
+  (Math.min(
+    Math.max(SCROLL_CUTOFF_HOUR * 60 - DAY_START_MINUTES, 0),
+    MINUTES_RANGE
+  ) /
+    MINUTES_RANGE) *
+    TIMELINE_HEIGHT;
+const TIMELINE_SCROLL_HEIGHT = Math.max(
+  SCROLL_VIEW_HEIGHT - HEADER_HEIGHT - FLOATING_HEIGHT,
+  0
+);
+const TIMELINE_PADDING = 20;
 const EVENT_DURATION_MINUTES = 60;
 const OVERLAP_OFFSET = 8;
 
@@ -59,6 +74,16 @@ const colorPalette = [
   "bg-yellow-soft text-amber-900 border-yellow-soft/60",
   "bg-blue-100 text-blue-900 border-blue-200",
 ];
+
+const colorForHabit = (habitId: string) => {
+  // Simple deterministic hash to spread ids across the palette
+  let hash = 0;
+  for (let i = 0; i < habitId.length; i += 1) {
+    hash = (hash * 31 + habitId.charCodeAt(i)) | 0;
+  }
+  const index = Math.abs(hash) % colorPalette.length;
+  return colorPalette[index];
+};
 
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
@@ -191,11 +216,8 @@ const buildCalendarDay = (
       if (minutes === null) return null;
       const offset = minutes - DAY_START_MINUTES;
       const clampedOffset = Math.max(0, Math.min(MINUTES_RANGE, offset));
-      const position =
-        (clampedOffset / MINUTES_RANGE) * TIMELINE_HEIGHT +
-        HEADER_HEIGHT +
-        FLOATING_HEIGHT;
-      const colorClass = colorPalette[index % colorPalette.length];
+      const position = (clampedOffset / MINUTES_RANGE) * TIMELINE_HEIGHT;
+      const colorClass = colorForHabit(habit.id);
       const timeLabel = formatTimeLabel(minutes);
       return {
         habit,
@@ -236,11 +258,9 @@ const hourMarkers = Array.from(
   (_, index) => {
     const hour = DAY_START_MINUTES / 60 + index;
     const minutes = hour * 60;
-    const position =
-      ((minutes - DAY_START_MINUTES) / MINUTES_RANGE) * TIMELINE_HEIGHT +
-      HEADER_HEIGHT +
-      FLOATING_HEIGHT;
-    return { hour, position };
+    const offset =
+      ((minutes - DAY_START_MINUTES) / MINUTES_RANGE) * TIMELINE_HEIGHT;
+    return { hour, offset };
   }
 );
 
@@ -294,7 +314,7 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
             </Button>
             <Button
               onClick={() => setWeekStart(startOfWeek(new Date()))}
-              className="bg-white text-foreground hover:bg-primary hover:text-white xl:text-sm 2xl:text-[15px] px-3 py-1"
+              className="bg-white text-foreground hover:bg-primary hover:text-white xl:text-xs 2xl:text-sm px-3 py-1"
             >
               Today
             </Button>
@@ -308,167 +328,182 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
         </div>
       </div>
 
-      <div
-        className="grid grid-cols-[60px_1fr] gap-3"
-        style={{ height: TOTAL_HEIGHT }}
-      >
+      <div className="relative rounded-3xl border border-gray-200 bg-white shadow-inner overflow-hidden">
         <div
-          className="relative text-[11px] text-muted-foreground"
-          style={{ height: "100%" }}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 shadow-inner bg-linear-to-br from-amber-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-900/40 opacity-95"
+        />
+        <div
+          className="relative overflow-y-scroll"
+          style={{
+            maxHeight:
+              SCROLL_VIEW_HEIGHT + TIMELINE_PADDING * 2 + HEADER_HEIGHT,
+            scrollbarGutter: "stable",
+          }}
         >
-          {hourMarkers.map((marker) => (
-            <div
-              key={marker.hour}
-              className="absolute left-0 right-0 flex items-center gap-1"
-              style={{ top: marker.position - 6 }}
-            >
-              <Clock3 className="h-3 w-3" />
-              <span>{formatHour(marker.hour)}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-inner">
           <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-linear-to-br from-amber-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-900/40 opacity-95"
-          />
-          <div
-            className="grid grid-cols-7 divide-x divide-gray-200"
-            style={{ height: "100%" }}
+            className="sticky top-0 z-20 grid gap-0 border-b border-gray-100 px-4 py-4 bg-white/90 backdrop-blur-sm"
+            style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
           >
+            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground flex items-end">
+              Time
+            </div>
             {weekDays.map((day, dayIndex) => {
               const dateLabel = day.date.toLocaleDateString("en-US", {
                 weekday: "short",
                 month: "short",
                 day: "numeric",
               });
-              const isToday =
-                startOfDay(day.date).getTime() === today.getTime();
-
               return (
                 <div
                   key={dayIndex}
-                  className={`relative ${isToday ? "bg-primary/5" : ""}`}
+                  className={`flex flex-col gap-2 rounded-xl relative z-10`}
                   title={dateLabel}
                 >
-                  <div
-                    className={`absolute inset-x-0 top-0 h-[54px] border-b px-3 py-2 backdrop-blur-sm ${
-                      isToday
-                        ? "border-primary/50 bg-primary/10"
-                        : "border-gray-100 bg-white/80"
-                    }`}
-                    style={{ height: HEADER_HEIGHT }}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex flex-col">
-                        <span className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          {day.date.toLocaleDateString("en-US", {
-                            weekday: "short",
-                          })}
-                        </span>
-                        <span className="xl:text-xs 2xl:text-sm font-semibold text-foreground">
-                          {day.date.toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="absolute inset-x-0 px-3"
-                    style={{ top: HEADER_HEIGHT, height: FLOATING_HEIGHT }}
-                  >
-                    <div className="flex flex-wrap gap-1">
-                      {day.floating.map((habit) => (
-                        <span
-                          key={habit.id}
-                          className="rounded-full border border-muted bg-white/70 px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground shadow-sm"
-                          title={describeHabit(habit)}
-                        >
-                          {habit.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div
-                    className="absolute inset-x-0"
-                    style={{
-                      top: HEADER_HEIGHT + FLOATING_HEIGHT,
-                      height: TIMELINE_HEIGHT,
-                    }}
-                  >
-                    <div className="absolute inset-0">
-                      {hourMarkers.map((marker) => (
-                        <div
-                          key={marker.hour}
-                          className="absolute inset-x-0 border-t border-dashed border-gray-200"
-                          style={{
-                            top:
-                              marker.position - HEADER_HEIGHT - FLOATING_HEIGHT,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <div className="relative h-full">
-                      {day.timed.map((event) => {
-                        const leftOffset = 6;
-                        const rightOffset = 6;
-                        const isHoveredGroup =
-                          hoveredGroupKey === event.groupKey;
-                        const isHoveredEvent =
-                          hoveredEventId === event.habit.id;
-                        const isOtherInGroup =
-                          isHoveredGroup && !isHoveredEvent;
-                        const top =
-                          event.position -
-                          HEADER_HEIGHT -
-                          FLOATING_HEIGHT +
-                          event.stackIndex * OVERLAP_OFFSET;
-                        return (
-                          <div
-                            key={event.habit.id}
-                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition-opacity duration-200 ease-out ${
-                              event.colorClass
-                            } ${
-                              isOtherInGroup
-                                ? "opacity-0 pointer-events-none"
-                                : ""
-                            }`}
-                            style={{
-                              top,
-                              left: `${leftOffset}%`,
-                              right: `${rightOffset}%`,
-                            }}
-                            title={`${event.timeLabel} - ${describeHabit(
-                              event.habit
-                            )}`}
-                            onMouseEnter={() => {
-                              setHoveredGroupKey(event.groupKey);
-                              setHoveredEventId(event.habit.id);
-                            }}
-                            onMouseLeave={() => {
-                              setHoveredGroupKey(null);
-                              setHoveredEventId(null);
-                            }}
-                          >
-                            <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
-                              {event.timeLabel}
-                            </p>
-                            <p className="xl:text-xs 2xl:text-sm font-semibold leading-tight">
-                              {event.habit.name}
-                            </p>
-                          </div>
-                        );
+                  <div className="flex flex-col">
+                    <span
+                      className={`${
+                        startOfDay(day.date).getTime() === today.getTime()
+                          ? "text-primary"
+                          : ""
+                      } xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground`}
+                    >
+                      {day.date.toLocaleDateString("en-US", {
+                        weekday: "short",
                       })}
-                    </div>
+                    </span>
+                    <span className="xl:text-xs 2xl:text-sm font-semibold text-foreground">
+                      {day.date.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {day.floating.map((habit) => (
+                      <span
+                        key={habit.id}
+                        className="rounded-full border border-muted bg-white/70 px-2 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-foreground shadow-sm"
+                        title={describeHabit(habit)}
+                      >
+                        {habit.name}
+                      </span>
+                    ))}
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          <div
+            className="relative px-4"
+            style={{
+              paddingTop: TIMELINE_PADDING,
+              paddingBottom: TIMELINE_PADDING,
+            }}
+          >
+            <div
+              className="grid gap-0 relative"
+              style={{
+                gridTemplateColumns: GRID_TEMPLATE_COLUMNS,
+                height: TIMELINE_HEIGHT,
+              }}
+            >
+              <div
+                className="pointer-events-none absolute inset-0 grid gap-0"
+                style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
+              >
+                <div className="border-r border-dashed border-gray-200" />
+                {weekDays.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`border-r border-dashed border-gray-200 ${
+                      index === weekDays.length - 1 ? "border-r-0" : ""
+                    } `}
+                  />
+                ))}
+              </div>
+              <div className="relative text-[11px] text-muted-foreground">
+                {hourMarkers.map((marker) => (
+                  <div
+                    key={marker.hour}
+                    className="absolute left-0 right-0 flex items-center gap-1"
+                    style={{ top: marker.offset - 6 }}
+                  >
+                    <Clock3 className="h-3 w-3" />
+                    <span>{formatHour(marker.hour)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {weekDays.map((day, dayIndex) => (
+                <div
+                  key={dayIndex}
+                  className={`relative h-full ${
+                    startOfDay(day.date).getTime() === today.getTime()
+                      ? "bg-primary/10"
+                      : ""
+                  }`}
+                  style={{ gridColumnStart: dayIndex + 2 }}
+                >
+                  <div className="absolute inset-0">
+                    {hourMarkers.map((marker) => (
+                      <div
+                        key={marker.hour}
+                        className="absolute inset-x-0 border-t border-dashed border-gray-200"
+                        style={{ top: marker.offset }}
+                      />
+                    ))}
+                  </div>
+                  <div className="relative" style={{ height: TIMELINE_HEIGHT }}>
+                    {day.timed.map((event) => {
+                      const leftOffset = 6;
+                      const rightOffset = 6;
+                      const isHoveredGroup = hoveredGroupKey === event.groupKey;
+                      const isHoveredEvent = hoveredEventId === event.habit.id;
+                      const isOtherInGroup = isHoveredGroup && !isHoveredEvent;
+                      const top =
+                        event.position + event.stackIndex * OVERLAP_OFFSET;
+                      return (
+                        <div
+                          key={event.habit.id}
+                          className={`absolute rounded-xl cursor-default border px-2 py-1 transition-opacity duration-200 ease-out ${
+                            event.colorClass
+                          } ${
+                            isOtherInGroup
+                              ? "opacity-0 pointer-events-none"
+                              : ""
+                          }`}
+                          style={{
+                            top,
+                            left: `${leftOffset}%`,
+                            right: `${rightOffset}%`,
+                          }}
+                          title={`${event.timeLabel} - ${describeHabit(
+                            event.habit
+                          )}`}
+                          onMouseEnter={() => {
+                            setHoveredGroupKey(event.groupKey);
+                            setHoveredEventId(event.habit.id);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredGroupKey(null);
+                            setHoveredEventId(null);
+                          }}
+                        >
+                          <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
+                            {event.timeLabel}
+                          </p>
+                          <p className="xl:text-xs 2xl:text-sm font-semibold leading-tight">
+                            {event.habit.name}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

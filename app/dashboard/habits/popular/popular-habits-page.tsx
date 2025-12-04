@@ -149,6 +149,7 @@ const PopularHabitsPage: React.FC = () => {
     null
   );
   const [likingShouldDoId, setLikingShouldDoId] = useState<string | null>(null);
+  const [shouldDoSearch, setShouldDoSearch] = useState("");
 
   type ShouldDoApi = {
     id: string;
@@ -455,10 +456,19 @@ const PopularHabitsPage: React.FC = () => {
   const userHasLikedSelectedPost = selectedPost
     ? likedPostIds.has(selectedPost.id)
     : false;
-  const sortedShouldDos = useMemo(
-    () => [...shouldDos].sort((a, b) => b.likesCount - a.likesCount),
-    [shouldDos]
-  );
+  const filteredShouldDos = useMemo(() => {
+    const term = shouldDoSearch.trim().toLowerCase();
+    return [...shouldDos]
+      .filter((entry) => {
+        if (!term) return true;
+        const inTitle = entry.title.toLowerCase().includes(term);
+        const inDescription =
+          entry.description?.toLowerCase().includes(term) ?? false;
+        return inTitle || inDescription;
+      })
+      .sort((a, b) => b.likesCount - a.likesCount);
+  }, [shouldDoSearch, shouldDos]);
+  const hasShouldDoSearch = shouldDoSearch.trim().length > 0;
 
   const resetShouldDoForm = () => {
     setShouldDoForm({ title: "", description: "" });
@@ -605,7 +615,7 @@ const PopularHabitsPage: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-sm px-4 py-3 xl:py-4">
+          <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-inner px-4 py-3 xl:py-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative max-w-xs flex-1 min-w-[220px]">
                 <Search className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
@@ -690,7 +700,7 @@ const PopularHabitsPage: React.FC = () => {
           </div>
 
           <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-5">
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner">
               <div className="px-5 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -700,10 +710,9 @@ const PopularHabitsPage: React.FC = () => {
                     <h2 className="xl:text-lg 2xl:text-xl font-semibold">
                       Popular habit posts
                     </h2>
-                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
-                      Hover or tap a card to preview its full why, steps, and
-                      guardrails.
-                    </p>
+                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                        Hover or tap a card to preview its full why and steps.
+                      </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-2 2xl:px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                     <TrendingUp className="w-4 h-4" />
@@ -832,7 +841,7 @@ const PopularHabitsPage: React.FC = () => {
               </div>
             </div>
 
-            <aside className="rounded-3xl border border-gray-100 bg-white shadow-sm h-fit">
+            <aside className="rounded-3xl border border-gray-100 shadow-inner h-fit bg-linear-to-tr to-primary/30 via-white from-white">
               <div className="px-5 pt-5 pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -956,8 +965,11 @@ const PopularHabitsPage: React.FC = () => {
                         <ul className="space-y-2 xl:text-xs 2xl:text-sm text-muted-foreground">
                           {selectedPost.steps.length > 0 ? (
                             selectedPost.steps.map((step) => (
-                              <li key={step} className="flex items-start gap-2">
-                                <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+                              <li
+                                key={step}
+                                className="flex items-center gap-2"
+                              >
+                                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
                                 <span>{step}</span>
                               </li>
                             ))
@@ -967,30 +979,6 @@ const PopularHabitsPage: React.FC = () => {
                             </li>
                           )}
                         </ul>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="xl:text-sm 2xl:text-base font-semibold">
-                          Guardrails
-                        </span>
-                      </div>
-                      <div className="space-y-2">
-                        {selectedPost.guardrails.length > 0 ? (
-                          selectedPost.guardrails.map((guardrail) => (
-                            <div
-                              key={guardrail}
-                              className="rounded-2xl border border-muted bg-muted/30 px-3 py-2 xl:text-xs 2xl:text-sm text-muted-foreground"
-                            >
-                              {guardrail}
-                            </div>
-                          ))
-                        ) : (
-                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                            No guardrails provided.
-                          </p>
-                        )}
                       </div>
                     </div>
 
@@ -1075,11 +1063,11 @@ const PopularHabitsPage: React.FC = () => {
 
         <section
           id="should-do"
-          className="space-y-4 p-6 rounded-3xl shadow-sm border border-gray-100 bg-white/90"
+          className="space-y-3 p-6 rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30"
         >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
+              <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                 Should Do
               </p>
               <h3 className="xl:text-lg 2xl:text-xl font-semibold">
@@ -1090,14 +1078,24 @@ const PopularHabitsPage: React.FC = () => {
                 the dashboard widget.
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-              <Sparkles className="w-4 h-4 text-primary" />
-              {sortedShouldDos.length} ideas
+            <div className="flex flex-col gap-2 w-full sm:w-auto sm:items-end">
+              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground self-start sm:self-end">
+                {filteredShouldDos.length} ideas
+              </div>
+              <div className="relative w-full sm:w-64">
+                <Search className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  value={shouldDoSearch}
+                  onChange={(event) => setShouldDoSearch(event.target.value)}
+                  placeholder="Search ideas"
+                  className="w-full rounded-full border border-gray-200 bg-white px-4 py-2 pl-9 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-4 items-start">
-            <div className="space-y-3">
+          <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-3 items-start">
+            <div className="space-y-2.5">
               {shouldDoLoading ? (
                 <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
                   Loading ideas...
@@ -1106,88 +1104,96 @@ const PopularHabitsPage: React.FC = () => {
                 <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 xl:text-xs 2xl:text-sm font-semibold text-rose-600">
                   {shouldDoError}
                 </div>
-              ) : sortedShouldDos.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
-                  No ideas yet. Be the first to post a Should Do.
-                </div>
+              ) : filteredShouldDos.length === 0 ? (
+                hasShouldDoSearch ? (
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                    No ideas match your search. Try a different keyword.
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                    No ideas yet. Be the first to post a Should Do.
+                  </div>
+                )
               ) : (
-                sortedShouldDos.map((idea) => (
-                  <article
-                    key={idea.id}
-                    className="rounded-2xl border border-gray-100 bg-white shadow-sm px-4 py-4 space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
-                        {idea.isSeed ? "Pinned" : "Community"}
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {filteredShouldDos.map((idea) => (
+                    <article
+                      key={idea.id}
+                      className="rounded-2xl border border-gray-100 bg-white shadow-sm px-3 py-3 space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
+                          {idea.isSeed ? "Pinned" : "Community"}
+                        </div>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                          <Heart className="w-4 h-4 text-primary" />
+                          {formatLikes(idea.likesCount)}{" "}
+                          {idea.likesCount === 1 ? "like" : "likes"}
+                        </div>
                       </div>
-                      <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                        <Heart className="w-4 h-4 text-primary" />
-                        {formatLikes(idea.likesCount)}{" "}
-                        {idea.likesCount === 1 ? "like" : "likes"}
+                      <div className="space-y-1">
+                        <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                          {idea.title}
+                        </h4>
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
+                          {idea.description ?? "No extra details yet."}
+                        </p>
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="xl:text-base 2xl:text-lg font-semibold text-foreground">
-                        {idea.title}
-                      </h4>
-                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
-                        {idea.description ?? "No extra details yet."}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleLikeShouldDo(idea.id)}
-                        disabled={
-                          idea.isSeed ||
-                          idea.likedByCurrentUser ||
-                          likingShouldDoId === idea.id
-                        }
-                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
-                          idea.likedByCurrentUser
-                            ? "border-primary bg-primary text-white"
-                            : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                        } ${
-                          idea.isSeed ? "opacity-60 cursor-not-allowed" : ""
-                        }`}
-                      >
-                        <Heart
-                          className={`w-4 h-4 ${
-                            idea.likedByCurrentUser
-                              ? "text-white"
-                              : "text-primary"
-                          }`}
-                        />
-                        <span>
-                          {idea.isSeed
-                            ? "Pinned"
-                            : idea.likedByCurrentUser
-                            ? "Liked"
-                            : "Like"}
-                        </span>
-                      </button>
-                      {idea.ownedByCurrentUser && !idea.isSeed ? (
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => handleEditShouldDo(idea.id)}
-                          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                          onClick={() => handleLikeShouldDo(idea.id)}
+                          disabled={
+                            idea.isSeed ||
+                            idea.likedByCurrentUser ||
+                            likingShouldDoId === idea.id
+                          }
+                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
+                            idea.likedByCurrentUser
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                          } ${
+                            idea.isSeed ? "opacity-60 cursor-not-allowed" : ""
+                          }`}
                         >
-                          <Pencil className="w-4 h-4 text-primary" />
-                          Edit
+                          <Heart
+                            className={`w-4 h-4 ${
+                              idea.likedByCurrentUser
+                                ? "text-white"
+                                : "text-primary"
+                            }`}
+                          />
+                          <span>
+                            {idea.isSeed
+                              ? "Pinned"
+                              : idea.likedByCurrentUser
+                              ? "Liked"
+                              : "Like"}
+                          </span>
                         </button>
+                        {idea.ownedByCurrentUser && !idea.isSeed ? (
+                          <button
+                            type="button"
+                            onClick={() => handleEditShouldDo(idea.id)}
+                            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                          >
+                            <Pencil className="w-4 h-4 text-primary" />
+                            Edit
+                          </button>
+                        ) : null}
+                      </div>
+                      {idea.createdAt ? (
+                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                          Posted {formatPostedDate(idea.createdAt)}
+                        </p>
                       ) : null}
-                    </div>
-                    {idea.createdAt ? (
-                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                        Posted {formatPostedDate(idea.createdAt)}
-                      </p>
-                    ) : null}
-                  </article>
-                ))
+                    </article>
+                  ))}
+                </div>
               )}
             </div>
 
-            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5 space-y-4">
+            <div className="px-4 space-y-3">
               <div className="space-y-1">
                 <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   {editingShouldDoId ? "Edit your idea" : "Post a Should Do"}

@@ -30,6 +30,7 @@ export type AnalyticsWidgetData = {
     completion: number;
     habits: FavoriteHabitStat[];
   }[];
+  userInitials: string;
   currentYear: number;
 };
 
@@ -71,6 +72,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
     positiveDelta,
     favoriteHabits,
     recentDays,
+    userInitials,
     currentYear,
   } = data;
 
@@ -199,7 +201,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
           </div>
           <div className="relative z-10 xl:pt-6 2xl:pt-2 flex flex-col justify-between h-full xl:gap-2 2xl:gap-3 items-center">
             <div className="select-none xl:w-12 xl:h-12 bg-gray-300/30 rounded-full flex items-center justify-center text-lg sm:text-xl font-semibold">
-              🎁
+              {userInitials}
             </div>
             <span className="xl:text-sm 2xl:text-md opacity-80">
               Habits Wrapped

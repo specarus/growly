@@ -248,7 +248,7 @@ export default function LandingPage() {
                 match your reality.
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-soft/15 text-green-soft-foreground xl:text-xs 2xl:text-sm font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-soft text-green-soft-foreground xl:text-xs 2xl:text-sm font-semibold">
               <Hammer className="xl:w-4 xl:h-4 2xl:h-5 2xl:w-5" />
               Crafted for tiny wins
             </div>

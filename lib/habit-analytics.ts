@@ -36,13 +36,13 @@ export const buildHabitAnalytics = (
 ): HabitAnalyticsResult => {
   const habitGoalMap = new Map<string, number>();
   const habitStartDateMap = new Map<string, Date>();
+  const habitStartDates: Date[] = [];
 
   habits.forEach((habit) => {
     habitGoalMap.set(habit.id, habit.goalAmount ?? 1);
-    habitStartDateMap.set(
-      habit.id,
-      getUtcDayStart(new Date(habit.startDate))
-    );
+    const startDate = getUtcDayStart(new Date(habit.startDate));
+    habitStartDateMap.set(habit.id, startDate);
+    habitStartDates.push(startDate);
   });
 
   const completionByHabit = new Map<string, Map<string, number>>();
@@ -74,7 +74,12 @@ export const buildHabitAnalytics = (
   const progressByDay: ProgressByDayMap = {};
   if (totalHabits > 0) {
     Object.entries(rawProgressByDay).forEach(([date, sum]) => {
-      progressByDay[date] = Math.min(1, sum / totalHabits);
+      const day = getUtcDayStart(new Date(date));
+      const activeHabitsForDay = habitStartDates.filter(
+        (start) => !Number.isNaN(start.getTime()) && start <= day
+      ).length;
+      const divisor = activeHabitsForDay > 0 ? activeHabitsForDay : totalHabits;
+      progressByDay[date] = Math.min(1, sum / divisor);
     });
   }
 

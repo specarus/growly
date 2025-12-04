@@ -154,7 +154,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
 
   return (
     <div className="flex flex-col xl:rounded-2xl 2xl:rounded-3xl h-full text-foreground">
-      <div className="flex items-center justify-between xl:mb-4">
+      <div className="flex items-start justify-between xl:mb-4">
         <div className="space-y-1">
           <h3 className="font-semibold xl:text-lg 2xl:text-xl">Should Do!</h3>
           <p className="text-muted-foreground xl:text-[11px] 2xl:text-xs">
