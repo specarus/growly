@@ -1,91 +1,147 @@
 "use client";
 
 import {
-  ChevronDown,
-  TrendingUp,
-  Search,
-  CheckCircle,
   BarChart3,
+  CheckCircle,
+  ChevronDown,
+  Search,
+  TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
-import confettiImage from "@/public/confetti.png";
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import Button from "@/app/components/ui/button";
 import PillButton from "@/app/components/ui/pill-button";
+import confettiImage from "@/public/confetti.png";
 
-interface Habit {
+export type FavoriteHabitStat = {
+  id: string;
   name: string;
   percentage: number;
-  color: string;
-}
+};
 
-type Month =
-  | "January"
-  | "February"
-  | "March"
-  | "April"
-  | "May"
-  | "June"
-  | "July"
-  | "August"
-  | "September"
-  | "October"
-  | "November"
-  | "December";
+export type AnalyticsWidgetData = {
+  completionRate: number;
+  positiveDelta: number;
+  favoriteHabits: FavoriteHabitStat[];
+  recentDays: {
+    key: string;
+    label: string;
+    completion: number;
+    habits: FavoriteHabitStat[];
+  }[];
+  currentYear: number;
+};
 
-const AnalyticsWidget: React.FC = () => {
-  const habits: Habit[] = [
-    { name: "Tennis", percentage: 40, color: "bg-green-soft" },
-    { name: "Swimming", percentage: 35, color: "bg-blue-400" },
-    { name: "Gym", percentage: 100, color: "bg-yellow-400" },
-    { name: "Reading", percentage: 15, color: "bg-coral" },
-    { name: "Study", percentage: 28, color: "bg-green-400" },
-    { name: "Running", percentage: 22, color: "bg-muted" },
-    { name: "Design", percentage: 30, color: "bg-primary" },
-    { name: "Basketball", percentage: 55, color: "bg-yellow-soft" },
-  ];
+type Props = {
+  data: AnalyticsWidgetData;
+};
 
-  const pastFiveDays: string[] = [
-    "Mon 10",
-    "Tue 11",
-    "Wed 12",
-    "Thu 13",
-    "Fri 14",
-  ];
-  const months: Month[] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
 
-  const [month, setMonth] = useState<Month>("November");
-  const [open, setOpen] = useState<boolean>(false);
+type Month = (typeof months)[number];
+
+const barColors = [
+  "bg-primary",
+  "bg-green-soft",
+  "bg-coral",
+  "bg-yellow-400",
+  "bg-blue-400",
+  "bg-emerald-500",
+  "bg-indigo-400",
+  "bg-muted",
+];
+
+const AnalyticsWidget: React.FC<Props> = ({ data }) => {
+  const {
+    completionRate,
+    positiveDelta,
+    favoriteHabits,
+    recentDays,
+    currentYear,
+  } = data;
+
+  const defaultMonth = months[new Date().getMonth()] as Month;
+  const [month, setMonth] = useState<Month>(defaultMonth);
+  const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [selected, setSelected] = useState<number>(1);
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number>(() =>
+    Math.max(0, recentDays.length - 1)
+  );
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const maxPercentage = Math.max(...habits.map((h) => h.percentage));
+  useEffect(() => {
+    if (recentDays.length === 0) {
+      setSelectedDayIndex(0);
+      return;
+    }
+    setSelectedDayIndex((current) => Math.min(current, recentDays.length - 1));
+  }, [recentDays.length]);
+
+  const selectedDay = useMemo(() => {
+    if (recentDays.length === 0) {
+      return null;
+    }
+    return (
+      recentDays[selectedDayIndex] ?? recentDays[recentDays.length - 1] ?? null
+    );
+  }, [recentDays, selectedDayIndex]);
+
+  const baseHabits =
+    selectedDay && selectedDay.habits.length > 0
+      ? selectedDay.habits
+      : favoriteHabits;
+
+  const filteredHabits = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return baseHabits;
+    }
+    const term = searchQuery.trim().toLowerCase();
+    return baseHabits.filter((habit) =>
+      habit.name.toLowerCase().includes(term)
+    );
+  }, [baseHabits, searchQuery]);
+
+  const habitsWithColors = filteredHabits.map((habit, index) => ({
+    ...habit,
+    color: barColors[index % barColors.length],
+  }));
+
+  const maxPercentage = habitsWithColors.reduce(
+    (max, habit) => Math.max(max, habit.percentage),
+    0
+  );
+
+  const formattedDelta = `${
+    positiveDelta >= 0 ? "+" : ""
+  }${positiveDelta.toFixed(1)}%`;
+  const formattedCompletionRate = `${Math.round(completionRate)}%`;
 
   return (
     <div className="flex xl:gap-4 2xl:gap-6 h-full text-foreground">
@@ -106,7 +162,12 @@ const AnalyticsWidget: React.FC = () => {
               Positive Habits
             </span>
           </div>
-          <div className="xl:text-3xl font-bold text-white mb-1">+58,2%</div>
+          <div className="xl:text-3xl font-bold text-white mb-1">
+            {formattedDelta}
+          </div>
+          <p className="xl:text-[11px] 2xl:text-xs text-white/70">
+            vs previous week
+          </p>
         </div>
 
         <div className="xl:py-2 px-4 2xl:py-4 xl:max-h-24 2xl:max-h-max xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-linear-to-br from-blue-300 to-blue-600 dark:from-slate-900 dark:to-blue-700">
@@ -118,7 +179,12 @@ const AnalyticsWidget: React.FC = () => {
               Completion Rate
             </span>
           </div>
-          <div className="xl:text-3xl font-bold text-white mb-1">85%</div>
+          <div className="xl:text-3xl font-bold text-white mb-1">
+            {formattedCompletionRate}
+          </div>
+          <p className="xl:text-[11px] 2xl:text-xs text-white/70">
+            Average goal success across habits
+          </p>
         </div>
 
         <div className="h-full p-2 xl:rounded-2xl 2xl:rounded-3xl border-0 shadow-md bg-analytics-dark text-analytics-dark-foreground relative overflow-hidden">
@@ -132,13 +198,13 @@ const AnalyticsWidget: React.FC = () => {
             />
           </div>
           <div className="relative z-10 xl:pt-6 2xl:pt-2 flex flex-col justify-between h-full xl:gap-2 2xl:gap-3 items-center">
-            <div className="select-none xl:w-12 xl:h-12 bg-gray-300/30 rounded-full flex items-center justify-center text-lg sm:text-xl">
+            <div className="select-none xl:w-12 xl:h-12 bg-gray-300/30 rounded-full flex items-center justify-center text-lg sm:text-xl font-semibold">
               🎁
             </div>
             <span className="xl:text-sm 2xl:text-md opacity-80">
               Habits Wrapped
             </span>
-            <div className="xl:text-3xl font-bold">2025</div>
+            <div className="xl:text-3xl font-bold">{currentYear}</div>
             <Button className="bg-white hover:bg-card/90 text-card-foreground xl:h-9 2xl:h-10 xl:text-xs 2xl:text-sm mt-2 transition-all duration-100 inline-flex items-center justify-center px-4 rounded-full border border-gray-100 shadow-sm dark:bg-card dark:text-card-foreground dark:hover:bg-card/80 dark:border-border">
               View
             </Button>
@@ -149,9 +215,21 @@ const AnalyticsWidget: React.FC = () => {
       <div className="space-y-4 grow w-full">
         <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full dark:bg-card dark:border-border">
           <div className="flex items-center justify-between xl:mb-4 2xl:mb-6 gap-2">
-            <h3 className="font-semibold xl:text-lg 2xl:text-xl">
-              Favorite Habits
-            </h3>
+            <div className="space-y-1">
+              <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+                Favorite Habits
+              </h3>
+              {selectedDay ? (
+                <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                  {selectedDay.label} - {selectedDay.completion}% of daily goals
+                  completed
+                </p>
+              ) : (
+                <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                  No recent check-ins yet
+                </p>
+              )}
+            </div>
 
             <div className="flex items-center gap-3">
               <div className="flex gap-1 shadow-sm rounded-full">
@@ -161,7 +239,9 @@ const AnalyticsWidget: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search"
-                  className="pl-1 pr-4 outline-none w-24 xl:text-xs 2xl:text-sm text-muted-foreground bg-transparent rounded-full placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/80"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="pl-1 pr-4 outline-none w-28 xl:text-xs 2xl:text-sm text-muted-foreground bg-transparent rounded-full placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/80"
                 />
               </div>
 
@@ -204,52 +284,66 @@ const AnalyticsWidget: React.FC = () => {
 
           <div className="space-y-4 overflow-x-auto flex flex-col h-full">
             <div className="grid grid-cols-5 xl:gap-1 2xl:gap-2 xl:text-[10px] 2xl:text-xs text-muted-foreground dark:text-muted-foreground/70 mb-2 min-w-max sm:min-w-0 flex-none">
-              {pastFiveDays.map((day, index) => (
-                <div
-                  key={index}
-                  className={`pb-2 text-center border-b-2 hover:border-muted-foreground cursor-pointer ${
-                    selected === index
-                      ? "border-muted-foreground"
-                      : "border-white"
-                  }`}
-                  onClick={() => setSelected(index)}
-                >
-                  {day}
+              {recentDays.length === 0 ? (
+                <div className="col-span-5 text-muted-foreground text-center py-2">
+                  No recent days to show
                 </div>
-              ))}
+              ) : (
+                recentDays.map((day, index) => (
+                  <div
+                    key={day.key}
+                    className={`pb-2 text-center border-b-2 hover:border-muted-foreground cursor-pointer ${
+                      selectedDayIndex === index
+                        ? "border-muted-foreground"
+                        : "border-white"
+                    }`}
+                    onClick={() => setSelectedDayIndex(index)}
+                    title={`${day.completion}% complete`}
+                  >
+                    {day.label}
+                  </div>
+                ))
+              )}
             </div>
 
-            <div className="relative flex flex-1 overflow-hidden">
-              {habits.map((habit) => {
-                const heightPercent = maxPercentage
-                  ? (habit.percentage / maxPercentage) * 100
-                  : 0;
-                return (
-                  <div
-                    key={habit.name}
-                    className="group h-10/12 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
-                  >
-                    <div className="flex flex-col items-center gap-1 text-center">
-                      <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
-                        {habit.name}
+            {habitsWithColors.length === 0 ? (
+              <div className="flex-1 grid place-items-center rounded-2xl border border-dashed border-muted/60 bg-muted/10 text-muted-foreground xl:text-xs 2xl:text-sm">
+                Log habit progress to see who is leading.
+              </div>
+            ) : (
+              <div className="relative flex flex-1 overflow-hidden">
+                {habitsWithColors.map((habit) => {
+                  const heightPercent = Math.max(
+                    0,
+                    Math.min(100, habit.percentage)
+                  );
+                  return (
+                    <div
+                      key={habit.id}
+                      className="group h-10/12 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
+                    >
+                      <div className="flex flex-col items-center gap-1 text-center">
+                        <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
+                          {habit.name}
+                        </div>
+                        <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">
+                          {habit.percentage}%
+                        </div>
                       </div>
-                      <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">
-                        {habit.percentage}%
+                      <div className="flex-1 w-full flex items-start">
+                        <div
+                          className={`w-full ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
+                          style={{
+                            height: `${heightPercent}%`,
+                            maxHeight: "100%",
+                          }}
+                        ></div>
                       </div>
                     </div>
-                    <div className="flex-1 w-full flex items-start">
-                      <div
-                        className={`w-full ${habit.color} shadow-md rounded-lg sm:rounded-xl transition-all hover:opacity-80`}
-                        style={{
-                          height: `${heightPercent}%`,
-                          maxHeight: "100%",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

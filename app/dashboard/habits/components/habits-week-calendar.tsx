@@ -417,9 +417,12 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                       {day.timed.map((event) => {
                         const leftOffset = 6;
                         const rightOffset = 6;
-                        const isHoveredGroup = hoveredGroupKey === event.groupKey;
-                        const isHoveredEvent = hoveredEventId === event.habit.id;
-                        const isOtherInGroup = isHoveredGroup && !isHoveredEvent;
+                        const isHoveredGroup =
+                          hoveredGroupKey === event.groupKey;
+                        const isHoveredEvent =
+                          hoveredEventId === event.habit.id;
+                        const isOtherInGroup =
+                          isHoveredGroup && !isHoveredEvent;
                         const top =
                           event.position -
                           HEADER_HEIGHT -
@@ -428,15 +431,21 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                         return (
                           <div
                             key={event.habit.id}
-                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition-opacity duration-200 ease-out ${event.colorClass} ${
-                              isOtherInGroup ? "opacity-0 pointer-events-none" : ""
+                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition-opacity duration-200 ease-out ${
+                              event.colorClass
+                            } ${
+                              isOtherInGroup
+                                ? "opacity-0 pointer-events-none"
+                                : ""
                             }`}
-                          style={{
+                            style={{
                               top,
                               left: `${leftOffset}%`,
                               right: `${rightOffset}%`,
                             }}
-                            title={`${event.timeLabel} - ${describeHabit(event.habit)}`}
+                            title={`${event.timeLabel} - ${describeHabit(
+                              event.habit
+                            )}`}
                             onMouseEnter={() => {
                               setHoveredGroupKey(event.groupKey);
                               setHoveredEventId(event.habit.id);
@@ -468,4 +477,3 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
 };
 
 export default HabitsWeekCalendar;
-

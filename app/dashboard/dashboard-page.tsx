@@ -1,6 +1,7 @@
 import CelebrationToast from "../components/celebration-toast";
 import GradientCircle from "../components/ui/gradient-circle";
 import AnalyticsWidget from "./components/analytics-widget";
+import type { AnalyticsWidgetData } from "./components/analytics-widget";
 import CalendarWidget from "./components/calendar-widget";
 import GreetingWidget from "./components/greeting-widget";
 import IntegrationWidget from "./components/integration-widget";
@@ -13,9 +14,10 @@ import { ProgressByDayMap } from "@/lib/habit-progress";
 
 interface DashboardProps {
   progressByDay: ProgressByDayMap;
+  analyticsData: AnalyticsWidgetData;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ progressByDay }) => {
+const Dashboard: React.FC<DashboardProps> = ({ progressByDay, analyticsData }) => {
   return (
     <main className="relative w-full min-h-screen xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
       <GradientCircle
@@ -59,7 +61,7 @@ const Dashboard: React.FC<DashboardProps> = ({ progressByDay }) => {
               </div>
             </div>
           </div>
-          <AnalyticsWidget />
+          <AnalyticsWidget data={analyticsData} />
         </div>
       </div>
     </main>
