@@ -138,22 +138,11 @@ export default async function DashboardPage() {
     };
   });
 
-  const initials =
-    session.user.name
-      ?.split(" ")
-      .map((part) => part.charAt(0))
-      .join("")
-      .slice(0, 3)
-      .toUpperCase() ||
-    session.user.email?.slice(0, 2).toUpperCase() ||
-    "You";
-
   const analyticsData: AnalyticsWidgetData = {
     completionRate,
     positiveDelta,
     favoriteHabits,
     recentDays,
-    userInitials: initials,
     currentYear: today.getUTCFullYear(),
   };
 
