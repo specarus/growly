@@ -34,18 +34,23 @@ type TimedEvent = {
   minutes: number;
   timeLabel: string;
   position: number;
-  height: number;
+  stackIndex: number;
+  groupStart: number;
+  groupKey: string;
   colorClass: string;
 };
 
 const DAY_START_MINUTES = 5 * 60;
 const DAY_END_MINUTES = 23 * 60;
 const MINUTES_RANGE = DAY_END_MINUTES - DAY_START_MINUTES;
-const TIMELINE_HEIGHT = 640;
+const HOURS_RANGE = MINUTES_RANGE / 60;
+const HOUR_HEIGHT = 56;
+const TIMELINE_HEIGHT = HOURS_RANGE * HOUR_HEIGHT;
 const HEADER_HEIGHT = 48;
 const FLOATING_HEIGHT = 44;
 const TOTAL_HEIGHT = HEADER_HEIGHT + FLOATING_HEIGHT + TIMELINE_HEIGHT;
-const MIN_EVENT_HEIGHT = 52;
+const EVENT_DURATION_MINUTES = 60;
+const OVERLAP_OFFSET = 8;
 
 const colorPalette = [
   "bg-primary/80 text-white border-primary/50",
@@ -127,7 +132,7 @@ const formatRangeLabel = (start: Date) => {
   const yearLabel = sameYear
     ? start.getFullYear()
     : `${start.getFullYear()}-${end.getFullYear()}`;
-  return `${startLabel} – ${endLabel}, ${yearLabel}`;
+  return `${startLabel} - ${endLabel}, ${yearLabel}`;
 };
 
 const shouldShowHabitOnDate = (habit: HabitLike, day: Date) => {
@@ -190,18 +195,14 @@ const buildCalendarDay = (
         (clampedOffset / MINUTES_RANGE) * TIMELINE_HEIGHT +
         HEADER_HEIGHT +
         FLOATING_HEIGHT;
-      const height = Math.max(
-        MIN_EVENT_HEIGHT,
-        (60 / MINUTES_RANGE) * TIMELINE_HEIGHT
-      );
       const colorClass = colorPalette[index % colorPalette.length];
       const timeLabel = formatTimeLabel(minutes);
       return {
         habit,
         minutes,
         position,
-        height,
         timeLabel,
+        stackIndex: 0,
         colorClass,
       };
     })
@@ -209,29 +210,47 @@ const buildCalendarDay = (
 
   timed.sort((a, b) => a.minutes - b.minutes);
 
+  let groupStart = -Infinity;
+  let groupIndex = -1;
+  const timedWithStacks = timed.map((event) => {
+    if (event.minutes - groupStart >= EVENT_DURATION_MINUTES) {
+      groupStart = event.minutes;
+      groupIndex = 0;
+    } else {
+      groupIndex += 1;
+    }
+    const groupKey = `${dayKey}-${groupStart}`;
+    return { ...event, stackIndex: groupIndex, groupStart, groupKey };
+  });
+
   return {
     date,
-    timed,
+    timed: timedWithStacks,
     floating,
     progress: dayProgress,
   };
 };
 
-const hourMarkers = Array.from({ length: 10 }, (_, index) => {
-  const hour = 5 + index * 2;
-  const minutes = hour * 60;
-  const position =
-    ((minutes - DAY_START_MINUTES) / MINUTES_RANGE) * TIMELINE_HEIGHT +
-    HEADER_HEIGHT +
-    FLOATING_HEIGHT;
-  return { hour, position };
-});
+const hourMarkers = Array.from(
+  { length: DAY_END_MINUTES / 60 - DAY_START_MINUTES / 60 + 1 },
+  (_, index) => {
+    const hour = DAY_START_MINUTES / 60 + index;
+    const minutes = hour * 60;
+    const position =
+      ((minutes - DAY_START_MINUTES) / MINUTES_RANGE) * TIMELINE_HEIGHT +
+      HEADER_HEIGHT +
+      FLOATING_HEIGHT;
+    return { hour, position };
+  }
+);
 
 const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
   const today = useMemo(() => startOfDay(new Date()), []);
   const [weekStart, setWeekStart] = useState<Date>(() =>
     startOfWeek(new Date())
   );
+  const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);
+  const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
 
   const weekDays: CalendarDay[] = useMemo(() => {
     return Array.from({ length: 7 }, (_, index) => {
@@ -395,26 +414,37 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                       ))}
                     </div>
                     <div className="relative h-full">
-                      {day.timed.map((event, eventIndex) => {
-                        const lane = eventIndex % 2;
-                        const leftOffset = 4 + lane * 4;
-                        const rightOffset = 4;
+                      {day.timed.map((event) => {
+                        const leftOffset = 6;
+                        const rightOffset = 6;
+                        const isHoveredGroup = hoveredGroupKey === event.groupKey;
+                        const isHoveredEvent = hoveredEventId === event.habit.id;
+                        const isOtherInGroup = isHoveredGroup && !isHoveredEvent;
+                        const top =
+                          event.position -
+                          HEADER_HEIGHT -
+                          FLOATING_HEIGHT +
+                          event.stackIndex * OVERLAP_OFFSET;
                         return (
                           <div
                             key={event.habit.id}
-                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition hover:-translate-y-px ${event.colorClass}`}
-                            style={{
-                              top:
-                                event.position -
-                                HEADER_HEIGHT -
-                                FLOATING_HEIGHT,
-                              height: event.height,
+                            className={`absolute rounded-xl cursor-default border px-3 xl:py-1   2xl:py-2 shadow-sm transition-opacity duration-200 ease-out ${event.colorClass} ${
+                              isOtherInGroup ? "opacity-0 pointer-events-none" : ""
+                            }`}
+                          style={{
+                              top,
                               left: `${leftOffset}%`,
                               right: `${rightOffset}%`,
                             }}
-                            title={`${event.timeLabel} — ${describeHabit(
-                              event.habit
-                            )}`}
+                            title={`${event.timeLabel} - ${describeHabit(event.habit)}`}
+                            onMouseEnter={() => {
+                              setHoveredGroupKey(event.groupKey);
+                              setHoveredEventId(event.habit.id);
+                            }}
+                            onMouseLeave={() => {
+                              setHoveredGroupKey(null);
+                              setHoveredEventId(null);
+                            }}
                           >
                             <p className="xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
                               {event.timeLabel}
@@ -438,3 +468,4 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
 };
 
 export default HabitsWeekCalendar;
+
