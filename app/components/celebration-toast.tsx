@@ -49,7 +49,9 @@ const CelebrationToast: React.FC = () => {
   const message =
     celebration.type === "level"
       ? `Level ${celebration.level} unlocked! +${celebration.xp} XP`
-      : `Great work! +${celebration.xp} XP for completing a todo.`;
+      : celebration.type === "habit"
+        ? `Great work! +${celebration.xp} XP for progressing a habit.`
+        : `Great work! +${celebration.xp} XP for completing a todo.`;
 
   const animationClass = visible
     ? "translate-y-0 opacity-100 scale-100"

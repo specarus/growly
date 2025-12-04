@@ -26,7 +26,7 @@ interface GamificationState {
 }
 
 interface XPContextValue extends GamificationState {
-  addXP: (amount: number) => void;
+  addXP: (amount: number, source?: CelebrationSource) => void;
   loading: boolean;
   celebration: CelebrationEvent | null;
   clearCelebration: () => void;
@@ -42,8 +42,10 @@ const xpForLevel = (level: number) =>
   BASE_XP_PER_LEVEL + (level - 1) * LEVEL_XP_INCREMENT;
 
 type CelebrationEvent =
-  | { type: "todo"; xp: number }
+  | { type: CelebrationSource; xp: number }
   | { type: "level"; xp: number; level: number };
+
+type CelebrationSource = "todo" | "habit";
 
 const computeLevelState = (totalXP: number) => {
   let remainingXP = totalXP;
@@ -125,7 +127,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
     Math.floor((xpGainedInLevel / xpNeededForLevelUp) * 100)
   );
 
-  const addXP = useCallback((amount: number) => {
+  const addXP = useCallback((amount: number, source: CelebrationSource = "todo") => {
     if (amount === 0) return;
 
     setTotalXP((prev) => {
@@ -137,7 +139,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
         if (nextLevel > prevLevel) {
           setCelebration({ type: "level", xp: amount, level: nextLevel });
         } else {
-          setCelebration({ type: "todo", xp: amount });
+          setCelebration({ type: source, xp: amount });
         }
       }
       return nextTotal;

@@ -24,6 +24,8 @@ import HabitsCalendar from "./components/habits-calendar";
 import HabitsWeekCalendar from "./components/habits-week-calendar";
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import { formatDayKey, ProgressByDayMap } from "@/lib/habit-progress";
+import { useXP } from "@/app/context/xp-context";
+import { XP_PER_HABIT } from "@/lib/xp";
 
 type Habit = PrismaHabit & {
   streak?: number;
@@ -100,6 +102,27 @@ type MenuPosition = {
   left: number;
 };
 
+const normalizeGoal = (value?: number | null) => {
+  if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
+    return 1;
+  }
+  return value;
+};
+
+const calculateHabitXpDelta = (
+  previousProgress: number,
+  nextProgress: number,
+  goalAmount?: number | null
+) => {
+  const goal = normalizeGoal(goalAmount);
+  const wasComplete = previousProgress >= goal;
+  const isComplete = nextProgress >= goal;
+
+  if (!wasComplete && isComplete) return XP_PER_HABIT;
+  if (wasComplete && !isComplete) return -XP_PER_HABIT;
+  return 0;
+};
+
 const Portal = ({ children }: { children: ReactNode }) => {
   const [container, setContainer] = useState<HTMLElement | null>(null);
 
@@ -127,6 +150,7 @@ const Portal = ({ children }: { children: ReactNode }) => {
 const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { addXP } = useXP();
   const [localHabits, setLocalHabits] = useState(habits);
   const [selectedHabitId, setSelectedHabitId] = useState<string>(
     habits[0]?.id || ""
@@ -208,6 +232,8 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       return;
     }
     setQuantityMenuOpen(null);
+    const targetHabit = localHabits.find((habit) => habit.id === habitId);
+    const previousProgress = targetHabit?.dailyProgress ?? 0;
     setCustomQuantities((prev) => ({
       ...prev,
       [habitId]: "",
@@ -242,6 +268,17 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       const data = await response.json();
 
       if (typeof data.dailyProgress === "number") {
+        const xpDelta = targetHabit
+          ? calculateHabitXpDelta(
+              previousProgress,
+              data.dailyProgress,
+              targetHabit.goalAmount
+            )
+          : 0;
+        if (xpDelta !== 0) {
+          addXP(xpDelta, "habit");
+        }
+
         setLocalHabits((prev) => {
           const next = prev.map((habit) =>
             habit.id === habitId
@@ -260,6 +297,8 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
 
   const handleReset = async (habitId: string) => {
     setQuantityMenuOpen(null);
+    const targetHabit = localHabits.find((habit) => habit.id === habitId);
+    const previousProgress = targetHabit?.dailyProgress ?? 0;
     try {
       const response = await fetch(`/api/habits/${habitId}/reset`, {
         method: "POST",
@@ -273,6 +312,17 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
 
       const nextProgress =
         typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
+
+      const xpDelta = targetHabit
+        ? calculateHabitXpDelta(
+            previousProgress,
+            nextProgress,
+            targetHabit.goalAmount
+          )
+        : 0;
+      if (xpDelta !== 0) {
+        addXP(xpDelta, "habit");
+      }
 
       setLocalHabits((prev) => {
         const next = prev.map((habit) =>
