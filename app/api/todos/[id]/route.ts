@@ -123,7 +123,7 @@ export async function GET(_request: Request, ctx: ParamsArg) {
       },
     });
 
-    if (!todo) {
+    if (!todo || todo.archived) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
@@ -166,13 +166,14 @@ export async function DELETE(_request: Request, ctx: ParamsArg) {
     const { id } = await resolveParams(ctx);
     const userId = await requireUserId();
 
-    await prisma.todo.delete({
+    await prisma.todo.update({
       where: {
         id_userId: {
           id,
           userId,
         },
       },
+      data: { archived: true },
     });
 
     revalidatePath("/dashboard");

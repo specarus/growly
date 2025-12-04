@@ -53,8 +53,8 @@ export async function GET() {
     const userId = await requireUserId();
 
     const todos = await prisma.todo.findMany({
-      where: { userId },
-      orderBy: { dueAt: "asc" },
+      where: { userId, archived: false },
+      orderBy: [{ status: "asc" }, { dueAt: "asc" }, { createdAt: "desc" }],
     });
 
     return NextResponse.json({ todos });
@@ -126,8 +126,9 @@ export async function DELETE(request: Request) {
       where.collections = { none: {} };
     }
 
-    const result = await prisma.todo.deleteMany({
+    const result = await prisma.todo.updateMany({
       where,
+      data: { archived: true },
     });
 
     revalidatePath("/dashboard");

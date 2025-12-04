@@ -306,7 +306,8 @@ export default async function MyPostsPage() {
       label: "Posted habits",
       value: displayOwned.length,
       hint: `${totalLikesEarned} total likes earned`,
-      accent: "from-primary/70 via-primary/60 to-green-soft/70",
+      accent:
+        "from-sky-500 via-blue-600 to-indigo-700 dark:from-sky-500 dark:via-blue-600 dark:to-indigo-700",
     },
     {
       label: "Ideas shared",
@@ -314,7 +315,8 @@ export default async function MyPostsPage() {
       hint: topIdea
         ? `"${topIdea.title}" is topping with ${topIdea.likesCount} likes`
         : "Try posting a fresh Should Do",
-      accent: "from-secondary via-coral/70 to-primary/60",
+      accent:
+        "from-rose-500 via-pink-500 to-fuchsia-500 dark:from-rose-500 dark:via-pink-500 dark:to-fuchsia-500",
     },
     {
       label: "Likes you gave",
@@ -322,13 +324,15 @@ export default async function MyPostsPage() {
       hint: `${
         displayLiked.length + displayLikedShouldDos.length
       } things boosted`,
-      accent: "from-amber-400 via-yellow-400 to-orange-500",
+      accent:
+        "from-purple-500 via-violet-500 to-indigo-500 dark:from-purple-500 dark:via-violet-500 dark:to-indigo-500",
     },
     {
       label: "Added blueprints",
       value: displayAdded.length,
       hint: "Imported to your board",
-      accent: "from-green-soft via-primary/70 to-emerald-500",
+      accent:
+        "from-emerald-400 via-green-500 to-teal-500 dark:from-emerald-400 dark:via-green-500 dark:to-teal-500",
     },
   ];
 

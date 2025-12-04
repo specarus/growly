@@ -1131,7 +1131,7 @@ const PopularHabitsPage: React.FC = () => {
 
         <section
           id="should-do"
-          className="space-y-3 p-6 rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30"
+          className="space-y-3 p-6 rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30 scroll-mt-28"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
@@ -1183,7 +1183,7 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                 )
               ) : (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 max-h-[32rem] overflow-y-auto pr-1">
                   {filteredShouldDos.map((idea) => {
                     const seedIcon = seedIconMap.get(idea.id);
                     const iconKey = idea.iconKey ?? seedIcon?.iconKey ?? null;
