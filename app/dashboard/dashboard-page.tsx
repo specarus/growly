@@ -7,6 +7,7 @@ import GreetingWidget from "./components/greeting-widget";
 import IntegrationWidget from "./components/integration-widget";
 import ScoreWidget from "./components/score-widget";
 import ShouldDoWidget from "./components/should-do-widget";
+import DailyQuoteWidget from "./components/daily-quote-widget";
 import SyncWidget from "./components/sync-widget";
 import TodosWidget from "./components/todos-widget";
 import WeatherWidget from "./components/weather-widget";
@@ -61,6 +62,9 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="col-span-2 flex flex-col">
               <div>
                 <IntegrationWidget />
+              </div>
+              <div className="h-fit">
+                <DailyQuoteWidget />
               </div>
             </div>
           </div>

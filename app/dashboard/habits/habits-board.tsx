@@ -728,14 +728,14 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   position={{ bottom: "-50px", right: "-30px" }}
                   color="rgba(240,144,41,0.35)"
                   fadeColor="rgba(240,144,41,0)"
-                  className="scale-[1.2]"
+                  className="scale-[3.5]"
                 />
                 <GradientCircle
                   size={210}
                   position={{ top: "-50px", left: "-30px" }}
                   color="rgba(240,144,41,0.35)"
                   fadeColor="rgba(240,144,41,0)"
-                  className="scale-[1.5]"
+                  className="scale-[3.5]"
                 />
                 <div className="flex items-center justify-between">
                   <div>
