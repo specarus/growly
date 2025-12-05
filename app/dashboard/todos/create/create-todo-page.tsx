@@ -125,7 +125,6 @@ const recurrenceOptions: Recurrence[] = ["None", "Daily", "Weekly", "Monthly"];
 const recurrenceDropdownOptionsId = "recurrence-dropdown-options";
 
 const curatedIconNames = [
-  // General / UI controls
   "Check",
   "CheckCircle",
   "Circle",
@@ -149,7 +148,6 @@ const curatedIconNames = [
   "Folder",
   "FolderOpen",
 
-  // Work & productivity
   "Briefcase",
   "ClipboardList",
   "ListTodo",
@@ -159,7 +157,6 @@ const curatedIconNames = [
   "Laptop",
   "Presentation",
 
-  // Home & personal
   "Home",
   "ShoppingCart",
   "Utensils",
@@ -168,7 +165,6 @@ const curatedIconNames = [
   "Car",
   "Wrench",
 
-  // Self-improvement / habits
   "Brain",
   "Heart",
   "Dumbbell",
@@ -176,27 +172,23 @@ const curatedIconNames = [
   "Leaf",
   "Smile",
 
-  // Communication
   "Mail",
   "Phone",
   "MessageSquare",
   "Bell",
   "Megaphone",
 
-  // Creativity & hobbies
   "Paintbrush",
   "Camera",
   "Music",
   "Gamepad",
   "Film",
 
-  // Lifestyle & travel
   "Globe",
   "MapPin",
   "Plane",
   "TreePalm",
 
-  // Priority / alerts
   "AlertTriangle",
   "AlertCircle",
   "Star",

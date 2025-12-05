@@ -22,8 +22,6 @@ export async function deleteAccountAction() {
     headers: requestHeaders,
   });
 
-  // Leveraging Prisma cascades via the schema ensures every related todo, habit,
-  // collection, routine, and analytic record is purged when the user is removed.
   await prisma.user.delete({
     where: { id: userId },
   });

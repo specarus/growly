@@ -37,6 +37,9 @@ export const buildHabitAnalytics = (
   const habitGoalMap = new Map<string, number>();
   const habitStartDateMap = new Map<string, Date>();
   const habitStartDates: Date[] = [];
+  const today = getUtcDayStart(new Date());
+  const todayKey = formatDayKey(today);
+  const todayProgressByHabit = new Map<string, number>();
 
   habits.forEach((habit) => {
     habitGoalMap.set(habit.id, habit.goalAmount ?? 1);
@@ -55,6 +58,9 @@ export const buildHabitAnalytics = (
     const normalizedGoal = goalAmount > 0 ? goalAmount : 1;
     const ratio = Math.min(1, entry.progress / normalizedGoal);
     const dayKey = formatDayKey(entry.date);
+    if (dayKey === todayKey) {
+      todayProgressByHabit.set(entry.habitId, entry.progress);
+    }
 
     let habitCompletion = completionByHabit.get(entry.habitId);
     if (!habitCompletion) {
@@ -83,11 +89,10 @@ export const buildHabitAnalytics = (
     });
   }
 
-  const today = getUtcDayStart(new Date());
-
   const habitsWithStats: HabitWithStats[] = habits.map((habit) => {
     const completionMap = completionByHabit.get(habit.id);
     const habitStart = habitStartDateMap.get(habit.id) ?? today;
+    const todaysProgress = todayProgressByHabit.get(habit.id) ?? 0;
 
     let streak = 0;
     const streakCursor = getUtcDayStart(new Date(today));
@@ -131,6 +136,7 @@ export const buildHabitAnalytics = (
 
     return {
       ...habit,
+      dailyProgress: todaysProgress,
       streak,
       averageCompletion,
       successRate,

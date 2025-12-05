@@ -50,7 +50,7 @@ const GRID_TEMPLATE_COLUMNS = "60px repeat(7, 1fr)";
 const HEADER_HEIGHT = 48;
 const FLOATING_HEIGHT = 44;
 const TIMELINE_PADDING = 20;
-const SCROLL_CUTOFF_HOUR = 14; // 2 PM viewport height, full day still scrolls
+const SCROLL_CUTOFF_HOUR = 14;
 const SCROLL_VIEW_HEIGHT =
   HEADER_HEIGHT +
   FLOATING_HEIGHT +
@@ -77,7 +77,6 @@ const colorPalette = [
 ];
 
 const colorForHabit = (habitId: string) => {
-  // Simple deterministic hash to spread ids across the palette
   let hash = 0;
   for (let i = 0; i < habitId.length; i += 1) {
     hash = (hash * 31 + habitId.charCodeAt(i)) | 0;
