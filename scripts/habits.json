@@ -1,0 +1,29 @@
+{
+  "habits": [
+    {
+      "id": "f6f78d41-1cb3-4d6c-a470-4118c95fc66a",
+      "name": "Brush teeth",
+      "description": null
+    },
+    {
+      "id": "0abb7247-9ea9-46a7-8ee5-b3a97e4a0d8b",
+      "name": "Morning stretch",
+      "description": null
+    },
+    {
+      "id": "a05a5cb3-1196-4ae1-a8a4-873c1d06b381",
+      "name": "Drink water",
+      "description": "Stay hydrated."
+    },
+    {
+      "id": "2ce04605-4152-4fd6-a43a-acb179641b35",
+      "name": "Gym",
+      "description": null
+    },
+    {
+      "id": "6400a487-5d6f-4d68-a1a4-bc75aee72b6a",
+      "name": "Study",
+      "description": null
+    }
+  ]
+}

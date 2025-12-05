@@ -81,6 +81,13 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   popularPost,
 }) => {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const [recommendations, setRecommendations] = useState<
+    { id: string; name: string; description: string | null; score?: number }[]
+  >([]);
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false);
+  const [recommendationsError, setRecommendationsError] = useState<
+    string | null
+  >(null);
 
   const buildDefaultForm = useMemo(
     () => ({
@@ -133,6 +140,51 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
     setIsDirty(false);
     setSaved(false);
   }, [buildDefaultForm, initialHabit]);
+
+  useEffect(() => {
+    if (mode !== "edit" || !habitId) {
+      setRecommendations([]);
+      return;
+    }
+    const controller = new AbortController();
+    setRecommendationsLoading(true);
+    setRecommendationsError(null);
+    fetch(`/api/habits/recommend?habitId=${habitId}&limit=5`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const payload = await response.json().catch(() => null);
+          const error =
+            (payload as { error?: string } | null)?.error ??
+            `Unable to fetch recommendations (${response.status})`;
+          throw new Error(error);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setRecommendations(
+          Array.isArray(data?.recommendations)
+            ? (data.recommendations as typeof recommendations)
+            : []
+        );
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setRecommendationsError(
+          error instanceof Error ? error.message : "Unable to load suggestions."
+        );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setRecommendationsLoading(false);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [habitId, mode]);
 
   const updateDropdownDirection = (
     toggleRef: React.RefObject<HTMLButtonElement | null>,
@@ -976,6 +1028,78 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                 </div>
               </div>
             </div>
+
+            {mode === "edit" && habitId ? (
+              <div className="rounded-3xl border border-primary/20 bg-primary/5 shadow-inner px-6 py-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                      Similar habits
+                    </p>
+                    <h2 className="xl:text-lg 2xl:text-xl font-semibold text-foreground">
+                      Suggestions to stack
+                    </h2>
+                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                      Based on this habit’s name and description.
+                    </p>
+                  </div>
+                  {recommendationsLoading ? (
+                    <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      Loading…
+                    </span>
+                  ) : null}
+                </div>
+
+                {recommendationsError ? (
+                  <p className="text-sm text-rose-600" role="alert">
+                    {recommendationsError}
+                  </p>
+                ) : null}
+
+                {!recommendationsLoading &&
+                !recommendationsError &&
+                recommendations.length === 0 ? (
+                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                    No similar habits yet. Try adding a description for better matches.
+                  </p>
+                ) : null}
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  {(recommendationsLoading ? Array.from({ length: 4 }) : recommendations).map(
+                    (rec, index) => (
+                      <div
+                        key={rec?.id ?? index}
+                        className="rounded-2xl border border-white/60 bg-white px-4 py-3 shadow-sm"
+                      >
+                        {recommendationsLoading ? (
+                          <div className="space-y-2 animate-pulse">
+                            <div className="h-4 w-32 bg-gray-200 rounded" />
+                            <div className="h-3 w-full bg-gray-200 rounded" />
+                            <div className="h-3 w-5/6 bg-gray-200 rounded" />
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                                {rec.name ?? "Untitled"}
+                              </p>
+                              {typeof rec.score === "number" ? (
+                                <span className="xl:text-[11px] 2xl:text-xs rounded-full bg-primary/10 text-primary px-2 py-1 font-semibold">
+                                  {Math.round(rec.score * 100)}%
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground line-clamp-3">
+                              {rec.description || "No description yet."}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </main>
