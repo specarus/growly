@@ -145,7 +145,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
   const formattedCompletionRate = `${Math.round(completionRate)}%`;
 
   return (
-    <div className="flex xl:gap-4 2xl:gap-6 h-full text-foreground">
+    <div className="flex xl:gap-4 2xl:gap-6 h-fit text-foreground">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>

@@ -54,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="col-span-6 flex flex-col xl:gap-4 2xl:gap-6">
-          <div className="grid grid-cols-5 xl:gap-4 h-full">
+          <div className="grid grid-cols-5 xl:gap-4 h-fit">
             <div className="col-span-3">
               <TodosWidget />
             </div>

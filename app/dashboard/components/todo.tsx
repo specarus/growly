@@ -78,7 +78,7 @@ const Todo: FC<TodoProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="relative flex items-start gap-3 select-none hover:opacity-80 border border-muted-foreground/5 p-2 shadow-inner hover:shadow-none transition rounded-2xl">
+    <div className="relative flex items-start gap-3 select-none hover:opacity-80 border border-muted-foreground/5 xl:p-2 2xl:p-3 shadow-inner hover:shadow-none transition rounded-2xl">
       <Link
         href={href || "#"}
         className="flex items-start gap-3 flex-1 min-w-0 group"

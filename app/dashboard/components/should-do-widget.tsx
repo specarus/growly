@@ -139,7 +139,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
   }, []);
 
   const sortedIdeas = useMemo(
-    () => [...ideas].sort((a, b) => b.likesCount - a.likesCount).slice(0, 4),
+    () => [...ideas].sort((a, b) => b.likesCount - a.likesCount).slice(0, 3),
     [ideas]
   );
 

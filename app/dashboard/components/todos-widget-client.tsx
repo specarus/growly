@@ -44,6 +44,22 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
   const topTodos = activeTodos.slice(0, 3);
   const remainingCount = Math.max(activeCount - topTodos.length, 0);
   const hasTodos = activeCount > 0;
+  const placeholderCount = hasTodos ? Math.max(3 - topTodos.length, 0) : 0;
+
+  const placeholderMessages = [
+    {
+      title: "Plan your next win",
+      subtitle: "Drop in another todo to keep momentum.",
+    },
+    {
+      title: "Save this spot",
+      subtitle: "Add a quick reminder for later today.",
+    },
+    {
+      title: "Keep the streak",
+      subtitle: "Queue up something small to finish strong.",
+    },
+  ];
 
   const celebrate = useCallback((origin?: HTMLElement) => {
     if (typeof document === "undefined") return;
@@ -172,16 +188,38 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
 
       <div className="xl:space-y-3 2xl:space-y-4 min-h-24">
         {hasTodos ? (
-          topTodos.map((todo) => (
-            <Todo
-              key={todo.id}
-              todo={todo}
-              href={`/dashboard/todos/${todo.id}/edit`}
-              onComplete={markComplete}
-              isCompleting={completingId === todo.id}
-              disabled={pendingId === todo.id}
-            />
-          ))
+          <>
+            {topTodos.map((todo) => (
+              <Todo
+                key={todo.id}
+                todo={todo}
+                href={`/dashboard/todos/${todo.id}/edit`}
+                onComplete={markComplete}
+                isCompleting={completingId === todo.id}
+                disabled={pendingId === todo.id}
+              />
+            ))}
+            {Array.from({ length: placeholderCount }).map((_, index) => {
+              const message =
+                placeholderMessages[index % placeholderMessages.length];
+              return (
+                <div
+                  key={`placeholder-${index}`}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-3 text-sm text-muted-foreground"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground">
+                      {message.title}
+                    </p>
+                    <p className="xl:text-[11px] 2xl:text-xs">
+                      {message.subtitle}
+                    </p>
+                  </div>
+                  <Sparkles className="w-4 h-4 shrink-0 text-primary" />
+                </div>
+              );
+            })}
+          </>
         ) : (
           <div className="rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-5 text-sm text-muted-foreground">
             <p className="font-semibold text-foreground mb-1">No todos yet</p>
