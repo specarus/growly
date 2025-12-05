@@ -59,13 +59,13 @@ const DailyQuoteWidget: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 rounded-2xl bg-white/5 backdrop-blur">
+        <div className="flex-1 rounded-2xl bg-white/5 backdrop-blur dark:bg-slate-900/70">
           {loading ? (
             <div className="space-y-3 animate-pulse">
-              <div className="h-3 w-1/3 rounded bg-white/30" />
-              <div className="h-4 rounded bg-white/30" />
-              <div className="h-4 w-5/6 rounded bg-white/25" />
-              <div className="h-3 w-1/2 rounded bg-white/20" />
+              <div className="h-3 w-1/3 rounded bg-gradient-to-r from-white/70 to-white/40 dark:from-primary/30 dark:to-primary/10" />
+              <div className="h-4 rounded bg-gradient-to-r from-white/70 to-white/40 dark:from-primary/25 dark:to-primary/5" />
+              <div className="h-4 w-5/6 rounded bg-gradient-to-r from-white/50 to-white/20 dark:from-slate-700/70 dark:to-slate-600/70" />
+              <div className="h-3 w-1/2 rounded bg-gradient-to-r from-white/50 to-white/20 dark:from-slate-700/60 dark:to-slate-600/60" />
             </div>
           ) : error ? (
             <div className="flex h-fit flex-col items-start justify-center gap-3 text-sm">
