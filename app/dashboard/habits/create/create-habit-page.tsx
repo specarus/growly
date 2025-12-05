@@ -1065,37 +1065,42 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                 ) : null}
 
                 <div className="grid md:grid-cols-2 gap-3">
-                  {(recommendationsLoading ? Array.from({ length: 4 }) : recommendations).map(
-                    (rec, index) => (
+                  {recommendationsLoading ? (
+                    Array.from({ length: 4 }).map((_, index) => (
                       <div
-                        key={rec?.id ?? index}
+                        key={`recommendation-loading-${index}`}
                         className="rounded-2xl border border-white/60 bg-white px-4 py-3 shadow-sm"
                       >
-                        {recommendationsLoading ? (
-                          <div className="space-y-2 animate-pulse">
-                            <div className="h-4 w-32 bg-gray-200 rounded" />
-                            <div className="h-3 w-full bg-gray-200 rounded" />
-                            <div className="h-3 w-5/6 bg-gray-200 rounded" />
-                          </div>
-                        ) : (
-                          <>
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="xl:text-sm 2xl:text-base font-semibold text-foreground">
-                                {rec.name ?? "Untitled"}
-                              </p>
-                              {typeof rec.score === "number" ? (
-                                <span className="xl:text-[11px] 2xl:text-xs rounded-full bg-primary/10 text-primary px-2 py-1 font-semibold">
-                                  {Math.round(rec.score * 100)}%
-                                </span>
-                              ) : null}
-                            </div>
-                            <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground line-clamp-3">
-                              {rec.description || "No description yet."}
-                            </p>
-                          </>
-                        )}
+                        <div className="space-y-2 animate-pulse">
+                          <div className="h-4 w-32 bg-gray-200 rounded" />
+                          <div className="h-3 w-full bg-gray-200 rounded" />
+                          <div className="h-3 w-5/6 bg-gray-200 rounded" />
+                        </div>
                       </div>
-                    )
+                    ))
+                  ) : (
+                    recommendations.map((rec) => (
+                      <div
+                        key={rec.id}
+                        className="rounded-2xl border border-white/60 bg-white px-4 py-3 shadow-sm"
+                      >
+                        <>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                              {rec.name ?? "Untitled"}
+                            </p>
+                            {typeof rec.score === "number" ? (
+                              <span className="xl:text-[11px] 2xl:text-xs rounded-full bg-primary/10 text-primary px-2 py-1 font-semibold">
+                                {Math.round(rec.score * 100)}%
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground line-clamp-3">
+                            {rec.description || "No description yet."}
+                          </p>
+                        </>
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
