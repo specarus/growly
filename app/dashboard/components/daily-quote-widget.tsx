@@ -81,7 +81,7 @@ const DailyQuoteWidget: React.FC = () => {
             <div className="flex h-fit flex-col justify-between gap-3 bg-white/70 px-5 py-3 text-foreground/90 rounded-2xl shadow-inner">
               <div className="flex items-start">
                 <p className="xl:text-xs 2xl:text-sm font-medium leading-relaxed ">
-                  {quote.text}
+                  "{quote.text}"
                 </p>
               </div>
               <div className="flex items-center justify-between xl:text-[11px] 2xl:text-xs">
