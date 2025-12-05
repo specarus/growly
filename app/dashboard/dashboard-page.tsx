@@ -7,6 +7,7 @@ import GreetingWidget from "./components/greeting-widget";
 import IntegrationWidget from "./components/integration-widget";
 import ScoreWidget from "./components/score-widget";
 import ShouldDoWidget from "./components/should-do-widget";
+import DailyQuoteWidget from "./components/daily-quote-widget";
 import SyncWidget from "./components/sync-widget";
 import TodosWidget from "./components/todos-widget";
 import WeatherWidget from "./components/weather-widget";
@@ -54,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="col-span-6 flex flex-col xl:gap-4 2xl:gap-6">
-          <div className="grid grid-cols-5 xl:gap-4 h-full">
+          <div className="grid grid-cols-5 xl:gap-4 h-fit">
             <div className="col-span-3">
               <TodosWidget />
             </div>
@@ -62,8 +63,12 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div>
                 <IntegrationWidget />
               </div>
+              <div className="h-fit">
+                <DailyQuoteWidget />
+              </div>
             </div>
           </div>
+
           <AnalyticsWidget data={analyticsData} />
         </div>
       </div>

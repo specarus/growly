@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  BarChart3,
-  CheckCircle,
-  ChevronDown,
-  Search,
-  TrendingUp,
-} from "lucide-react";
+import { BarChart3, CheckCircle, Search, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -37,23 +31,6 @@ type Props = {
   data: AnalyticsWidgetData;
 };
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
-
-type Month = (typeof months)[number];
-
 const barColors = [
   "bg-primary",
   "bg-green-soft",
@@ -75,8 +52,6 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
     currentYear,
   } = data;
 
-  const defaultMonth = months[new Date().getMonth()] as Month;
-  const [month, setMonth] = useState<Month>(defaultMonth);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(() =>
@@ -119,6 +94,8 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
       ? selectedDay.habits
       : favoriteHabits;
 
+  const baseHabitCount = Math.max(1, baseHabits.length);
+
   const filteredHabits = useMemo(() => {
     if (!searchQuery.trim()) {
       return baseHabits;
@@ -134,18 +111,13 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
     color: barColors[index % barColors.length],
   }));
 
-  const maxPercentage = habitsWithColors.reduce(
-    (max, habit) => Math.max(max, habit.percentage),
-    0
-  );
-
   const formattedDelta = `${
     positiveDelta >= 0 ? "+" : ""
   }${positiveDelta.toFixed(1)}%`;
   const formattedCompletionRate = `${Math.round(completionRate)}%`;
 
   return (
-    <div className="flex xl:gap-4 2xl:gap-6 h-full text-foreground">
+    <div className="flex xl:gap-4 2xl:gap-6 h-fit text-foreground">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <h2 className="xl:text-lg 2xl:text-xl font-semibold">Analytics</h2>
@@ -213,7 +185,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
         </div>
       </div>
 
-      <div className="space-y-4 grow w-full">
+      <div className="space-y-4 grow w-full h-full">
         <div className="xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full dark:bg-card dark:border-border">
           <div className="flex items-center justify-between xl:mb-4 2xl:mb-6 gap-2">
             <div className="space-y-1">
@@ -244,41 +216,6 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
                   onChange={(event) => setSearchQuery(event.target.value)}
                   className="pl-1 pr-4 outline-none w-28 xl:text-xs 2xl:text-sm text-muted-foreground bg-transparent rounded-full placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/80"
                 />
-              </div>
-
-              <div className="relative xl:w-32 2xl:w-40" ref={dropdownRef}>
-                <div
-                  onClick={() => setOpen(!open)}
-                  className="select-none relative xl:h-8 2xl:h-10 z-20 rounded-full cursor-pointer flex items-center justify-between gap-2 bg-white border border-gray-50 shadow-sm xl:text-xs 2xl:text-sm sm:rounded-full xl:px-4 py-2 2xl:px-6 dark:bg-card dark:border-border dark:text-foreground"
-                >
-                  <p>{month}</p>
-                  <ChevronDown
-                    className={`xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4 transition-transform duration-300 ease-in-out ${
-                      open ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-
-                <div
-                  className={`absolute w-full border border-gray-50 dark:border-border xl:top-4 2xl:top-8 left-0 shadow-lg overflow-y-auto bg-white dark:bg-card rounded-b-2xl xl:pt-4 2xl:pt-2 z-10 transition-all duration-300 ease-in-out ${
-                    open
-                      ? "xl:max-h-52 2xl:max-h-60 opacity-100"
-                      : "max-h-0 opacity-0"
-                  }`}
-                >
-                  {months.map((m) => (
-                    <div
-                      key={m}
-                      onClick={() => {
-                        setMonth(m);
-                        setOpen(false);
-                      }}
-                      className="px-4 py-2 xl:text-xs 2xl:text-sm hover:bg-gray-100 cursor-pointer transition-colors duration-200 dark:hover:bg-border/60"
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
@@ -312,16 +249,21 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
                 Log habit progress to see who is leading.
               </div>
             ) : (
-              <div className="relative flex flex-1 overflow-hidden">
+              <div className="relative flex flex-1 overflow-hidden justify-start">
                 {habitsWithColors.map((habit) => {
                   const heightPercent = Math.max(
                     0,
                     Math.min(100, habit.percentage)
                   );
+                  const barWidthPercent = `${100 / baseHabitCount}%`;
                   return (
                     <div
                       key={habit.id}
-                      className="group h-10/12 relative flex w-full flex-col items-center justify-between px-2 transition hover:bg-primary/20"
+                      className="group h-10/12 relative flex flex-col items-center justify-between px-2 transition hover:bg-primary/20"
+                      style={{
+                        flex: `0 0 ${barWidthPercent}`,
+                        maxWidth: barWidthPercent,
+                      }}
                     >
                       <div className="flex flex-col items-center gap-1 text-center">
                         <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
