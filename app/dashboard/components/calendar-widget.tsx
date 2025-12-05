@@ -139,12 +139,20 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
             }
 
             const { day, progress } = dayObj;
+            const isToday =
+              day === today.getDate() &&
+              currentMonth === today.getMonth() &&
+              currentYear === today.getFullYear();
 
             return (
               <div
                 key={day}
                 className={`${
-                  progress === 1 ? "text-white bg-primary" : ""
+                  progress === 1
+                    ? "text-white bg-primary"
+                    : isToday
+                      ? "text-primary"
+                      : ""
                 } relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center xl:text-xs 2xl:text-sm rounded-full`}
                 title={`${getMonthName(currentMonth)} ${day} - ${Math.round(
                   progress * 100
