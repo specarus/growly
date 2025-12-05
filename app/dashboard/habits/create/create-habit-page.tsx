@@ -463,6 +463,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                         value={form.name}
                         onChange={handleChange("name")}
                         placeholder="e.g. Morning stretch"
+                        maxLength={80}
                         className={inputClassName}
                         required
                       />

@@ -332,6 +332,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
                       value={form.name}
                       onChange={handleChange("name")}
                       placeholder="Daily launch sequence"
+                      maxLength={80}
                       className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                       required
                     />

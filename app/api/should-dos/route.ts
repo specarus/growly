@@ -59,6 +59,7 @@ const parseLimit = (value: string | null) => {
 const getErrorStatus = (message: string) => {
   if (message === "Unauthorized") return 401;
   if (message === "Not found") return 404;
+  if (message.toLowerCase().includes("title")) return 400;
   return 500;
 };
 
@@ -97,9 +98,9 @@ export async function GET(request: NextRequest) {
       );
     }
     return NextResponse.json(
-        { error: "Unable to load ideas right now." },
-        { status: 500 }
-      );
+      { error: "Unable to load ideas right now." },
+      { status: 500 }
+    );
   }
 }
 

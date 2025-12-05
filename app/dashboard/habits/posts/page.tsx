@@ -25,7 +25,8 @@ const mapToDisplayPost = (
       habit: { select: { name: true } };
     };
   }>,
-  label: string
+  label: string,
+  flags?: { isOwned?: boolean; isLiked?: boolean }
 ): DisplayPost => ({
   id: post.id,
   title: post.title,
@@ -40,9 +41,15 @@ const mapToDisplayPost = (
   highlight: post.highlight,
   likesCount: post.likesCount,
   label,
+  isOwned: Boolean(flags?.isOwned),
+  isLiked: Boolean(flags?.isLiked),
 });
 
-const mapFallbackPost = (post: PopularPost, label: string): DisplayPost => ({
+const mapFallbackPost = (
+  post: PopularPost,
+  label: string,
+  flags?: { isOwned?: boolean; isLiked?: boolean }
+): DisplayPost => ({
   id: post.id,
   title: post.title,
   summary: post.summary,
@@ -56,6 +63,8 @@ const mapFallbackPost = (post: PopularPost, label: string): DisplayPost => ({
   highlight: post.highlight ?? null,
   likesCount: post.likesCount,
   label,
+  isOwned: Boolean(flags?.isOwned),
+  isLiked: Boolean(flags?.isLiked),
 });
 
 const mapShouldDo = (
@@ -71,7 +80,8 @@ const mapShouldDo = (
       iconColor: true;
     };
   }>,
-  label: string
+  label: string,
+  flags?: { isOwned?: boolean; isLiked?: boolean }
 ): DisplayShouldDo => ({
   id: idea.id,
   title: idea.title,
@@ -81,6 +91,8 @@ const mapShouldDo = (
   label,
   iconKey: idea.iconKey,
   iconColor: idea.iconColor,
+  isOwned: Boolean(flags?.isOwned),
+  isLiked: Boolean(flags?.isLiked),
 });
 
 const sumLikes = (items: { likesCount: number }[]) =>
@@ -224,27 +236,29 @@ export default async function MyPostsPage() {
     .filter(Boolean) as PopularPost[];
 
   const displayOwned = ownedPosts.map((post) =>
-    mapToDisplayPost(post, "Your post")
+    mapToDisplayPost(post, "Your post", { isOwned: true })
   );
 
   const displayLiked = likedPosts
     .filter((post) => post.userId !== userId)
-    .map((post) => mapToDisplayPost(post, "Liked post"));
+    .map((post) => mapToDisplayPost(post, "Liked post", { isLiked: true }));
 
   const displayAdded = [
-    ...addedPosts.map((post) => mapToDisplayPost(post, "Added from popular")),
+    ...addedPosts.map((post) =>
+      mapToDisplayPost(post, "Added from popular", { isOwned: false })
+    ),
     ...fallbackAddedPosts.map((post) =>
-      mapFallbackPost(post, "Added from popular")
+      mapFallbackPost(post, "Added from popular", { isOwned: false })
     ),
   ];
 
   const displayOwnedShouldDos = ownedShouldDos.map((idea) =>
-    mapShouldDo(idea, "Your Should Do")
+    mapShouldDo(idea, "Your Should Do", { isOwned: true })
   );
 
   const displayLikedShouldDos = likedShouldDos
     .filter((idea) => idea.userId !== userId)
-    .map((idea) => mapShouldDo(idea, "Liked Should Do"));
+    .map((idea) => mapShouldDo(idea, "Liked Should Do", { isLiked: true }));
 
   const allPosts = [...displayOwned, ...displayLiked, ...displayAdded].filter(
     (post) => Boolean(post.createdAt)
@@ -307,7 +321,7 @@ export default async function MyPostsPage() {
       value: displayOwned.length,
       hint: `${totalLikesEarned} total likes earned`,
       accent:
-        "from-sky-500 via-blue-600 to-indigo-700 dark:from-sky-500 dark:via-blue-600 dark:to-indigo-700",
+        "bg-linear-to-br from-[#2f8cff] via-[#4f7ff5] to-[#6d5dfc]",
     },
     {
       label: "Ideas shared",
@@ -316,7 +330,7 @@ export default async function MyPostsPage() {
         ? `"${topIdea.title}" is topping with ${topIdea.likesCount} likes`
         : "Try posting a fresh Should Do",
       accent:
-        "from-rose-500 via-pink-500 to-fuchsia-500 dark:from-rose-500 dark:via-pink-500 dark:to-fuchsia-500",
+        "bg-linear-to-br from-[#ff6ba3] via-[#ff4fa3] to-[#d64cf3]",
     },
     {
       label: "Likes you gave",
@@ -325,14 +339,14 @@ export default async function MyPostsPage() {
         displayLiked.length + displayLikedShouldDos.length
       } things boosted`,
       accent:
-        "from-purple-500 via-violet-500 to-indigo-500 dark:from-purple-500 dark:via-violet-500 dark:to-indigo-500",
+        "bg-linear-to-br from-[#a46bff] via-[#8c67ff] to-[#7a6bff]",
     },
     {
       label: "Added blueprints",
       value: displayAdded.length,
       hint: "Imported to your board",
       accent:
-        "from-emerald-400 via-green-500 to-teal-500 dark:from-emerald-400 dark:via-green-500 dark:to-teal-500",
+        "bg-linear-to-br from-[#22d2a1] via-[#26c779] to-[#21c064]",
     },
   ];
 
@@ -357,7 +371,7 @@ export default async function MyPostsPage() {
                   className="relative overflow-hidden rounded-2xl border border-white/60 dark:border-white/10 bg-white/80 dark:bg-slate-900/70 shadow-inner px-4 py-3"
                 >
                   <div
-                    className={`absolute inset-0 opacity-70 bg-linear-to-br ${stat.accent} dark:from-white/10 dark:via-primary/25 dark:to-emerald-700/40`}
+                    className={`absolute inset-0 opacity-80 ${stat.accent}`}
                   />
                   <div className="relative space-y-1 text-white drop-shadow-sm">
                     <p className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.14em] font-semibold">

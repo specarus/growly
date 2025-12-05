@@ -24,11 +24,16 @@ const toOptionalString = (value: unknown) => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
+const MAX_TITLE_LENGTH = 80;
+
 const parseCreateRoutinePayload = (value: unknown): CreateRoutinePayload => {
   const entry = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
   const name = typeof entry.name === "string" ? entry.name.trim() : "";
   if (!name) {
     throw new Error("Routine name is required.");
+  }
+  if (name.length > MAX_TITLE_LENGTH) {
+    throw new Error("Routine name is too long.");
   }
   const rawHabitIds = Array.isArray(entry.habitIds) ? entry.habitIds : [];
   const habitIds = rawHabitIds
@@ -111,6 +116,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, routineId: routine.id });
   } catch (error) {
     console.error("Unable to create routine", error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       { error: "Unable to create routine" },
       { status: 400 }

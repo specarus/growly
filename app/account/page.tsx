@@ -120,8 +120,13 @@ export default async function AccountPage() {
   ];
 
   return (
-    <main className="relative min-h-screen bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 pb-16 pt-28">
-      <div className="xl:px-48 2xl:px-80">
+    <main className="relative min-h-screen overflow-hidden bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 pb-16 pt-28">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute -left-24 -top-20 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(255,214,102,0.55),_transparent_65%)] blur-3xl" />
+        <div className="absolute bottom-10 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(79,153,120,0.4),_transparent_60%)] blur-3xl" />
+        <div className="absolute -right-24 top-20 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,_rgba(99,145,255,0.4),_transparent_60%)] blur-3xl" />
+      </div>
+      <div className="relative z-10 xl:px-48 2xl:px-80">
         <div className="mx-auto flex flex-col gap-10">
           <section className="space-y-8">
             <PageHeading

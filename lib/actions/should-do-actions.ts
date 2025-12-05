@@ -1,5 +1,7 @@
 import { requireUserId } from "./habit-actions";
 
+const MAX_TITLE_LENGTH = 80;
+
 const toOptionalString = (value: unknown) => {
   if (typeof value !== "string") {
     return null;
@@ -25,12 +27,15 @@ export type ShouldDoUpdatePayload = {
 export const parseShouldDoPayload = async (
   payload: Record<string, unknown>
 ): Promise<ShouldDoPayload> => {
-  // Ensure the user is authenticated before parsing to simplify downstream logic.
   await requireUserId();
 
-  const rawTitle = typeof payload.title === "string" ? payload.title.trim() : "";
+  const rawTitle =
+    typeof payload.title === "string" ? payload.title.trim() : "";
   if (!rawTitle) {
     throw new Error("Title is required.");
+  }
+  if (rawTitle.length > MAX_TITLE_LENGTH) {
+    throw new Error("Title is too long.");
   }
 
   return {
@@ -44,7 +49,6 @@ export const parseShouldDoPayload = async (
 export const parseShouldDoUpdate = async (
   payload: Record<string, unknown>
 ): Promise<ShouldDoUpdatePayload> => {
-  // Parsing update payloads shares the same rules, but allow passing either field.
   await requireUserId();
 
   const titleValue =
@@ -67,6 +71,9 @@ export const parseShouldDoUpdate = async (
   if (titleValue !== undefined) {
     if (!titleValue) {
       throw new Error("Title is required.");
+    }
+    if (titleValue.length > MAX_TITLE_LENGTH) {
+      throw new Error("Title is too long.");
     }
     update.title = titleValue;
   }

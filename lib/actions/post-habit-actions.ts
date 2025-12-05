@@ -27,6 +27,8 @@ const timeWindowValues = [
 ] as const;
 type TimeWindowValue = (typeof timeWindowValues)[number];
 
+const MAX_TITLE_LENGTH = 80;
+
 const toOptionalString = (value: unknown) => {
   if (typeof value !== "string") {
     return null;
@@ -106,6 +108,9 @@ export const parsePostHabitPayload = async (
     typeof payload.title === "string" ? payload.title.trim() : "";
   if (!title) {
     throw new Error("Post title is required.");
+  }
+  if (title.length > MAX_TITLE_LENGTH) {
+    throw new Error("Post title is too long.");
   }
 
   const cadence =

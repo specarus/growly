@@ -8,6 +8,7 @@ import {
 
 import type { DisplayShouldDo } from "../types";
 import { shouldDoSeeds } from "@/app/dashboard/components/should-do-seeds";
+import ShouldDoActions from "./should-do-actions";
 
 const formatDate = (value: string) => {
   try {
@@ -111,12 +112,20 @@ const ShouldDoSection = ({ title, description, ideas }: Props) => (
                 <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                   {idea.description ?? "No extra details."}
                 </p>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
                   <span>{idea.label}</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
-                    <Heart className="w-3 h-3 text-primary" />
-                    {idea.likesCount} {idea.likesCount === 1 ? "like" : "likes"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <ShouldDoActions
+                      ideaId={idea.id}
+                      isOwned={idea.isOwned}
+                      isLiked={idea.isLiked}
+                    />
+                    <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
+                      <Heart className="w-3 h-3 text-primary" />
+                      {idea.likesCount}{" "}
+                      {idea.likesCount === 1 ? "like" : "likes"}
+                    </span>
+                  </div>
                 </div>
               </article>
             ))}

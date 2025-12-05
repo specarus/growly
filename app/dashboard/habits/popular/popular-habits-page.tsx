@@ -1183,7 +1183,7 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                 )
               ) : (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 max-h-[32rem] overflow-y-auto pr-1">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 max-h-128 overflow-y-auto pr-1">
                   {filteredShouldDos.map((idea) => {
                     const seedIcon = seedIconMap.get(idea.id);
                     const iconKey = idea.iconKey ?? seedIcon?.iconKey ?? null;
@@ -1353,6 +1353,7 @@ const PopularHabitsPage: React.FC = () => {
                       }))
                     }
                     placeholder="e.g. Sunrise cold plunge accountability"
+                    maxLength={80}
                     className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>

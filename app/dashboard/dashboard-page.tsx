@@ -17,7 +17,10 @@ interface DashboardProps {
   analyticsData: AnalyticsWidgetData;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ progressByDay, analyticsData }) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  progressByDay,
+  analyticsData,
+}) => {
   return (
     <main className="relative w-full min-h-screen xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
       <GradientCircle
@@ -51,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ progressByDay, analyticsData }) =
         </div>
 
         <div className="col-span-6 flex flex-col xl:gap-4 2xl:gap-6">
-          <div className="grid grid-cols-5 xl:gap-4 xl:min-h-[340x] 2xl:min-h-[400px]">
+          <div className="grid grid-cols-5 xl:gap-4 h-full">
             <div className="col-span-3">
               <TodosWidget />
             </div>

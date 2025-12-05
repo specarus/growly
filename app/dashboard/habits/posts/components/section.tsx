@@ -1,4 +1,5 @@
 import { SectionProps } from "../types";
+import PostActions from "./post-actions";
 
 import { CalendarClock, Clock3, HeartPulse, TrendingUp } from "lucide-react";
 
@@ -73,12 +74,20 @@ const Section = ({ title, description, posts }: SectionProps) => (
                     {post.commitment}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
                   <span>{post.label}</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
-                    <TrendingUp className="w-3 h-3 text-primary" />
-                    {post.likesCount} {post.likesCount === 1 ? "like" : "likes"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <PostActions
+                      postId={post.id}
+                      isOwned={post.isOwned}
+                      isLiked={post.isLiked}
+                    />
+                    <span className="inline-flex items-center gap-1 rounded-full bg-muted dark:bg-slate-800 px-2 py-1 font-semibold">
+                      <TrendingUp className="w-3 h-3 text-primary" />
+                      {post.likesCount}{" "}
+                      {post.likesCount === 1 ? "like" : "likes"}
+                    </span>
+                  </div>
                 </div>
               </article>
             ))}

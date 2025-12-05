@@ -11,6 +11,8 @@ const getErrorStatus = (message: string) => {
   return 500;
 };
 
+const MAX_TITLE_LENGTH = 80;
+
 const toOptionalString = (value: unknown) => {
   if (typeof value !== "string") {
     return null;
@@ -32,6 +34,9 @@ const parseUpdateRoutinePayload = (value: unknown): UpdateRoutinePayload => {
   const name = typeof entry.name === "string" ? entry.name.trim() : "";
   if (!name) {
     throw new Error("Routine name is required.");
+  }
+  if (name.length > MAX_TITLE_LENGTH) {
+    throw new Error("Routine name is too long.");
   }
   const rawHabitIds = Array.isArray(entry.habitIds) ? entry.habitIds : [];
   const habitIds = rawHabitIds

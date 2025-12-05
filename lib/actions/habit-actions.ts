@@ -6,6 +6,8 @@ import { auth } from "@/lib/auth";
 
 export type UnitCategory = "Quantity" | "Time";
 
+const MAX_TITLE_LENGTH = 80;
+
 export interface HabitPayload {
   name: string;
   description: string | null;
@@ -95,6 +97,9 @@ export const parseHabitPayload = async (
   const name = typeof payload.name === "string" ? payload.name.trim() : "";
   if (!name) {
     throw new Error("Habit name is required.");
+  }
+  if (name.length > MAX_TITLE_LENGTH) {
+    throw new Error("Habit name is too long.");
   }
 
   return {

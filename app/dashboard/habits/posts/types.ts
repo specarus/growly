@@ -12,6 +12,8 @@ export type DisplayPost = {
   highlight: string | null;
   likesCount: number;
   label: string;
+  isOwned: boolean;
+  isLiked: boolean;
 };
 
 export type SectionProps = {
@@ -29,4 +31,6 @@ export type DisplayShouldDo = {
   label: string;
   iconKey?: string | null;
   iconColor?: string | null;
+  isOwned: boolean;
+  isLiked: boolean;
 };

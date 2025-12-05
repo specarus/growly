@@ -474,6 +474,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         value={form.title}
                         onChange={handleChange("title")}
                         placeholder="e.g. Sunrise energy loop"
+                        maxLength={80}
                         className={inputControlClassName}
                         required
                       />

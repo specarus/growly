@@ -8,6 +8,7 @@ import { requireUserId } from "@/lib/actions/habit-actions";
 const getErrorStatus = (message: string) => {
   if (message === "Unauthorized") return 401;
   if (message.includes("Habit")) return 400;
+  if (message.toLowerCase().includes("title")) return 400;
   return 500;
 };
 
