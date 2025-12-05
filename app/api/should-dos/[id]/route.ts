@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
@@ -140,10 +140,11 @@ export async function PATCH(
         { status: getErrorStatus(error.message) }
       );
     }
-  return NextResponse.json(
-    { error: "Unable to update idea now." },
-    { status: 500 }
-  );
+    return NextResponse.json(
+      { error: "Unable to update idea now." },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(
@@ -185,5 +186,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
 }
