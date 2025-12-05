@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 
 import Header from "./components/layout/header";
+import NavigationLoader from "./components/navigation-loader";
 import { ModalProvider } from "./context/modal-context";
 import { XPProvider } from "./context/xp-context";
 import { auth } from "../lib/auth";
@@ -64,6 +65,7 @@ export default async function RootLayout({
             <XPProvider>
               <ModalProvider>
                 <div className="min-h-screen flex flex-col text-foreground">
+                  <NavigationLoader />
                   <Header />
                   <main className="flex-1 w-full h-full">{children}</main>
                   <Footer />

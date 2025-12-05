@@ -37,7 +37,7 @@ type TimedEvent = {
   stackIndex: number;
   groupStart: number;
   groupKey: string;
-  colorClass: string;
+  colorStyle: EventColorStyle;
 };
 
 const DAY_START_MINUTES = 5 * 60;
@@ -68,21 +68,38 @@ const TIMELINE_SCROLL_HEIGHT = Math.max(
 const EVENT_DURATION_MINUTES = 60;
 const OVERLAP_OFFSET = 8;
 
-const colorPalette = [
-  "bg-primary/80 text-white border-primary/50",
-  "bg-green-soft/80 text-emerald-900 border-green-soft",
-  "bg-coral/80 text-white border-coral/70",
-  "bg-yellow-soft text-amber-900 border-yellow-soft/60",
-  "bg-blue-100 text-blue-900 border-blue-200",
-];
+type EventColorStyle = {
+  backgroundColor: string;
+  borderColor: string;
+  color: string;
+};
 
-const colorForHabit = (habitId: string) => {
-  let hash = 0;
-  for (let i = 0; i < habitId.length; i += 1) {
-    hash = (hash * 31 + habitId.charCodeAt(i)) | 0;
+const DEFAULT_COLOR_STYLE: EventColorStyle = {
+  backgroundColor: "hsl(var(--primary) / 0.85)",
+  borderColor: "hsl(var(--primary) / 0.5)",
+  color: "hsl(var(--primary-foreground))",
+};
+
+const buildColorStyles = (count: number): EventColorStyle[] => {
+  if (count <= 0) return [];
+  const styles: EventColorStyle[] = [];
+  const goldenAngle = 137.508; // spreads hues evenly
+  for (let index = 0; index < count; index += 1) {
+    const hue = (index * goldenAngle) % 360;
+    styles.push({
+      backgroundColor: `hsl(${hue} 70% 72%)`,
+      borderColor: `hsl(${hue} 65% 58%)`,
+      color: `hsl(${hue} 32% 18%)`,
+    });
   }
-  const index = Math.abs(hash) % colorPalette.length;
-  return colorPalette[index];
+  return styles;
+};
+
+const colorForHabit = (
+  habitId: string,
+  colorsByHabit: Map<string, EventColorStyle>
+) => {
+  return colorsByHabit.get(habitId) ?? DEFAULT_COLOR_STYLE;
 };
 
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
@@ -197,7 +214,8 @@ const describeHabit = (habit: HabitLike) => {
 const buildCalendarDay = (
   habits: HabitLike[],
   date: Date,
-  progressByDay: ProgressByDayMap
+  progressByDay: ProgressByDayMap,
+  colorsByHabit: Map<string, EventColorStyle>
 ): CalendarDay => {
   const dayKey = formatDayKey(date);
   const dayProgress = clamp(progressByDay[dayKey] ?? 0);
@@ -217,7 +235,7 @@ const buildCalendarDay = (
       const offset = minutes - DAY_START_MINUTES;
       const clampedOffset = Math.max(0, Math.min(MINUTES_RANGE, offset));
       const position = (clampedOffset / MINUTES_RANGE) * TIMELINE_HEIGHT;
-      const colorClass = colorForHabit(habit.id);
+      const colorStyle = colorForHabit(habit.id, colorsByHabit);
       const timeLabel = formatTimeLabel(minutes);
       return {
         habit,
@@ -225,7 +243,7 @@ const buildCalendarDay = (
         position,
         timeLabel,
         stackIndex: 0,
-        colorClass,
+        colorStyle,
       };
     })
     .filter(Boolean) as TimedEvent[];
@@ -272,12 +290,40 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
   const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
 
+  const timedHabitIdsThisWeek = useMemo(() => {
+    const ids = new Set<string>();
+    const anchor = startOfWeek(weekStart);
+    const daysThisWeek = Array.from({ length: 7 }, (_, index) =>
+      addDays(anchor, index)
+    );
+    daysThisWeek.forEach((day) => {
+      habits.forEach((habit) => {
+        if (
+          shouldShowHabitOnDate(habit, day) &&
+          parseMinutes(habit.timeOfDay) !== null
+        ) {
+          ids.add(habit.id);
+        }
+      });
+    });
+    return Array.from(ids).sort();
+  }, [habits, weekStart]);
+
+  const colorsByHabit = useMemo(() => {
+    const styles = buildColorStyles(timedHabitIdsThisWeek.length);
+    const map = new Map<string, EventColorStyle>();
+    timedHabitIdsThisWeek.forEach((habitId, index) => {
+      map.set(habitId, styles[index] ?? DEFAULT_COLOR_STYLE);
+    });
+    return map;
+  }, [timedHabitIdsThisWeek]);
+
   const weekDays: CalendarDay[] = useMemo(() => {
     return Array.from({ length: 7 }, (_, index) => {
       const date = addDays(weekStart, index);
-      return buildCalendarDay(habits, date, progressByDay);
+      return buildCalendarDay(habits, date, progressByDay, colorsByHabit);
     });
-  }, [habits, progressByDay, weekStart]);
+  }, [colorsByHabit, habits, progressByDay, weekStart]);
 
   const weekRangeLabel = useMemo(
     () => formatRangeLabel(weekStart),
@@ -474,8 +520,6 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                           <div
                             key={event.habit.id}
                             className={`absolute rounded-xl cursor-default border px-2 py-1 transition-opacity duration-200 ease-out ${
-                              event.colorClass
-                            } ${
                               isOtherInGroup
                                 ? "opacity-0 pointer-events-none"
                                 : ""
@@ -484,6 +528,9 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
                               top,
                               left: `${leftOffset}%`,
                               right: `${rightOffset}%`,
+                              backgroundColor: event.colorStyle.backgroundColor,
+                              borderColor: event.colorStyle.borderColor,
+                              color: event.colorStyle.color,
                             }}
                             title={`${event.timeLabel} - ${describeHabit(
                               event.habit

@@ -8,7 +8,6 @@ import {
   useMemo,
   useRef,
   useState,
-  useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -106,6 +105,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   const [isDirty, setIsDirty] = useState(false);
   const [isDeletingHabit, setIsDeletingHabit] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [cadenceMenuOpen, setCadenceMenuOpen] = useState(false);
   const [reminderMenuOpen, setReminderMenuOpen] = useState(false);
   const [cadenceDropDirection, setCadenceDropDirection] = useState<
@@ -260,10 +260,13 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   };
 
   const router = useRouter();
-  const [isSubmitting, startTransition] = useTransition();
 
   const submitHabit = useCallback(
     async ({ skipRedirect = false } = {}) => {
+      if (isSubmitting) {
+        return false;
+      }
+      setIsSubmitting(true);
       const payload = {
         name: form.name,
         description: form.description,
@@ -297,16 +300,16 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
       } catch (error) {
         console.error("Failed to save habit", error);
         return false;
+      } finally {
+        setIsSubmitting(false);
       }
     },
-    [form, habitId, mode, router]
+    [form, habitId, isSubmitting, mode, router]
   );
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    startTransition(() => {
-      void submitHabit();
-    });
+    void submitHabit();
   };
 
   const handleGuardSave = useCallback(
@@ -797,7 +800,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                     disabled={isSubmitting}
                   >
                     {isSubmitting
-                      ? "Saving habit..."
+                      ? "Saving..."
                       : mode === "edit"
                       ? "Update habit"
                       : "Create habit"}
