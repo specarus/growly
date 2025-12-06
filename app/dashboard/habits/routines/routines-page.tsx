@@ -6,10 +6,10 @@ import { Clock3, Edit, GripVertical, Plus, Target, Trash2 } from "lucide-react";
 
 import PageGradient from "@/app/components/ui/page-gradient";
 import { useRouter } from "next/navigation";
-import MainButton from "@/app/components/ui/main-button";
 import PageHeading from "@/app/components/page-heading";
 import HabitsTabs from "../components/habits-tabs";
 import GradientCircle from "@/app/components/ui/gradient-circle";
+import Button from "@/app/components/ui/button";
 
 type Habit = {
   id: string;
@@ -224,12 +224,12 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
           description="Drag habits into the routines that keep you steady. Changes now sync directly to your saved layouts."
           actions={
             <div className="flex flex-row gap-3">
-              <MainButton
-                label="Create routine"
-                icon={<Plus className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />}
+              <Button
                 className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
                 onClick={handleNewRoutine}
-              />
+              >
+                Create routine
+              </Button>
             </div>
           }
         />
@@ -301,7 +301,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                       <p className="font-semibold xl:text-sm 2xl:text-base">
                         {habit.name}
                       </p>
-                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
                         {habit.cadence} - {habit.focus}
                       </p>
                     </div>
