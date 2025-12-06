@@ -1,0 +1,1 @@
+export const HABIT_STREAK_THRESHOLD = 0.5;

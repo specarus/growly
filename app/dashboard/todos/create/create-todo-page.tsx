@@ -871,7 +871,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     type="button"
                     onClick={() => handleSubmit("Planned")}
                     disabled={isPending}
-                    className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
+                    className="xl:min-w-28 2xl:min-w-36 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
                   >
                     Save draft
                   </Button>
@@ -879,7 +879,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     type="button"
                     onClick={() => handleSubmit()}
                     disabled={isPending}
-                    className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+                    className="xl:min-w-32 2xl:min-w-40 xl:h-8 2xl:h-10 xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
                   >
                     {primaryCtaLabel}
                   </Button>

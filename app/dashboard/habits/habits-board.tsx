@@ -276,7 +276,12 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
             )
           : 0;
         if (xpDelta !== 0) {
-          addXP(xpDelta, "habit");
+          const goalAmount = normalizeGoal(targetHabit?.goalAmount);
+          const unit = targetHabit?.goalUnit?.trim() || "goal";
+          addXP(xpDelta, "habit", {
+            label: targetHabit?.name ?? "Habit progress",
+            detail: `${goalAmount} ${unit}`,
+          });
         }
 
         setLocalHabits((prev) => {
@@ -321,7 +326,12 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
           )
         : 0;
       if (xpDelta !== 0) {
-        addXP(xpDelta, "habit");
+        const goalAmount = normalizeGoal(targetHabit?.goalAmount);
+        const unit = targetHabit?.goalUnit?.trim() || "goal";
+        addXP(xpDelta, "habit", {
+          label: targetHabit?.name ?? "Habit progress",
+          detail: `${goalAmount} ${unit}`,
+        });
       }
 
       setLocalHabits((prev) => {

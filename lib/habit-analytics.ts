@@ -1,5 +1,6 @@
 import type { Habit } from "@prisma/client";
 
+import { HABIT_STREAK_THRESHOLD } from "./streak";
 import {
   formatDayKey,
   getUtcDayStart,
@@ -99,7 +100,7 @@ export const buildHabitAnalytics = (
     while (streakCursor >= habitStart) {
       const key = formatDayKey(streakCursor);
       const ratio = completionMap?.get(key) ?? 0;
-      if (ratio < 1) {
+      if (ratio < HABIT_STREAK_THRESHOLD) {
         break;
       }
       streak += 1;

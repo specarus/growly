@@ -138,7 +138,14 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
           throw new Error("Unable to update todo status");
         }
 
-        addXP(XP_PER_TODO);
+        addXP(XP_PER_TODO, "todo", {
+          label: todo.title,
+          detail: todo.time
+            ? `Due ${todo.time}`
+            : todo.location
+            ? todo.location
+            : undefined,
+        });
         setActiveCount((prev) => Math.max(prev - 1, 0));
 
         setTimeout(

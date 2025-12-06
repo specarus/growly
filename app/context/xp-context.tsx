@@ -11,9 +11,16 @@ import {
 import { useSession } from "./session-context";
 
 import { MAX_STREAK_BONUS } from "@/lib/xp";
+import type { XPActivityEntry, XPActivitySource } from "@/types/xp";
 
 const BASE_XP_PER_LEVEL = 100;
 const LEVEL_XP_INCREMENT = 25;
+const MAX_ACTIVITY_LOG = 8;
+
+type XPActivityMetadata = {
+  label?: string;
+  detail?: string;
+};
 
 interface GamificationState {
   totalXP: number;
@@ -26,7 +33,12 @@ interface GamificationState {
 }
 
 interface XPContextValue extends GamificationState {
-  addXP: (amount: number, source?: CelebrationSource) => void;
+  addXP: (
+    amount: number,
+    source?: XPActivitySource,
+    metadata?: XPActivityMetadata
+  ) => void;
+  activityLog: XPActivityEntry[];
   loading: boolean;
   celebration: CelebrationEvent | null;
   clearCelebration: () => void;
@@ -73,6 +85,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
   const [celebration, setCelebration] = useState<CelebrationEvent | null>(
     null
   );
+  const [activityLog, setActivityLog] = useState<XPActivityEntry[]>([]);
 
   useEffect(() => {
     if (!session?.user?.id) {
@@ -80,6 +93,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       setTodayXP(null);
       setStreakBonus(null);
       setCelebration(null);
+      setActivityLog([]);
       return;
     }
 
@@ -90,6 +104,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
         setTotalXP(null);
         setTodayXP(null);
         setStreakBonus(null);
+        setActivityLog([]);
 
         const response = await fetch("/api/xp", {
           headers: { "Content-Type": "application/json" },
@@ -105,6 +120,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
         setTotalXP(data.totalXP ?? 0);
         setTodayXP(data.todayXP ?? 0);
         setStreakBonus(data.streakBonus ?? 0);
+        setActivityLog(data.activity ?? []);
       } catch (error) {
         if ((error as Error).name === "AbortError") return;
         console.error("[XPProvider] load XP", error);
@@ -115,6 +131,16 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
 
     return () => controller.abort();
   }, [session?.user?.id]);
+  
+  const logActivityEntry = useCallback((entry: XPActivityEntry) => {
+    setActivityLog((prev) => {
+      const next = [entry, ...prev];
+      if (next.length > MAX_ACTIVITY_LOG) {
+        next.length = MAX_ACTIVITY_LOG;
+      }
+      return next;
+    });
+  }, []);
 
   const xpTotalValue = totalXP ?? 0;
   const { level, xpGainedInLevel, xpNeededForLevelUp } = useMemo(
@@ -127,34 +153,71 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
     Math.floor((xpGainedInLevel / xpNeededForLevelUp) * 100)
   );
 
-  const addXP = useCallback((amount: number, source: CelebrationSource = "todo") => {
-    if (amount === 0) return;
+  const addXP = useCallback(
+    (
+      amount: number,
+      source: XPActivitySource = "todo",
+      metadata: XPActivityMetadata = {}
+    ) => {
+      if (amount === 0) return;
 
-    setTotalXP((prev) => {
-      const previousTotal = prev ?? 0;
-      const nextTotal = Math.max(0, previousTotal + amount);
-      const prevLevel = computeLevelState(previousTotal).level;
-      const nextLevel = computeLevelState(nextTotal).level;
-      if (amount > 0) {
-        if (nextLevel > prevLevel) {
-          setCelebration({ type: "level", xp: amount, level: nextLevel });
-        } else {
-          setCelebration({ type: source, xp: amount });
+      const timestamp = new Date().toISOString();
+      const defaultLabel =
+        metadata.label ??
+        (source === "habit"
+          ? "Habit milestone"
+          : source === "level"
+            ? "Level progress"
+            : "Todo complete");
+      const buildId = (prefix: string) =>
+        `${prefix}-${timestamp}-${Math.random().toString(36).slice(2)}`;
+
+      logActivityEntry({
+        id: buildId(source),
+        source,
+        label: defaultLabel,
+        xp: amount,
+        timestamp,
+        detail: metadata.detail,
+      });
+
+      setTotalXP((prev) => {
+        const previousTotal = prev ?? 0;
+        const nextTotal = Math.max(0, previousTotal + amount);
+        const prevLevel = computeLevelState(previousTotal).level;
+        const nextLevel = computeLevelState(nextTotal).level;
+        if (amount > 0) {
+          if (nextLevel > prevLevel) {
+            logActivityEntry({
+              id: buildId("level"),
+              source: "level",
+              label: `Level ${nextLevel} unlocked`,
+              xp: amount,
+              timestamp,
+              detail: `Total XP ${nextTotal}`,
+            });
+            setCelebration({ type: "level", xp: amount, level: nextLevel });
+          } else {
+            const celebrationSource: CelebrationSource =
+              source === "habit" ? "habit" : "todo";
+            setCelebration({ type: celebrationSource, xp: amount });
+          }
         }
-      }
-      return nextTotal;
-    });
+        return nextTotal;
+      });
 
-    setTodayXP((prev) => {
-      const nextToday = (prev == null ? 0 : prev) + amount;
-      return Math.max(0, nextToday);
-    });
+      setTodayXP((prev) => {
+        const nextToday = (prev == null ? 0 : prev) + amount;
+        return Math.max(0, nextToday);
+      });
 
-    setStreakBonus((prev) => {
-      const nextBonus = (prev == null ? 0 : prev) + Math.floor(amount / 2);
-      return Math.max(0, Math.min(MAX_STREAK_BONUS, nextBonus));
-    });
-  }, []);
+      setStreakBonus((prev) => {
+        const nextBonus = (prev == null ? 0 : prev) + Math.floor(amount / 2);
+        return Math.max(0, Math.min(MAX_STREAK_BONUS, nextBonus));
+      });
+    },
+    [logActivityEntry]
+  );
 
   const clearCelebration = useCallback(() => setCelebration(null), []);
 
@@ -169,6 +232,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       progress,
       todayXP: todayXP ?? 0,
       streakBonus: streakBonus ?? 0,
+      activityLog,
       addXP,
       celebration,
       clearCelebration,
@@ -182,6 +246,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       progress,
       todayXP,
       streakBonus,
+      activityLog,
       addXP,
       celebration,
       clearCelebration,

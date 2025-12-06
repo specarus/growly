@@ -21,6 +21,7 @@ import type { TodoStatus } from "@prisma/client";
 
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import PageHeading from "@/app/components/page-heading";
+import XPActivityFeed from "./components/xp-activity-feed";
 
 type TrendPoint = { label: string; value: number };
 
@@ -1114,6 +1115,7 @@ const AnalyticsClient: React.FC<Props> = ({
             })}
           </div>
         </section>
+        <XPActivityFeed />
       </div>
     </main>
   );

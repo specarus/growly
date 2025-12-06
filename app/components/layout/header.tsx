@@ -145,7 +145,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
       <div className="2xl:px-28 xl:px-8 mx-auto xl:h-16 2xl:h-20 grid grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,1fr)] items-center gap-4">
         <div className="flex items-center min-w-0 gap-4">
-          <Sprout className="text-green-soft" />
+          <Sprout className="xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 text-green-soft" />
 
           <div className="flex w-full flex-1 flex-col min-w-0 xl:flex-row xl:items-center xl:gap-20 2xl:gap-24">
             <div className="flex items-center xl:gap-1.5 2xl:gap-2 xl:text-sm 2xl:text-base truncate">

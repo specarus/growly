@@ -332,7 +332,10 @@ const TodosPage: React.FC<TodosPageProps> = ({
       );
 
       if (reopenedFromCompleted) {
-        addXP(-XP_PER_TODO);
+        addXP(-XP_PER_TODO, "todo", {
+          label: current?.title ?? "Reopened todo",
+          detail: "Reopened from completed",
+        });
       }
     } catch (error) {
       console.error(error);
