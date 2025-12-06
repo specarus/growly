@@ -95,7 +95,9 @@ const iconMap = {
   CalendarClock,
 };
 
-const MENU_WIDTH = 192;
+const MENU_DEFAULT_WIDTH = 192;
+const MENU_MIN_WIDTH = 160;
+const MENU_VIEWPORT_GUTTER = 16;
 
 type MenuPosition = {
   top: number;
@@ -165,6 +167,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   const [progressMap, setProgressMap] =
     useState<ProgressByDayMap>(progressByDay);
   const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null);
+  const [menuWidth, setMenuWidth] = useState<number>(MENU_DEFAULT_WIDTH);
 
   const updateMenuPosition = useCallback(() => {
     if (typeof window === "undefined") {
@@ -176,9 +179,32 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
     }
 
     const rect = anchor.getBoundingClientRect();
+    const viewportLeft = window.scrollX + MENU_VIEWPORT_GUTTER;
+    const viewportRight =
+      window.scrollX + window.innerWidth - MENU_VIEWPORT_GUTTER;
+    const availableWidth = Math.max(
+      window.innerWidth - MENU_VIEWPORT_GUTTER * 2,
+      0
+    );
+    const calculatedWidth =
+      availableWidth <= 0
+        ? MENU_DEFAULT_WIDTH
+        : availableWidth < MENU_MIN_WIDTH
+        ? availableWidth
+        : Math.min(MENU_DEFAULT_WIDTH, availableWidth);
+    setMenuWidth(calculatedWidth);
+
+    const rightEdge = rect.right + window.scrollX;
+    const preferredLeft = rightEdge - calculatedWidth;
+    const maxLeft = Math.max(viewportRight - calculatedWidth, viewportLeft);
+    const left = Math.min(
+      Math.max(preferredLeft, viewportLeft),
+      maxLeft
+    );
+
     setMenuPosition({
       top: rect.bottom + window.scrollY,
-      left: rect.right - MENU_WIDTH + window.scrollX,
+      left,
     });
   }, []);
 
@@ -433,37 +459,37 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   }, [localHabits, searchParams]);
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
+    <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground lg:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
-      <div className="xl:px-8 2xl:px-28 space-y-8">
+      <div className="lg:px-4 xl:px-8 2xl:px-28 lg:space-y-6 xl:space-y-8">
         <PageHeading
           badgeLabel="Your habits"
           title="Habit board"
           description="This board shows your current rhythm, streaks, and where you spend focus time."
-          titleClassName="xl:text-2xl 2xl:text-3xl"
+          titleClassName="font-bold"
         />
         <div>
-          <HabitsTabs active="habits" containerClassName="xl:gap-1 2xl:gap-2" />
+          <HabitsTabs active="habits" containerClassName="lg:gap-1 2xl:gap-2" />
         </div>
 
-        <div className="grid gap-5">
-          <div className="grid xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white shadow-inner h-full">
-              <div className="px-6 pt-5 pb-6 space-y-4">
+        <div className="grid lg:gap-4 xl:gap-5">
+          <div className="grid lg:grid-cols-3 lg:gap-4 xl:gap-5">
+            <div className="lg:col-span-2 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner h-full">
+              <div className="lg:px-4 xl:px-6 lg:pt-3 xl:pt-5 lg:pb-4 xl:pb-6 lg:space-y-3 xl:space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Active habits
                     </p>
-                    <h2 className="xl:text-base 2xl:text-lg font-semibold">
+                    <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                       Habits and Statistics
                     </h2>
                   </div>
                   <Link
                     href="/dashboard/habits/create"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white xl:text-xs 2xl:text-sm font-semibold transition hover:brightness-105 shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none"
+                    className="inline-flex items-center gap-2 lg:px-3 xl:px-4 lg:py-1 xl:py-2 rounded-full bg-primary text-white lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold transition hover:brightness-105 shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                     Create habit
                   </Link>
                 </div>
@@ -472,22 +498,22 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   <label htmlFor="habit-search" className="sr-only">
                     Search habits
                   </label>
-                  <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/80 px-3 py-2 text-xs text-muted-foreground shadow-sm">
-                    <Search className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex items-center lg:gap-1.5 xl:gap-2 rounded-2xl border border-gray-100 bg-white/80 lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs text-muted-foreground shadow-sm">
+                    <Search className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-muted-foreground" />
                     <input
                       id="habit-search"
                       type="search"
                       value={searchTerm}
                       onChange={(event) => setSearchTerm(event.target.value)}
                       placeholder="Search habits or goals"
-                      className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
+                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none"
                       autoComplete="off"
                     />
                   </div>
                 </div>
 
                 <div className="overflow-hidden rounded-2xl border border-gray-100 bg-muted/50">
-                  <div className="grid grid-cols-6 px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                  <div className="grid grid-cols-6 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     <span className="col-span-2">Habit</span>
                     <span>Cadence</span>
                     <span>Streak</span>
@@ -495,28 +521,28 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                   <div className="divide-y divide-gray-100">
                     {localHabits.length === 0 ? (
-                      <div className="px-4 py-10 text-center xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
+                      <div className="lg:px-3 xl:px-4 lg:py-8 xl:py-10 text-center lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
                         <p className="font-semibold text-foreground">
                           No habits yet
                         </p>
-                        <p className="xl:text-xs 2xl:text-sm">
+                        <p className="lg:text-[11px] xl:text-xs 2xl:text-sm">
                           Start tracking a rhythm and this board will show your
                           streaks, completion, and cadence.
                         </p>
                         <Link
                           href="/dashboard/habits/create"
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 xl:text-xs 2xl:text-sm font-semibold text-primary hover:border-primary hover:bg-primary/5 transition"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-primary hover:border-primary hover:bg-primary/5 transition"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                           Create your first habit
                         </Link>
                       </div>
                     ) : filteredHabits.length === 0 ? (
-                      <div className="px-4 py-10 text-center xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
+                      <div className="lg:px-3 xl:px-4 lg:py-8 xl:py-10 text-center lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground space-y-4">
                         <p className="font-semibold text-foreground">
                           No habits match your search
                         </p>
-                        <p className="xl:text-xs 2xl:text-sm">
+                        <p className="lg:text-[11px] xl:text-xs 2xl:text-sm">
                           Try another keyword or clear the search to view
                           everything.
                         </p>
@@ -561,7 +587,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 );
                               }
                             }}
-                            className={`grid gap-1 w-full text-left grid-cols-6 px-4 py-3 items-center xl:text-xs 2xl:text-sm transition ${
+                            className={`grid gap-1 w-full text-left grid-cols-6 lg:px-3 xl:px-4 lg:py-2 xl:py-3 items-center lg:text-[11px] xl:text-xs 2xl:text-sm transition ${
                               isSelected
                                 ? "bg-primary/5"
                                 : "bg-white/60 hover:bg-primary/5"
@@ -572,10 +598,10 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                 {habit.name}
                               </div>
                               <div className="space-y-1">
-                                <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                                <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                                   {focusLabel}
                                 </div>
-                                <p className="xl:text-[11px] 2xl:text-xs font-semibold text-primary">
+                                <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
                                   {loggedLabel}
                                 </p>
                               </div>
@@ -583,8 +609,8 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                             <div className="text-muted-foreground">
                               {habit.cadence}
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Flame className="w-4 h-4 text-primary" />
+                            <div className="flex items-center lg:gap-1.5 xl:gap-2">
+                              <Flame className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                               <span className="font-semibold">
                                 {streakValue}d
                               </span>
@@ -592,13 +618,13 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                             <div className="col-span-2 flex items-center justify-between">
                               <div className="flex items-center">
                                 {isComplete ? (
-                                  <span className="flex items-center gap-1 xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
-                                    <Check className="w-4 h-4" />
+                                  <span className="flex items-center gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
+                                    <Check className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                                     <p>Completed</p>
                                   </span>
                                 ) : (
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
+                                  <div className="flex items-center lg:gap-2 lxl:gap-3">
+                                    <div className="lg:w-16 xl:w-24 lg:h-1 xl:h-2 rounded-full bg-muted overflow-hidden">
                                       <div
                                         className="h-full bg-linear-to-r from-primary to-coral"
                                         style={{
@@ -606,7 +632,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                         }}
                                       />
                                     </div>
-                                    <span className="xl:text-xs 2xl:text-sm font-semibold">
+                                    <span className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
                                       {displayCompletion}%
                                     </span>
                                   </div>
@@ -622,7 +648,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                               >
                                 <button
                                   type="button"
-                                  className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
+                                  className="flex lg:h-6 xl:h-8 lg:w-6 xl:w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
                                   aria-haspopup="true"
                                   aria-expanded={quantityMenuOpen === habit.id}
                                   onClick={(event) => {
@@ -632,14 +658,14 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                     );
                                   }}
                                 >
-                                  <Plus className="w-4 h-4" />
+                                  <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                                 </button>
                                 {quantityMenuOpen === habit.id &&
                                   menuPosition && (
                                     <Portal>
                                       <div
                                         ref={quantityMenuRef}
-                                        className="w-48 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg"
+                                        className="max-w-full lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white lg:p-2 xl:p-3 shadow-lg"
                                         onMouseDown={(event) =>
                                           event.stopPropagation()
                                         }
@@ -647,20 +673,21 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                           position: "absolute",
                                           top: menuPosition.top,
                                           left: menuPosition.left,
+                                          width: menuWidth,
                                           zIndex: 1100,
                                         }}
                                       >
-                                        <p className="text-[11px] mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                                        <p className="lg:text-[9px] xl:text-[11px] lg:mb-0.5 xl:mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                                           Add quantity
                                         </p>
                                         <div className="space-y-1">
-                                          <div className="flex items-center gap-2">
+                                          <div className="flex items-center lg:gap-1.5 xl:gap-2">
                                             <input
                                               id={`custom-quantity-${habit.id}`}
                                               type="number"
                                               min="0"
                                               step="0.1"
-                                              className="w-full rounded-2xl border border-gray-100 px-3 py-1 text-xs outline-none focus:border-primary"
+                                              className="w-full rounded-2xl border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs outline-none focus:border-primary"
                                               value={
                                                 customQuantities[habit.id] ?? ""
                                               }
@@ -678,7 +705,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                             />
                                             <button
                                               type="button"
-                                              className="rounded-2xl border border-primary/60 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary"
+                                              className="rounded-2xl border border-primary/60 bg-primary/5 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-primary transition hover:border-primary"
                                               onClick={(event) => {
                                                 event.stopPropagation();
                                                 const value = Number.parseFloat(
@@ -701,7 +728,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                                           </div>
                                           <button
                                             type="button"
-                                            className="w-full rounded-full border border-muted/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
+                                            className="w-full rounded-full border border-muted/40 bg-muted/10 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
                                             onClick={(event) => {
                                               event.stopPropagation();
                                               void handleReset(habit.id);
@@ -722,7 +749,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   </div>
                 </div>
 
-                <div className="xl:mt-8 2xl:mt-10">
+                <div className="lg:mt-6 xl:mt-8 2xl:mt-10">
                   <HabitsWeekCalendar
                     habits={localHabits}
                     progressByDay={progressMap}
@@ -731,8 +758,8 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
               </div>
             </div>
 
-            <div className="h-fit flex flex-col xl:gap-6">
-              <div className="relative px-6 pt-5 pb-6 space-y-4 rounded-3xl border border-gray-100 bg-white shadow-inner overflow-hidden">
+            <div className="h-fit flex flex-col lg:gap-4 xl:gap-6">
+              <div className="relative lg:px-4 xl:px-6 lg:pt-3 xl:pt-5 lg:pb-4 xl:pb-6 lg:space-y-3 xl:space-y-4 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner overflow-hidden">
                 <GradientCircle
                   size={210}
                   position={{ bottom: "-50px", right: "-30px" }}
@@ -749,43 +776,45 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                 />
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                       Playbook
                     </p>
-                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
+                    <h2 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                       Protect the streaks
                     </h2>
-                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                       Guardrails, rescues, and weekly reviews that protect every
                       streak.
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="lg:space-y-2 xl:space-y-3">
                   {streakDefensePlaybook.map((item, index) => {
                     const Icon = iconMap[item.icon];
                     return (
                       <div
                         key={`${item.title}-${index}`}
-                        className="relative rounded-2xl border border-gray-50 bg-white px-4 py-3 space-y-2 shadow-lg"
+                        className="relative rounded-2xl border border-gray-50 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:space-y-1 xl:space-y-2 shadow-lg"
                       >
                         <div className="flex items-center justify-between">
                           <div
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] ${item.accent}`}
+                            className={`inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[8px] xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] ${item.accent}`}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                             <span>{item.label}</span>
                           </div>
                         </div>
                         <div className="flex items-start gap-2">
                           <div className="space-y-1">
-                            <p className="font-semibold">{item.title}</p>
-                            <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                            <p className="font-semibold lg:text-sm xl:text-base">
+                              {item.title}
+                            </p>
+                            <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
                               {item.detail}
                             </p>
-                            <div className="inline-flex items-center gap-2 text-xs font-semibold rounded-full bg-muted px-3 py-1 text-muted-foreground">
-                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                            <div className="inline-flex items-center gap-2 text-xs font-semibold rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 text-muted-foreground">
+                              <span className="lg:h-1 lg:w-1 xl:h-1.5 xl:w-1.5 rounded-full bg-primary" />
                               {item.meta}
                             </div>
                           </div>
@@ -795,17 +824,17 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                   })}
                 </div>
               </div>
-              <div className="max-w-6xl shadow-inner rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
-                <div className="xl:p-5 2xl:p-6 space-y-4">
+              <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
+                <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                      <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                         Calendar
                       </p>
-                      <h2 className="xl:text-base 2xl:text-lg font-semibold">
+                      <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                         Habit rhythm
                       </h2>
-                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                         Daily completion percentages help you spot where
                         momentum is building.
                       </p>

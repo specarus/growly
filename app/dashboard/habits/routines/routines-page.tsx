@@ -215,17 +215,17 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
   );
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
+    <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground g:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
-      <div className="xl:px-8 2xl:px-28 space-y-8">
+      <div className="lg:px-4 xl:px-8 2xl:px-28 space-y-8">
         <PageHeading
           badgeLabel="Routines"
           title="Group habits into routines"
           description="Drag habits into the routines that keep you steady. Changes now sync directly to your saved layouts."
           actions={
-            <div className="flex flex-row gap-3">
+            <div className="flex flex-row lg:gap-2 xl:gap-3">
               <Button
-                className="xl:text-xs 2xl:text-sm xl:h-8 2xl:h-10"
+                className="lg:text-[10px] text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
                 onClick={handleNewRoutine}
               >
                 Create routine
@@ -234,35 +234,35 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
           }
         />
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center lg:gap-2 xl:gap-3">
           <HabitsTabs
             active="routines"
-            containerClassName="xl:gap-1 2xl:gap-2"
+            containerClassName="lg:gap-0.5 xl:gap-1 2xl:gap-2"
             tabClassName="border border-transparent"
           />
-          <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+          <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
             Move habits between the backlog and your routines.
           </span>
         </div>
         {routineError ? (
-          <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700">
+          <div className="rounded-2xl border border-rose-100 bg-rose-50 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold text-rose-700">
             {routineError}
           </div>
         ) : null}
 
-        <div className="grid xl:grid-cols-[0.95fr_1.05fr] gap-5">
+        <div className="grid lg:grid-cols-[0.95fr_1.05fr] lg:gap-3 xl:gap-5">
           <div
             className={`relative overflow-hidden ${dropClasses} ${
               hoverTarget === "backlog"
                 ? "border-primary/80 bg-primary/5"
                 : "border-gray-100 bg-white/80"
-            } p-5 h-full`}
+            } lg:p-4 xl:p-5 h-full`}
             onDragOver={(event) => event.preventDefault()}
             onDragEnter={() => setHoverTarget("backlog")}
             onDragLeave={() => setHoverTarget(null)}
             onDrop={handleDrop("backlog")}
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between lg:mb-2 xl:mb-3">
               <GradientCircle
                 size={210}
                 position={{ top: "-50px", right: "-50px" }}
@@ -271,21 +271,21 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                 className="scale-[2]"
               />
               <div>
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   Unassigned
                 </p>
-                <h2 className="xl:text-base 2xl:text-lg font-semibold mb-1">
+                <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold lg:mb-0.5 xl:mb-1">
                   Habit backlog
                 </h2>
-                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                   Drop habits here to pull them out of a routine.
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="lg:space-y-2 xl:space-y-3">
               {backlog.length === 0 ? (
-                <div className="rounded-xl border-2 border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-[13px] 2xl:text-sm text-muted-foreground">
+                <div className="rounded-xl lg:border xl:border-2 border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-[13px] 2xl:text-sm text-muted-foreground">
                   No loose habits. Drag one back from a routine to stash it
                   here.
                 </div>
@@ -295,24 +295,24 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                     key={habit.id}
                     draggable
                     onDragStart={handleDragStart(habit.id, "backlog")}
-                    className="rounded-xl border-2 border-gray-100 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-3 hover:border-primary/50 cursor-grab"
+                    className="rounded-xl lg:border xl:border-2 border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 shadow-sm flex items-center justify-between lg:gap-2 xl:gap-3 hover:border-primary/50 cursor-grab"
                   >
                     <div>
-                      <p className="font-semibold xl:text-sm 2xl:text-base">
+                      <p className="font-semibold lg:text-xs xl:text-sm 2xl:text-base">
                         {habit.name}
                       </p>
-                      <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                         {habit.cadence} - {habit.focus}
                       </p>
                     </div>
-                    <GripVertical className="w-4 h-4 text-muted-foreground" />
+                    <GripVertical className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-muted-foreground" />
                   </div>
                 ))
               )}
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 lg:gap-3 xl:gap-4">
             {routines.map((routine) => (
               <div
                 key={routine.id}
@@ -320,33 +320,33 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                   hoverTarget === routine.id
                     ? "border-primary/80 bg-primary/5"
                     : "border-gray-100 bg-white/80"
-                } xl:p-4 2xl:p-5 flex flex-col gap-4`}
+                } lg:p-3 xl:p-4 2xl:p-5 flex flex-col gap-4`}
                 onDragOver={(event) => event.preventDefault()}
                 onDragEnter={() => setHoverTarget(routine.id)}
                 onDragLeave={() => setHoverTarget(null)}
                 onDrop={handleDrop(routine.id)}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between lg:gap-1 xl:gap-2">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-2 xl:mb-2 2xl:mb-3 rounded-full bg-muted px-3 xl:py-1 2xl:py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      <Target className="w-4 h-4 text-primary" />
+                    <div className="inline-flex items-center gap-2 xl:mb-2 2xl:mb-3 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 2xl:py-2 lg:text-[9px] xl:text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <Target className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                       Routine
                     </div>
-                    <h3 className="xl:text-base 2xl:text-lg font-semibold leading-tight">
+                    <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold leading-tight">
                       {routine.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock3 className="w-4 h-4 text-primary" />
+                    <div className="flex items-center lg:gap-1 xl:gap-2 lg:text-[11px] xl:text-xs text-muted-foreground">
+                      <Clock3 className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                       <span>{routine.anchor ?? "Not set"}</span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center xl:gap-2 2xl:gap-3">
+                  <div className="flex flex-col items-end lg:gap-1.5 xl:gap-2">
+                    <div className="flex items-center lg:gap-1.5 xl:gap-2 2xl:gap-3">
                       <Link
                         href={`/dashboard/habits/routines/${routine.id}/edit`}
                         className="text-muted-foreground hover:underline"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                       </Link>
                       <button
                         type="button"
@@ -354,9 +354,9 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                           handleDeleteRoutine(routine.id, routine.habits)
                         }
                         disabled={deletingRoutineId === routine.id}
-                        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-rose-600 hover:border-rose-400 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full border border-rose-200 bg-rose-50 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-rose-600 hover:border-rose-400 disabled:cursor-not-allowed disabled:opacity-70"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="lg:w-2.5 lg:h-2.5 xl:w-3.5 xl:h-3.5" />
                         <span>
                           {deletingRoutineId === routine.id
                             ? "Deleting..."
@@ -364,15 +364,15 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                         </span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-center xl:text-[11px] 2xl:text-xs xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 py-1 rounded-full">
+                    <div className="flex items-center justify-center lg:text-[9px] xl:text-[11px] 2xl:text-xs lg:w-24 xl:w-32 2xl:w-36 font-semibold text-primary bg-primary/10 lg:py-0.5 xl:py-1 rounded-full">
                       Drop habits here
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="lg:space-y-2 xl:space-y-3">
                   {routine.habits.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <div className="rounded-xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-2 xl:py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
                       Empty slot. Drag a habit from the backlog to start this
                       routine.
                     </div>
@@ -382,17 +382,17 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
                         key={habit.id}
                         draggable
                         onDragStart={handleDragStart(habit.id, routine.id)}
-                        className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-3 hover:border-primary/50 cursor-grab"
+                        className="rounded-xl border border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 shadow-sm flex items-center justify-between lg:gap-2 xl:gap-3 hover:border-primary/50 cursor-grab"
                       >
                         <div>
-                          <p className="xl:text-sm 2xl:text-base font-semibold">
+                          <p className="lg:text-xs xl:text-sm 2xl:text-base font-semibold">
                             {habit.name}
                           </p>
-                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                          <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             {habit.cadence} - {habit.focus}
                           </p>
                         </div>
-                        <GripVertical className="w-4 h-4 text-muted-foreground" />
+                        <GripVertical className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-muted-foreground" />
                       </div>
                     ))
                   )}

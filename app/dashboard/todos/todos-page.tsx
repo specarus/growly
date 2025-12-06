@@ -672,7 +672,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                       </Link>
                     ) : (
                       <Button
-                        className="lg:text-[10px] text-white shadow-sm shadow-primary hover:shadow-none transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
+                        className="lg:text-[10px] text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
                         onClick={handleNewTodo}
                       >
                         <Plus className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
