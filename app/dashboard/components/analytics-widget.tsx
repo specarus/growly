@@ -259,14 +259,14 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
                   return (
                     <div
                       key={habit.id}
-                      className="group h-10/12 relative flex flex-col items-center justify-between px-2 transition hover:bg-primary/20"
+                      className="group h-10/12 relative flex flex-col items-center justify-between xl:p-2 transition hover:bg-primary/20"
                       style={{
                         flex: `0 0 ${barWidthPercent}`,
                         maxWidth: barWidthPercent,
                       }}
                     >
-                      <div className="flex flex-col items-center gap-1 text-center">
-                        <div className="xl:text-xs xl:mt-1 2xl:mt-2 truncate w-full font-medium">
+                      <div className="flex flex-col items-center gap-1 text-center xl:min-h-16">
+                        <div className="xl:text-xs text-wrap xl:mt-1 2xl:mt-2 truncate w-full font-medium">
                           {habit.name}
                         </div>
                         <div className="xl:text-[9px] 2xl:text-[10px] sm:text-xs text-muted-foreground mb-1">

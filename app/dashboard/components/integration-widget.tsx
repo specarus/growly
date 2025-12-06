@@ -3,8 +3,8 @@ import { Link as LinkIcon } from "lucide-react";
 
 const IntegrationWidget = () => {
   return (
-    <div className="flex flex-col items-center xl:p-2 2xl:p-6 xl:rounded-2xl 2xl:rounded-3xl text-foreground">
-      <div className="flex items-start justify-between mb-3 sm:mb-4">
+    <div className="flex flex-col items-center xl:p-6 xl:rounded-2xl 2xl:rounded-3xl text-foreground">
+      <div className="flex items-start justify-between mb-4">
         <div
           style={{ backgroundImage: "url('/spotify.png')" }}
           className="xl:w-12 xl:h-12 2xl:w-16 2xl:h-16 rounded-full bg-cover bg-no-repeat bg-center"
