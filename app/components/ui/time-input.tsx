@@ -146,8 +146,8 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-start xl:gap-3 2xl:gap-4">
+    <div className="lg:space-y-1 xl:space-y-2">
+      <div className="flex items-start lg:gap-2 xl:gap-3 2xl:gap-4">
         <div className="space-y-1 text-center">
           <input
             type="text"
@@ -158,13 +158,13 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
             onChange={handleHourInputChange}
             placeholder="--"
             aria-label="Hour"
-            className="xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 rounded-2xl border border-gray-200 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 lg:rounded-lg xl:rounded-2xl border border-gray-100 shadow-inner text-center lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           />
-          <p className="xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="lg:text-[7px] xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Hour
           </p>
         </div>
-        <span className="xl:text-xl 2xl:text-2xl font-semibold text-muted-foreground xl:pt-2 2xl:pt-3">
+        <span className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-muted-foreground lg:pt-1 xl:pt-2 2xl:pt-3">
           :
         </span>
         <div className="space-y-1 text-center">
@@ -177,19 +177,19 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
             onChange={handleMinuteInputChange}
             placeholder="--"
             aria-label="Minute"
-            className="xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 rounded-2xl border border-gray-200 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 lg:rounded-xl xl:rounded-2xl border border-gray-100 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           />
-          <p className="xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="lg:text-[7px] xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Minute
           </p>
         </div>
-        <div className="grid xl:h-14 xl:w-14 2xl:h-18 2xl:w-18 grid-rows-2 overflow-hidden rounded-2xl border border-gray-200 xl:text-[11px] 2xl:text-sm font-semibold">
+        <div className="grid lg:h-10 lg:w-10 xl:h-14 xl:w-14 2xl:h-18 2xl:w-18 grid-rows-2 overflow-hidden lg:rounded-xl xl:rounded-2xl border border-gray-100 lg:text-[9px] xl:text-[11px] 2xl:text-sm font-semibold">
           {(["AM", "PM"] as const).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => handleMeridiemChange(option)}
-              className={`flex h-full items-center justify-center px-3 uppercase tracking-[0.2em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+              className={`flex h-full items-center justify-center uppercase tracking-[0.2em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
                 option === "AM" ? "border-b border-gray-200" : ""
               } ${
                 meridiem === option
