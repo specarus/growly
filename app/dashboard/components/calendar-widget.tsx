@@ -94,32 +94,32 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
   const todayProgress = clamp(progressByDay[todayKey] ?? 0);
 
   return (
-    <div className="border-none shadow-none xl:min-h-80 2xl:min-h-96">
-      <div className="flex items-center justify-between xl:mb-2 2xl:mb-4">
-        <h3 className="font-semibold xl:text-lg 2xl:text-xl text-foreground">
+    <div className="border-none shadow-none lg:min-h-72 xl:min-h-80 2xl:min-h-96">
+      <div className="flex items-center justify-between lg:mb-1 xl:mb-2 2xl:mb-4">
+        <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl text-foreground">
           {getMonthName(currentMonth)}, {currentYear}
         </h3>
-        <div className="flex gap-3 xl:gap-1 2xl:gap-2 items-center">
+        <div className="flex lg:gap-0.5 xl:gap-1 2xl:gap-2 items-center">
           <Button
             onClick={handlePreviousMonth}
-            className="text-muted-foreground hover:text-white bg-white hover:bg-primary/90 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
+            className="text-muted-foreground hover:text-white bg-white hover:bg-primary/90 lg:w-5 lg:h-5 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
           >
-            <ChevronLeft className="xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
+            <ChevronLeft className="lg:h-3 lg:w-3 xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
           </Button>
           <Button
             onClick={handleNextMonth}
-            className="text-muted-foreground hover:text-white bg-white hover:bg-primary/90 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
+            className="text-muted-foreground hover:text-white bg-white hover:bg-primary/90 lg:w-5 lg:h-5 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7"
           >
-            <ChevronRight className="xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
+            <ChevronRight className="lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4" />
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 sm:gap-1.5 mb-2">
+      <div className="grid grid-cols-7 lg:gap-1 xl:gap-1.5 lg:mb-1 xl:mb-2">
         {dayNames.map((dayName) => (
           <div
             key={dayName}
-            className="text-center xl:text-xs 2xl:text-sm font-medium text-muted-foreground"
+            className="text-center lg:text-[10px] xl:text-xs 2xl:text-sm font-medium text-muted-foreground"
           >
             {dayName}
           </div>
@@ -129,8 +129,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
       {dayWeeks.map((week, weekIndex) => (
         <div
           key={weekIndex}
-          className={`grid grid-cols-7 xl:gap-1.5 2xl:gap-2 ${
-            weekIndex < dayWeeks.length - 1 ? "xl:mb-2 2xl:mb-3" : ""
+          className={`grid grid-cols-7 lg:gap-1 xl:gap-1.5 2xl:gap-2 ${
+            weekIndex < dayWeeks.length - 1 ? "lg:mb-1 xl:mb-2 2xl:mb-3" : ""
           }`}
         >
           {week.map((dayObj, dayIndex) => {
@@ -151,9 +151,9 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
                   progress === 1
                     ? "text-white bg-primary"
                     : isToday
-                      ? "text-primary"
-                      : ""
-                } relative xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center xl:text-xs 2xl:text-sm rounded-full`}
+                    ? "text-primary"
+                    : ""
+                } relative lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 grid place-items-center lg:text-[9px] xl:text-xs 2xl:text-sm rounded-full`}
                 title={`${getMonthName(currentMonth)} ${day} - ${Math.round(
                   progress * 100
                 )}% of habits completed`}
@@ -192,8 +192,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ progressByDay }) => {
         </div>
       ))}
 
-      <div className="flex items-center xl:gap-1 2xl:gap-2 xl:mt-2 2xl:mt-3 xl:text-xs 2xl:text-sm text-emerald-500 font-medium">
-        <ClipboardCheck className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
+      <div className="flex items-center lg:gap-0.5 xl:gap-1 2xl:gap-2 lg:mt-1 xl:mt-2 2xl:mt-3 lg:text-[9px] xl:text-xs 2xl:text-sm text-emerald-500 font-medium">
+        <ClipboardCheck className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
         <p>Today {Math.round(todayProgress * 100)}% of habits completed</p>
       </div>
     </div>

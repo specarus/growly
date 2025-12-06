@@ -5,6 +5,34 @@ import CircularProgress from "./circular-progress";
 import { useXP } from "@/app/context/xp-context";
 import { MAX_STREAK_BONUS } from "@/lib/xp";
 
+const getCircularProgressSize = (): number => {
+  if (typeof window === "undefined") {
+    return 32;
+  }
+
+  if (window.matchMedia("(min-width: 1280px)").matches) {
+    return 56;
+  }
+
+  if (window.matchMedia("(min-width: 1024px)").matches) {
+    return 40;
+  }
+
+  return 32;
+};
+
+const getCircularProgressStrokeWidth = (size: number): number => {
+  if (size >= 56) {
+    return 3.5;
+  }
+
+  if (size >= 40) {
+    return 2.5;
+  }
+
+  return 3;
+};
+
 const ScoreWidget: React.FC = () => {
   const {
     totalXP,
@@ -18,6 +46,20 @@ const ScoreWidget: React.FC = () => {
   } = useXP();
   const [pulse, setPulse] = useState(false);
   const prevTotalXPRef = useRef<number | null>(null);
+
+  const [circularProgressSize, setCircularProgressSize] = useState(() =>
+    getCircularProgressSize()
+  );
+  const circularProgressStrokeWidth =
+    getCircularProgressStrokeWidth(circularProgressSize);
+
+  useEffect(() => {
+    const handleResize = () =>
+      setCircularProgressSize(getCircularProgressSize());
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -81,7 +123,7 @@ const ScoreWidget: React.FC = () => {
 
   const progressFillClassName = [
     "bg-green-soft",
-    "h-2.5",
+    "lg:h-1.5 xl:h-2.5",
     "rounded-full",
     "transition-all duration-500 ease-out",
     "transform",
@@ -92,71 +134,77 @@ const ScoreWidget: React.FC = () => {
     .join(" ");
 
   return (
-    <div className="text-foreground xl:p-3 2xl:p-4 rounded-2xl shadow-none border-none">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold  uppercase tracking-wider">
+    <div className="text-foreground lg:p-2 xl:p-3 2xl:p-4">
+      <div className="flex items-center justify-between lg:mb-1 xl:mb-2">
+        <h3 className="lg:text-xs xl:text-sm font-semibold uppercase tracking-wider">
           Habit Score
         </h3>
       </div>
-      <div className="flex flex-col xl:gap-3 2xl:gap-4">
+      <div className="flex flex-col lg:gap-2 xl:gap-3 2xl:gap-4">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col items-center xl:px-3 xl:py-2 2xl:px-4 2xl:py-3 rounded-lg bg-secondary/50 text-primary dark:text-white select-none">
-            <span className="xl:text-lg 2xl:text-xl font-extrabold leading-none">
+          <div className="flex flex-col items-center lg:px-2 lg:py-1 xl:px-3 xl:py-2 2xl:px-4 2xl:py-3 lg:rounded-sm xl:rounded-lg bg-secondary/50 text-primary dark:text-white select-none">
+            <span className="lg:text-base xl:text-lg 2xl:text-xl font-extrabold leading-none">
               {level}
             </span>
-            <span className="xl:text-[10px] 2xl:text-xs font-medium">
+            <span className="lg:text-[8px] xl:text-[10px] 2xl:text-xs font-medium">
               LEVEL
             </span>
           </div>
           <div className="text-right">
-            <p className="xl:text-2xl 2xl:text-3xl font-bold leading-tight">
+            <p className="lg:text-xl xl:text-2xl 2xl:text-3xl font-bold leading-tight">
               {formatNumber(totalXP)}
             </p>
-            <p className="xl:text-xs 2xl:text-sm font-medium">Total XP</p>
+            <p className="lg:text-[10px] xl:text-xs 2xl:text-sm font-medium">
+              Total XP
+            </p>
           </div>
         </div>
 
-        <div className="w-full flex xl:px-8 2xl:px-10 justify-between rounded-lg">
+        <div className="w-full flex lg:px-6 xl:px-8 2xl:px-10 justify-between rounded-lg">
           <div className="flex flex-col items-center gap-1 select-none">
             <CircularProgress
               progress={todayXPProgress}
+              size={circularProgressSize}
+              strokeWidth={circularProgressStrokeWidth}
               progressColor="rgb(34 197 94)"
               textColor="rgb(34 197 94)"
             >
-              <span className="text-xs font-bold">
+              <span className="lg:text-[10px] xl:text-xs font-bold">
                 +{formatNumber(todayXP)}
               </span>
             </CircularProgress>
 
-            <span className="xl:text-[10px] 2xl:text-xs font-medium text-gray-500 mt-1">
+            <span className="lg:text-[8px] xl:text-[10px] 2xl:text-xs font-medium text-gray-500 lg:mt-0.5 xl:mt-1">
               Today&apos;s XP
             </span>
           </div>
           <div className="flex flex-col items-center gap-1 select-none">
             <CircularProgress
               progress={streakBonusProgress}
+              size={circularProgressSize}
+              strokeWidth={circularProgressStrokeWidth}
               progressColor="rgb(234 179 8)"
               textColor="rgb(234 179 8)"
             >
-              <span className="text-xs font-bold">
+              <span className="lg:text-[10px] xl:text-xs font-bold">
                 +{formatNumber(streakBonus)}
               </span>
             </CircularProgress>
-            <span className="xl:text-[10px] 2xl:text-xs font-medium text-gray-500 mt-1">
+            <span className="lg:text-[8px] xl:text-[10px] 2xl:text-xs font-medium text-gray-500 lg:mt-0.5 xl:mt-1">
               Streak Bonus
             </span>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-muted">
-          <p className="text-xs font-semibold mb-1 flex justify-between">
+        <div className="lg:pt-2 xl:pt-4 border-t border-muted">
+          <p className="lg:text-[10px] xl:text-xs font-semibold lg:mb-0.5 xl:mb-1 flex justify-between">
             <span>XP to Level {nextLevel}:</span>
             <span className="font-extrabold text-green-soft">
               {formatNumber(xpGainedInLevel)} /{" "}
               {formatNumber(xpNeededForLevelUp)}
             </span>
           </p>
-          <div className="w-full rounded-full h-2.5 bg-muted">
+          <div className="w-full rounded-full lg:h-1.5 xl:h-2.5 bg-muted">
             <div
               className={progressFillClassName}
               style={{ width: `${safeProgress}%` }}

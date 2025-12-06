@@ -59,10 +59,10 @@ const CheckedBox: FC<CheckedBoxProps> = ({ checked, onClick, disabled }) => {
         checked
           ? "bg-green-soft border-green-soft"
           : "border-primary bg-transparent"
-      } border shrink-0 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 rounded-full grid place-items-center transition hover:scale-105 disabled:opacity-60`}
+      } border shrink-0 lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 rounded-full grid place-items-center transition hover:scale-105 disabled:opacity-60`}
     >
       {checked ? (
-        <Check className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-white" />
+        <Check className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-white" />
       ) : (
         <span className="sr-only">Mark complete</span>
       )}
@@ -78,25 +78,27 @@ const Todo: FC<TodoProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="relative flex items-start bg-muted/20 gap-3 select-none hover:opacity-80 border border-muted-foreground/5 xl:p-2 2xl:p-3 shadow-inner hover:shadow-none transition rounded-2xl">
+    <div className="relative flex items-start bg-muted/20 lg:gap-2 xl:gap-3 select-none hover:opacity-80 border border-muted-foreground/5 lg:p-2 2xl:p-3 shadow-inner hover:shadow-none transition lg:rounded-xl xl:rounded-2xl">
       <Link
         href={href || "#"}
-        className="flex items-start gap-3 flex-1 min-w-0 group"
+        className="flex items-start lg:gap-2 xl:gap-3 flex-1 min-w-0 group"
       >
         <div
-          className="grid place-items-center w-12 h-12 xl:rounded-lg 2xl:rounded-xl shrink-0 border border-white shadow-sm"
+          className="grid place-items-center lg:w-10 lg:h-10 xl:w-12 xl:h-12 lg:rounded-sm xl:rounded-lg 2xl:rounded-xl shrink-0 border border-white shadow-sm"
           style={{ backgroundColor: todo.iconColor || "#E5E7EB" }}
         >
           {(() => {
             const IconComp =
               (icons as Record<string, LucideIcon>)[todo.iconKey] || Sparkles;
-            return <IconComp className="w-5 h-5 text-slate-500" />;
+            return (
+              <IconComp className="lg:w-4 xl:w-5 lg:h-4 xl:h-5 text-slate-500" />
+            );
           })()}
         </div>
         <div className="flex-1 min-w-0">
           <div className="relative mb-1">
             <div
-              className={`font-medium xl:text-[13px] 2xl:text-[15px] truncate transition-colors ${
+              className={`font-medium lg:text-[11px] xl:text-[13px] 2xl:text-[15px] truncate transition-colors ${
                 todo.completed || isCompleting
                   ? "text-muted-foreground"
                   : "text-foreground"
@@ -111,28 +113,28 @@ const Todo: FC<TodoProps> = ({
             />
           </div>
 
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center lg:gap-1 xl:gap-2 mb-1">
             <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 xl:text-[10px] 2xl:text-[11px] font-semibold"
+              className="inline-flex items-center gap-1 rounded-full lg:px-1 xl:px-2 xl:py-0.5 lg:text-[7px] xl:text-[10px] 2xl:text-[11px] font-semibold"
               style={{
                 backgroundColor: `${todo.statusColor}20`,
                 color: todo.statusColor,
               }}
             >
               <span
-                className="h-2 w-2 rounded-full"
+                className="lg:h-1 lg:w-1 xl:h-2 xl:w-2 rounded-full"
                 style={{ backgroundColor: todo.statusColor }}
               />
               {todo.statusLabel}
             </span>
           </div>
-          <div className="flex items-center xl:gap-2 2xl:gap-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
-            <span className="flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
-              <Clock className="w-3 h-3 shrink-0 text-slate-500" />
+          <div className="flex items-center lg:gap-1 xl:gap-2 2xl:gap-3 lg:text-[8px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+            <span className="flex items-center lg:gap-0.5 xl:gap-1 whitespace-nowrap">
+              <Clock className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 shrink-0 text-slate-500" />
               {todo.time}
             </span>
-            <span className="flex items-center gap-0.5 sm:gap-1 truncate">
-              <MapPin className="w-3 h-3 shrink-0 text-red-400" />
+            <span className="flex items-center lg:gap-0.5 xl:gap-1 truncate">
+              <MapPin className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 shrink-0 text-red-400" />
               <span className="truncate">{todo.location}</span>
             </span>
           </div>
@@ -147,7 +149,7 @@ const Todo: FC<TodoProps> = ({
       />
       {isCompleting ? (
         <div
-          className="absolute inset-0 rounded-2xl pointer-events-none"
+          className="absolute inset-0 lg:rounded-xl xl:rounded-2xl pointer-events-none"
           style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
         />
       ) : null}

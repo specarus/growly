@@ -139,11 +139,11 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
         }
 
         addXP(XP_PER_TODO, "todo", {
-          label: todo.title,
-          detail: todo.time
-            ? `Due ${todo.time}`
-            : todo.location
-            ? todo.location
+          label: current.title,
+          detail: current.time
+            ? `Due ${current.time}`
+            : current.location
+            ? current.location
             : undefined,
         });
         setActiveCount((prev) => Math.max(prev - 1, 0));
@@ -177,14 +177,14 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
   );
 
   return (
-    <div className="xl:p-2 2xl:p-6 text-foreground">
-      <div className="flex items-center justify-between xl:mb-4">
-        <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+    <div className="lg:p-2 2xl:p-6 text-foreground">
+      <div className="flex items-center justify-between lg:mb-2 xl:mb-4">
+        <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
           Today&apos;s Todos
         </h3>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center lg:gap-2 xl:gap-3">
           <PillButton href="/dashboard/todos/create" variant="primary">
-            <Plus className="w-3 h-3" />
+            <Plus className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
             New todo
           </PillButton>
           <PillButton href="/dashboard/todos" variant="ghost">
@@ -193,7 +193,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
         </div>
       </div>
 
-      <div className="xl:space-y-3 2xl:space-y-4 min-h-24">
+      <div className="lg:space-y-2 xl:space-y-3 2xl:space-y-4 min-h-24">
         {hasTodos ? (
           <>
             {topTodos.map((todo) => (
@@ -212,31 +212,31 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
               return (
                 <div
                   key={`placeholder-${index}`}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-3 text-sm text-muted-foreground"
+                  className="flex items-center justify-between lg:gap-2 xl:gap-3 lg:rounded-xl xl:rounded-2xl border border-dashed border-gray-200 bg-white/70 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-xs xl:text-sm text-muted-foreground"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-foreground">
                       {message.title}
                     </p>
-                    <p className="xl:text-[11px] 2xl:text-xs">
+                    <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs">
                       {message.subtitle}
                     </p>
                   </div>
-                  <Sparkles className="w-4 h-4 shrink-0 text-primary" />
+                  <Sparkles className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 shrink-0 text-primary" />
                 </div>
               );
             })}
           </>
         ) : (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-white/70 px-4 py-5 text-sm text-muted-foreground">
+          <div className="lg:rounded-xl xl:rounded-2xl border border-dashed border-gray-200 bg-white/70 lg:px-3 xl:px-4 lg:py-4 xl:py-5 lg:text-xs xl:text-sm text-muted-foreground">
             <p className="font-semibold text-foreground mb-1">No todos yet</p>
             <p>Start a new one to see it here.</p>
             <PillButton
               href="/dashboard/todos/create"
               variant="text"
-              className="mt-3 gap-2"
+              className="lg:mt-2 xl:mt-3 gap-2"
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
               Create a todo
             </PillButton>
           </div>
@@ -244,7 +244,7 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
       </div>
 
       {hasTodos && remainingCount > 0 ? (
-        <div className="mt-3 xl:text-[11px] 2xl:text-xs text-muted-foreground">
+        <div className="lg:mt-2 xl:mt-3 lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
           +{remainingCount} more waiting -{" "}
           <Link
             href="/dashboard/todos"
@@ -257,19 +257,19 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
 
       {hasTodos ? (
         <>
-          <div className="mt-4 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
-            <CalendarDays className="w-3 h-3" />
+          <div className="lg:mt-2.5 xl:mt-4 flex items-center lg:gap-1 xl:gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+            <CalendarDays className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
             <span className="truncate">Tap a todo to edit or reschedule.</span>
           </div>
-          <div className="mt-1 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
-            <Clock3 className="w-3 h-3" />
+          <div className="mt-1 flex items-center lg:gap-1 xl:gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+            <Clock3 className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
             <span className="truncate">
               Need a new one? Start fresh in seconds.
             </span>
           </div>
         </>
       ) : (
-        <div className="mt-4 flex items-center gap-2 xl:text-[11px] 2xl:text-xs text-muted-foreground">
+        <div className="lg:mt-2.5 xl:mt-4 flex items-center lg:gap-1 xl:gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
           Add a todo to see it on your dashboard.
         </div>
       )}

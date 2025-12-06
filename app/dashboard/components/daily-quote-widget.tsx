@@ -45,21 +45,19 @@ const DailyQuoteWidget: React.FC = () => {
   return (
     <div className="relative h-fit overflow-hidden rounded-2xl border border-muted/50 shadow-inner bg-secondary">
       <div className="absolute inset-0 opacity-30 bg-white" />
-      <div className="relative flex h-full flex-col gap-3 p-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/50 backdrop-blur">
-              <Quote className="w-4 h-4 text-primary" />
-            </span>
-            <div className="leading-tight">
-              <p className="text-xs uppercase tracking-[0.12em] text-foreground">
-                Daily motivation
-              </p>
-            </div>
+      <div className="relative flex h-full flex-col lg:gap-2 xl:gap-3 lg:p-1.5 xl:p-2">
+        <div className="flex items-center gap-4">
+          <span className="grid lg:h-6 xl:h-8 lg:w-7 xl:w-8 place-items-center rounded-full bg-white/50 backdrop-blur">
+            <Quote className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+          </span>
+          <div className="leading-tight">
+            <p className="lg:text-[10px] xl:text-xs uppercase tracking-[0.12em] text-foreground">
+              Daily motivation
+            </p>
           </div>
         </div>
 
-        <div className="flex-1 rounded-2xl bg-white/5 backdrop-blur dark:bg-slate-900/70">
+        <div className="flex-1 lg:rounded-xl xl:rounded-2xl bg-white/5 backdrop-blur dark:bg-card/70">
           {loading ? (
             <div className="space-y-3 animate-pulse">
               <div className="h-3 w-1/3 rounded bg-linear-to-r from-white/70 to-white/40 dark:from-primary/30 dark:to-primary/10" />
@@ -68,23 +66,23 @@ const DailyQuoteWidget: React.FC = () => {
               <div className="h-3 w-1/2 rounded bg-linear-to-r from-white/50 to-white/20 dark:from-slate-700/60 dark:to-slate-600/60" />
             </div>
           ) : error ? (
-            <div className="flex h-fit flex-col items-start justify-center gap-3 text-sm">
+            <div className="flex h-fit flex-col items-start justify-center lg:gap-2 xl:gap-3 lg:text-xs xl:text-sm">
               <p className="text-rose-100/90">{error}</p>
               <Button
                 onClick={fetchQuote}
-                className="xl:h-8 xl:px-3 2xl:h-9 2xl:px-4 bg-white text-primary hover:bg-white/90 shadow-sm"
+                className="lg:h-7 xl:h-8 2xl:h-9 bg-white text-primary hover:bg-white/90 shadow-sm"
               >
                 Try again
               </Button>
             </div>
           ) : quote ? (
-            <div className="flex h-fit flex-col justify-between gap-3 bg-white/40 px-5 py-3 text-foreground/90 rounded-2xl shadow-inner">
+            <div className="flex h-fit flex-col justify-between lg:gap-2 xl:gap-3 bg-white/40 lg:px-4 xl:px-5 lg:py-2 xl:py-3 text-foreground/90 lg:rounded-xl xl:rounded-2xl shadow-inner">
               <div className="flex items-start">
-                <p className="xl:text-xs 2xl:text-sm font-medium leading-relaxed ">
+                <p className="lg:text-[9px] xl:text-xs 2xl:text-sm font-medium leading-relaxed ">
                   "{quote.text}"
                 </p>
               </div>
-              <div className="flex items-center justify-between xl:text-[11px] 2xl:text-xs">
+              <div className="flex items-center justify-between lg:text-[8px] xl:text-[11px] 2xl:text-xs">
                 <span className="font-semibold text-primary">
                   — {quote.author}
                 </span>
@@ -92,7 +90,7 @@ const DailyQuoteWidget: React.FC = () => {
               </div>
             </div>
           ) : (
-            <p className="xl:text-xs 2xl:text-sm">
+            <p className="lg:text-[10px] xl:text-xs 2xl:text-sm">
               No quote available right now.
             </p>
           )}

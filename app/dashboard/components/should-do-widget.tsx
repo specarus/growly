@@ -108,12 +108,15 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
             likesCount: entry.likesCount ?? 0,
             likedByCurrentUser: Boolean(entry.likedByCurrentUser),
             ownedByCurrentUser: Boolean(entry.ownedByCurrentUser),
-            iconKey: entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey ?? null,
+            iconKey:
+              entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey ?? null,
             icon:
               seedIconMap.get(entry.id)?.icon ??
               resolveIcon(entry.iconKey ?? seedIconMap.get(entry.id)?.iconKey),
             iconColor:
-              entry.iconColor ?? seedIconMap.get(entry.id)?.iconColor ?? undefined,
+              entry.iconColor ??
+              seedIconMap.get(entry.id)?.iconColor ??
+              undefined,
           }))
           .filter((entry) => Boolean(entry.id));
 
@@ -167,7 +170,11 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
         method: nextLiked ? "POST" : "DELETE",
       });
       if (!response.ok) {
-        throw new Error(nextLiked ? "Unable to like this idea." : "Unable to unlike this idea.");
+        throw new Error(
+          nextLiked
+            ? "Unable to like this idea."
+            : "Unable to unlike this idea."
+        );
       }
     } catch (likeError) {
       setIdeas((current) =>
@@ -188,11 +195,13 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
   };
 
   return (
-    <div className="flex flex-col xl:rounded-2xl 2xl:rounded-3xl h-full text-foreground">
-      <div className="flex items-start justify-between xl:mb-8 2xl:mb-10">
-        <div className="space-y-1">
-          <h3 className="font-semibold xl:text-lg 2xl:text-xl">Should Do!</h3>
-          <p className="text-muted-foreground xl:text-[11px] 2xl:text-xs">
+    <div className="flex flex-col h-full text-foreground">
+      <div className="flex items-start justify-between lg:mb-6 xl:mb-8 2xl:mb-10">
+        <div className="lg:space-y-0.5 xl:space-y-1">
+          <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
+            Should Do!
+          </h3>
+          <p className="text-muted-foreground lg:text-[9px] xl:text-[11px] 2xl:text-xs">
             Wild ideas from the crew.
           </p>
         </div>
@@ -201,17 +210,17 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
         </PillButton>
       </div>
 
-      <div className="flex flex-col flex-1 xl:gap-2 2xl:gap-3">
+      <div className="flex flex-col flex-1 lg:gap-1 xl:gap-2 2xl:gap-3">
         {isLoading ? (
-          <div className="rounded-xl border border-dashed border-muted bg-muted/20 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-muted bg-muted/20 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[10px] xl:text-xs 2xl:text-sm text-muted-foreground">
             Loading ideas...
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-dashed border-rose-200 bg-rose-50 px-4 py-3 xl:text-xs 2xl:text-sm text-rose-600">
+          <div className="rounded-xl border border-dashed border-rose-200 bg-rose-50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[10px] xl:text-xs 2xl:text-sm text-rose-600">
             {error}
           </div>
         ) : sortedIdeas.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-muted bg-muted/20 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-muted bg-muted/20 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[10px] 2xl:text-sm text-muted-foreground">
             No ideas yet. Be the first to post.
           </div>
         ) : (
@@ -223,15 +232,17 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
             return (
               <div
                 key={idea.id}
-                className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between xl:py-2 2xl:py-3 xl:px-4 2xl:px-5 xl:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors"
+                className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between lg:py-1 xl:py-2 2xl:py-3 lg:px-3 xl:px-4 2xl:px-5 lg:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="xl:text-2xl 2xl:text-3xl shrink-0">
+                <div className="flex items-center lg:gap-2 xl:gap-3 min-w-0">
+                  <span className="shrink-0">
                     <Icon
                       className={
                         usesClass
-                          ? `${idea.iconColor ?? "text-primary"} w-5 h-5`
-                          : "w-5 h-5"
+                          ? `${
+                              idea.iconColor ?? "text-primary"
+                            } lg:w-4 lg:h-4 xl:w-5 xl:h-5`
+                          : "lg:w-4 lg:h-4 xl:w-5 xl:h-5"
                       }
                       style={
                         usesClass
@@ -241,11 +252,11 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
                     />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium xl:mb-0.5 2xl:mb-1 xl:text-sm 2xl:text-base truncate">
+                    <div className="font-medium xl:mb-0.5 2xl:mb-1 lg:text-xs xl:text-sm 2xl:text-base truncate">
                       {idea.title}
                     </div>
-                    <div className="xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-2 truncate">
-                      <Users className="w-3 h-3 shrink-0" />
+                    <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground flex items-center gap-2 truncate">
+                      <Users className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 shrink-0" />
                       <span className="truncate">
                         {formatLikes(idea.likesCount)}
                       </span>
@@ -256,7 +267,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
                   type="button"
                   onClick={() => handleLike(idea.id)}
                   disabled={likingId === idea.id || isSeed}
-                  className={`group inline-flex items-center justify-center rounded-full border px-2.5 py-2 transition-transform duration-200 ease-out active:scale-95 hover:-translate-y-0.5 shadow-sm ${
+                  className={`group inline-flex items-center justify-center rounded-full border lg:px-1.5 xl:px-2.5 lg:py-1 xl:py-2 transition-transform duration-200 ease-out active:scale-95 hover:-translate-y-0.5 shadow-sm ${
                     isLiked
                       ? "border-primary bg-primary text-white shadow-[0_10px_30px_-16px_rgba(59,130,246,0.8)]"
                       : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40 hover:shadow-[0_10px_30px_-18px_rgba(59,130,246,0.7)]"
@@ -271,7 +282,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
                   }
                 >
                   <Heart
-                    className={`w-4 h-4 transition-transform duration-200 ease-out group-hover:scale-110 ${
+                    className={`lg:w-3 lg:h-3 xl:w-4 xl:h-4 transition-transform duration-200 ease-out group-hover:scale-110 ${
                       isLiked ? "text-white" : "text-primary"
                     }`}
                   />

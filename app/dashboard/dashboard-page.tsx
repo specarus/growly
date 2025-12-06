@@ -23,7 +23,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   analyticsData,
 }) => {
   return (
-    <main className="relative w-full min-h-screen xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
+    <main className="relative w-full lg:pt-14 xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
       <GradientCircle
         size={210}
         position={{ top: "-50px", right: "-50px" }}
@@ -34,14 +34,14 @@ const Dashboard: React.FC<DashboardProps> = ({
       <div className="pointer-events-none absolute -left-24 -top-12 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 top-48 h-64 w-64 rounded-full bg-green-soft/20 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 bottom-10 h-48 w-48 -translate-x-1/2 rounded-full bg-yellow-soft/25 blur-3xl" />
-      <div className="grid grid-cols-10 gap-6 xl:px-8 2xl:px-28 xl:pb-12 2xl:pb-16">
-        <div className="h-full col-span-2 grid xl:gap-4 2xl:gap-6">
+      <div className="grid lg:grid-cols-5 xl:grid-cols-10 lg:gap-5 xl:gap-6 lg:px-6 xl:px-8 2xl:px-28 lg:pb-8 xl:pb-12 2xl:pb-16">
+        <div className="h-full lg:col-span-1 xl:col-span-2 grid lg:gap-3 xl:gap-4 2xl:gap-6">
           <GreetingWidget />
           <CalendarWidget progressByDay={progressByDay} />
           <SyncWidget />
         </div>
 
-        <div className="col-span-2 flex flex-col xl:gap-2 2xl:gap-4">
+        <div className="lg:col-span-1 xl:col-span-2 flex flex-col lg:gap-2 2xl:gap-4">
           <div>
             <WeatherWidget />
           </div>
@@ -54,8 +54,8 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        <div className="col-span-6 flex flex-col xl:gap-4 2xl:gap-6">
-          <div className="grid grid-cols-5 xl:gap-4 h-fit">
+        <div className="lg:col-span-3 xl:col-span-6 flex flex-col lg:gap-3 xl:gap-4 2xl:gap-6">
+          <div className="grid grid-cols-5 lg:gap-3 xl:gap-4 h-fit">
             <div className="col-span-3">
               <TodosWidget />
             </div>
