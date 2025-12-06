@@ -55,16 +55,16 @@ const PostActions = ({ postId, isOwned, isLiked }: Props) => {
   const label = mode === "delete" ? "Delete" : "Unpin";
   const Icon = mode === "delete" ? Trash2 : PinOff;
   const baseClasses =
-    "inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60";
+    "inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full border lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60";
   const deleteClasses =
     "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-400";
   const unpinClasses =
     "border-gray-200 bg-white text-muted-foreground hover:border-primary/40 hover:text-primary";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center lg:gap-1.5 xl:gap-2">
       {error ? (
-        <p className="text-[11px] text-rose-600" role="alert">
+        <p className="lg:text-[9px] xl:text-[11px] text-rose-600" role="alert">
           {error}
         </p>
       ) : null}
@@ -78,13 +78,13 @@ const PostActions = ({ postId, isOwned, isLiked }: Props) => {
       >
         {pending ? (
           <Loader2
-            className={`w-3 h-3 animate-spin ${
+            className={`lg:w-2 lg:h-2 xl:w-3 xl:h-3 animate-spin ${
               mode === "delete" ? "text-rose-600" : "text-primary"
             }`}
           />
         ) : (
           <Icon
-            className={`w-3 h-3 ${
+            className={`lg:w-2 lg:h-2 xl:w-3 xl:h-3 ${
               mode === "delete" ? "text-rose-600" : "text-primary"
             }`}
           />

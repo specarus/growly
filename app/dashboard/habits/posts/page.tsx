@@ -320,8 +320,7 @@ export default async function MyPostsPage() {
       label: "Posted habits",
       value: displayOwned.length,
       hint: `${totalLikesEarned} total likes earned`,
-      accent:
-        "bg-linear-to-br from-[#2f8cff] via-[#4f7ff5] to-[#6d5dfc]",
+      accent: "bg-linear-to-br from-[#2f8cff] via-[#4f7ff5] to-[#6d5dfc]",
     },
     {
       label: "Ideas shared",
@@ -329,8 +328,7 @@ export default async function MyPostsPage() {
       hint: topIdea
         ? `"${topIdea.title}" is topping with ${topIdea.likesCount} likes`
         : "Try posting a fresh Should Do",
-      accent:
-        "bg-linear-to-br from-[#ff6ba3] via-[#ff4fa3] to-[#d64cf3]",
+      accent: "bg-linear-to-br from-[#ff6ba3] via-[#ff4fa3] to-[#d64cf3]",
     },
     {
       label: "Likes you gave",
@@ -338,23 +336,21 @@ export default async function MyPostsPage() {
       hint: `${
         displayLiked.length + displayLikedShouldDos.length
       } things boosted`,
-      accent:
-        "bg-linear-to-br from-[#a46bff] via-[#8c67ff] to-[#7a6bff]",
+      accent: "bg-linear-to-br from-[#a46bff] via-[#8c67ff] to-[#7a6bff]",
     },
     {
       label: "Added blueprints",
       value: displayAdded.length,
       hint: "Imported to your board",
-      accent:
-        "bg-linear-to-br from-[#22d2a1] via-[#26c779] to-[#21c064]",
+      accent: "bg-linear-to-br from-[#22d2a1] via-[#26c779] to-[#21c064]",
     },
   ];
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-t from-white/90 via-light-yellow/55 to-green-soft/15">
+    <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground lg:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-t from-white/90 via-light-yellow/55 to-green-soft/15">
       <PageGradient />
-      <div className="xl:px-8 2xl:px-28 space-y-10">
-        <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-r from-primary/10 via-white to-green-soft/20 dark:from-primary/20 dark:via-slate-900 dark:to-emerald-800/30 shadow-inner px-6 py-7 2xl:px-10 2xl:py-9">
+      <div className="lg:px-4 xl:px-8 2xl:px-28 lg:space-y-6 xl:space-y-10">
+        <div className="relative overflow-hidden lg:rounded-2xl xl:rounded-3xl border border-white/60 bg-linear-to-r from-primary/10 via-white to-green-soft/20 dark:from-primary/20 dark:via-slate-900 dark:to-emerald-800/30 shadow-inner lg:px-5 xl:px-6 lg:py-6 xl:py-7 2xl:px-10 2xl:py-9">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.15),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.25),transparent_45%)]" />
           <div className="absolute inset-y-0 right-0 w-72 bg-[radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.18),transparent_40%)] dark:bg-[radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.35),transparent_40%)] blur-2xl" />
           <div className="relative space-y-6">
@@ -364,25 +360,25 @@ export default async function MyPostsPage() {
               description="A personalized pulse of what you've published, bookmarked, and added from the crew."
               titleClassName="xl:text-2xl 2xl:text-3xl"
             />
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 relative">
+            <div className="grid lg:gap-2 xl:gap-3 grid-cols-4 relative">
               {highlightStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="relative overflow-hidden rounded-2xl border border-white/60 dark:border-white/10 bg-white/80 dark:bg-slate-900/70 shadow-inner px-4 py-3"
+                  className="relative overflow-hidden rounded-2xl border border-white/60 dark:border-white/10 bg-white/80 dark:bg-slate-900/70 shadow-inner lg:px-3 xl:px-4 lg:py-2 xl:py-3"
                 >
                   <div
                     className={`absolute inset-0 opacity-80 ${stat.accent}`}
                   />
                   <div className="relative space-y-1 text-white drop-shadow-sm">
-                    <p className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.14em] font-semibold">
+                    <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs uppercase tracking-[0.14em] font-semibold">
                       {stat.label}
                     </p>
-                    <div className="flex items-center gap-2">
-                      <span className="xl:text-xl 2xl:text-2xl font-semibold">
+                    <div className="flex items-center lg:gap-1.5 xl:gap-2">
+                      <span className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold">
                         {stat.value}
                       </span>
                     </div>
-                    <p className="xl:text-[11px] 2xl:text-xs opacity-80">
+                    <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs opacity-80">
                       {stat.hint}
                     </p>
                   </div>
@@ -392,27 +388,27 @@ export default async function MyPostsPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner p-5 space-y-4">
-            <div className="flex items-center justify-between gap-3">
+        <div className="grid lg:gap-3 xl:gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner lg:p-4 xl:p-5 lg:space-y-3 xl:space-y-4">
+            <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
               <div>
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
                   Category momentum
                 </p>
-                <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+                <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
                   Where your posts live
                 </h3>
               </div>
-              <div className="rounded-full bg-primary/10 text-primary font-semibold xl:text-xs 2xl:text-sm px-4 py-1">
+              <div className="rounded-full bg-primary/10 text-primary font-semibold lg:text-[10px] xl:text-xs 2xl:text-sm px-4 py-1">
                 {allPosts.length} total posts
               </div>
             </div>
             {categorySpread.length === 0 ? (
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                 Post a habit to see category momentum.
               </p>
             ) : (
-              <div className="space-y-2">
+              <div className="lg:space-y-1 xl:space-y-2">
                 {categorySpread.map((entry, index) => {
                   const max =
                     categorySpread[0]?.count === 0
@@ -429,15 +425,15 @@ export default async function MyPostsPage() {
                   return (
                     <div
                       key={entry.category}
-                      className="rounded-2xl border border-gray-100 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 p-3 space-y-2"
+                      className="rounded-2xl border border-gray-100 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 lg:p-2 xl:p-3 lg:space-y-1 xl:space-y-2"
                     >
-                      <div className="flex items-center justify-between xl:text-sm 2xl:text-base font-semibold">
+                      <div className="flex items-center justify-between lg:text-xs xl:text-sm 2xl:text-base font-semibold">
                         <span>{entry.category}</span>
                         <span className="text-muted-foreground">
                           {entry.count} {entry.count === 1 ? "post" : "posts"}
                         </span>
                       </div>
-                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="lg:h-1.5 xl:h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className={`h-full bg-linear-to-r ${gradient}`}
                           style={{ width: `${width}%` }}
@@ -450,17 +446,17 @@ export default async function MyPostsPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner p-5 space-y-4">
+          <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner lg:p-4 xl:p-5 lg:space-y-3 xl:space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
                   Posting rhythm
                 </p>
-                <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+                <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
                   Last 6 months
                 </h3>
               </div>
-              <div className="rounded-full bg-secondary/20 text-secondary-foreground font-semibold xl:text-xs 2xl:text-sm px-4 py-1">
+              <div className="rounded-full bg-secondary/20 text-secondary-foreground font-semibold lg:text-[10px] xl:text-xs 2xl:text-sm px-4 py-1">
                 {activityBuckets.reduce(
                   (total, bucket) => total + bucket.count,
                   0
@@ -468,7 +464,7 @@ export default async function MyPostsPage() {
                 drops
               </div>
             </div>
-            <div className="flex items-end gap-3 h-28">
+            <div className="flex items-end lg:gap-2 xl:gap-3 lg:h-24 xl:h-28">
               {activityBuckets.map((bucket) => {
                 const max =
                   activityBuckets.reduce(
@@ -479,9 +475,9 @@ export default async function MyPostsPage() {
                 return (
                   <div
                     key={bucket.key}
-                    className="flex-1 flex flex-col items-center gap-2"
+                    className="flex-1 flex flex-col items-center lg:gap-1 xl:gap-2"
                   >
-                    <div className="w-full rounded-full bg-muted dark:bg-slate-800 h-2 overflow-hidden">
+                    <div className="w-full rounded-full bg-muted dark:bg-slate-800 lg:h-1.5 xl:h-2 overflow-hidden">
                       <div
                         className="h-full bg-linear-to-r from-primary to-green-soft dark:from-primary/70 dark:to-emerald-500"
                         style={{ width: `${(bucket.count / max) * 100 || 8}%` }}
@@ -491,95 +487,95 @@ export default async function MyPostsPage() {
                       className="w-full rounded-xl bg-linear-to-b from-primary/80 to-green-soft/70 dark:from-primary/70 dark:to-emerald-600"
                       style={{ height: `${height}%` }}
                     />
-                    <span className="xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
+                    <span className="lg:text-[9px] xl:text-[10px] 2xl:text-[11px] text-muted-foreground">
                       {bucket.label}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+            <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
               Tracks everything you posted, liked, or added — plus your Should
               Do drops — to surface weekly momentum.
             </p>
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+        <div className="grid lg:gap-3 xl:gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner p-5 space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
                   Like highlights
                 </p>
-                <h3 className="font-semibold xl:text-lg 2xl:text-xl">
-                  What’s getting love
+                <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
+                  What's getting love
                 </h3>
               </div>
-              <div className="rounded-full bg-primary/10 text-primary font-semibold xl:text-xs 2xl:text-sm px-4 py-1">
+              <div className="rounded-full bg-primary/10 text-primary font-semibold lg:text-[11px] xl:text-xs 2xl:text-sm px-4 py-1">
                 {totalLikesEarned} likes earned
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-linear-to-br from-primary/10 to-white dark:from-primary/20 dark:to-slate-900 px-4 py-3 space-y-2 shadow-inner">
-                <p className="xl:text-[11px] 2xl:text-xs font-semibold text-primary uppercase tracking-[0.16em]">
+                <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary uppercase tracking-[0.16em]">
                   Top post
                 </p>
                 {topPost ? (
                   <>
-                    <h4 className="font-semibold xl:text-sm 2xl:text-base">
+                    <h4 className="font-semibold lg:text-xs xl:text-sm 2xl:text-base">
                       {topPost.title}
                     </h4>
-                    <p className="text-muted-foreground xl:text-[11px] 2xl:text-xs line-clamp-2">
+                    <p className="text-muted-foreground lg:text-[9px] xl:text-[11px] 2xl:text-xs line-clamp-2">
                       {topPost.summary ??
                         topPost.highlight ??
                         "No details yet."}
                     </p>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-                      <Heart className="w-3 h-3 text-primary" />
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:  text-[11px] font-semibold text-muted-foreground">
+                      <Heart className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 text-primary" />
                       {topPost.likesCount}{" "}
                       {topPost.likesCount === 1 ? "like" : "likes"}
                     </div>
                   </>
                 ) : (
-                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                     Post a habit to start earning likes.
                   </p>
                 )}
               </div>
 
-              <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-linear-to-br from-secondary/10 to-white dark:from-secondary/20 dark:to-slate-900 px-4 py-3 space-y-2 shadow-inner">
-                <p className="xl:text-[11px] 2xl:text-xs font-semibold text-secondary uppercase tracking-[0.16em]">
+              <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-linear-to-br from-secondary/10 to-white dark:from-secondary/20 dark:to-slate-900 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:space-y-1 xl:space-y-2 shadow-inner">
+                <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-secondary uppercase tracking-[0.16em]">
                   Top idea
                 </p>
                 {topIdea ? (
                   <>
-                    <h4 className="font-semibold xl:text-sm 2xl:text-base">
+                    <h4 className="font-semibold lg:text-xs xl:text-sm 2xl:text-base">
                       {topIdea.title}
                     </h4>
-                    <p className="text-muted-foreground xl:text-[11px] 2xl:text-xs line-clamp-2">
+                    <p className="text-muted-foreground lg:text-[9px] xl:text-[11px] 2xl:text-xs line-clamp-2">
                       {topIdea.description ?? "No details yet."}
                     </p>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-                      <Heart className="w-3 h-3 text-primary" />
+                    <div className="inline-flex items-center lg:gap-1 xl:gap-2 rounded-full bg-white lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold text-muted-foreground">
+                      <Heart className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 text-primary" />
                       {topIdea.likesCount}{" "}
                       {topIdea.likesCount === 1 ? "like" : "likes"}
                     </div>
                   </>
                 ) : (
-                  <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                  <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                     Share a Should Do to see it compete.
                   </p>
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 px-4 py-3 text-[11px] 2xl:text-xs text-muted-foreground">
+            <div className="flex items-center justify-between rounded-2xl border border-dashed border-gray-100 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <Heart className="w-3 h-3 text-primary" />
+                <Heart className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 text-primary" />
                 You liked {totalLikesGiven} things
               </span>
               <span className="inline-flex items-center gap-2">
-                <TrendingUp className="w-3 h-3 text-primary" />
+                <TrendingUp className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 text-primary" />
                 {totalLikesEarned} likes received
               </span>
             </div>
@@ -588,23 +584,23 @@ export default async function MyPostsPage() {
           <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/70 shadow-inner p-5 space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] text-primary">
                   Likes by category
                 </p>
-                <h3 className="font-semibold xl:text-lg 2xl:text-xl">
+                <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">
                   Where the applause lands
                 </h3>
               </div>
-              <div className="rounded-full bg-muted px-4 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+              <div className="rounded-full bg-muted lg:px-3 xl:px-4 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                 {likesPerCategory.length} categories
               </div>
             </div>
             {likesPerCategory.length === 0 ? (
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                 Earn some likes to see category breakdown.
               </p>
             ) : (
-              <div className="space-y-2">
+              <div className="lg:space-y-1 xl:space-y-2">
                 {likesPerCategory.map((entry, index) => {
                   const max =
                     likesPerCategory[0]?.likes === 0
@@ -621,7 +617,7 @@ export default async function MyPostsPage() {
                   return (
                     <div
                       key={entry.category}
-                      className="rounded-2xl border border-gray-100 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 p-3 space-y-1"
+                      className="rounded-2xl border border-gray-100 dark:border-white/10 bg-muted/40 dark:bg-slate-800/70 lg:p-2 xl:p-3 space-y-1"
                     >
                       <div className="flex items-center justify-between xl:text-sm 2xl:text-base font-semibold">
                         <span>{entry.category}</span>
@@ -629,7 +625,7 @@ export default async function MyPostsPage() {
                           {entry.likes} {entry.likes === 1 ? "like" : "likes"}
                         </span>
                       </div>
-                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="lg:h-1.5 xl:h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className={`h-full bg-linear-to-r ${gradient}`}
                           style={{ width: `${width}%` }}
@@ -643,7 +639,7 @@ export default async function MyPostsPage() {
           </div>
         </div>
 
-        <div className="space-y-5">
+        <div className="lg:space-y-3 xl:space-y-5">
           <Section
             title="Your posts"
             description="Posts you published from your habits"

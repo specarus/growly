@@ -47,17 +47,17 @@ export default function DeleteAccountForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="lg:space-y-3 xl:space-y-4">
       <div className="space-y-1">
-        <p className="xl:text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+        <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
           Reset for good
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="lg:space-y-1 xl:space-y-2">
         {message && (
           <p
-            className={`text-xs font-semibold ${
+            className={`lg:text-[11px] xl:text-xs font-semibold ${
               status === "error"
                 ? "text-destructive"
                 : "text-green-soft-foreground"
@@ -66,7 +66,7 @@ export default function DeleteAccountForm() {
             {message}
           </p>
         )}
-        <label className="xl:text-[11px] 2xl:text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">
+        <label className="lg:text-[9px] xl:text-[11px] 2xl:text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">
           Confirm by typing "{CONFIRMATION_TEXT}"
         </label>
         <input
@@ -74,14 +74,14 @@ export default function DeleteAccountForm() {
           value={confirmation}
           onChange={(event) => setConfirmation(event.target.value)}
           placeholder={CONFIRMATION_TEXT}
-          className="w-full rounded-xl border border-primary/20 px-4 py-2 xl:text-xs 2xl:text-sm focus:border-destructive focus:outline-none focus:ring-2 focus:ring-destructive/30"
+          className="w-full rounded-xl border border-primary/20 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm focus:border-destructive focus:outline-none focus:ring-2 focus:ring-destructive/30"
         />
       </div>
 
       <Button
         type="submit"
         disabled={!canSubmit}
-        className="bg-red-400 xl:text-xs 2xl:text-sm text-white transition xl:py-2 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-red-400 lg:text-[11px] xl:text-xs 2xl:text-sm text-white transition lg:py-1 xl:py-2 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPending ? "Deleting…" : "Delete my account"}
       </Button>

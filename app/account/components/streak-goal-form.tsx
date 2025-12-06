@@ -36,14 +36,14 @@ export default function StreakGoalForm({ initialGoal }: Props) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+    <div className="lg:space-y-3 xl:space-y-4">
+      <div className="flex flex-wrap lg:gap-1.5 xl:gap-2">
         {options.map((value) => (
           <button
             key={value}
             type="button"
             onClick={() => setGoal(value)}
-            className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
+            className={`rounded-full border lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-xs xl:text-sm font-semibold transition ${
               goal === value
                 ? "border-primary bg-primary text-white"
                 : "border-muted dark:border-muted-foreground/50 dark text-foreground hover:border-primary dark:hover:border-primary hover:text-primary"
@@ -54,19 +54,21 @@ export default function StreakGoalForm({ initialGoal }: Props) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
+      <div className="flex items-center justify-between lg:text-xs xl:text-sm text-muted-foreground">
         <span>Aim for a stretch target that still feels sustainable.</span>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={isPending}
-          className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary/30 disabled:opacity-60"
+          className="rounded-full bg-primary lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-xs xl:text-sm font-semibold text-white shadow-sm shadow-primary/30 disabled:opacity-60"
         >
           {isPending ? "Saving…" : "Save goal"}
         </button>
       </div>
 
-      {message && <p className="text-sm text-muted-foreground">{message}</p>}
+      {message && (
+        <p className="lg:text-xs xl:text-sm text-muted-foreground">{message}</p>
+      )}
     </div>
   );
 }
