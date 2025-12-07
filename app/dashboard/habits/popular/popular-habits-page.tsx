@@ -651,19 +651,18 @@ const PopularHabitsPage: React.FC = () => {
   };
 
   return (
-    <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
+    <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground lg:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-b from-green-soft/20 via-card/70 to-primary/20">
       <PageGradient />
-      <div className="xl:px-8 2xl:px-28 space-y-8">
+      <div className="lg:px-4 xl:px-8 2xl:px-28 lg:space-y-6 xl:space-y-8">
         <PageHeading
           badgeLabel="Community habits"
           title="Browse habits people post for the crew"
-          titleClassName="xl:text-xl 2xl:text-2xl"
           description="Open the blueprint, learn why it works, and riff back on a habit that stuck."
           actions={
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex flex-col lg:gap-1.5 xl:gap-2 items-center">
               <Button
                 onClick={() => router.push("/dashboard/habits/popular/create")}
-                className="xl:h-8 2xl:h-10 xl:px-5 2xl:px-7 xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition"
+                className="lg:h-6 xl:h-8 2xl:h-10 lg:px-3 xl:px-5 2xl:px-7 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition"
               >
                 Create a post
               </Button>
@@ -671,31 +670,31 @@ const PopularHabitsPage: React.FC = () => {
           }
         />
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center lg:gap-2 xl:gap-3">
           <HabitsTabs
             active="popular"
-            containerClassName="xl:gap-1 2xl:gap-2"
+            containerClassName="lg:gap-0.5 xl:gap-1 2xl:gap-2"
           />
-          <span className="xl:text-xs text-muted-foreground">
+          <span className="lg:text-[11px] xl:text-xs text-muted-foreground">
             Filter by category, cadence, or time window and click a card to see
             the full post.
           </span>
         </div>
 
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-inner px-4 py-3 xl:py-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="relative max-w-xs flex-1 min-w-[220px]">
-                <Search className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="lg:space-y-3 xl:space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-inner lg:px-3 xl:px-4 lg:py-3 xl:py-4">
+            <div className="flex flex-wrap items-center lg:gap-2 xl:gap-3">
+              <div className="relative max-w-xs flex-1 lg:max-w-[200px] xl:max-w-[220px]">
+                <Search className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search"
-                  className="w-full rounded-full border border-gray-100 bg-white px-4 py-2 pl-9 xl:text-xs text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full rounded-full border border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:pl-7 xl:pl-9 lg:text-[11px] xl:text-xs text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -703,19 +702,19 @@ const PopularHabitsPage: React.FC = () => {
                     setCommitment("Any");
                     setTimeWindow("Any");
                   }}
-                  className="px-3 py-1.5 rounded-full border border-gray-200 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
+                  className="lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 rounded-full border border-gray-100 lg:text-[11px] xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition"
                 >
                   Reset filters
                 </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
                 {categories.map((item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => setCategory(item)}
-                    className={`px-3 py-1.5 rounded-full border xl:text-xs font-semibold transition ${
+                    className={`lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 rounded-full border lg:text-[11px] xl:text-xs font-semibold transition ${
                       category === item
                         ? "bg-primary text-white border-primary"
                         : "bg-white text-muted-foreground border-gray-200 hover:border-primary/40"
@@ -726,7 +725,7 @@ const PopularHabitsPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
                 {(
                   ["Any", "Quick", "Standard", "Deep"] as (Commitment | "Any")[]
                 ).map((item) => (
@@ -734,7 +733,7 @@ const PopularHabitsPage: React.FC = () => {
                     key={item}
                     type="button"
                     onClick={() => setCommitment(item)}
-                    className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
+                    className={`lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 rounded-full border lg:text-[11px] xl:text-xs font-semibold transition ${
                       commitment === item
                         ? "bg-analytics-dark/90 text-white border-analytics-dark"
                         : "bg-white text-muted-foreground border-gray-200 hover:border-primary/40"
@@ -745,7 +744,7 @@ const PopularHabitsPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center lg:gap-1.5 xl: gap-2">
                 {timeFilters.map((item) => (
                   <button
                     key={item.value}
@@ -753,7 +752,7 @@ const PopularHabitsPage: React.FC = () => {
                     onClick={() =>
                       setTimeWindow(item.value === "Any" ? "Any" : item.value)
                     }
-                    className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
+                    className={`lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 rounded-full border lg:text-[11px] xl:text-xs font-semibold transition ${
                       timeWindow === item.value ||
                       (timeWindow === "Any" && item.value === "Any")
                         ? "bg-muted text-foreground border-gray-200"
@@ -767,38 +766,38 @@ const PopularHabitsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-5">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-5">
             <div className="rounded-3xl border border-gray-100 bg-white shadow-inner">
-              <div className="px-5 pt-5 pb-6 space-y-4">
-                <div className="flex items-center justify-between gap-3">
+              <div className="lg:px-4 xl:px-5 lg:pt-4 xl:pt-5 lg:pb-5 xl:pb-6 lg:space-y-3 xl:space-y-4">
+                <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>
-                    <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                       Browse
                     </p>
-                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
+                    <h2 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                       Popular habit posts
                     </h2>
-                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                       Hover or tap a card to preview its full why and steps.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-2 2xl:px-3 xl:py-1 2xl:py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                    <TrendingUp className="w-4 h-4" />
+                  <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-muted lg:px-2 2xl:px-3 lg:py-0.5 xl:py-1 2xl:py-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                    <TrendingUp className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                     {posts.length} posts
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 lg:gap-2 xl:gap-3">
                   {loading ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <div className="col-span-2 rounded-2xl border border-dashed border-gray-100 bg-muted/50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 2xl:py-5 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                       Loading posts…
                     </div>
                   ) : error ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm font-semibold text-rose-600">
+                    <div className="col-span-2 rounded-2xl border border-dashed border-gray-100 bg-muted/50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 2xl:py-5 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-rose-600">
                       {error}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="sm:col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 xl:px-4 xl:py-3 2xl:py-5 xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <div className="col-span-2 rounded-2xl border border-dashed border-gray-200 bg-muted/50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 2xl:py-5 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                       No posts match those filters yet. Try another combination.
                     </div>
                   ) : (
@@ -819,48 +818,48 @@ const PopularHabitsPage: React.FC = () => {
                               setSelectedPostId(post.id);
                             }
                           }}
-                          className={`relative flex flex-col justify-between w-full text-left rounded-2xl border px-4 py-4 transition shadow-sm hover:border-primary/40 ${
+                          className={`relative flex flex-col justify-between w-full text-left rounded-2xl border lg:p-3 xl:p-4 transition shadow-sm hover:border-primary/40 ${
                             isSelected
                               ? "border-primary/60 ring-2 ring-primary/20 bg-primary/5"
                               : "border-gray-100 bg-white"
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start justify-between lg:gap-1.5 xl:gap-2">
                             <div
-                              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold ${styles.badge}`}
+                              className={`inline-flex items-center gap-2 rounded-full lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[8px] xl:text-[10px] 2xl:text-[11px] font-semibold ${styles.badge}`}
                             >
                               <span
-                                className={`h-2 w-2 rounded-full ${styles.dot}`}
+                                className={`lg:h-1 lg:w-1 xl:h-2 xl:w-2 rounded-full ${styles.dot}`}
                               />
                               {post.category}
                             </div>
-                            <span className="text-[11px] font-semibold text-muted-foreground">
+                            <span className="lg:text-[9px] xl:text-[11px] font-semibold text-muted-foreground">
                               {formatLikes(post.likesCount)} {likeLabel}
                             </span>
                           </div>
-                          <div className="mt-2 space-y-1">
-                            <p className="xl:text-base 2xl:text-lg font-semibold">
+                          <div className="lg:mt-1 xl:mt-2 space-y-1">
+                            <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                               {post.title}
                             </p>
-                            <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                            <p className="lg:text-[10px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                               {post.summary ?? "No summary provided."}
                             </p>
                           </div>
-                          <div className="mt-3 flex flex-wrap gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                            <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-                              <Clock3 className="w-3.5 h-3.5 text-primary" />
+                          <div className="lg:mt-2 xl:mt-3 flex flex-wrap lg:gap-1.5 xl:gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                            <div className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 lg:py-0.5 xl:py-1">
+                              <Clock3 className="lg:w-2.5 lg:h-2.5 xl:w-3.5 xl:h-3.5 text-primary" />
                               {post.duration ?? "Flexible"}
                             </div>
-                            <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-                              <CalendarClock className="w-3.5 h-3.5 text-primary" />
+                            <div className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 lg:py-0.5 xl:py-1">
+                              <CalendarClock className="lg:w-2.5 lg:h-2.5 xl:w-3.5 xl:h-3.5 text-primary" />
                               {post.cadence}
                             </div>
-                            <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
-                              <HeartPulse className="w-3.5 h-3.5 text-primary" />
+                            <div className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 lg:py-0.5 xl:py-1">
+                              <HeartPulse className="lg:w-1.5 lg:h-1.5 xl:w-3.5 xl:h-3.5 text-primary" />
                               {commitmentCopy[post.commitment]}
                             </div>
                           </div>
-                          <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+                          <div className="lg:mt-2 xl:mt-3 flex items-center justify-between lg:gap-2 xl:gap-3 lg:text-[9px] xl:text-xs">
                             <span className="text-muted-foreground">
                               • Posted {formatPostedDate(post.createdAt)}
                             </span>
@@ -880,7 +879,7 @@ const PopularHabitsPage: React.FC = () => {
                                     ? "You already liked this post"
                                     : `Like ${post.title}`
                                 }
-                                className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                                className={`inline-flex items-center gap-1 rounded-full border lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold transition ${
                                   post.likedByCurrentUser
                                     ? "border-primary bg-primary text-white"
                                     : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
@@ -889,7 +888,7 @@ const PopularHabitsPage: React.FC = () => {
                                 }`}
                               >
                                 <Heart
-                                  className={`w-4 h-4 ${
+                                  className={`lg:h-3 lg:w-3 xl:w-4 xl:h-4 ${
                                     post.likedByCurrentUser
                                       ? "text-white"
                                       : "text-primary"
@@ -909,46 +908,46 @@ const PopularHabitsPage: React.FC = () => {
               </div>
             </div>
 
-            <aside className="rounded-3xl border border-gray-100 shadow-inner h-fit bg-linear-to-tr to-primary/30 via-white from-white">
-              <div className="px-5 pt-5 pb-6 space-y-4">
-                <div className="flex items-center justify-between gap-3">
+            <aside className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 shadow-inner h-fit bg-linear-to-tr to-primary/30 via-white from-white">
+              <div className="lg:px-4 xl:px-5 lg:pt-4 xl:pt-5 lg:pb-5 xl:pb-6 lg:space-y-3 xl:space-y-4">
+                <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>
-                    <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                       Playbook
                     </p>
-                    <h2 className="xl:text-lg 2xl:text-xl font-semibold">
+                    <h2 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                       Blueprint and safety net
                     </h2>
-                    <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                       Copy the structure, tune the anchor, and pin it in your
                       board.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
                     Community
                   </div>
                 </div>
 
                 {selectedPost ? (
-                  <div className="space-y-4">
+                  <div className="lg:space-y-3 xl:space-y-4">
                     <div className="space-y-1">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-muted xl:px-3 xl:py-1 2xl:py-2 text-[11px] font-semibold text-muted-foreground">
-                        <Target className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
+                      <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 2xl:py-2 lg:text-[9px] xl:text-[11px] font-semibold text-muted-foreground">
+                        <Target className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
                         {selectedPost.timeWindow} -{" "}
                         {selectedPost.anchor ?? "No anchor yet"}
                       </div>
-                      <h3 className="xl:text-base 2xl:text-lg font-semibold xl:pt-2 2xl:pt-4">
+                      <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold lg:pt-1.5 xl:pt-2 2xl:pt-4">
                         {selectedPost.title}
                       </h3>
-                      <p className="xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
                         {selectedPost.summary ?? "No summary available."}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
+                      <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 lg:text-[11px] xl:text-xs font-semibold text-muted-foreground">
                         <Heart
-                          className={`w-4 h-4 ${
+                          className={`lg:w-3 lg:h-3 xl:w-4 xl:h-4 ${
                             selectedPost.likedByCurrentUser
                               ? "text-primary"
                               : "text-muted-foreground"
@@ -962,87 +961,87 @@ const PopularHabitsPage: React.FC = () => {
                     </div>
                     {likeError ? (
                       <p
-                        className="text-[11px] 2xl:text-xs text-rose-600"
+                        className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-rose-600"
                         role="alert"
                       >
                         {likeError}
                       </p>
                     ) : null}
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
-                        <div className="flex items-center gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                          <Clock3 className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
+                    <div className="grid grid-cols-2 lg:gap-2 xl:gap-3 lg:text-xs xl:text-sm">
+                      <div className="rounded-2xl border border-gray-100 bg-muted lg:p-2 xl:p-3 space-y-1">
+                        <div className="flex items-center gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                          <Clock3 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4 text-primary" />
                           Duration
                         </div>
-                        <p className="xl:text-sm 2xl:text-base font-semibold">
+                        <p className="lg:text-xs xl:text-sm 2xl:text-base font-semibold">
                           {selectedPost.duration ?? "Flexible"}
                         </p>
-                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                           {commitmentCopy[selectedPost.commitment]}
                         </p>
                       </div>
-                      <div className="rounded-2xl border border-gray-100 bg-muted px-3 py-3 space-y-1">
-                        <div className="flex items-center gap-2 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                          <CalendarClock className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
+                      <div className="rounded-2xl border border-gray-100 bg-muted lg:p-2 xl:p-3 space-y-1">
+                        <div className="flex items-center gap-2 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                          <CalendarClock className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4 text-primary" />
                           Cadence
                         </div>
-                        <p className="xl:text-sm font-semibold">
+                        <p className="lg:text-xs xl:text-sm font-semibold">
                           {selectedPost.cadence}
                         </p>
-                        <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                           {selectedPost.highlight ?? "Why it matters"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Brain className="w-4 h-4 text-primary" />
-                        <span className="xl:text-sm 2xl:text-base font-semibold">
+                    <div className="lg:space-y-1 xl:space-y-2">
+                      <div className="flex items-center lg:gap-1.5 xl:gap-2">
+                        <Brain className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                        <span className="lg:text-xs xl:text-sm 2xl:text-base font-semibold">
                           Why it works
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap lg:gap-1.5 xl:gap-2">
                         {selectedPost.benefits.length > 0 ? (
                           selectedPost.benefits.map((benefit) => (
                             <span
                               key={benefit}
-                              className="inline-flex items-center gap-2 rounded-full bg-muted/30 px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
+                              className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-muted/30 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
                             >
-                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                              <span className="lg:h-1 lg:w-1 xl:h-1.5 xl:w-1.5 rounded-full bg-primary" />
                               {benefit}
                             </span>
                           ))
                         ) : (
-                          <span className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                          <span className="lg:text-[8px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             No benefit notes yet.
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="rounded-2xl border border-dashed border-gray-200 bg-primary/5 px-4 py-4 space-y-2">
-                        <div className="flex items-center justify-between text-sm font-semibold">
-                          <span className="inline-flex items-center gap-2 xl:text-sm 2xl:text-base">
-                            <CheckCircle2 className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-primary" />
+                    <div className="lg:space-y-2 xl:space-y-3">
+                      <div className="rounded-2xl border border-dashed border-gray-200 bg-primary/5 lg:p-3 xl:p-4 lg:space-y-1 xl:space-y-2">
+                        <div className="flex items-center justify-between lg:text-xs xl:text-sm font-semibold">
+                          <span className="inline-flex items-center gap-2 lg:text-xs xl:text-sm 2xl:text-base">
+                            <CheckCircle2 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4 text-primary" />
                             First three reps
                           </span>
                         </div>
-                        <ul className="space-y-2 xl:text-xs 2xl:text-sm text-muted-foreground">
+                        <ul className="space-y-2 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                           {selectedPost.steps.length > 0 ? (
                             selectedPost.steps.map((step) => (
                               <li
                                 key={step}
                                 className="flex items-center gap-2"
                               >
-                                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+                                <span className="inline-block lg:h-1 lg:w-1 xl:h-1.5 xl:w-1.5 rounded-full bg-primary" />
                                 <span>{step}</span>
                               </li>
                             ))
                           ) : (
-                            <li className="xl:text-[11px] 2xl:text-xs">
+                            <li className="lg:text-[9px] xl:text-[11px] 2xl:text-xs">
                               No steps recorded yet.
                             </li>
                           )}
@@ -1050,7 +1049,7 @@ const PopularHabitsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center xl:gap-2 2xl:gap-3">
+                    <div className="flex items-center lg:gap-1 xl:gap-2 2xl:gap-3">
                       <div className="flex flex-col gap-1">
                         <button
                           type="button"
@@ -1063,9 +1062,9 @@ const PopularHabitsPage: React.FC = () => {
                             isAddingSelectedPost ||
                             isAddedSelectedPost
                           }
-                          className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex items-center gap-2 rounded-full border border-gray-200 lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          <CalendarClock className="w-4 h-4" />
+                          <CalendarClock className="lg:h-3 lg:w-3 xl:w-4 xl:h-4" />
                           <span>
                             {isAddedSelectedPost
                               ? "Added"
@@ -1074,13 +1073,13 @@ const PopularHabitsPage: React.FC = () => {
                               : "Add to habit board"}
                           </span>
                           {showSuccessMessage ? (
-                            <p className="xl:text-xs text-green-soft">
+                            <p className="lg:text-[11px] xl:text-xs text-green-soft">
                               Habit added to your board.
                             </p>
                           ) : null}
                           {addError ? (
                             <p
-                              className="xl:text-xs text-rose-500"
+                              className="lg:text-[11px] xl:text-xs text-rose-500"
                               role="alert"
                             >
                               {addError}
@@ -1100,7 +1099,7 @@ const PopularHabitsPage: React.FC = () => {
                             ? "You already liked this post"
                             : `Like ${selectedPost.title}`
                         }
-                        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                        className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold transition ${
                           userHasLikedSelectedPost
                             ? "border-primary bg-primary text-white"
                             : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
@@ -1120,7 +1119,7 @@ const PopularHabitsPage: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-4 xl:text-xs 2xl:text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:p-3 xl:p-4 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                     Select a post on the left to see its blueprint.
                   </div>
                 )}
@@ -1131,59 +1130,59 @@ const PopularHabitsPage: React.FC = () => {
 
         <section
           id="should-do"
-          className="space-y-3 p-6 rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30 scroll-mt-28"
+          className="lg:space-y-2 xl:space-y-3 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30 lg:scroll-mt-24 xl:scroll-mt-28"
         >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex lg:gap-2 xl:gap-3 items-start justify-between">
             <div className="space-y-1">
-              <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                 Should Do
               </p>
-              <h3 className="xl:text-lg 2xl:text-xl font-semibold">
+              <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                 Drop wild ideas for everyone to try
               </h3>
-              <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                 Post, edit, or like community dares. Top liked ones surface on
                 the dashboard widget.
               </p>
             </div>
-            <div className="flex flex-col gap-2 w-full sm:w-auto sm:items-end">
-              <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground self-start sm:self-end">
+            <div className="flex flex-col lg:gap-1.5 xl:gap-2 w-auto items-end">
+              <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground self-end">
                 {filteredShouldDos.length} ideas
               </div>
-              <div className="relative w-full sm:w-64">
-                <Search className="xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative w-full lg:w-48 xl:w-64">
+                <Search className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   value={shouldDoSearch}
                   onChange={(event) => setShouldDoSearch(event.target.value)}
                   placeholder="Search ideas"
-                  className="w-full rounded-full border border-gray-200 bg-white px-4 py-2 pl-9 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full rounded-full border border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:pl-7 xl:pl-9 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid xl:grid-cols-[1.1fr_0.9fr] gap-3 items-start">
-            <div className="space-y-2.5">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] lg:gap-2 xl:gap-3 items-start">
+            <div className="lg:space-y-1.5 xl:space-y-2.5">
               {shouldDoLoading ? (
-                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                   Loading ideas...
                 </div>
               ) : shouldDoError ? (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 xl:text-xs 2xl:text-sm font-semibold text-rose-600">
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-rose-600">
                   {shouldDoError}
                 </div>
               ) : filteredShouldDos.length === 0 ? (
                 hasShouldDoSearch ? (
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                     No ideas match your search. Try a different keyword.
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 px-4 py-3 xl:text-xs 2xl:text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                     No ideas yet. Be the first to post a Should Do.
                   </div>
                 )
               ) : (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 max-h-128 overflow-y-auto pr-1">
+                <div className="grid lg:gap-2 xl:gap-3 grid-cols-2 overflow-y-auto lg:pb-2 lg:pr-0.5 xl:pr-1">
                   {filteredShouldDos.map((idea) => {
                     const seedIcon = seedIconMap.get(idea.id);
                     const iconKey = idea.iconKey ?? seedIcon?.iconKey ?? null;
@@ -1195,27 +1194,29 @@ const PopularHabitsPage: React.FC = () => {
                     return (
                       <article
                         key={idea.id}
-                        className="rounded-2xl border border-gray-100 bg-white shadow-sm px-3 py-3 space-y-2"
+                        className="rounded-2xl border border-gray-100 bg-white shadow-sm xl:p-3 lg:p-2 lg:space-y-1 xl:space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
+                          <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[8px] xl:text-[10px] 2xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em]">
                             {idea.isSeed ? "Pinned" : "Community"}
                           </div>
-                          <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-                            <Heart className="w-4 h-4 text-primary" />
+                          <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-white lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
+                            <Heart className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                             {formatLikes(idea.likesCount)}{" "}
                             {idea.likesCount === 1 ? "like" : "likes"}
                           </div>
                         </div>
 
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="grid place-items-center w-8 h-8 rounded-full border border-gray-100 bg-muted">
+                          <div className="flex items-center lg:gap-1.5 xl:gap-2">
+                            <span className="grid place-items-center lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full border border-gray-100 bg-muted">
                               <IconComp
                                 className={
                                   usesClass
-                                    ? `${iconColor ?? "text-primary"} w-4 h-4`
-                                    : "w-4 h-4 text-slate-700"
+                                    ? `${
+                                        iconColor ?? "text-primary"
+                                      } lg:w-3 lg:h-3 xl:w-4 xl:h-4`
+                                    : "lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-slate-700"
                                 }
                                 style={
                                   usesClass
@@ -1224,23 +1225,23 @@ const PopularHabitsPage: React.FC = () => {
                                 }
                               />
                             </span>
-                            <h4 className="xl:text-sm 2xl:text-base font-semibold text-foreground">
+                            <h4 className="lg:text-xs xl:text-sm 2xl:text-base font-semibold text-foreground">
                               {idea.title}
                             </h4>
                           </div>
-                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
+                          <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground leading-relaxed">
                             {idea.description ?? "No extra details yet."}
                           </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
                           <button
                             type="button"
                             onClick={() => handleLikeShouldDo(idea.id)}
                             disabled={
                               idea.isSeed || likingShouldDoId === idea.id
                             }
-                            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold transition ${
+                            className={`inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full border lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold transition ${
                               idea.likedByCurrentUser
                                 ? "border-primary bg-primary text-white"
                                 : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
@@ -1249,7 +1250,7 @@ const PopularHabitsPage: React.FC = () => {
                             }`}
                           >
                             <Heart
-                              className={`w-4 h-4 ${
+                              className={`lg:w-3 lg:h-3 xl:w-4 xl:h-4 ${
                                 idea.likedByCurrentUser
                                   ? "text-white"
                                   : "text-primary"
@@ -1267,16 +1268,16 @@ const PopularHabitsPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleEditShouldDo(idea.id)}
-                              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
+                              className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full border border-gray-200 bg-white lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground hover:border-primary/40"
                             >
-                              <Pencil className="w-4 h-4 text-primary" />
+                              <Pencil className="lg:w-2.5 lg:h-2.5 xl:w-4 xl:h-4 text-primary" />
                               Edit
                             </button>
                           ) : null}
                         </div>
 
                         {idea.createdAt ? (
-                          <p className="xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                          <p className="lg:text-[8px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                             Posted {formatPostedDate(idea.createdAt)}
                           </p>
                         ) : null}
@@ -1287,22 +1288,22 @@ const PopularHabitsPage: React.FC = () => {
               )}
             </div>
 
-            <div className="px-4 space-y-3">
+            <div className="lg:px-2 xl:px-4 lg:space-y-2 xl:space-y-3">
               <div className="space-y-1">
-                <p className="xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   {editingShouldDoId ? "Edit your idea" : "Post a Should Do"}
                 </p>
-                <p className="xl:text-xs 2xl:text-sm text-muted-foreground">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                   Keep it punchy. Crazy, hard, or weird ideas welcome.
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+              <div className="lg:space-y-2 xl:space-y-3">
+                <div className="lg:space-y-1 xl:space-y-2">
+                  <label className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
                     Icon
                   </label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 lg:gap-1.5 xl:gap-2">
                     {iconOptions.map((option) => {
                       const IconComp = resolveIcon(option.key);
                       const selected = shouldDoForm.iconKey === option.key;
@@ -1320,19 +1321,19 @@ const PopularHabitsPage: React.FC = () => {
                               iconKey: option.key,
                             }))
                           }
-                          className={`flex items-center gap-2 rounded-2xl border px-2 py-2 text-left transition hover:border-primary/40 ${
+                          className={`flex items-center lg:gap-1.5 xl:gap-2 rounded-2xl border lg:p-1 xl:p-2 text-left transition hover:border-primary/40 ${
                             selected
                               ? "border-primary shadow-sm"
                               : "border-gray-200 bg-white"
                           }`}
                         >
                           <span
-                            className="grid place-items-center w-9 h-9 rounded-xl border border-white"
+                            className="grid place-items-center lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-xl border border-white"
                             style={{ backgroundColor: `${bg}20` }}
                           >
-                            <IconComp className="w-4 h-4 text-slate-700" />
+                            <IconComp className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-slate-700" />
                           </span>
-                          <span className="xl:text-[11px] 2xl:text-xs font-semibold text-foreground">
+                          <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-foreground">
                             {option.label}
                           </span>
                         </button>
@@ -1341,7 +1342,7 @@ const PopularHabitsPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+                  <label className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
                     Title
                   </label>
                   <input
@@ -1354,11 +1355,11 @@ const PopularHabitsPage: React.FC = () => {
                     }
                     placeholder="e.g. Sunrise cold plunge accountability"
                     maxLength={80}
-                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full rounded-2xl border border-gray-200 bg-white lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="xl:text-xs 2xl:text-sm font-semibold">
+                  <label className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
                     Details (optional)
                   </label>
                   <textarea
@@ -1371,23 +1372,23 @@ const PopularHabitsPage: React.FC = () => {
                     }
                     rows={3}
                     placeholder="What makes it fun, scary, or memorable?"
-                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                    className="w-full rounded-2xl border border-gray-200 bg-white lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                   />
                 </div>
               </div>
 
               {shouldDoSubmitError ? (
-                <p className="xl:text-[11px] 2xl:text-xs text-rose-600">
+                <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-rose-600">
                   {shouldDoSubmitError}
                 </p>
               ) : null}
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center lg:gap-1.5 xl:gap-2">
                 <Button
                   type="button"
                   onClick={handleSubmitShouldDo}
                   disabled={savingShouldDo}
-                  className="xl:h-9 2xl:h-10 xl:px-4 2xl:px-6 xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-70"
+                  className="lg:h-7 xl:h-9 2xl:h-10 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-70"
                 >
                   {editingShouldDoId
                     ? savingShouldDo
@@ -1401,7 +1402,7 @@ const PopularHabitsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={resetShouldDoForm}
-                    className="xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground underline-offset-4 hover:underline"
+                    className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground underline-offset-4 hover:underline"
                   >
                     Cancel edit
                   </button>
