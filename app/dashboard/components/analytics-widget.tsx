@@ -190,7 +190,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
       </div>
 
       <div className="space-y-4 grow w-full h-full">
-        <div className="lg:px-3 lg:pt-2 xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 lg:rounded-xl xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner h-full dark:bg-card dark:border-border">
+        <div className="lg:px-3 lg:pt-2 xl:px-4 2xl:px-6 xl:pt-4 2xl:pt-6 lg:rounded-xl xl:rounded-2xl 2xl:rounded-3xl bg-white border border-gray-50 shadow-inner shadow-black/10 h-full dark:bg-card dark:border-border">
           <div className="flex items-center justify-between lg:mb-2 xl:mb-4 2xl:mb-6 lg:gap-1 xl:gap-2">
             <div className="lg:space-y-0.5 xl:space-y-1">
               <h3 className="font-semibold lg:text-base xl:text-lg 2xl:text-xl">

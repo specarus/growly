@@ -138,7 +138,7 @@ const HabitsCalendar: React.FC<HabitsCalendarProps> = ({ progressByDay }) => {
               return (
                 <div
                   key={`day-${weekIndex}-${dayValue}`}
-                  className={`relative shadow-inner shadow-primary/20 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 rounded-full grid place-items-center transition ${
+                  className={`relative shadow-inner shadow-black/10 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 rounded-full grid place-items-center transition ${
                     progress >= 1 ? "bg-primary text-white" : "bg-transparent"
                   } ${
                     isToday

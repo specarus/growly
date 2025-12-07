@@ -851,7 +851,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         key={status}
                         onDragOver={(event) => event.preventDefault()}
                         onDrop={(event) => handleDrop(event, status)}
-                        className={`lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 2xl:p-5 lg:min-h-40 xl:min-h-60 transition ${
+                        className={`lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white/80 shadow-inner shadow-black/10 lg:p-3 xl:p-4 2xl:p-5 lg:min-h-40 xl:min-h-60 transition ${
                           draggingId ? "ring-1 ring-primary/40" : ""
                         }`}
                       >

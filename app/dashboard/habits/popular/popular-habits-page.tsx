@@ -908,7 +908,7 @@ const PopularHabitsPage: React.FC = () => {
               </div>
             </div>
 
-            <aside className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 shadow-inner h-fit bg-linear-to-tr to-primary/30 via-white from-white">
+            <aside className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 shadow-inner shadow-black/10 h-fit bg-linear-to-tr to-primary/30 via-white from-white">
               <div className="lg:px-4 xl:px-5 lg:pt-4 xl:pt-5 lg:pb-5 xl:pb-6 lg:space-y-3 xl:space-y-4">
                 <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>

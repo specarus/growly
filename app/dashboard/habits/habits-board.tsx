@@ -197,10 +197,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
     const rightEdge = rect.right + window.scrollX;
     const preferredLeft = rightEdge - calculatedWidth;
     const maxLeft = Math.max(viewportRight - calculatedWidth, viewportLeft);
-    const left = Math.min(
-      Math.max(preferredLeft, viewportLeft),
-      maxLeft
-    );
+    const left = Math.min(Math.max(preferredLeft, viewportLeft), maxLeft);
 
     setMenuPosition({
       top: rect.bottom + window.scrollY,
@@ -795,7 +792,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                     return (
                       <div
                         key={`${item.title}-${index}`}
-                        className="relative rounded-2xl border border-gray-50 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:space-y-1 xl:space-y-2 shadow-lg"
+                        className="relative rounded-2xl border border-gray-50 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:space-y-1 xl:space-y-2 shadow-inner shadow-black/10"
                       >
                         <div className="flex items-center justify-between">
                           <div

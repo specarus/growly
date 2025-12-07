@@ -287,7 +287,7 @@ export default async function AccountPage() {
             </div>
           </section>
 
-          <section className="grid lg:gap-4 xl:gap-6 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 2xl:p-8 shadow-inner shadow-foreground/5 backdrop-blur">
+          <section className="grid lg:gap-4 xl:gap-6 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 2xl:p-8 shadow-inner shadow-black/10 backdrop-blur">
             <div className="flex flex-col lg:gap-1.5 xl:gap-2">
               <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                 Weekly focus

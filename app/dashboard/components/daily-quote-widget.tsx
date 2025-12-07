@@ -76,7 +76,7 @@ const DailyQuoteWidget: React.FC = () => {
               </Button>
             </div>
           ) : quote ? (
-            <div className="flex h-fit flex-col justify-between lg:gap-2 xl:gap-3 bg-white/40 lg:px-4 xl:px-5 lg:py-2 xl:py-3 text-foreground/90 lg:rounded-xl xl:rounded-2xl shadow-inner">
+            <div className="flex h-fit flex-col justify-between lg:gap-2 xl:gap-3 bg-white/40 lg:px-4 xl:px-5 lg:py-2 xl:py-3 text-foreground/90 lg:rounded-xl xl:rounded-2xl shadow-inner shadow-black/10">
               <div className="flex items-start">
                 <p className="lg:text-[9px] xl:text-xs 2xl:text-sm font-medium leading-relaxed ">
                   "{quote.text}"

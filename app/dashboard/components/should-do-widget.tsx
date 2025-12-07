@@ -232,7 +232,7 @@ const ShouldDoWidget: React.FC<ShouldDoWidgetProps> = () => {
             return (
               <div
                 key={idea.id}
-                className="flex-1 shadow-inner select-none border border-muted border-dashed bg-white flex items-center justify-between lg:py-1 xl:py-2 2xl:py-3 lg:px-3 xl:px-4 2xl:px-5 lg:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors"
+                className="flex-1 shadow-inner shadow-black/10 select-none border border-muted border-dashed bg-white flex items-center justify-between lg:py-1 xl:py-2 2xl:py-3 lg:px-3 xl:px-4 2xl:px-5 lg:rounded-xl 2xl:rounded-2xl hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center lg:gap-2 xl:gap-3 min-w-0">
                   <span className="shrink-0">
