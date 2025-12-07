@@ -215,12 +215,12 @@ function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="inline-flex items-center justify-center rounded-full border border-muted/40 bg-card/80 lg:p-1 xl:p-2 text-foreground transition hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="inline-flex items-center justify-center rounded-full border border-muted/40 bg-card/80 lg:p-1.5 xl:p-2 text-foreground transition hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       {isDark ? (
-        <Sun className="lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-primary" />
+        <Sun className="lg:w-2.5 lg:h-2.5 xl:h-4 xl:w-4 text-primary" />
       ) : (
-        <Moon className="lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-foreground" />
+        <Moon className="lg:w-2.5 lg:h-2.5 xl:h-4 xl:w-4 text-foreground" />
       )}
     </button>
   );
