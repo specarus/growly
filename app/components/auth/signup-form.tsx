@@ -79,18 +79,18 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
   return (
     <div className="w-full mx-auto">
-      <h2 className="xl:text-3xl 2xl:text-4xl font-extrabold mb-2 text-foreground">
+      <h2 className="lg:text-2xl xl:text-3xl 2xl:text-4xl font-extrabold lg:mb-1 xl:mb-2 text-foreground">
         Sign Up
       </h2>
-      <p className="xl:text-sm 2xl:text-base text-muted-foreground xl:mb-6 2xl:mb-8">
+      <p className="lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground lg:mb-6 2xl:mb-8">
         Join the community and create your account.
       </p>
 
-      <form onSubmit={handleSignup} className="xl:space-y-4 2xl:space-y-6">
-        <div className="flex flex-col gap-2">
+      <form onSubmit={handleSignup} className="lg:space-y-4 2xl:space-y-6">
+        <div className="flex flex-col lg:gap-1.5 xl:gap-2">
           <Label htmlFor="signup-name">Name</Label>
           <div className="relative">
-            <User className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <User className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="signup-name"
               type="text"
@@ -102,10 +102,10 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col lg:gap-1.5 xl:gap-2">
           <Label htmlFor="signup-email">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="signup-email"
               type="email"
@@ -117,10 +117,10 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col lg:gap-1.5 xl:gap-2">
           <Label htmlFor="signup-password">Password</Label>
           <div className="relative">
-            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="signup-password"
               type="password"
@@ -132,19 +132,19 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
             <button
               onClick={() => setShowPassword(!showPassword)}
               type="button"
-              className="absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer text-primary"
+              className="absolute top-1/2 -translate-y-1/2 lg:right-3 xl:right-4 cursor-pointer text-primary"
             >
               {showPassword ? (
-                <Eye className="w-4 h-4" />
+                <Eye className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
               ) : (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
               )}
             </button>
           </div>
         </div>
 
         {error ? (
-          <p className="text-sm text-destructive" role="alert">
+          <p className="lg:text-xs xl:text-sm text-destructive" role="alert">
             {error}
           </p>
         ) : null}
@@ -152,12 +152,12 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-primary border border-primary text-white xl:h-10 2xl:h-12 w-full xl:text-base 2xl:text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-200 disabled:opacity-60"
+          className="bg-primary border border-primary text-white lg:h-8 xl:h-10 2xl:h-12 w-full lg:text-sm xl:text-base 2xl:text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-200 disabled:opacity-60"
         >
           {isLoading ? "Creating..." : "Sign Up"}
         </Button>
 
-        <div className="flex justify-center items-center gap-2 pt-2 xl:text-[13px] 2xl:text-sm">
+        <div className="flex justify-center items-center lg:gap-1.5 xl:gap-2 lg:pt-1 xl:pt-2 lg:text-[11px] xl:text-[13px] 2xl:text-sm">
           <p className="text-muted-foreground">Already have an account?</p>
           <button
             type="button"

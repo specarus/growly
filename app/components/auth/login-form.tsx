@@ -78,18 +78,18 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
 
   return (
     <div className="w-full mx-auto">
-      <h2 className="xl:text-3xl 2xl:text-4xl font-extrabold mb-2 text-foreground">
+      <h2 className="lg:text-2xl xl:text-3xl 2xl:text-4xl font-extrabold lg:mb-1 xl:mb-2 text-foreground">
         Log In
       </h2>
-      <p className="xl:text-sm 2xl:text-base text-muted-foreground xl:mb-6 2xl:mb-8">
+      <p className="lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground lg:mb-6 2xl:mb-8">
         Welcome back! Please enter your details.
       </p>
 
-      <form onSubmit={handleLogin} className="xl:space-y-4 2xl:space-y-6">
-        <div className="flex flex-col gap-2">
+      <form onSubmit={handleLogin} className="lg:space-y-4 2xl:space-y-6">
+        <div className="flex flex-col lg:gap-1.5 xl:gap-2">
           <Label htmlFor="login-email">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="login-email"
               type="email"
@@ -101,10 +101,10 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col lg:gap-1.5 xl:gap-2">
           <Label htmlFor="login-password">Password</Label>
           <div className="relative">
-            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="login-password"
               type={showPassword ? "text" : "password"}
@@ -116,12 +116,12 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
             <button
               onClick={() => setShowPassword(!showPassword)}
               type="button"
-              className="absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer text-primary"
+              className="absolute top-1/2 -translate-y-1/2 lg:right-3 xl:right-4 cursor-pointer text-primary"
             >
               {showPassword ? (
-                <Eye className="w-4 h-4" />
+                <Eye className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
               ) : (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
               )}
             </button>
           </div>
@@ -130,7 +130,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
         <div className="flex items-center justify-between">
           <label
             htmlFor="remember"
-            className="flex items-center gap-2 cursor-pointer select-none"
+            className="flex items-center lg:gap-1.5 xl:gap-2 cursor-pointer select-none"
           >
             <input
               id="remember"
@@ -140,24 +140,29 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
               className="sr-only peer"
             />
             <span
-              className={`xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 rounded-full border-2 transition-all duration-200 ${
-                rememberMe ? "border-primary bg-primary" : "border-primary bg-white"
+              className={`lg:w-2.5 lg:h-2.5 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 rounded-full lg:border xl:border-2 transition-all duration-200 ${
+                rememberMe
+                  ? "border-primary bg-primary"
+                  : "border-primary bg-white"
               }`}
             />
-            <span className="xl:text-xs 2xl:text-sm text-muted-foreground">
+            <span className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
               Remember me
             </span>
           </label>
           <a
             href="#"
-            className="xl:text-xs 2xl:text-sm text-primary font-medium hover:underline transition-colors duration-150"
+            className="lg:text-[11px] xl:text-xs 2xl:text-sm text-primary font-medium hover:underline transition-colors duration-150"
           >
             Forgot Password?
           </a>
         </div>
 
         {error ? (
-          <p className="xl:text-xs 2xl:text-sm text-destructive" role="alert">
+          <p
+            className="lg:text-[11px] xl:text-xs 2xl:text-sm text-destructive"
+            role="alert"
+          >
             {error}
           </p>
         ) : null}
@@ -165,12 +170,12 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-primary text-white xl:h-10 2xl:h-12 w-full xl:text-base 2xl:text-lg font-semibold hover:bg-white border border-primary hover:text-primary transition-all duration-200 disabled:opacity-60"
+          className="bg-primary text-white lg:h-8 xl:h-10 2xl:h-12 w-full lg:text-sm xl:text-base 2xl:text-lg font-semibold hover:bg-white border border-primary hover:text-primary transition-all duration-200 disabled:opacity-60"
         >
           {isLoading ? "Logging in..." : "Log in"}
         </Button>
 
-        <div className="flex items-center justify-center gap-2 pt-2 xl:text-[13px] 2xl:text-sm">
+        <div className="flex items-center justify-center lg:gap-1.5 xl:gap-2 lg:pt-1 xl:pt-2 lg:text-[11px] xl:text-[13px] 2xl:text-sm">
           <p className="text-center text-muted-foreground">New user?</p>
           <button
             type="button"

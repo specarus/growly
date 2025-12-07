@@ -171,7 +171,7 @@ export default async function AccountPage() {
                     {["Release notes", "Privacy", "Support"].map((link) => (
                       <span
                         key={link}
-                        className="rounded-full border border-muted lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
+                        className="rounded-full border border-muted lg:px-2 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground"
                       >
                         {link}
                       </span>
