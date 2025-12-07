@@ -661,18 +661,18 @@ const TodosPage: React.FC<TodosPageProps> = ({
                       dangerouslySetInnerHTML={{ __html: heroDescriptionHtml }}
                     />
                   }
-                  descriptionClassName="lg:text-[10px] xl:text-xs 2xl:text-sm text-muted-foreground max-w-4xl"
+                  descriptionClassName="text-muted-foreground"
                   actions={
                     isCollectionView ? (
                       <Link
                         href="/dashboard/todos"
-                        className={`${buttonBase} lg:h-6 xl:h-8 2xl:h-10 lg:px-3 xl:px-4 2xl:px-6 bg-white border border-gray-100 shadow-sm hover:border-primary/40`}
+                        className={`${buttonBase} lg:text-[10px] xl:text-xs 2xl:text-sm lg:h-6 xl:h-8 2xl:h-10 lg:px-3 xl:px-4 2xl:px-6 bg-white border border-gray-100 shadow-sm hover:border-primary/40`}
                       >
                         Back to all todos
                       </Link>
                     ) : (
                       <Button
-                        className="lg:text-[10px] text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
+                        className="lg:text-[10px] xl:text-xs 2xl:text-sm  text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
                         onClick={handleNewTodo}
                       >
                         <Plus className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
@@ -787,7 +787,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                         </div>
                         <div className="grid grid-cols-2 gap-2 lg:text-[10px] xl:text-xs 2xl:text-sm">
                           {uniqueTags.length === 0 ? (
-                            <div className="col-span-2 text-xs text-muted-foreground lg:px-2 lg:py-0.5 xl:py-1">
+                            <div className="col-span-2 lg:text-[10px] xl:text-xs text-muted-foreground lg:px-2 lg:py-0.5 xl:py-1">
                               No tags yet
                             </div>
                           ) : (

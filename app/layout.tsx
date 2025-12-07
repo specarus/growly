@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 
 import Header from "./components/layout/header";
+import MobileAppGate from "./components/layout/mobile-app-gate";
 import NavigationLoader from "./components/navigation-loader";
 import { ModalProvider } from "./context/modal-context";
 import { XPProvider } from "./context/xp-context";
@@ -48,13 +49,33 @@ export const metadata: Metadata = {
   description: "Habit Tracker App",
 };
 
+const mobileDevicePattern =
+  /(android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|tablet|mobile)/i;
+
+const isMobileOrTabletDevice = (userAgent?: string | null) =>
+  Boolean(userAgent && mobileDevicePattern.test(userAgent));
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const incomingHeaders = await headers();
+  const userAgent = incomingHeaders.get("user-agent") ?? "";
+  const showMobileGate = isMobileOrTabletDevice(userAgent);
+
+  if (showMobileGate) {
+    return (
+      <html lang="en" className={`${montserrat.variable} antialiased`}>
+        <body>
+          <MobileAppGate />
+        </body>
+      </html>
+    );
+  }
+
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: incomingHeaders,
   });
 
   return (
