@@ -16,7 +16,6 @@ const buttonClass =
 
 const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
   open,
-  targetLabel,
   isSaving,
   onKeepEditing,
   onDiscard,
@@ -28,22 +27,22 @@ const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center xl:p-3 2xl:p-4"
+      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center lg:p-2 xl:p-3 2xl:p-4"
       data-unsaved-dialog
     >
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div className="pointer-events-auto relative z-10 max-w-lg rounded-3xl border border-gray-200 bg-white/95 p-6 shadow-2xl">
-        <p className="xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.4em] text-muted-foreground">
+      <div className="pointer-events-auto relative z-10 max-w-lg lg:rounded-2xl xl:rounded-3xl border border-gray-200 bg-white/95 lg:p-4 xl:p-6 shadow-xl">
+        <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.4em] text-muted-foreground">
           Unsaved changes
         </p>
-        <h3 className="xl:mt-3 2xl:mt-4 xl:text-base 2xl:text-lg font-semibold text-foreground">
+        <h3 className="lg:mt-2 xl:mt-3 2xl:mt-4 lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
           Looks like you started something.
         </h3>
 
-        <p className="mt-1 xl:text-xs 2xl:text-sm text-muted-foreground">
+        <p className="mt-1 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
           Save your work before you go or discard the changes to continue.
         </p>
-        <div className="mt-6 flex flex-wrap gap-3 xl:text-[11px] 2xl:text-xs">
+        <div className="lg:mt-4 xl:mt-6 flex flex-wrap lg:gap-2 xl:gap-3 lg:text-[9px] xl:text-[11px] 2xl:text-xs">
           <button
             type="button"
             onClick={onSave}

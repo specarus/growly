@@ -40,10 +40,10 @@ const dropdownSelectWrapperClassName =
   "relative overflow-visible rounded-2xl border border-gray-100 bg-gradient-to-br from-white/95 to-white/70 shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
 
 const fieldButtonClassName =
-  "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 px-4 py-3 xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0";
+  "w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white/90 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0";
 
 const inputControlClassName =
-  "w-full border-none bg-transparent px-4 py-3 xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none text-left";
+  "w-full border-none bg-transparent lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none text-left";
 
 const textareaControlClassName = `${inputControlClassName} resize-none leading-relaxed`;
 
@@ -151,8 +151,8 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
     : undefined;
 
   return (
-    <div className="space-y-2">
-      <label className="xl:text-sm font-semibold">{label}</label>
+    <div className="lg:space-y-1 xl:space-y-2">
+      <label className="lg:text-xs xl:text-sm font-semibold">{label}</label>
       <div className={dropdownSelectWrapperClassName}>
         <button
           type="button"
@@ -165,7 +165,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
         >
           <span className="truncate">{optionLabel}</span>
           <ChevronDown
-            className={`xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
+            className={`lg:h-2 lg:w-2 xl:h-3 xl:w-3 2xl:h-4 2xl:w-4 transition-transform ${
               open ? "rotate-180 text-primary" : "text-muted-foreground"
             }`}
           />
@@ -176,7 +176,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
             id={optionsId}
             role="listbox"
             aria-activedescendant={activeOptionId}
-            className={`absolute left-0 z-20 max-h-56 min-w-full w-max overflow-y-scroll rounded-2xl border border-gray-100 bg-white shadow-lg flex flex-col ${
+            className={`absolute left-0 z-20 lg:max-h-44 xl:max-h-56 min-w-full w-max overflow-y-scroll rounded-2xl border border-gray-100 bg-white shadow-lg flex flex-col ${
               direction === "down" ? "top-full mt-2" : "bottom-full mb-2"
             }`}
           >
@@ -196,7 +196,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
                     onSelect(option.value);
                     setOpen(false);
                   }}
-                  className={`w-full block rounded-none border-b border-gray-100 px-4 py-3 text-left xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
+                  className={`w-full block rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
                     isSelected
                       ? "bg-primary/10 text-primary font-semibold"
                       : "text-foreground hover:bg-primary/5"
@@ -210,7 +210,9 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
         )}
       </div>
       {helper ? (
-        <p className="text-xs text-muted-foreground">{helper}</p>
+        <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
+          {helper}
+        </p>
       ) : null}
     </div>
   );
@@ -408,27 +410,26 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
   return (
     <>
       {guardDialog}
-      <main className="relative overflow-hidden w-full min-h-screen xl:pt-24 2xl:pt-28 text-foreground xl:pb-12 2xl:pb-16 bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15">
+      <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground lg:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-tr from-white/90 via-light-yellow/55 to-green-soft/15">
         <PageGradient />
-        <div className="relative z-10 xl:px-8 2xl:px-28 space-y-8">
+        <div className="relative z-10 lg:px-4 xl:px-8 2xl:px-28 space-y-8">
           <PageHeading
             badgeLabel="Create a post"
             title="Share a habit you love"
-            titleClassName="xl:text-xl 2xl:text-2xl md:text-3xl"
             description="Pick one of your habits, fill in the missing storytelling bits, and share the playbook with the crew."
             actions={
               <Link
                 href="/dashboard/habits/popular"
-                className="xl:text-xs 2xl:text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-primary underline-offset-4 hover:underline"
               >
                 Back to popular habits
               </Link>
             }
           />
 
-          <div className="xl:max-w-5xl 2xl:max-w-6xl">
+          <div className="lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
             {habits.length === 0 ? (
-              <div className="rounded-3xl border border-gray-100 bg-white shadow-inner px-6 py-8 space-y-3 text-sm text-muted-foreground">
+              <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:px-4 xl:px-6 lg:py-6 xl:py-8 lg:space-y-2 xl:space-y-3 lg:text-xs xl:text-sm text-muted-foreground">
                 <p>
                   You'll need to create a habit before you can publish a post.
                 </p>
@@ -440,8 +441,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                 </Link>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="rounded-3xl border border-gray-100 bg-white shadow-inner px-6 py-6 space-y-6">
+              <form
+                onSubmit={handleSubmit}
+                className="lg:space-y-4 xl:space-y-6"
+              >
+                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-6 lg:space-y-4 xl:space-y-6">
                   <DropdownField
                     label="Habit to share"
                     options={habits.map((habit) => ({
@@ -458,17 +462,25 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                       setForm((current) => ({ ...current, habitId: value }));
                     }}
                   />
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Description</label>
+                  <div className="lg:space-y-1 xl:space-y-2">
+                    <label className="lg:text-xs xl:text-sm font-semibold">
+                      Description
+                    </label>
                     {selectedHabit?.description ? (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="lg:text-[11px] text-xs text-muted-foreground">
                         {selectedHabit.description}
                       </p>
-                    ) : null}
+                    ) : (
+                      <p className="lg:text-[11px] text-xs text-muted-foreground">
+                        No description yet.
+                      </p>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Post title</label>
+                  <div className="lg:space-y-1 xl:space-y-2">
+                    <label className="lg:text-xs xl:text-sm font-semibold">
+                      Post title
+                    </label>
                     <div className={dropdownSelectWrapperClassName}>
                       <input
                         value={form.title}
@@ -481,8 +493,8 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">
+                  <div className="lg:space-y-1 xl:space-y-2">
+                    <label className="lg:text-xs xl:text-sm font-semibold">
                       Why it matters
                     </label>
                     <div className={dropdownSelectWrapperClassName}>
@@ -496,9 +508,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Highlight</label>
+                  <div className="grid lg:gap-2 xl:gap-4 grid-cols-2">
+                    <div className="lg:space-y-1 xl:space-y-2">
+                      <label className="lg:text-xs xl:text-sm font-semibold">
+                        Highlight
+                      </label>
                       <div className={dropdownSelectWrapperClassName}>
                         <input
                           value={form.highlight}
@@ -508,8 +522,10 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Anchor</label>
+                    <div className="lg:space-y-1 xl:space-y-2">
+                      <label className="lg:text-xs xl:text-sm font-semibold">
+                        Anchor
+                      </label>
                       <div className={dropdownSelectWrapperClassName}>
                         <input
                           value={form.anchor}
@@ -521,9 +537,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Duration</label>
+                  <div className="grid lg:gap-2 xl:gap-4 md:grid-cols-2">
+                    <div className="lg:space-y-1 xl:space-y-2">
+                      <label className="lg:tex-xs xl:text-sm font-semibold">
+                        Duration
+                      </label>
                       <div className={dropdownSelectWrapperClassName}>
                         <input
                           value={form.duration}
@@ -533,8 +551,10 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Cadence</label>
+                    <div className="lg:space-y-1 xl:space-y-2">
+                      <label className="lg:text-xs xl:text-sm font-semibold">
+                        Cadence
+                      </label>
                       <div className={dropdownSelectWrapperClassName}>
                         <input
                           value={form.cadence}
@@ -544,14 +564,14 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                           aria-readonly="true"
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
                         Pulled from the selected habit and locked in for this
                         post.
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid lg:gap-2 xl:gap-4 grid-cols-3">
                     <DropdownField
                       label="Category"
                       options={categories.map((category) => ({
@@ -601,8 +621,8 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">
+                  <div className="lg:space-y-1 xl:space-y-2">
+                    <label className="lg:text-xs xl:text-sm font-semibold">
                       Why it works
                     </label>
                     <div className={dropdownSelectWrapperClassName}>
@@ -649,12 +669,12 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
                       List each reason on its own line.
                     </p>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="lg:space-y-1 xl:space-y-2">
                     <label className="text-sm font-semibold">Steps</label>
                     <div className={dropdownSelectWrapperClassName}>
                       <input
@@ -674,11 +694,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         className={inputControlClassName}
                       />
                       {form.steps.length > 0 && (
-                        <div className="flex flex-wrap gap-2 m-2">
+                        <div className="flex flex-wrap lg:gap-1.5 xl:gap-2 lg:m-1.5 xl:m-2">
                           {form.steps.map((step) => (
                             <span
                               key={step}
-                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                              className="flex items-center lg:text-[10px] xl:text-xs lg:px-2 lg:py-0.5 xl:py-1 rounded-full bg-primary/10 text-primary font-medium"
                             >
                               {step}
                               <button
@@ -689,20 +709,22 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                                 className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
                                 aria-label={`Remove step ${step}`}
                               >
-                                <X className="w-3 h-3" />
+                                <X className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
                               </button>
                             </span>
                           ))}
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
                       Short, actionable steps keep it repeatable.
                     </p>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Guardrails</label>
+                  <div className="lg:space-y-1 xl:space-y-2">
+                    <label className="lg:text-xs xl:text-sm font-semibold">
+                      Guardrails
+                    </label>
                     <div className={dropdownSelectWrapperClassName}>
                       <input
                         value={guardrailInput}
@@ -725,11 +747,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                         className={inputControlClassName}
                       />
                       {form.guardrails.length > 0 && (
-                        <div className="flex flex-wrap gap-2 m-2">
+                        <div className="flex flex-wrap lg:gap-1.5 xl:gap-2 lg:m-1.5 xl:m-2">
                           {form.guardrails.map((guardrail) => (
                             <span
                               key={guardrail}
-                              className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium"
+                              className="flex items-center lg:text-[10px] xl:text-xs lg:px-2 lg:py-0.5 xl:py-1 rounded-full bg-primary/10 text-primary font-medium"
                             >
                               {guardrail}
                               <button
@@ -740,14 +762,14 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                                 className="ml-1.5 focus:outline-none hover:text-red-500 transition-colors"
                                 aria-label={`Remove guardrail ${guardrail}`}
                               >
-                                <X className="w-3 h-3" />
+                                <X className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
                               </button>
                             </span>
                           ))}
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
                       Share hard boundaries or conditions that protect the
                       habit.
                     </p>
@@ -759,11 +781,11 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                     </div>
                   ) : null}
 
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center lg:gap-2 xl:gap-3">
                     <Button
                       type="submit"
                       disabled={isSubmitting || !form.habitId}
-                      className="xl:h-10 2xl:h-12 xl:px-5 2xl:px-7 xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
+                      className="lg:h-8 xl:h-10 2xl:h-12 lg:text-xs xl:text-sm 2xl:text-base bg-primary text-white shadow-sm hover:brightness-105 transition disabled:cursor-not-allowed disabled:brightness-90"
                     >
                       {isSubmitting ? "Sharing post..." : "Share this habit"}
                     </Button>

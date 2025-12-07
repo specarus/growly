@@ -50,8 +50,8 @@ const CelebrationToast: React.FC = () => {
     celebration.type === "level"
       ? `Level ${celebration.level} unlocked! +${celebration.xp} XP`
       : celebration.type === "habit"
-        ? `Great work! +${celebration.xp} XP for progressing a habit.`
-        : `Great work! +${celebration.xp} XP for completing a todo.`;
+      ? `Great work! +${celebration.xp} XP for progressing a habit.`
+      : `Great work! +${celebration.xp} XP for completing a todo.`;
 
   const animationClass = visible
     ? "translate-y-0 opacity-100 scale-100"
@@ -61,13 +61,13 @@ const CelebrationToast: React.FC = () => {
     <div
       role="status"
       aria-live="assertive"
-      className="pointer-events-none fixed inset-x-0 top-8 z-50 flex justify-center"
+      className="pointer-events-none fixed inset-x-0 lg:top-6 xl:top-8 z-50 flex justify-center"
     >
       <div
-        className={`${animationClass} relative pointer-events-auto border border-muted/40 bg-card/80 xl:px-4 2xl:px-5 xl:py-3 2xl:py-4 rounded-sm overflow-hidden shadow-lg shadow-black/40 transition-all duration-300 origin-top`}
+        className={`${animationClass} relative pointer-events-auto border border-muted/40 bg-card/80 lg:px-3 xl:px-4 2xl:px-5 lg:py-2 xl:py-3 2xl:py-4 rounded-sm overflow-hidden shadow-lg shadow-black/40 transition-all duration-300 origin-top`}
       >
         <div className="flex items-center">
-          <p className="xl:text-xs 2xl:text-sm font-semibold text-foreground">
+          <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-foreground">
             {message}
           </p>
           <div
