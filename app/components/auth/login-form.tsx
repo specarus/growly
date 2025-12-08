@@ -12,6 +12,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Label from "./label";
 import Input from "./input";
 import Button from "../ui/button";
+import { getFriendlyAuthErrorMessage } from "./error-messages";
 
 type Session = typeof import("@/lib/auth").auth.$Infer.Session;
 
@@ -31,6 +32,9 @@ const getSessionFromResult = (result: unknown): Session | null => {
 interface FormProps {
   setIsLogin: (isLogin: boolean) => void;
 }
+
+const INVALID_LOGIN_CREDENTIALS =
+  "We couldn't verify that email and password combination. Double-check your credentials or reset your password.";
 
 const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
   const router = useRouter();
@@ -54,7 +58,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
       const result = await signIn(email, password, rememberMe);
 
       if (!result.user) {
-        setError("Invalid email or password");
+        setError(INVALID_LOGIN_CREDENTIALS);
         return;
       }
 
@@ -66,11 +70,7 @@ const LoginForm: React.FC<FormProps> = ({ setIsLogin }) => {
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(
-        `Authentication error: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
+      setError(getFriendlyAuthErrorMessage("login", err));
     } finally {
       setIsLoading(false);
     }

@@ -13,6 +13,7 @@ import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 import Label from "./label";
 import Input from "./input";
+import { getFriendlyAuthErrorMessage } from "./error-messages";
 
 interface FormProps {
   setIsLogin: (isLogin: boolean) => void;
@@ -32,6 +33,9 @@ const getSessionFromResult = (result: unknown): Session | null => {
 
   return null;
 };
+
+const GENERIC_SIGNUP_ERROR =
+  "We couldn't create your account just yet. Please try again in a minute.";
 
 const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
   const router = useRouter();
@@ -55,7 +59,7 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
       const result = await signUp(email, password, name);
 
       if (!result.user) {
-        setError("Failed to create account");
+        setError(GENERIC_SIGNUP_ERROR);
         return;
       }
 
@@ -67,11 +71,7 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(
-        `Authentication error: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
+      setError(getFriendlyAuthErrorMessage("signup", err));
     } finally {
       setIsLoading(false);
     }

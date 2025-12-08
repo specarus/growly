@@ -179,7 +179,7 @@ export default async function AccountPage() {
                   </div>
                 </div>
 
-                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card/90 lg:p-4 xl:p-6 shadow-inner">
+                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 shadow-inner">
                   <EditProfileForm
                     initialName={editableName}
                     initialEmail={editableEmail}

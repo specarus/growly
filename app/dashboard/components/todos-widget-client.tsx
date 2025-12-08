@@ -222,7 +222,6 @@ const TodosWidgetClient: FC<TodosWidgetClientProps> = ({
                       {message.subtitle}
                     </p>
                   </div>
-                  <Sparkles className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 shrink-0 text-primary" />
                 </div>
               );
             })}
