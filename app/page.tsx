@@ -169,7 +169,7 @@ export default function LandingPage() {
 
           <div className="relative">
             <div className="absolute inset-0 lg:rounded-2xl xl:rounded-3xl bg-linear-to-br from-primary/15 via-white to-green-soft/20 blur-3xl" />
-            <div className="relative rounded-3xl border border-white/60 bg-white/80 backdrop-blur shadow-inner lg:p-4 xl:p-6 lg:space-y-3 xl:space-y-4">
+            <div className="relative rounded-3xl border border-white/60 bg-white/80 backdrop-blur shadow-inner shadow-black/10 lg:p-4 xl:p-6 lg:space-y-3 xl:space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
@@ -235,7 +235,7 @@ export default function LandingPage() {
       </section>
 
       <section className="relative z-10 lg:px-4 2xl:px-28 xl:px-8 lg:mt-10 xl:mt-14 2xl:mt-16">
-        <div className="flex flex-col lg:gap-8 xl:gap-10 bg-white/80 backdrop-blur border border-white/70 shadow-inner lg:rounded-2xl xl:rounded-3xl lg:p-12 xl:p-10 2xl:p-8">
+        <div className="flex flex-col lg:gap-8 xl:gap-10 bg-white/80 backdrop-blur border border-white/70 shadow-inner shadow-black/10 lg:rounded-2xl xl:rounded-3xl lg:p-12 xl:p-10 2xl:p-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between lg:gap-3 xl:gap-4">
             <div className="lg:space-y-2 xl:space-y-3">
               <p className="lg:text-xs xl:text-sm 2xl:text-base uppercase tracking-[0.2em] text-muted-foreground">
@@ -375,7 +375,7 @@ export default function LandingPage() {
       </section>
 
       <section className="relative z-10 lg:px-4 2xl:px-28 xl:px-8 lg:mt-10 xl:mt-14 2xl:mt-16">
-        <div className="rounded-3xl bg-white/90 backdrop-blur border border-white/70 shadow-lg lg:p-4 xl:p-6 2xl:p-8 flex items-center justify-between lg:gap-4 xl:gap-6">
+        <div className="rounded-3xl bg-white/90 backdrop-blur border border-white/70 shadow-inner shadow-black/10 lg:p-4 xl:p-6 2xl:p-8 flex items-center justify-between lg:gap-4 xl:gap-6">
           <div className="lg:space-y-2 xl:space-y-3">
             <p className="lg:text-xs xl:text-sm 2xl:text-base uppercase tracking-[0.2em] text-muted-foreground">
               Ready when you are
