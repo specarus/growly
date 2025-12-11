@@ -29,6 +29,7 @@ import {
   normalizeGoal,
   readRescueEvents,
 } from "./lib/habits-board-utils";
+import { calculateHabitRisk } from "./lib/habit-risk";
 import { streakDefensePlaybook } from "./constants";
 import type { Habit, HabitsBoardProps, RescueWindow } from "./types";
 import { formatDayKey, type ProgressByDayMap } from "@/lib/habit-progress";
@@ -367,6 +368,15 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
                           100,
                           Math.round(completionValue + additionalCompletion)
                         );
+                        const risk = calculateHabitRisk({
+                          streak: habit.streak,
+                          completion: displayCompletion,
+                          successRate: habit.completion,
+                          goalAmount: goalAmountValue,
+                          loggedAmount,
+                        });
+                        const aiSuggestionValue =
+                          risk.level === "low" ? null : risk.suggestedLogAmount;
                         const isComplete = displayCompletion >= 100;
                         const rescueWindow = rescueWindows[habit.id];
                         const showRescueNudge =
@@ -400,6 +410,8 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
                             menuWidth={menuWidth}
                             registerAnchor={registerAnchor}
                             registerMenu={registerMenu}
+                            risk={risk}
+                            aiSuggestionValue={aiSuggestionValue}
                             onHover={setSelectedHabitId}
                             onNavigate={(id) =>
                               router.push(`/dashboard/habits/${id}/edit`)

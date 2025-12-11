@@ -168,7 +168,7 @@ export const formatRangeLabel = (start: Date) => {
 
 export const shouldShowHabitOnDate = (habit: HabitLike, day: Date) => {
   const start = toDate(habit.startDate);
-  const cadence = (habit.cadence ?? "Daily").toLowerCase();
+  const cadence = (habit.cadence ?? "").toLowerCase();
   const target = startOfDay(day);
 
   if (start) {
@@ -184,10 +184,12 @@ export const shouldShowHabitOnDate = (habit: HabitLike, day: Date) => {
     }
   }
 
+  if (!cadence.trim()) return true; // unknown cadence? show it.
   if (cadence.includes("day")) return true;
-  if (cadence.includes("week")) return true;
-  if (cadence.includes("month")) return true;
-  return false;
+  if (cadence.includes("daily")) return true;
+  if (cadence.includes("week")) return true; // no anchor day? show across the week.
+  if (cadence.includes("month")) return true; // no anchor date? show across the month.
+  return true; // default to visible so habits are not hidden due to wording.
 };
 
 export const describeHabit = (habit: HabitLike) => {

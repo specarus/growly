@@ -1,7 +1,7 @@
 "use client";
 
 import Portal from "./portal";
-import type { MenuPosition } from "../types";
+import type { HabitRiskLevel, MenuPosition } from "../types";
 
 type Props = {
   habitId: string;
@@ -13,6 +13,14 @@ type Props = {
   menuPosition: MenuPosition | null;
   menuWidth: number;
   registerMenu: (node: HTMLDivElement | null) => void;
+  aiSuggestion?: {
+    value: number;
+    adjustedGoal: number;
+    goalDelta: number;
+    level: HabitRiskLevel;
+    label: string;
+  } | null;
+  onUseSuggestion?: (habitId: string, value: number) => void;
 };
 
 const QuantityMenu: React.FC<Props> = ({
@@ -25,6 +33,8 @@ const QuantityMenu: React.FC<Props> = ({
   menuPosition,
   menuWidth,
   registerMenu,
+  aiSuggestion,
+  onUseSuggestion,
 }) => {
   if (!isOpen || !menuPosition) {
     return null;
@@ -47,6 +57,45 @@ const QuantityMenu: React.FC<Props> = ({
         <p className="lg:text-[9px] xl:text-[11px] lg:mb-0.5 xl:mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Add quantity
         </p>
+        {aiSuggestion ? (
+          <div className="mb-2 rounded-2xl border border-primary/30 bg-primary/5 lg:px-2 xl:px-3 lg:py-1.5 xl:py-2 shadow-sm">
+            <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
+              <div className="space-y-0.5">
+                <p className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
+                  AI suggested
+                </p>
+                <p className="lg:text-[10px] xl:text-xs text-foreground">
+                  Try {aiSuggestion.value} to aim for{" "}
+                  {aiSuggestion.adjustedGoal}
+                  {aiSuggestion.goalDelta !== 0 && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      ({aiSuggestion.goalDelta > 0 ? "+" : ""}
+                      {aiSuggestion.goalDelta} vs goal)
+                    </span>
+                  )}
+                </p>
+                <p className="lg:text-[9px] xl:text-[11px] text-muted-foreground">
+                  {aiSuggestion.label}
+                </p>
+              </div>
+              <button
+                type="button"
+                className={`rounded-full border lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold transition ${
+                  aiSuggestion.level === "high"
+                    ? "border-coral text-coral hover:bg-coral/10"
+                    : "border-primary text-primary hover:bg-primary/10"
+                }`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onUseSuggestion?.(habitId, aiSuggestion.value);
+                }}
+              >
+                Use
+              </button>
+            </div>
+          </div>
+        ) : null}
         <div className="space-y-1">
           <div className="flex items-center lg:gap-1.5 xl:gap-2">
             <input

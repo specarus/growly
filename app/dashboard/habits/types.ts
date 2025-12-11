@@ -5,6 +5,8 @@ import type { Habit as PrismaHabit } from "@prisma/client";
 
 import type { ProgressByDayMap } from "@/lib/habit-progress";
 
+export type HabitRiskLevel = "low" | "medium" | "high";
+
 export type Habit = Omit<PrismaHabit, "dailyProgress"> & {
   dailyProgress?: number | null;
   streak?: number;

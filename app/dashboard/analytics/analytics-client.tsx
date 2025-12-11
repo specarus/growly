@@ -11,6 +11,7 @@ import {
   Trophy,
   ChessQueen,
   ChartPie,
+  LifeBuoy,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,6 +19,7 @@ import type { TodoStatus } from "@prisma/client";
 
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import PageHeading from "@/app/components/page-heading";
+import { calculateHabitRisk } from "../habits/lib/habit-risk";
 
 type TrendPoint = { label: string; value: number };
 
@@ -80,6 +82,25 @@ const buildAreaPath = (points: number[], width = 720, height = 200) => {
   });
 
   return `M0,${height} L${coords.join(" ")} L${width},${height} Z`;
+};
+
+const buildSparklinePolyline = (points: number[], width = 160, height = 46) => {
+  if (points.length === 0) {
+    return "";
+  }
+  if (points.length === 1) {
+    const y = height - (Math.max(0, Math.min(points[0], 100)) / 100) * height;
+    return `0,${y}`;
+  }
+  const step = width / Math.max(points.length - 1, 1);
+  return points
+    .map((value, index) => {
+      const clamped = Math.max(0, Math.min(100, value));
+      const x = index * step;
+      const y = height - (clamped / 100) * height;
+      return `${x},${y}`;
+    })
+    .join(" ");
 };
 
 const FlipCard: React.FC<{
@@ -324,6 +345,51 @@ const AnalyticsClient: React.FC<Props> = ({
     todoTotal > 0
       ? Math.round(((todoStatusCounts.COMPLETED ?? 0) / todoTotal) * 100)
       : 0;
+
+  const habitRisks = useMemo(() => {
+    const parseGoalAmount = (goal: string) => {
+      if (!goal) return 1;
+      const numeric = Number.parseFloat(goal.replace(/[^\d.-]/g, ""));
+      return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
+    };
+
+    return habits
+      .map((habit, index) => {
+        const goalAmount = parseGoalAmount(habit.goal);
+        const risk = calculateHabitRisk({
+          streak: habit.streak,
+          averageCompletion: habit.averageCompletion,
+          successRate: habit.successRate,
+          goalAmount,
+        });
+        const seed = index + habit.id.length;
+        const base = risk.score * 100;
+        const forecast = Array.from({ length: 7 }, (_, idx) => {
+          const wobble = Math.sin(seed + idx * 0.6) * 6;
+          return Math.max(
+            5,
+            Math.min(95, Math.round(base + wobble - idx * 0.6))
+          );
+        });
+        return { ...habit, risk, forecast };
+      })
+      .sort((a, b) => b.risk.score - a.risk.score);
+  }, [habits]);
+
+  const riskPalette = {
+    high: {
+      chip: "bg-coral/15 text-coral border-coral/40",
+      stroke: "#ef4444",
+    },
+    medium: {
+      chip: "bg-amber-100 text-amber-700 border-amber-300",
+      stroke: "#f59e0b",
+    },
+    low: {
+      chip: "bg-emerald-50 text-emerald-600 border-emerald-200",
+      stroke: "#10b981",
+    },
+  } as const;
 
   const statCards = [
     {
@@ -1024,6 +1090,122 @@ const AnalyticsClient: React.FC<Props> = ({
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="lg:space-y-3 xl:space-y-4 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                Streak risk
+              </p>
+              <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
+                Risk forecast
+              </h3>
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                ML-flavored risk plus goal suggestions to keep streaks
+                breathing.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 lg:text-[9px] xl:text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+              7-day outlook
+            </div>
+          </div>
+
+          {habitRisks.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-4 xl:py-6 text-center lg:text-xs xl:text-sm text-muted-foreground">
+              Track a few habits to see streak risk and suggested targets.
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-3 lg:gap-3 xl:gap-4">
+              {habitRisks.slice(0, 6).map((habit) => {
+                const palette = riskPalette[habit.risk.level];
+                const points = buildSparklinePolyline(habit.forecast);
+                const lastPointValue =
+                  habit.forecast.length > 0
+                    ? habit.forecast[habit.forecast.length - 1]
+                    : 0;
+                const lastPoint = Math.max(0, Math.min(lastPointValue, 100));
+                return (
+                  <div
+                    key={habit.id}
+                    className="rounded-2xl border border-gray-100 bg-linear-to-br from-white via-card to-green-soft/20 lg:px-3 xl:px-4 lg:py-3 xl:py-4 shadow-inner space-y-2"
+                  >
+                    <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
+                      <div>
+                        <p className="lg:text-xs xl:text-sm font-semibold text-foreground">
+                          {habit.name}
+                        </p>
+                        <p className="lg:text-[9px] xl:text-[11px] text-muted-foreground">
+                          {habit.cadence}
+                        </p>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold ${palette.chip}`}
+                      >
+                        <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                        {habit.risk.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between lg:text-[10px] xl:text-xs text-muted-foreground">
+                      <div className="flex items-center lg:gap-1.5 xl:gap-2 font-semibold text-foreground">
+                        <Flame className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                        <span>{habit.streak}d streak</span>
+                      </div>
+                      <div className="font-semibold text-foreground">
+                        Adjusted goal {habit.risk.adjustedGoal}
+                        {habit.risk.goalDelta !== 0 && (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            ({habit.risk.goalDelta > 0 ? "+" : ""}
+                            {habit.risk.goalDelta})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-white border border-gray-100 lg:p-2 xl:p-3 shadow-sm">
+                      <svg
+                        viewBox="0 0 160 46"
+                        xmlns="http://www.w3.org/2000/svg"
+                        role="img"
+                        aria-label={`${habit.name} risk forecast`}
+                        className="w-full h-12"
+                        preserveAspectRatio="none"
+                      >
+                        <polyline
+                          points={points}
+                          fill="none"
+                          stroke={palette.stroke}
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        {points ? (
+                          <circle
+                            cx={160}
+                            cy={46 - (lastPoint / 100) * 46}
+                            r="3.5"
+                            fill="white"
+                            stroke={palette.stroke}
+                            strokeWidth="2"
+                          />
+                        ) : null}
+                      </svg>
+                      <div className="flex items-center justify-between lg:text-[10px] xl:text-xs text-muted-foreground">
+                        <span>Risk {Math.round(habit.risk.score * 100)}%</span>
+                        <span>
+                          Try {habit.risk.suggestedLogAmount} next log
+                        </span>
+                      </div>
+                    </div>
+                    <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
+                      {habit.risk.reasons[0] ?? "Keeping momentum steady"}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <section className="lg:space-y-3 xl:space-y-4 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl shadow-inner border border-gray-100 bg-white">
