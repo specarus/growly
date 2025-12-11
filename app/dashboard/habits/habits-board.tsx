@@ -1,155 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { createPortal } from "react-dom";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
-import {
-  CalendarClock,
-  Check,
-  Flame,
-  LifeBuoy,
-  Plus,
-  Search,
-  ShieldCheck,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import type { Habit as PrismaHabit } from "@prisma/client";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
-import HabitsTabs from "./components/habits-tabs";
-import HabitsCalendar from "./components/habits-calendar";
-import HabitsWeekCalendar from "./components/habits-week-calendar";
-import GradientCircle from "@/app/components/ui/gradient-circle";
-import { formatDayKey, ProgressByDayMap } from "@/lib/habit-progress";
 import { useXP } from "@/app/context/xp-context";
-import { XP_PER_HABIT } from "@/lib/xp";
+import HabitsCalendar from "./components/habits-calendar";
+import HabitsTabs from "./components/habits-tabs";
+import HabitsWeekCalendar from "./components/habits-week-calendar";
+import HabitPlaybook from "./components/habit-playbook";
+import HabitRow from "./components/habit-row";
+import { useQuantityMenu } from "./hooks/use-quantity-menu";
+import {
+  fetchMonthlyProgress,
+  patchHabitProgress,
+  resetHabitProgress,
+} from "./actions/habit-progress";
+import {
+  appendRescueEvent,
+  calculateHabitXpDelta,
+  computeRescueAmount,
+  computeRescueWindow,
+  getFocusLabel,
+  isWithinRescueWindow,
+  normalizeGoal,
+  readRescueEvents,
+} from "./lib/habits-board-utils";
+import { streakDefensePlaybook } from "./constants";
+import type { Habit, HabitsBoardProps, RescueWindow } from "./types";
+import { formatDayKey, type ProgressByDayMap } from "@/lib/habit-progress";
 
-type Habit = PrismaHabit & {
-  streak?: number;
-  completion?: number;
-};
-
-type PlaybookItem = {
-  title: string;
-  detail: string;
-  label: "Prevent" | "Rescue" | "Review";
-  meta: string;
-  icon: "ShieldCheck" | "LifeBuoy" | "CalendarClock";
-  accent: string;
-};
-
-type Props = {
-  habits: Habit[];
-  progressByDay: ProgressByDayMap;
-};
-
-const getFocusLabel = (habit: Habit) => {
-  const description = habit.description?.trim();
-  if (description) {
-    return description;
-  }
-
-  const amount = habit.goalAmount ?? 0;
-  const unit = habit.goalUnit ?? "count";
-  const cadence = habit.cadence?.toLowerCase() ?? "";
-
-  return `${amount} ${unit} per ${cadence}`;
-};
-
-const streakDefensePlaybook: PlaybookItem[] = [
-  {
-    title: "Anchor a reliable cue",
-    detail:
-      "Pair the habit with a fixed trigger so you start automatically and avoid the drift that breaks streaks.",
-    label: "Prevent",
-    meta: "Before start",
-    icon: "ShieldCheck",
-    accent: "text-green-soft bg-green-soft/20",
-  },
-  {
-    title: "Rescue with the smallest win",
-    detail:
-      "If you miss a session, do a short reset or partial rep to keep the streak intact and rebuild momentum.",
-    label: "Rescue",
-    meta: "If you slip",
-    icon: "LifeBuoy",
-    accent: "text-coral bg-coral/20",
-  },
-  {
-    title: "Review and adjust weekly",
-    detail:
-      "Reflect on what worked, tweak anchors, and plan the next week with realistic cues so streaks stay protected.",
-    label: "Review",
-    meta: "Weekly reset",
-    icon: "CalendarClock",
-    accent: "text-primary bg-primary/20",
-  },
-];
-
-const iconMap = {
-  ShieldCheck,
-  LifeBuoy,
-  CalendarClock,
-};
-
-const MENU_DEFAULT_WIDTH = 192;
-const MENU_MIN_WIDTH = 160;
-const MENU_VIEWPORT_GUTTER = 16;
-
-type MenuPosition = {
-  top: number;
-  left: number;
-};
-
-const normalizeGoal = (value?: number | null) => {
-  if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
-    return 1;
-  }
-  return value;
-};
-
-const calculateHabitXpDelta = (
-  previousProgress: number,
-  nextProgress: number,
-  goalAmount?: number | null
-) => {
-  const goal = normalizeGoal(goalAmount);
-  const wasComplete = previousProgress >= goal;
-  const isComplete = nextProgress >= goal;
-
-  if (!wasComplete && isComplete) return XP_PER_HABIT;
-  if (wasComplete && !isComplete) return -XP_PER_HABIT;
-  return 0;
-};
-
-const Portal = ({ children }: { children: ReactNode }) => {
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-
-    const node = document.createElement("div");
-    document.body.appendChild(node);
-    setContainer(node);
-
-    return () => {
-      document.body.removeChild(node);
-    };
-  }, []);
-
-  if (!container) {
-    return null;
-  }
-
-  return createPortal(children, container);
-};
-
-const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
+const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addXP } = useXP();
@@ -158,54 +42,37 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
     habits[0]?.id || ""
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [quantityMenuOpen, setQuantityMenuOpen] = useState<string | null>(null);
   const [customQuantities, setCustomQuantities] = useState<
     Record<string, string>
   >({});
-  const quantityButtonRef = useRef<HTMLDivElement | null>(null);
-  const quantityMenuRef = useRef<HTMLDivElement | null>(null);
   const [progressMap, setProgressMap] =
     useState<ProgressByDayMap>(progressByDay);
-  const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null);
-  const [menuWidth, setMenuWidth] = useState<number>(MENU_DEFAULT_WIDTH);
+  const [rescueWindows, setRescueWindows] = useState<
+    Record<string, RescueWindow | null>
+  >({});
+  const [clockTick, setClockTick] = useState<number>(() => Date.now());
 
-  const updateMenuPosition = useCallback(() => {
+  const {
+    openId: quantityMenuOpenId,
+    menuPosition,
+    menuWidth,
+    toggleMenu,
+    closeMenu,
+    registerAnchor,
+    registerMenu,
+  } = useQuantityMenu();
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
-    const anchor = quantityButtonRef.current;
-    if (!anchor) {
-      return;
-    }
-
-    const rect = anchor.getBoundingClientRect();
-    const viewportLeft = window.scrollX + MENU_VIEWPORT_GUTTER;
-    const viewportRight =
-      window.scrollX + window.innerWidth - MENU_VIEWPORT_GUTTER;
-    const availableWidth = Math.max(
-      window.innerWidth - MENU_VIEWPORT_GUTTER * 2,
-      0
-    );
-    const calculatedWidth =
-      availableWidth <= 0
-        ? MENU_DEFAULT_WIDTH
-        : availableWidth < MENU_MIN_WIDTH
-        ? availableWidth
-        : Math.min(MENU_DEFAULT_WIDTH, availableWidth);
-    setMenuWidth(calculatedWidth);
-
-    const rightEdge = rect.right + window.scrollX;
-    const preferredLeft = rightEdge - calculatedWidth;
-    const maxLeft = Math.max(viewportRight - calculatedWidth, viewportLeft);
-    const left = Math.min(Math.max(preferredLeft, viewportLeft), maxLeft);
-
-    setMenuPosition({
-      top: rect.bottom + window.scrollY,
-      left,
-    });
+    const timer = window.setInterval(() => setClockTick(Date.now()), 60000);
+    return () => {
+      window.clearInterval(timer);
+    };
   }, []);
 
-  const refreshTodayProgress = (updatedHabits: Habit[]) => {
+  const refreshTodayProgress = useCallback((updatedHabits: Habit[]) => {
     if (updatedHabits.length === 0) {
       return;
     }
@@ -220,211 +87,138 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       ...prev,
       [todayKey]: Math.min(1, sum / updatedHabits.length),
     }));
-  };
+  }, []);
 
-  const reloadProgressMap = async () => {
+  const reloadProgressMap = useCallback(async () => {
     try {
-      const today = new Date();
-      const from = new Date(
-        Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)
-      ).toISOString();
-      const to = new Date(
-        Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)
-      ).toISOString();
-      const response = await fetch(
-        `/api/habits/daily-progress?from=${from}&to=${to}`,
-        { cache: "no-store" }
-      );
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = (await response.json()) as {
-        progressByDay: ProgressByDayMap;
-      };
-
-      if (data.progressByDay) {
-        setProgressMap(data.progressByDay);
-      }
+      const next = await fetchMonthlyProgress();
+      setProgressMap(next);
     } catch (error) {
       console.error("Unable to reload progress map", error);
     }
-  };
-  const handleAddQuantity = async (habitId: string, amount: number) => {
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return;
-    }
-    setQuantityMenuOpen(null);
-    const targetHabit = localHabits.find((habit) => habit.id === habitId);
-    const previousProgress = targetHabit?.dailyProgress ?? 0;
-    setCustomQuantities((prev) => ({
-      ...prev,
-      [habitId]: "",
-    }));
+  }, []);
 
-    setLocalHabits((prev) => {
-      const next = prev.map((habit) =>
-        habit.id === habitId
-          ? {
-              ...habit,
-              dailyProgress: (habit.dailyProgress ?? 0) + amount,
-            }
-          : habit
-      );
-      refreshTodayProgress(next);
-      return next;
-    });
+  const awardXpDelta = useCallback(
+    (
+      habit: Habit | undefined,
+      previousProgress: number,
+      nextProgress: number
+    ) => {
+      const xpDelta = habit
+        ? calculateHabitXpDelta(
+            previousProgress,
+            nextProgress,
+            habit.goalAmount
+          )
+        : 0;
+      if (xpDelta !== 0) {
+        const goalAmount = normalizeGoal(habit?.goalAmount);
+        const unit = habit?.goalUnit?.trim() || "goal";
+        addXP(xpDelta, "habit", {
+          label: habit?.name ?? "Habit progress",
+          detail: `${goalAmount} ${unit}`,
+        });
+      }
+    },
+    [addXP]
+  );
 
-    try {
-      const response = await fetch(`/api/habits/${habitId}/progress`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount }),
+  const handleAddQuantity = useCallback(
+    async (habitId: string, amount: number) => {
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return;
+      }
+      closeMenu();
+      const targetHabit = localHabits.find((habit) => habit.id === habitId);
+      const previousProgress = targetHabit?.dailyProgress ?? 0;
+      setCustomQuantities((prev) => ({
+        ...prev,
+        [habitId]: "",
+      }));
+
+      setLocalHabits((prev) => {
+        const next = prev.map((habit) =>
+          habit.id === habitId
+            ? {
+                ...habit,
+                dailyProgress: (habit.dailyProgress ?? 0) + amount,
+              }
+            : habit
+        );
+        refreshTodayProgress(next);
+        return next;
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      try {
+        const data = await patchHabitProgress(habitId, amount);
 
-      const data = await response.json();
+        if (typeof data.dailyProgress === "number") {
+          awardXpDelta(targetHabit, previousProgress, data.dailyProgress);
 
-      if (typeof data.dailyProgress === "number") {
-        const xpDelta = targetHabit
-          ? calculateHabitXpDelta(
-              previousProgress,
-              data.dailyProgress,
-              targetHabit.goalAmount
-            )
-          : 0;
-        if (xpDelta !== 0) {
-          const goalAmount = normalizeGoal(targetHabit?.goalAmount);
-          const unit = targetHabit?.goalUnit?.trim() || "goal";
-          addXP(xpDelta, "habit", {
-            label: targetHabit?.name ?? "Habit progress",
-            detail: `${goalAmount} ${unit}`,
+          setLocalHabits((prev) => {
+            const next = prev.map((habit) =>
+              habit.id === habitId
+                ? { ...habit, dailyProgress: data.dailyProgress ?? 0 }
+                : habit
+            );
+            refreshTodayProgress(next);
+            return next;
           });
+          const { window } = appendRescueEvent(habitId, Date.now());
+          setRescueWindows((prev) => ({
+            ...prev,
+            [habitId]: window,
+          }));
+          void reloadProgressMap();
         }
+      } catch (error) {
+        console.error("Unable to persist habit progress", error);
+      }
+    },
+    [
+      awardXpDelta,
+      closeMenu,
+      localHabits,
+      refreshTodayProgress,
+      reloadProgressMap,
+    ]
+  );
+
+  const handleReset = useCallback(
+    async (habitId: string) => {
+      closeMenu();
+      const targetHabit = localHabits.find((habit) => habit.id === habitId);
+      const previousProgress = targetHabit?.dailyProgress ?? 0;
+      try {
+        const data = await resetHabitProgress(habitId);
+
+        const nextProgress =
+          typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
+
+        awardXpDelta(targetHabit, previousProgress, nextProgress);
 
         setLocalHabits((prev) => {
           const next = prev.map((habit) =>
             habit.id === habitId
-              ? { ...habit, dailyProgress: data.dailyProgress }
+              ? { ...habit, dailyProgress: nextProgress }
               : habit
           );
           refreshTodayProgress(next);
           return next;
         });
         void reloadProgressMap();
+      } catch (error) {
+        console.error("Unable to reset habit progress", error);
       }
-    } catch (error) {
-      console.error("Unable to persist habit progress", error);
-    }
-  };
-
-  const handleReset = async (habitId: string) => {
-    setQuantityMenuOpen(null);
-    const targetHabit = localHabits.find((habit) => habit.id === habitId);
-    const previousProgress = targetHabit?.dailyProgress ?? 0;
-    try {
-      const response = await fetch(`/api/habits/${habitId}/reset`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.json();
-
-      const nextProgress =
-        typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
-
-      const xpDelta = targetHabit
-        ? calculateHabitXpDelta(
-            previousProgress,
-            nextProgress,
-            targetHabit.goalAmount
-          )
-        : 0;
-      if (xpDelta !== 0) {
-        const goalAmount = normalizeGoal(targetHabit?.goalAmount);
-        const unit = targetHabit?.goalUnit?.trim() || "goal";
-        addXP(xpDelta, "habit", {
-          label: targetHabit?.name ?? "Habit progress",
-          detail: `${goalAmount} ${unit}`,
-        });
-      }
-
-      setLocalHabits((prev) => {
-        const next = prev.map((habit) =>
-          habit.id === habitId
-            ? { ...habit, dailyProgress: nextProgress }
-            : habit
-        );
-        refreshTodayProgress(next);
-        return next;
-      });
-      void reloadProgressMap();
-    } catch (error) {
-      console.error("Unable to reset habit progress", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!quantityMenuOpen) {
-      quantityButtonRef.current = null;
-      quantityMenuRef.current = null;
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        (quantityButtonRef.current &&
-          quantityButtonRef.current.contains(target)) ||
-        (quantityMenuRef.current && quantityMenuRef.current.contains(target))
-      ) {
-        return;
-      }
-      setQuantityMenuOpen(null);
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setQuantityMenuOpen(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [quantityMenuOpen]);
-
-  useEffect(() => {
-    if (!quantityMenuOpen) {
-      quantityMenuRef.current = null;
-      setMenuPosition(null);
-      return;
-    }
-
-    updateMenuPosition();
-
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.addEventListener("scroll", updateMenuPosition, true);
-    window.addEventListener("resize", updateMenuPosition);
-    return () => {
-      window.removeEventListener("scroll", updateMenuPosition, true);
-      window.removeEventListener("resize", updateMenuPosition);
-    };
-  }, [quantityMenuOpen, updateMenuPosition]);
+    },
+    [
+      awardXpDelta,
+      closeMenu,
+      localHabits,
+      refreshTodayProgress,
+      reloadProgressMap,
+    ]
+  );
 
   useEffect(() => {
     setLocalHabits(habits);
@@ -433,6 +227,26 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
   useEffect(() => {
     setProgressMap(progressByDay);
   }, [progressByDay]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const events = readRescueEvents();
+    const today = new Date().getDay();
+    const next: Record<string, RescueWindow | null> = {};
+    localHabits.forEach((habit) => {
+      next[habit.id] = computeRescueWindow(events[habit.id] ?? [], today);
+    });
+    setRescueWindows(next);
+  }, [localHabits]);
+
+  useEffect(() => {
+    const param = searchParams.get("habitId");
+    if (param && localHabits.some((habit) => habit.id === param)) {
+      setSelectedHabitId(param);
+    }
+  }, [localHabits, searchParams]);
 
   const filteredHabits = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -447,13 +261,6 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
       );
     });
   }, [localHabits, searchTerm]);
-
-  useEffect(() => {
-    const param = searchParams.get("habitId");
-    if (param && localHabits.some((habit) => habit.id === param)) {
-      setSelectedHabitId(param);
-    }
-  }, [localHabits, searchParams]);
 
   return (
     <main className="relative overflow-hidden w-full min-h-screen lg:pt-18 xl:pt-24 2xl:pt-28 text-foreground lg:pb-8 xl:pb-12 2xl:pb-16 bg-linear-to-br from-white/90 via-light-yellow/55 to-green-soft/15">
@@ -561,6 +368,13 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                           Math.round(completionValue + additionalCompletion)
                         );
                         const isComplete = displayCompletion >= 100;
+                        const rescueWindow = rescueWindows[habit.id];
+                        const showRescueNudge =
+                          rescueWindow &&
+                          !isComplete &&
+                          loggedAmount < goalAmountValue &&
+                          isWithinRescueWindow(rescueWindow, clockTick);
+                        const quickRescueAmount = computeRescueAmount(habit);
                         const loggedLabel =
                           loggedAmount > 0
                             ? `+${loggedAmount}${
@@ -568,178 +382,41 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
                               } logged`
                             : "Tap + to log progress";
                         return (
-                          <div
+                          <HabitRow
                             key={habit.id}
-                            role="button"
-                            tabIndex={0}
-                            onMouseEnter={() => setSelectedHabitId(habit.id)}
-                            onClick={() =>
-                              router.push(`/dashboard/habits/${habit.id}/edit`)
+                            habit={habit}
+                            focusLabel={focusLabel}
+                            streakValue={streakValue}
+                            displayCompletion={displayCompletion}
+                            isSelected={isSelected}
+                            loggedLabel={loggedLabel}
+                            isComplete={isComplete}
+                            rescueWindow={rescueWindow}
+                            quickRescueAmount={quickRescueAmount}
+                            showRescueNudge={Boolean(showRescueNudge)}
+                            customQuantity={customQuantities[habit.id] ?? ""}
+                            quantityMenuOpenId={quantityMenuOpenId}
+                            menuPosition={menuPosition}
+                            menuWidth={menuWidth}
+                            registerAnchor={registerAnchor}
+                            registerMenu={registerMenu}
+                            onHover={setSelectedHabitId}
+                            onNavigate={(id) =>
+                              router.push(`/dashboard/habits/${id}/edit`)
                             }
-                            onKeyDown={(event) => {
-                              if (event.key === "Enter" || event.key === " ") {
-                                event.preventDefault();
-                                router.push(
-                                  `/dashboard/habits/${habit.id}/edit`
-                                );
-                              }
+                            onToggleMenu={(id, anchor) => {
+                              setSelectedHabitId(id);
+                              toggleMenu(id, anchor);
                             }}
-                            className={`grid gap-1 w-full text-left grid-cols-6 lg:px-3 xl:px-4 lg:py-2 xl:py-3 items-center lg:text-[11px] xl:text-xs 2xl:text-sm transition ${
-                              isSelected
-                                ? "bg-primary/5"
-                                : "bg-white/60 hover:bg-primary/5"
-                            }`}
-                          >
-                            <div className="col-span-2 space-y-1">
-                              <div className="font-semibold text-foreground">
-                                {habit.name}
-                              </div>
-                              <div className="space-y-1">
-                                <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                                  {focusLabel}
-                                </div>
-                                <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
-                                  {loggedLabel}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="text-muted-foreground">
-                              {habit.cadence}
-                            </div>
-                            <div className="flex items-center lg:gap-1.5 xl:gap-2">
-                              <Flame className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                              <span className="font-semibold">
-                                {streakValue}d
-                              </span>
-                            </div>
-                            <div className="col-span-2 flex items-center justify-between">
-                              <div className="flex items-center">
-                                {isComplete ? (
-                                  <span className="flex items-center gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
-                                    <Check className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                                    <p>Completed</p>
-                                  </span>
-                                ) : (
-                                  <div className="flex items-center lg:gap-2 lxl:gap-3">
-                                    <div className="lg:w-16 xl:w-24 lg:h-1 xl:h-2 rounded-full bg-muted overflow-hidden">
-                                      <div
-                                        className="h-full bg-linear-to-r from-primary to-coral"
-                                        style={{
-                                          width: `${displayCompletion}%`,
-                                        }}
-                                      />
-                                    </div>
-                                    <span className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
-                                      {displayCompletion}%
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <div
-                                className="relative"
-                                ref={(node) => {
-                                  if (quantityMenuOpen === habit.id) {
-                                    quantityButtonRef.current = node;
-                                  }
-                                }}
-                              >
-                                <button
-                                  type="button"
-                                  className="flex lg:h-6 xl:h-8 lg:w-6 xl:w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
-                                  aria-haspopup="true"
-                                  aria-expanded={quantityMenuOpen === habit.id}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    setQuantityMenuOpen((current) =>
-                                      current === habit.id ? null : habit.id
-                                    );
-                                  }}
-                                >
-                                  <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                                </button>
-                                {quantityMenuOpen === habit.id &&
-                                  menuPosition && (
-                                    <Portal>
-                                      <div
-                                        ref={quantityMenuRef}
-                                        className="max-w-full lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white lg:p-2 xl:p-3 shadow-lg"
-                                        onMouseDown={(event) =>
-                                          event.stopPropagation()
-                                        }
-                                        style={{
-                                          position: "absolute",
-                                          top: menuPosition.top,
-                                          left: menuPosition.left,
-                                          width: menuWidth,
-                                          zIndex: 1100,
-                                        }}
-                                      >
-                                        <p className="lg:text-[9px] xl:text-[11px] lg:mb-0.5 xl:mb-1 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                                          Add quantity
-                                        </p>
-                                        <div className="space-y-1">
-                                          <div className="flex items-center lg:gap-1.5 xl:gap-2">
-                                            <input
-                                              id={`custom-quantity-${habit.id}`}
-                                              type="number"
-                                              min="0"
-                                              step="0.1"
-                                              className="w-full rounded-2xl border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs outline-none focus:border-primary"
-                                              value={
-                                                customQuantities[habit.id] ?? ""
-                                              }
-                                              onChange={(event) => {
-                                                event.stopPropagation();
-                                                setCustomQuantities((prev) => ({
-                                                  ...prev,
-                                                  [habit.id]:
-                                                    event.target.value,
-                                                }));
-                                              }}
-                                              onClick={(event) =>
-                                                event.stopPropagation()
-                                              }
-                                            />
-                                            <button
-                                              type="button"
-                                              className="rounded-2xl border border-primary/60 bg-primary/5 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-primary transition hover:border-primary"
-                                              onClick={(event) => {
-                                                event.stopPropagation();
-                                                const value = Number.parseFloat(
-                                                  customQuantities[habit.id] ??
-                                                    ""
-                                                );
-                                                if (
-                                                  Number.isFinite(value) &&
-                                                  value > 0
-                                                ) {
-                                                  void handleAddQuantity(
-                                                    habit.id,
-                                                    value
-                                                  );
-                                                }
-                                              }}
-                                            >
-                                              Add
-                                            </button>
-                                          </div>
-                                          <button
-                                            type="button"
-                                            className="w-full rounded-full border border-muted/40 bg-muted/10 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
-                                            onClick={(event) => {
-                                              event.stopPropagation();
-                                              void handleReset(habit.id);
-                                            }}
-                                          >
-                                            Reset progress
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </Portal>
-                                  )}
-                              </div>
-                            </div>
-                          </div>
+                            onCustomQuantityChange={(id, value) =>
+                              setCustomQuantities((prev) => ({
+                                ...prev,
+                                [id]: value,
+                              }))
+                            }
+                            onAddQuantity={handleAddQuantity}
+                            onReset={handleReset}
+                          />
                         );
                       })
                     )}
@@ -756,71 +433,7 @@ const HabitsBoard: React.FC<Props> = ({ habits, progressByDay }) => {
             </div>
 
             <div className="h-fit flex flex-col lg:gap-4 xl:gap-6">
-              <div className="relative lg:px-4 xl:px-6 lg:pt-3 xl:pt-5 lg:pb-4 xl:pb-6 lg:space-y-3 xl:space-y-4 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner overflow-hidden">
-                <GradientCircle
-                  size={210}
-                  position={{ bottom: "-50px", right: "-30px" }}
-                  color="rgba(240,144,41,0.35)"
-                  fadeColor="rgba(240,144,41,0)"
-                  className="scale-[3.5]"
-                />
-                <GradientCircle
-                  size={210}
-                  position={{ top: "-50px", left: "-30px" }}
-                  color="rgba(240,144,41,0.35)"
-                  fadeColor="rgba(240,144,41,0)"
-                  className="scale-[3.5]"
-                />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                      Playbook
-                    </p>
-                    <h2 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
-                      Protect the streaks
-                    </h2>
-                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                      Guardrails, rescues, and weekly reviews that protect every
-                      streak.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="lg:space-y-2 xl:space-y-3">
-                  {streakDefensePlaybook.map((item, index) => {
-                    const Icon = iconMap[item.icon];
-                    return (
-                      <div
-                        key={`${item.title}-${index}`}
-                        className="relative rounded-2xl border border-gray-50 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:space-y-1 xl:space-y-2 shadow-inner shadow-black/10"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div
-                            className={`inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[8px] xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] ${item.accent}`}
-                          >
-                            <Icon className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                            <span>{item.label}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <div className="space-y-1">
-                            <p className="font-semibold lg:text-sm xl:text-base">
-                              {item.title}
-                            </p>
-                            <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
-                              {item.detail}
-                            </p>
-                            <div className="inline-flex items-center gap-2 text-xs font-semibold rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 text-muted-foreground">
-                              <span className="lg:h-1 lg:w-1 xl:h-1.5 xl:w-1.5 rounded-full bg-primary" />
-                              {item.meta}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <HabitPlaybook items={streakDefensePlaybook} />
               <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
                 <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
                   <div className="flex items-center justify-between">
