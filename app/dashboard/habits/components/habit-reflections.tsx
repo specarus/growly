@@ -149,7 +149,7 @@ const HabitReflections: React.FC<Props> = ({ initialReflections }) => {
               placeholder="Today's win, a habit tweak that helped, or a cue that worked."
               rows={3}
               maxLength={600}
-              className="w-full rounded-xl border border-gray-200 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs text-foreground placeholder:text-muted-foreground shadow-inner focus:border-primary outline-none resize-none"
+              className="w-full rounded-xl border border-gray-200 bg-white lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs text-foreground placeholder:text-muted-foreground/70 shadow-inner focus:border-primary outline-none resize-none"
             />
           </div>
           <div className="flex items-center justify-between">

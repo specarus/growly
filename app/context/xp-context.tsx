@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useSession } from "./session-context";
@@ -38,6 +39,7 @@ interface XPContextValue extends GamificationState {
     source?: XPActivitySource,
     metadata?: XPActivityMetadata
   ) => void;
+  refreshXP: () => Promise<void>;
   activityLog: XPActivityEntry[];
   loading: boolean;
   celebration: CelebrationEvent | null;
@@ -86,6 +88,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
     null
   );
   const [activityLog, setActivityLog] = useState<XPActivityEntry[]>([]);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     if (!session?.user?.id) {
@@ -101,10 +104,8 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
 
     const loadXP = async () => {
       try {
-        setTotalXP(null);
-        setTodayXP(null);
-        setStreakBonus(null);
-        setActivityLog([]);
+        const requestId = requestIdRef.current + 1;
+        requestIdRef.current = requestId;
 
         const response = await fetch("/api/xp", {
           headers: { "Content-Type": "application/json" },
@@ -117,6 +118,9 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
         }
 
         const data = await response.json();
+        if (controller.signal.aborted || requestId !== requestIdRef.current) {
+          return;
+        }
         setTotalXP(data.totalXP ?? 0);
         setTodayXP(data.todayXP ?? 0);
         setStreakBonus(data.streakBonus ?? 0);
@@ -127,11 +131,16 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       }
     };
 
+    setTotalXP(null);
+    setTodayXP(null);
+    setStreakBonus(null);
+    setActivityLog([]);
+
     loadXP();
 
     return () => controller.abort();
   }, [session?.user?.id]);
-  
+
   const logActivityEntry = useCallback((entry: XPActivityEntry) => {
     setActivityLog((prev) => {
       const next = [entry, ...prev];
@@ -219,6 +228,38 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
     [logActivityEntry]
   );
 
+  const refreshXP = useCallback(async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+
+    try {
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
+
+      const response = await fetch("/api/xp", {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load XP");
+      }
+
+      const data = await response.json();
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      setTotalXP(data.totalXP ?? 0);
+      setTodayXP(data.todayXP ?? 0);
+      setStreakBonus(data.streakBonus ?? 0);
+      setActivityLog(data.activity ?? []);
+    } catch (error) {
+      console.error("[XPProvider] refresh XP", error);
+    }
+  }, [session?.user?.id]);
+
   const clearCelebration = useCallback(() => setCelebration(null), []);
 
   const loading = totalXP === null;
@@ -234,6 +275,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       streakBonus: streakBonus ?? 0,
       activityLog,
       addXP,
+      refreshXP,
       celebration,
       clearCelebration,
       loading,
@@ -248,6 +290,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       streakBonus,
       activityLog,
       addXP,
+      refreshXP,
       celebration,
       clearCelebration,
       loading,

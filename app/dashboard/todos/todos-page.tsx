@@ -683,7 +683,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 />
               </div>
               <div className="grid md:grid-cols-3 lg:gap-3 xl:gap-4">
-                <div className="lg:rounded-lg xl:rounded-2xl border border-gray-50 bg-white/90 shadow-lg lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="lg:rounded-lg xl:rounded-2xl border border-gray-50 bg-white/90 shadow-md lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="lg:w-8 lg:h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <CheckCircle2 className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>
@@ -696,7 +696,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="lg:rounded-lg xl:rounded-2xl border border-gray-50 bg-white/90 shadow-lg lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="lg:rounded-lg xl:rounded-2xl border border-gray-50 bg-white/90 shadow-md lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="lg:w-8 lg:h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <Timer className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>
@@ -709,7 +709,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="lg:rounded-xl xl:rounded-2xl border border-gray-50 bg-white/90 shadow-lg lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
+                <div className="lg:rounded-xl xl:rounded-2xl border border-gray-50 bg-white/90 shadow-md lg:p-2 xl:p-3 2xl:p-5 flex items-center gap-3">
                   <div className="lg:w-8 lg:h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center">
                     <Target className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-muted-foreground" />
                   </div>

@@ -42,7 +42,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
 }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { addXP } = useXP();
+  const { addXP, refreshXP } = useXP();
   const [localHabits, setLocalHabits] = useState(habits);
   const [selectedHabitId, setSelectedHabitId] = useState<string>(
     habits[0]?.id || ""
@@ -125,6 +125,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
           detail: `${goalAmount} ${unit}`,
         });
       }
+      return xpDelta;
     },
     [addXP]
   );
@@ -159,7 +160,11 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
         const data = await patchHabitProgress(habitId, amount);
 
         if (typeof data.dailyProgress === "number") {
-          awardXpDelta(targetHabit, previousProgress, data.dailyProgress);
+          const xpDelta = awardXpDelta(
+            targetHabit,
+            previousProgress,
+            data.dailyProgress
+          );
 
           setLocalHabits((prev) => {
             const next = prev.map((habit) =>
@@ -176,6 +181,9 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
             [habitId]: window,
           }));
           void reloadProgressMap();
+          if (xpDelta !== 0) {
+            void refreshXP();
+          }
         }
       } catch (error) {
         console.error("Unable to persist habit progress", error);
@@ -187,6 +195,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
       localHabits,
       refreshTodayProgress,
       reloadProgressMap,
+      refreshXP,
     ]
   );
 
@@ -201,7 +210,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
         const nextProgress =
           typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
 
-        awardXpDelta(targetHabit, previousProgress, nextProgress);
+        const xpDelta = awardXpDelta(targetHabit, previousProgress, nextProgress);
 
         setLocalHabits((prev) => {
           const next = prev.map((habit) =>
@@ -213,6 +222,9 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
           return next;
         });
         void reloadProgressMap();
+        if (xpDelta !== 0) {
+          void refreshXP();
+        }
       } catch (error) {
         console.error("Unable to reset habit progress", error);
       }
@@ -223,6 +235,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
       localHabits,
       refreshTodayProgress,
       reloadProgressMap,
+      refreshXP,
     ]
   );
 
