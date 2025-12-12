@@ -44,5 +44,21 @@ export default async function HabitsPage() {
     progressEntries
   );
 
-  return <HabitsBoard habits={habitsWithStats} progressByDay={progressByDay} />;
+  const reflections = await prisma.habitReflection.findMany({
+    where: {
+      userId: session.user.id,
+    },
+    orderBy: {
+      entryDate: "desc",
+    },
+    take: 20,
+  });
+
+  return (
+    <HabitsBoard
+      habits={habitsWithStats}
+      progressByDay={progressByDay}
+      reflections={reflections}
+    />
+  );
 }

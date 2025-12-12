@@ -12,6 +12,7 @@ import HabitsCalendar from "./components/habits-calendar";
 import HabitsTabs from "./components/habits-tabs";
 import HabitsWeekCalendar from "./components/habits-week-calendar";
 import HabitPlaybook from "./components/habit-playbook";
+import HabitReflections from "./components/habit-reflections";
 import HabitRow from "./components/habit-row";
 import { useQuantityMenu } from "./hooks/use-quantity-menu";
 import {
@@ -34,7 +35,11 @@ import { streakDefensePlaybook } from "./constants";
 import type { Habit, HabitsBoardProps, RescueWindow } from "./types";
 import { formatDayKey, type ProgressByDayMap } from "@/lib/habit-progress";
 
-const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
+const HabitsBoard: React.FC<HabitsBoardProps> = ({
+  habits,
+  progressByDay,
+  reflections,
+}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addXP } = useXP();
@@ -375,8 +380,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
                           goalAmount: goalAmountValue,
                           loggedAmount,
                         });
-                        const aiSuggestionValue =
-                          risk.level === "low" ? null : risk.suggestedLogAmount;
                         const isComplete = displayCompletion >= 100;
                         const rescueWindow = rescueWindows[habit.id];
                         const showRescueNudge =
@@ -411,7 +414,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
                             registerAnchor={registerAnchor}
                             registerMenu={registerMenu}
                             risk={risk}
-                            aiSuggestionValue={aiSuggestionValue}
                             onHover={setSelectedHabitId}
                             onNavigate={(id) =>
                               router.push(`/dashboard/habits/${id}/edit`)
@@ -446,6 +448,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({ habits, progressByDay }) => {
 
             <div className="h-fit flex flex-col lg:gap-4 xl:gap-6">
               <HabitPlaybook items={streakDefensePlaybook} />
+              <HabitReflections initialReflections={reflections} />
               <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">
                 <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
                   <div className="flex items-center justify-between">

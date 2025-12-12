@@ -127,6 +127,14 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
   const reminderPanelRef = useRef<HTMLDivElement | null>(null);
   const [showStartDateDropdown, setShowStartDateDropdown] = useState(false);
   const startDateToggleRef = useRef<HTMLButtonElement | null>(null);
+  const closeCadenceMenu = useCallback(() => {
+    setCadenceMenuOpen(false);
+    cadenceToggleRef.current?.blur();
+  }, []);
+  const closeReminderMenu = useCallback(() => {
+    setReminderMenuOpen(false);
+    reminderToggleRef.current?.blur();
+  }, []);
 
   const markDirty = useCallback(() => {
     setIsDirty(true);
@@ -644,7 +652,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                           ref={cadenceToggleRef}
                           onClick={() => {
                             setCadenceMenuOpen((open) => !open);
-                            setReminderMenuOpen(false);
+                            closeReminderMenu();
                           }}
                           aria-haspopup="listbox"
                           aria-expanded={cadenceMenuOpen}
@@ -695,7 +703,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                                       cadence,
                                     }));
                                     markDirty();
-                                    setCadenceMenuOpen(false);
+                                    closeCadenceMenu();
                                   }}
                                   className={`w-full rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-xs xl:text-sm transition last:border-b-0 ${
                                     form.cadence === cadence
@@ -777,7 +785,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                           ref={reminderToggleRef}
                           onClick={() => {
                             setReminderMenuOpen((open) => !open);
-                            setCadenceMenuOpen(false);
+                            closeCadenceMenu();
                           }}
                           aria-haspopup="listbox"
                           aria-expanded={reminderMenuOpen}
@@ -828,7 +836,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                                       reminder,
                                     }));
                                     markDirty();
-                                    setReminderMenuOpen(false);
+                                    closeReminderMenu();
                                   }}
                                   className={`w-full rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
                                     form.reminder === reminder

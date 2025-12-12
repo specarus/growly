@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Check, Flame, LifeBuoy, Plus } from "lucide-react";
+import { Asterisk, Check, Flame, LifeBuoy, Plus } from "lucide-react";
 
 import QuantityMenu from "./quantity-menu";
 import type { Habit, MenuPosition, RescueWindow } from "../types";
@@ -25,7 +25,6 @@ type Props = {
   registerAnchor: (node: HTMLDivElement | null) => void;
   registerMenu: (node: HTMLDivElement | null) => void;
   risk: HabitRisk;
-  aiSuggestionValue: number | null;
   onHover: (id: string) => void;
   onNavigate: (id: string) => void;
   onToggleMenu: (habitId: string, anchor: HTMLDivElement | null) => void;
@@ -52,7 +51,6 @@ const HabitRow: React.FC<Props> = ({
   registerAnchor,
   registerMenu,
   risk,
-  aiSuggestionValue,
   onHover,
   onNavigate,
   onToggleMenu,
@@ -63,7 +61,6 @@ const HabitRow: React.FC<Props> = ({
   const anchorRef = useRef<HTMLDivElement | null>(null);
   const isMenuOpen = quantityMenuOpenId === habit.id;
   const shouldShowRescue = rescueWindow && showRescueNudge;
-  const showSuggestion = aiSuggestionValue !== null && risk.level !== "low";
 
   const riskColor =
     risk.level === "high"
@@ -98,15 +95,15 @@ const HabitRow: React.FC<Props> = ({
         <div className="flex items-center gap-2">
           <div className="font-semibold text-foreground">{habit.name}</div>
           <span
-            className={`inline-flex items-center gap-1 rounded-full border lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold transition ${riskColor}`}
+            className={`inline-flex items-center gap-1 rounded-full border lg:px-2 xl:px-2.5 lg:py-0.5 lg:text-[9px] xl:text-[11px] font-semibold transition ${riskColor}`}
             title={risk.reasons.join(" • ")}
           >
-            <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+            <Asterisk className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
             {risk.label}
           </span>
         </div>
         <div className="space-y-1">
-          <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+          <div className="lg:text-[8px] xl:text-[9px] 2xl:text-[11px] text-muted-foreground">
             {focusLabel}
           </div>
           <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
@@ -123,10 +120,10 @@ const HabitRow: React.FC<Props> = ({
               }}
             >
               <span className="inline-flex items-center gap-1.5 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
-                <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                <LifeBuoy className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
                 Rescue now
               </span>
-              <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+              <span className="lg:text-[8px] xl:text-[9px] 2xl:text-[11px] text-muted-foreground">
                 You often save this at {rescueWindow.label}. Want a quick win?
               </span>
             </button>
@@ -184,20 +181,6 @@ const HabitRow: React.FC<Props> = ({
             menuPosition={menuPosition}
             menuWidth={menuWidth}
             registerMenu={registerMenu}
-            aiSuggestion={
-              showSuggestion
-                ? {
-                    value: aiSuggestionValue ?? 0,
-                    adjustedGoal: risk.adjustedGoal,
-                    goalDelta: risk.goalDelta,
-                    level: risk.level,
-                    label: risk.reasons[0] ?? "Personalized target",
-                  }
-                : null
-            }
-            onUseSuggestion={(id, value) => {
-              onCustomQuantityChange(id, value.toString());
-            }}
           />
         </div>
       </div>

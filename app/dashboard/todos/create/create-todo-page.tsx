@@ -410,6 +410,18 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
   const recurrenceToggleRef = useRef<HTMLButtonElement | null>(null);
   const recurrencePanelRef = useRef<HTMLDivElement | null>(null);
   const dateToggleRef = useRef<HTMLButtonElement | null>(null);
+  const closeCategoryMenu = useCallback(() => {
+    setCategoryMenuOpen(false);
+    categoryToggleRef.current?.blur();
+  }, []);
+  const closeReminderMenu = useCallback(() => {
+    setReminderMenuOpen(false);
+    reminderToggleRef.current?.blur();
+  }, []);
+  const closeRecurrenceMenu = useCallback(() => {
+    setRecurrenceMenuOpen(false);
+    recurrenceToggleRef.current?.blur();
+  }, []);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -971,7 +983,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     reminder,
                   }));
                   markDirty();
-                  setReminderMenuOpen(false);
+                  closeReminderMenu();
                 }}
                 className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-xs xl:text-sm transition last:border-b-0 ${
                   form.reminder === reminder
@@ -1023,7 +1035,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     recurrence,
                   }));
                   markDirty();
-                  setRecurrenceMenuOpen(false);
+                  closeRecurrenceMenu();
                 }}
                 className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
                   form.recurrence === recurrence
@@ -1211,17 +1223,17 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                 type="button"
                                 aria-selected={form.category === category}
                                 onClick={() => {
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    category,
-                                  }));
-                                  markDirty();
-                                  setCategoryMenuOpen(false);
-                                }}
-                                className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
-                                  form.category === category
-                                    ? "bg-primary/10 text-primary font-semibold"
-                                    : "text-foreground hover:bg-primary/5"
+                                setForm((prev) => ({
+                                  ...prev,
+                                  category,
+                                }));
+                                markDirty();
+                                closeCategoryMenu();
+                              }}
+                              className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
+                                form.category === category
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-primary/5"
                                 }`}
                               >
                                 {category}
@@ -1522,7 +1534,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         aria-controls={reminderDropdownOptionsId}
                         onClick={() => {
                           setReminderMenuOpen((open) => !open);
-                          setRecurrenceMenuOpen(false);
+                          closeRecurrenceMenu();
                         }}
                         className="w-full flex items-center justify-between lg:rounded-xl xl:rounded-2xl border-none bg-transparent lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left text-foreground lg:text-[11px] xl:text-xs 2xl:text-sm focus:outline-none focus-visible:outline-none"
                       >
@@ -1555,7 +1567,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                         aria-controls={recurrenceDropdownOptionsId}
                         onClick={() => {
                           setRecurrenceMenuOpen((open) => !open);
-                          setReminderMenuOpen(false);
+                          closeReminderMenu();
                         }}
                         className="w-full flex items-center justify-between lg:rounded-xl xl:rounded-2xl border-none bg-transparent lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left text-foreground lg:text-[11px] xl:text-xs 2xl:text-sm focus:outline-none focus-visible:outline-none"
                       >

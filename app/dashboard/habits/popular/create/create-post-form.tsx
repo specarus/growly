@@ -184,22 +184,23 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
               const optionId = `${optionsId}-option-${sanitizeDropdownValue(
                 option.value
               )}`;
-              const isSelected = option.value === value;
-              return (
-                <button
-                  key={optionId}
-                  id={optionId}
-                  type="button"
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => {
-                    onSelect(option.value);
-                    setOpen(false);
-                  }}
-                  className={`w-full block rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
-                    isSelected
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "text-foreground hover:bg-primary/5"
+                  const isSelected = option.value === value;
+                  return (
+                    <button
+                      key={optionId}
+                      id={optionId}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        onSelect(option.value);
+                        toggleRef.current?.blur();
+                        setOpen(false);
+                      }}
+                      className={`w-full block rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
+                        isSelected
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "text-foreground hover:bg-primary/5"
                   }`}
                 >
                   {option.label}

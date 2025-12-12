@@ -25,6 +25,7 @@ model User {
   accounts      Account[]
   todos         Todo[]
   habits         Habit[]
+  habitReflections HabitReflection[]
   collections   Collection[]
   routines      Routine[]
   postHabits    PostHabit[]
@@ -176,6 +177,20 @@ model HabitDailyProgress {
   @@index([habitId])
   @@index([date])
   @@map("habit_daily_progress")
+}
+
+model HabitReflection {
+  id        String   @id @default(uuid())
+  userId    String
+  entryDate DateTime
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, entryDate])
+  @@map("habit_reflection")
 }
 
 model PostHabit {

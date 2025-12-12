@@ -13,6 +13,15 @@ export type Habit = Omit<PrismaHabit, "dailyProgress"> & {
   completion?: number;
 };
 
+export type HabitReflection = {
+  id: string;
+  userId: string;
+  entryDate: string | Date;
+  note: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
 export type PlaybookItem = {
   title: string;
   detail: string;
@@ -38,6 +47,7 @@ export type MenuPosition = {
 export type HabitsBoardProps = {
   habits: Habit[];
   progressByDay: ProgressByDayMap;
+  reflections: HabitReflection[];
 };
 
 export type PortalProps = {
