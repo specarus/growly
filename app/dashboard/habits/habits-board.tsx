@@ -212,7 +212,11 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
         const nextProgress =
           typeof data.dailyProgress === "number" ? data.dailyProgress : 0;
 
-        const xpDelta = awardXpDelta(targetHabit, previousProgress, nextProgress);
+        const xpDelta = awardXpDelta(
+          targetHabit,
+          previousProgress,
+          nextProgress
+        );
 
         setLocalHabits((prev) => {
           const next = prev.map((habit) =>
@@ -509,6 +513,30 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                   </div>
                 </div>
 
+                <div className="relative overflow-hidden lg:mt-6 xl:mt-8 2xl:mt-10 border rounded-2xl border-gray-100 shadow-inner min-h-[220px] lg:min-h-[260px]">
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[url('/path.jpg')] bg-cover bg-no-repeat bg-center bg-white"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-r from-black/35 via-black/20 to-black/15" />
+                  <div className="relative flex flex-col lg:flex-row items-start lg:items-center justify-between lg:px-4 xl:px-6 2xl:px-8 lg:py-4 xl:py-6 gap-4">
+                    <div className="space-y-2 text-white">
+                      <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.2em] text-white/80">
+                        Wayfinding
+                      </p>
+                      <h3 className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold leading-tight">
+                        Follow the right path — it leads to the destination you
+                        want.
+                      </h3>
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-white/80 max-w-2xl">
+                        Keep logging the small steps. Today&apos;s reps shape
+                        tomorrow&apos;s wins, and your streak keeps you on
+                        course.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="lg:mt-6 xl:mt-8 2xl:mt-10">
                   <HabitsWeekCalendar
                     habits={localHabits}
@@ -527,16 +555,16 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                         Snapshot
                       </p>
                       <div className="flex items-center gap-2">
-                        <Sparkles className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
                         <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                           Today&apos;s momentum
                         </h2>
                       </div>
                       <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                        Quick view of daily completion, streak protection, and XP gained.
+                        Quick view of daily completion, streak protection, and
+                        XP gained.
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="w-28 text-right">
                       <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         Avg today
                       </p>
@@ -593,12 +621,12 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                           <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
                             7-day flow
                           </p>
-                          <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                          <p className="lg:text-[9px] xl:text-[11px] text-muted-foreground">
                             See how daily completion has trended this week.
                           </p>
                         </div>
                       </div>
-                      <div className="lg:text-[9px] xl:text-[10px] text-muted-foreground font-semibold">
+                      <div className="w-40 text-right lg:text-[9px] xl:text-[10px] text-muted-foreground font-semibold">
                         {hasProgressData
                           ? `High ${recentProgressPeak}% / Avg ${recentProgressAverage}%`
                           : "Waiting for this week's first logs"}
@@ -625,8 +653,14 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                               y1="0"
                               y2="1"
                             >
-                              <stop offset="0%" stopColor="rgba(240,144,41,0.3)" />
-                              <stop offset="100%" stopColor="rgba(31,133,77,0.05)" />
+                              <stop
+                                offset="0%"
+                                stopColor="rgba(240,144,41,0.3)"
+                              />
+                              <stop
+                                offset="100%"
+                                stopColor="rgba(31,133,77,0.05)"
+                              />
                             </linearGradient>
                           </defs>
                           <path
@@ -644,7 +678,10 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                         </svg>
                         <div className="grid grid-cols-7 lg:text-[9px] xl:text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.14em]">
                           {recentProgressSeries.map((point, index) => (
-                            <span key={`${point.label}-${index}`} className="text-center">
+                            <span
+                              key={`${point.label}-${index}`}
+                              className="text-center"
+                            >
                               {point.label.slice(0, 3)}
                             </span>
                           ))}

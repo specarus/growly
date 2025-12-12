@@ -6,14 +6,74 @@ import EditProfileForm from "./components/edit-profile-form";
 import SignOutButton from "./components/sign-out-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { CalendarDays, Flame, Goal, ShieldCheck } from "lucide-react";
+import { CalendarDays, Flame, Goal, Medal, ShieldCheck } from "lucide-react";
 import PageHeading from "@/app/components/page-heading";
 import { prisma } from "@/lib/prisma";
 import StreakGoalForm from "./components/streak-goal-form";
 import { buildHabitAnalytics } from "@/lib/habit-analytics";
 import { formatDayKey } from "@/lib/habit-progress";
+import { XP_PER_HABIT, XP_PER_TODO } from "@/lib/xp";
 
 export const dynamic = "force-dynamic";
+
+const BASE_XP_PER_LEVEL = 100;
+const LEVEL_XP_INCREMENT = 25;
+
+const badgeTiers = [
+  {
+    level: 50,
+    stage: "Diamond",
+    label: "Diamond Pathmaker",
+    className: "bg-gradient-to-r from-sky-500 to-indigo-600 text-white",
+  },
+  {
+    level: 25,
+    stage: "Gold",
+    label: "Gold Trailblazer",
+    className: "bg-gradient-to-r from-amber-400 to-orange-500 text-white",
+  },
+  {
+    level: 10,
+    stage: "Silver",
+    label: "Silver Strider",
+    className: "bg-gradient-to-r from-slate-200 to-slate-400 text-slate-900",
+  },
+  {
+    level: 5,
+    stage: "Bronze",
+    label: "Bronze Beginner",
+    className: "bg-gradient-to-r from-amber-200 to-amber-300 text-amber-900",
+  },
+] as const;
+
+const xpForLevel = (level: number) =>
+  BASE_XP_PER_LEVEL + (level - 1) * LEVEL_XP_INCREMENT;
+
+const cumulativeXpForLevel = (targetLevel: number) => {
+  let total = 0;
+  for (let level = 1; level < targetLevel; level += 1) {
+    total += xpForLevel(level);
+  }
+  return total;
+};
+
+const computeLevelState = (totalXP: number) => {
+  let remainingXP = totalXP;
+  let currentLevel = 1;
+  let xpForCurrentLevel = xpForLevel(currentLevel);
+
+  while (xpForCurrentLevel > 0 && remainingXP >= xpForCurrentLevel) {
+    remainingXP -= xpForCurrentLevel;
+    currentLevel += 1;
+    xpForCurrentLevel = xpForLevel(currentLevel);
+  }
+
+  return {
+    level: currentLevel,
+    xpGainedInLevel: remainingXP,
+    xpNeededForLevelUp: xpForCurrentLevel,
+  };
+};
 
 const focusAreas = [
   {
@@ -60,11 +120,18 @@ export default async function AccountPage() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  const [userRecord, habits, progressEntries] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { streakGoalDays: true },
-    }),
+  const [userRecord, completedTodosCount, habits, progressEntries] =
+    await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { streakGoalDays: true },
+      }),
+      prisma.todo.count({
+        where: {
+          userId: session.user.id,
+          status: "COMPLETED",
+        },
+      }),
     prisma.habit.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
@@ -79,13 +146,51 @@ export default async function AccountPage() {
         progress: true,
       },
     }),
-  ]);
+    ]);
   const streakGoal = userRecord?.streakGoalDays ?? 21;
+  const totalTodosXP = completedTodosCount * XP_PER_TODO;
 
   const { habitsWithStats, progressByDay } = buildHabitAnalytics(
     habits,
     progressEntries
   );
+
+  const habitGoalMap = new Map<string, number>();
+  habits.forEach((habit) => {
+    habitGoalMap.set(habit.id, habit.goalAmount ?? 1);
+  });
+
+  const totalHabitCompletions = progressEntries.reduce((sum, entry) => {
+    const goalAmount = habitGoalMap.get(entry.habitId) ?? 1;
+    return sum + (entry.progress >= goalAmount ? 1 : 0);
+  }, 0);
+  const totalHabitXP = totalHabitCompletions * XP_PER_HABIT;
+  const totalXP = totalTodosXP + totalHabitXP;
+
+  const { level, xpGainedInLevel, xpNeededForLevelUp } =
+    computeLevelState(totalXP);
+
+  const badgeCurrent =
+    badgeTiers.find((tier) => level >= tier.level) ?? null;
+  const badgeNext = [...badgeTiers]
+    .sort((a, b) => a.level - b.level)
+    .find((tier) => level < tier.level);
+  const startXP = cumulativeXpForLevel(badgeCurrent?.level ?? 1);
+  const targetXP = badgeNext ? cumulativeXpForLevel(badgeNext.level) : null;
+  const progressToNextBadge =
+    targetXP && targetXP > startXP
+      ? Math.min(
+          100,
+          Math.max(0, Math.floor(((totalXP - startXP) / (targetXP - startXP)) * 100))
+        )
+      : 100;
+
+  const badgeStatuses = badgeTiers.map((tier) => {
+    const achieved = level >= tier.level;
+    const xpNeeded = Math.max(cumulativeXpForLevel(tier.level) - totalXP, 0);
+    const levelsAway = Math.max(tier.level - level, 0);
+    return { ...tier, achieved, xpNeeded, levelsAway };
+  });
 
   const bestStreak = habitsWithStats.reduce(
     (max, habit) => Math.max(max, habit.streak ?? 0),
@@ -100,6 +205,9 @@ export default async function AccountPage() {
   }).reduce<number>((sum, value) => sum + value, 0);
 
   const recoveryDays = Math.max(0, 7 - weeklyWins);
+
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US").format(value);
 
   const stats = [
     {
@@ -230,6 +338,122 @@ export default async function AccountPage() {
             </div>
 
             <div className="lg:space-y-3 xl:space-y-4">
+              <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/30 bg-linear-to-r from-primary/10 via-white/85 to-yellow-soft/30 lg:p-4 xl:p-6 shadow-inner shadow-primary/15 lg:space-y-4 xl:space-y-5">
+                <div className="flex items-start justify-between lg:gap-2">
+                  <div className="lg:space-y-1 xl:space-y-1.5">
+                    <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.4em] text-primary">
+                      Level badges
+                    </p>
+                    <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold text-foreground">
+                      Track your next milestone
+                    </h3>
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
+                      Badges unlock at levels 5 (Bronze), 10 (Silver), 25 (Gold), and 50 (Diamond).
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/30 lg:px-3 xl:px-4 lg:py-1 xl:py-2 shadow-sm">
+                    <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
+                    <span className="lg:text-[11px] xl:text-xs font-semibold text-primary">
+                      Level {level}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
+                  <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                    <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Current badge
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeCurrent?.className ?? "bg-muted text-foreground"}`}
+                        >
+                          <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                          <span className="uppercase tracking-[0.16em]">
+                            {badgeCurrent?.stage ?? "Starter"}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="lg:text-sm xl:text-base font-semibold text-primary">
+                        Level {level}
+                      </p>
+                    </div>
+                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                      {badgeCurrent?.label ?? "Earn your first badge at level 5."}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                    <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Next badge
+                    </p>
+                    {badgeNext ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div
+                            className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeNext.className}`}
+                          >
+                            <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                            <span className="uppercase tracking-[0.16em]">
+                              {badgeNext.stage}
+                            </span>
+                          </div>
+                          <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
+                            Level {badgeNext.level}
+                          </span>
+                        </div>
+                        <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
+                          <div
+                            className="h-full bg-linear-to-r from-primary to-coral transition-all"
+                            style={{ width: `${progressToNextBadge}%` }}
+                          />
+                        </div>
+                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                          {badgeNext.level - level} levels to go ·{" "}
+                          {formatNumber(Math.max((targetXP ?? 0) - totalXP, 0))} XP needed
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                        You&apos;re at the top badge. Keep stacking XP to open new milestones.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
+                  {badgeStatuses.map((tier) => (
+                    <div
+                      key={tier.stage}
+                      className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                          {tier.stage}
+                        </span>
+                        <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
+                          Lv {tier.level}
+                        </span>
+                      </div>
+                      <div
+                        className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
+                      >
+                        <Medal className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                        <span>{tier.label}</span>
+                      </div>
+                      <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                        {tier.achieved
+                          ? "Unlocked"
+                          : `${tier.levelsAway} levels away · ${formatNumber(
+                              tier.xpNeeded
+                            )} XP`}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex lg:gap-2 xl:gap-3 flex-row items-center justify-between">
                 <div>
                   <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] lg:mt-1 xl:mt-2 text-muted-foreground">

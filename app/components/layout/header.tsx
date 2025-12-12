@@ -6,8 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { useSession } from "@/app/context/session-context";
 import { useTheme } from "@/app/context/theme-context";
+import { useXP } from "@/app/context/xp-context";
 import { signOut } from "@/lib/actions/auth-actions";
-import { ChevronDown, Moon, Sprout, Sun, User } from "lucide-react";
+import { ChevronDown, Medal, Moon, Sprout, Sun, User } from "lucide-react";
 
 const formatSegment = (segment: string) =>
   segment
@@ -21,9 +22,59 @@ const isLikelyId = (segment: string) => /^[0-9a-fA-F-]{6,}$/.test(segment);
 
 type AccountDropdownProps = {
   session: NonNullable<ReturnType<typeof useSession>["session"]>;
+  badge: BadgeInfo | null;
 };
 
-function AccountDropdown({ session }: AccountDropdownProps) {
+type BadgeInfo = {
+  label: string;
+  stage: string;
+  className: string;
+};
+
+const badgeTiers: Array<{
+  level: number;
+  stage: string;
+  label: string;
+  className: string;
+}> = [
+  {
+    level: 50,
+    stage: "Diamond",
+    label: "Diamond Pathmaker",
+    className: "bg-gradient-to-r from-sky-500 to-indigo-600 text-white",
+  },
+  {
+    level: 25,
+    stage: "Gold",
+    label: "Gold Trailblazer",
+    className: "bg-gradient-to-r from-amber-400 to-orange-500 text-white",
+  },
+  {
+    level: 10,
+    stage: "Silver",
+    label: "Silver Strider",
+    className: "bg-gradient-to-r from-slate-200 to-slate-400 text-slate-900",
+  },
+  {
+    level: 5,
+    stage: "Bronze",
+    label: "Bronze Beginner",
+    className: "bg-gradient-to-r from-amber-200 to-amber-300 text-amber-900",
+  },
+];
+
+const getBadgeForLevel = (level: number): BadgeInfo | null => {
+  const tier = badgeTiers.find((item) => level >= item.level);
+  return tier
+    ? {
+        label: tier.label,
+        stage: tier.stage,
+        className: tier.className,
+      }
+    : null;
+};
+
+function AccountDropdown({ session, badge }: AccountDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +117,12 @@ function AccountDropdown({ session }: AccountDropdownProps) {
       >
         <User className="lg:h-3 lg:w-3 xl:h-4 xl:w-4" />
         <p className="lg:text-[10px] xl:text-xs 2xl:text-sm truncate">{name}</p>
+        {badge ? (
+          <span className={`hidden sm:inline-flex items-center gap-1 rounded-full border border-white/40 lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 text-[10px] font-semibold shadow-sm ${badge.className}`}>
+            <Medal className="lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5" />
+            <span className="uppercase tracking-wider">{badge.stage}</span>
+          </span>
+        ) : null}
         <ChevronDown
           className={`lg:h-2 lg:w-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -84,6 +141,12 @@ function AccountDropdown({ session }: AccountDropdownProps) {
           <p className="lg:text-[10px] xl:text-xs 2xl:text-sm font-semibold text-foreground truncate">
             {name}
           </p>
+          {badge ? (
+            <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-0.5 text-primary font-semibold lg:text-[9px] xl:text-[10px] uppercase tracking-[0.16em]">
+              <Medal className="lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5" />
+              <span>{badge.label}</span>
+            </div>
+          ) : null}
           {email && (
             <p className="mt-1 lg:text-[8px] xl:text-[10px] 2xl:text-[11px] tracking-wide text-muted-foreground truncate">
               {email}
@@ -121,6 +184,7 @@ function AccountDropdown({ session }: AccountDropdownProps) {
 
 export default function Header() {
   const { session } = useSession();
+  const { level, loading: xpLoading } = useXP();
   const pathname = usePathname();
 
   const segments = pathname
@@ -140,6 +204,7 @@ export default function Header() {
   const normalizedPathname = pathname ?? "";
   const isLinkActive = (href: string) =>
     normalizedPathname === href || normalizedPathname.startsWith(`${href}/`);
+  const badge = xpLoading ? null : getBadgeForLevel(level);
 
   return (
     <header className="fixed top-0 left-0 w-full shadow-sm border-b border-gray-50 backdrop-blur-sm z-40">
@@ -199,7 +264,7 @@ export default function Header() {
 
         <div className="flex items-center lg:gap-2 xl:gap-3 justify-self-end">
           <ThemeToggle />
-          {session && <AccountDropdown session={session} />}
+          {session && <AccountDropdown session={session} badge={badge} />}
         </div>
       </div>
     </header>
