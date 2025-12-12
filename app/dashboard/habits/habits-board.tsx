@@ -547,7 +547,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
             </div>
 
             <div className="h-fit flex flex-col lg:gap-4 xl:gap-6">
-              <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-white to-green-soft/20">
+              <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-linear-to-br from-primary/10 via-card to-green-soft/20">
                 <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
