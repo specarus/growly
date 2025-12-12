@@ -1,50 +1,24 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { CalendarDays, Flame, Goal, Medal, ShieldCheck } from "lucide-react";
 
 import DeleteAccountForm from "./components/delete-account-form";
 import EditProfileForm from "./components/edit-profile-form";
 import SignOutButton from "./components/sign-out-button";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { CalendarDays, Flame, Goal, Medal, ShieldCheck } from "lucide-react";
-import PageHeading from "@/app/components/page-heading";
-import { prisma } from "@/lib/prisma";
 import StreakGoalForm from "./components/streak-goal-form";
+import PageHeading from "@/app/components/page-heading";
+import { auth } from "@/lib/auth";
 import { buildHabitAnalytics } from "@/lib/habit-analytics";
 import { formatDayKey } from "@/lib/habit-progress";
+import { prisma } from "@/lib/prisma";
 import { XP_PER_HABIT, XP_PER_TODO } from "@/lib/xp";
+import { BADGE_TIERS } from "@/lib/badges";
 
 export const dynamic = "force-dynamic";
 
 const BASE_XP_PER_LEVEL = 100;
 const LEVEL_XP_INCREMENT = 25;
-
-const badgeTiers = [
-  {
-    level: 50,
-    stage: "Diamond",
-    label: "Diamond Pathmaker",
-    className: "bg-gradient-to-r from-sky-500 to-indigo-600 text-white",
-  },
-  {
-    level: 25,
-    stage: "Gold",
-    label: "Gold Trailblazer",
-    className: "bg-gradient-to-r from-amber-400 to-orange-500 text-white",
-  },
-  {
-    level: 10,
-    stage: "Silver",
-    label: "Silver Strider",
-    className: "bg-gradient-to-r from-slate-200 to-slate-400 text-slate-900",
-  },
-  {
-    level: 5,
-    stage: "Bronze",
-    label: "Bronze Beginner",
-    className: "bg-gradient-to-r from-amber-200 to-amber-300 text-amber-900",
-  },
-] as const;
 
 const xpForLevel = (level: number) =>
   BASE_XP_PER_LEVEL + (level - 1) * LEVEL_XP_INCREMENT;
@@ -120,6 +94,7 @@ export default async function AccountPage() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
   const [userRecord, completedTodosCount, habits, progressEntries] =
     await Promise.all([
       prisma.user.findUnique({
@@ -132,23 +107,23 @@ export default async function AccountPage() {
           status: "COMPLETED",
         },
       }),
-    prisma.habit.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.habitDailyProgress.findMany({
-      where: {
-        habit: { userId: session.user.id },
-      },
-      select: {
-        habitId: true,
-        date: true,
-        progress: true,
-      },
-    }),
+      prisma.habit.findMany({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.habitDailyProgress.findMany({
+        where: {
+          habit: { userId: session.user.id },
+        },
+        select: {
+          habitId: true,
+          date: true,
+          progress: true,
+        },
+      }),
     ]);
+
   const streakGoal = userRecord?.streakGoalDays ?? 21;
-  const totalTodosXP = completedTodosCount * XP_PER_TODO;
 
   const { habitsWithStats, progressByDay } = buildHabitAnalytics(
     habits,
@@ -162,17 +137,19 @@ export default async function AccountPage() {
 
   const totalHabitCompletions = progressEntries.reduce((sum, entry) => {
     const goalAmount = habitGoalMap.get(entry.habitId) ?? 1;
-    return sum + (entry.progress >= goalAmount ? 1 : 0);
+    const normalizedGoal = goalAmount > 0 ? goalAmount : 1;
+    return sum + (entry.progress >= normalizedGoal ? 1 : 0);
   }, 0);
+
   const totalHabitXP = totalHabitCompletions * XP_PER_HABIT;
+  const totalTodosXP = completedTodosCount * XP_PER_TODO;
   const totalXP = totalTodosXP + totalHabitXP;
 
   const { level, xpGainedInLevel, xpNeededForLevelUp } =
     computeLevelState(totalXP);
 
-  const badgeCurrent =
-    badgeTiers.find((tier) => level >= tier.level) ?? null;
-  const badgeNext = [...badgeTiers]
+  const badgeCurrent = BADGE_TIERS.find((tier) => level >= tier.level) ?? null;
+  const badgeNext = [...BADGE_TIERS]
     .sort((a, b) => a.level - b.level)
     .find((tier) => level < tier.level);
   const startXP = cumulativeXpForLevel(badgeCurrent?.level ?? 1);
@@ -181,11 +158,14 @@ export default async function AccountPage() {
     targetXP && targetXP > startXP
       ? Math.min(
           100,
-          Math.max(0, Math.floor(((totalXP - startXP) / (targetXP - startXP)) * 100))
+          Math.max(
+            0,
+            Math.floor(((totalXP - startXP) / (targetXP - startXP)) * 100)
+          )
         )
       : 100;
 
-  const badgeStatuses = badgeTiers.map((tier) => {
+  const badgeStatuses = BADGE_TIERS.map((tier) => {
     const achieved = level >= tier.level;
     const xpNeeded = Math.max(cumulativeXpForLevel(tier.level) - totalXP, 0);
     const levelsAway = Math.max(tier.level - level, 0);
@@ -275,7 +255,7 @@ export default async function AccountPage() {
                     <p>Joined with patient goals, not noisy streaks.</p>
                     <p>All notifications land in your trusted channels.</p>
                   </div>
-                  <div className="flex flex-wrapl lg:gap-1.5 xl:gap-2">
+                  <div className="flex flex-wrap lg:gap-1.5 xl:gap-2">
                     {["Release notes", "Privacy", "Support"].map((link) => (
                       <span
                         key={link}
@@ -308,7 +288,7 @@ export default async function AccountPage() {
                 </div>
               </div>
 
-              <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-lg shadow-primary/20 h-fit">
+              <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-inner shadow-primary/20 h-fit">
                 <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
                   Momentum
                 </p>
@@ -338,7 +318,7 @@ export default async function AccountPage() {
             </div>
 
             <div className="lg:space-y-3 xl:space-y-4">
-              <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/30 bg-linear-to-r from-primary/10 via-white/85 to-yellow-soft/30 lg:p-4 xl:p-6 shadow-inner shadow-primary/15 lg:space-y-4 xl:space-y-5">
+              <div className="lg:space-y-4 xl:space-y-5">
                 <div className="flex items-start justify-between lg:gap-2">
                   <div className="lg:space-y-1 xl:space-y-1.5">
                     <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.4em] text-primary">
@@ -348,7 +328,7 @@ export default async function AccountPage() {
                       Track your next milestone
                     </h3>
                     <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                      Badges unlock at levels 5 (Bronze), 10 (Silver), 25 (Gold), and 50 (Diamond).
+                      Build up XP to unlock badges.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/30 lg:px-3 xl:px-4 lg:py-1 xl:py-2 shadow-sm">
@@ -359,98 +339,105 @@ export default async function AccountPage() {
                   </div>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
-                  <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                    <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                      Current badge
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeCurrent?.className ?? "bg-muted text-foreground"}`}
-                        >
-                          <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                          <span className="uppercase tracking-[0.16em]">
-                            {badgeCurrent?.stage ?? "Starter"}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="lg:text-sm xl:text-base font-semibold text-primary">
-                        Level {level}
+                <div className="bg-muted/50 dark:bg-card/20 border border-gray-100 shadow-inner p-4 rounded-2xl grid gap-3 xl:gap-4">
+                  <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
+                    <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                      <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                        Current badge
                       </p>
-                    </div>
-                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      {badgeCurrent?.label ?? "Earn your first badge at level 5."}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                    <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                      Next badge
-                    </p>
-                    {badgeNext ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
                           <div
-                            className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeNext.className}`}
+                            className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${
+                              badgeCurrent?.className ??
+                              "bg-muted text-foreground"
+                            }`}
                           >
                             <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                             <span className="uppercase tracking-[0.16em]">
-                              {badgeNext.stage}
+                              {badgeCurrent?.stage ?? "Starter"}
                             </span>
                           </div>
-                          <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
-                            Level {badgeNext.level}
-                          </span>
                         </div>
-                        <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
-                          <div
-                            className="h-full bg-linear-to-r from-primary to-coral transition-all"
-                            style={{ width: `${progressToNextBadge}%` }}
-                          />
-                        </div>
-                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                          {badgeNext.level - level} levels to go ·{" "}
-                          {formatNumber(Math.max((targetXP ?? 0) - totalXP, 0))} XP needed
+                        <p className="lg:text-sm xl:text-base font-semibold text-primary">
+                          Level {level}
                         </p>
                       </div>
-                    ) : (
-                      <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
-                        You&apos;re at the top badge. Keep stacking XP to open new milestones.
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
-                  {badgeStatuses.map((tier) => (
-                    <div
-                      key={tier.stage}
-                      className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                          {tier.stage}
-                        </span>
-                        <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
-                          Lv {tier.level}
-                        </span>
-                      </div>
-                      <div
-                        className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
-                      >
-                        <Medal className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                        <span>{tier.label}</span>
-                      </div>
                       <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                        {tier.achieved
-                          ? "Unlocked"
-                          : `${tier.levelsAway} levels away · ${formatNumber(
-                              tier.xpNeeded
-                            )} XP`}
+                        {badgeCurrent?.label ??
+                          "Earn your first badge at level 5."}
                       </p>
                     </div>
-                  ))}
+
+                    <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                      <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                        Next badge
+                      </p>
+                      {badgeNext ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div
+                              className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeNext.className}`}
+                            >
+                              <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                              <span className="uppercase tracking-[0.16em]">
+                                {badgeNext.stage}
+                              </span>
+                            </div>
+                            <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
+                              Level {badgeNext.level}
+                            </span>
+                          </div>
+                          <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
+                            <div
+                              className="h-full bg-linear-to-r from-primary to-coral transition-all"
+                              style={{ width: `${progressToNextBadge}%` }}
+                            />
+                          </div>
+                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                            {badgeNext.level - level} levels to go ·{" "}
+                            {badgeNext.level - level} levels to go · XP needed
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                          You&apos;re at the top badge. Keep stacking XP to open
+                          new milestones.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
+                    {badgeStatuses.map((tier) => (
+                      <div
+                        key={tier.stage}
+                        className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                            {tier.stage}
+                          </span>
+                          <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
+                            Lv {tier.level}
+                          </span>
+                        </div>
+                        <div
+                          className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
+                        >
+                          <Medal className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                          <span>{tier.label}</span>
+                        </div>
+                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                          {tier.achieved
+                            ? "Unlocked"
+                            : `${tier.levelsAway} levels away · ${formatNumber(
+                                tier.xpNeeded
+                              )} XP`}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -481,7 +468,7 @@ export default async function AccountPage() {
               </div>
             </div>
 
-            <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/30 dark:border-none bg-linear-to-r from-primary/10 via-white/85 dark:via-card/20 to-light-yellow/40 lg:p-4 xl:p-6 shadow-lg shadow-primary/15 lg:space-y-4 xl:space-y-5">
+            <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/30 dark:border-none bg-linear-to-r from-primary/10 via-white/85 dark:via-card/20 to-light-yellow/40 lg:p-4 xl:p-6 shadow-inner shadow-primary/15 lg:space-y-4 xl:space-y-5">
               <div className="flex lg:gap-1.5 xl:gap-2 items-start justify-between">
                 <div className="lg:space-y-1 xl:space-y-1.5">
                   <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs uppercase tracking-[0.4em] text-primary">
@@ -501,8 +488,8 @@ export default async function AccountPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-muted bg-card/90 lg:p-4 xl:p-5 shadow-inner shadow-primary/5 lg:space-y-3 xl:space-y-4">
-                <p className="lg:text-xs xl:text-sm 2xl:text-base text-muted-foreground">
+              <div className="rounded-2xl border border-muted bg-card/90 lg:p-4 xl:p-5 shadow-inner shadow-black/5 lg:space-y-3 xl:space-y-4">
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                   Analytics will track how your best streak compares to this
                   target.
                 </p>

@@ -36,7 +36,7 @@ export default function StreakGoalForm({ initialGoal }: Props) {
   };
 
   return (
-    <div className="lg:space-y-3 xl:space-y-4">
+    <div className="lg:space-y-2 xl:space-y-3">
       <div className="flex flex-wrap lg:gap-1.5 xl:gap-2">
         {options.map((value) => (
           <button
@@ -54,13 +54,13 @@ export default function StreakGoalForm({ initialGoal }: Props) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between lg:text-xs xl:text-sm text-muted-foreground">
+      <div className="flex items-center justify-between lg:text-[11px] xl:text-xs text-muted-foreground">
         <span>Aim for a stretch target that still feels sustainable.</span>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={isPending}
-          className="rounded-full bg-primary lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-xs xl:text-sm font-semibold text-white shadow-sm shadow-primary/30 disabled:opacity-60"
+          className="rounded-full bg-primary lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-white shadow-sm shadow-primary/30 disabled:opacity-60"
         >
           {isPending ? "Saving…" : "Save goal"}
         </button>

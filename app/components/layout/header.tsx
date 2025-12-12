@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/app/context/session-context";
 import { useTheme } from "@/app/context/theme-context";
 import { useXP } from "@/app/context/xp-context";
+import { BADGE_TIERS } from "@/lib/badges";
 import { signOut } from "@/lib/actions/auth-actions";
 import { ChevronDown, Medal, Moon, Sprout, Sun, User } from "lucide-react";
 
@@ -31,40 +32,8 @@ type BadgeInfo = {
   className: string;
 };
 
-const badgeTiers: Array<{
-  level: number;
-  stage: string;
-  label: string;
-  className: string;
-}> = [
-  {
-    level: 50,
-    stage: "Diamond",
-    label: "Diamond Pathmaker",
-    className: "bg-gradient-to-r from-sky-500 to-indigo-600 text-white",
-  },
-  {
-    level: 25,
-    stage: "Gold",
-    label: "Gold Trailblazer",
-    className: "bg-gradient-to-r from-amber-400 to-orange-500 text-white",
-  },
-  {
-    level: 10,
-    stage: "Silver",
-    label: "Silver Strider",
-    className: "bg-gradient-to-r from-slate-200 to-slate-400 text-slate-900",
-  },
-  {
-    level: 5,
-    stage: "Bronze",
-    label: "Bronze Beginner",
-    className: "bg-gradient-to-r from-amber-200 to-amber-300 text-amber-900",
-  },
-];
-
 const getBadgeForLevel = (level: number): BadgeInfo | null => {
-  const tier = badgeTiers.find((item) => level >= item.level);
+  const tier = BADGE_TIERS.find((item) => level >= item.level);
   return tier
     ? {
         label: tier.label,
