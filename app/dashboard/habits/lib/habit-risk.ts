@@ -26,7 +26,9 @@ export type HabitRiskInput = {
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
-const toPercent = (value?: number | null, fallback = 0) => {
+const toPercent = (value?: number | null, fallback: null): number | null;
+const toPercent = (value?: number | null, fallback?: number): number;
+const toPercent = (value?: number | null, fallback: number | null = 0) => {
   if (typeof value !== "number" || Number.isNaN(value)) return fallback;
   return Math.max(0, Math.min(100, value));
 };
