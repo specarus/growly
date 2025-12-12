@@ -8,10 +8,9 @@ import {
   STREAK_LOOKBACK_DAYS,
   MAX_STREAK_BONUS,
 } from "@/lib/xp";
+import { formatDayKey, getUtcDayStart } from "@/lib/habit-progress";
 import { HABIT_STREAK_THRESHOLD } from "@/lib/streak";
 import type { XPActivityEntry } from "@/types/xp";
-
-const toDayKey = (value: Date) => value.toISOString().slice(0, 10);
 
 const normalizeGoal = (value?: number | null) => {
   if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
@@ -114,23 +113,23 @@ export async function GET(request: Request) {
   });
   const totalTodosXP = totalCompleted * XP_PER_TODO;
 
-  const now = new Date();
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
-  const todayKey = toDayKey(startOfToday);
+  const todayStart = getUtcDayStart(new Date());
+  const todayKey = formatDayKey(todayStart);
 
   const todayCompleted = await prisma.todo.count({
     where: {
       userId,
       status: "COMPLETED",
-      updatedAt: { gte: startOfToday },
+      updatedAt: { gte: todayStart },
     },
   });
   const todayTodoXP = todayCompleted * XP_PER_TODO;
 
-  const lookbackStart = new Date(startOfToday);
-  lookbackStart.setDate(lookbackStart.getDate() - (STREAK_LOOKBACK_DAYS - 1));
-  const lookbackKey = toDayKey(lookbackStart);
+  const lookbackStart = getUtcDayStart(new Date(todayStart));
+  lookbackStart.setUTCDate(
+    lookbackStart.getUTCDate() - (STREAK_LOOKBACK_DAYS - 1)
+  );
+  const lookbackKey = formatDayKey(lookbackStart);
 
   const recentCompletions = await prisma.todo.findMany({
     where: {
@@ -179,7 +178,7 @@ export async function GET(request: Request) {
     const normalizedGoal = goalAmount > 0 ? goalAmount : 1;
     const ratio =
       normalizedGoal > 0 ? Math.min(1, entry.progress / normalizedGoal) : 0;
-    const entryDayKey = toDayKey(entry.date);
+    const entryDayKey = formatDayKey(entry.date);
     const isComplete = entry.progress >= normalizedGoal;
 
     if (isComplete) {
@@ -196,21 +195,21 @@ export async function GET(request: Request) {
   });
 
   const completedDays = new Set(
-    recentCompletions.map((todo) => todo.updatedAt.toISOString().slice(0, 10))
+    recentCompletions.map((todo) => formatDayKey(todo.updatedAt))
   );
   habitStreakDays.forEach((day) => completedDays.add(day));
 
   let streak = 0;
-  const streakCursor = new Date(startOfToday);
+  const streakCursor = new Date(todayStart);
 
   while (streak < STREAK_LOOKBACK_DAYS) {
-    const key = streakCursor.toISOString().slice(0, 10);
+    const key = formatDayKey(streakCursor);
     if (!completedDays.has(key)) {
       break;
     }
 
     streak += 1;
-    streakCursor.setDate(streakCursor.getDate() - 1);
+    streakCursor.setUTCDate(streakCursor.getUTCDate() - 1);
   }
 
   const streakBonus = Math.min(MAX_STREAK_BONUS, streak * 10);

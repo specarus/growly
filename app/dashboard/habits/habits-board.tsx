@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Activity, Plus, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import PageGradient from "@/app/components/ui/page-gradient";
@@ -23,12 +23,14 @@ import {
 import {
   appendRescueEvent,
   calculateHabitXpDelta,
+  calculateDisplayCompletion,
   computeRescueAmount,
   computeRescueWindow,
   getFocusLabel,
   isWithinRescueWindow,
   normalizeGoal,
   readRescueEvents,
+  buildRecentProgressSeries,
 } from "./lib/habits-board-utils";
 import { calculateHabitRisk } from "./lib/habit-risk";
 import { streakDefensePlaybook } from "./constants";
@@ -42,7 +44,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
 }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { addXP, refreshXP } = useXP();
+  const { addXP, refreshXP, todayXP } = useXP();
   const [localHabits, setLocalHabits] = useState(habits);
   const [selectedHabitId, setSelectedHabitId] = useState<string>(
     habits[0]?.id || ""
@@ -267,6 +269,70 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
     }
   }, [localHabits, searchParams]);
 
+  const todayKey = useMemo(
+    () => formatDayKey(new Date(clockTick)),
+    [clockTick]
+  );
+
+  const todayCompletionPercent = useMemo(() => {
+    const raw = progressMap[todayKey] ?? 0;
+    const clamped = Math.max(0, Math.min(1, raw));
+    return Math.round(clamped * 100);
+  }, [progressMap, todayKey]);
+
+  const completedTodayCount = useMemo(() => {
+    if (localHabits.length === 0) return 0;
+    return localHabits.filter(
+      (habit) => calculateDisplayCompletion(habit) >= 100
+    ).length;
+  }, [localHabits]);
+
+  const recentProgressSeries = useMemo(
+    () => buildRecentProgressSeries(progressMap, 7, new Date(clockTick)),
+    [progressMap, clockTick]
+  );
+
+  const recentProgressAverage = useMemo(() => {
+    if (recentProgressSeries.length === 0) return 0;
+    const sum = recentProgressSeries.reduce(
+      (acc, point) => acc + point.value,
+      0
+    );
+    return Math.round(sum / recentProgressSeries.length);
+  }, [recentProgressSeries]);
+
+  const recentProgressPeak = useMemo(
+    () =>
+      recentProgressSeries.reduce(
+        (peak, point) => Math.max(peak, point.value),
+        0
+      ),
+    [recentProgressSeries]
+  );
+
+  const sparklinePath = useMemo(() => {
+    const width = 220;
+    const height = 72;
+    if (recentProgressSeries.length === 0) {
+      return { line: "", area: "", width, height };
+    }
+    const points = recentProgressSeries.map((point, index) => {
+      const x =
+        recentProgressSeries.length === 1
+          ? width / 2
+          : (index / (recentProgressSeries.length - 1)) * width;
+      const y = height - (point.value / 100) * height;
+      return { x, y };
+    });
+    const line = points
+      .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+      .join(" ");
+    const area = `${line} L ${width} ${height} L 0 ${height} Z`;
+    return { line, area, width, height };
+  }, [recentProgressSeries]);
+
+  const hasProgressData = recentProgressSeries.length > 0;
+
   const filteredHabits = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) {
@@ -374,18 +440,11 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                       filteredHabits.map((habit) => {
                         const isSelected = habit.id === selectedHabitId;
                         const streakValue = habit.streak ?? 0;
-                        const completionValue = habit.completion ?? 0;
                         const focusLabel = getFocusLabel(habit);
                         const loggedAmount = habit.dailyProgress ?? 0;
-                        const goalAmountValue = habit.goalAmount ?? 1;
-                        const additionalCompletion =
-                          goalAmountValue > 0
-                            ? (loggedAmount / goalAmountValue) * 100
-                            : 0;
-                        const displayCompletion = Math.min(
-                          100,
-                          Math.round(completionValue + additionalCompletion)
-                        );
+                        const goalAmountValue = normalizeGoal(habit.goalAmount);
+                        const displayCompletion =
+                          calculateDisplayCompletion(habit);
                         const risk = calculateHabitRisk({
                           streak: habit.streak,
                           completion: displayCompletion,
@@ -460,6 +519,142 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
             </div>
 
             <div className="h-fit flex flex-col lg:gap-4 xl:gap-6">
+              <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-white to-green-soft/20">
+                <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                        Snapshot
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
+                        <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
+                          Today&apos;s momentum
+                        </h2>
+                      </div>
+                      <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        Quick view of daily completion, streak protection, and XP gained.
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Avg today
+                      </p>
+                      <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-bold text-primary">
+                        {todayCompletionPercent}%
+                      </p>
+                      <p className="lg:text-[9px] xl:text-[11px] text-muted-foreground">
+                        7d avg {recentProgressAverage}%
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid lg:grid-cols-3 gap-3 xl:gap-4">
+                    <div className="rounded-xl border border-gray-100 bg-white/80 shadow-inner lg:p-3 xl:p-4">
+                      <p className="lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.14em]">
+                        Completion
+                      </p>
+                      <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                        {todayCompletionPercent}%
+                      </p>
+                      <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                        Average across all habits today
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white/80 shadow-inner lg:p-3 xl:p-4">
+                      <p className="lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.14em]">
+                        Streaks protected
+                      </p>
+                      <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                        {completedTodayCount}/{localHabits.length || 0}
+                      </p>
+                      <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                        Habits hit 100% today
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white/80 shadow-inner lg:p-3 xl:p-4">
+                      <p className="lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.14em]">
+                        XP gained
+                      </p>
+                      <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                        {Math.max(0, todayXP ?? 0)} XP
+                      </p>
+                      <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                        From today&apos;s habit actions
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-100 bg-white/90 shadow-inner lg:p-3 xl:p-4">
+                    <div className="flex items-center justify-between lg:mb-2 xl:mb-3">
+                      <div className="flex items-center gap-2">
+                        <Activity className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
+                        <div>
+                          <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                            7-day flow
+                          </p>
+                          <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                            See how daily completion has trended this week.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="lg:text-[9px] xl:text-[10px] text-muted-foreground font-semibold">
+                        {hasProgressData
+                          ? `High ${recentProgressPeak}% / Avg ${recentProgressAverage}%`
+                          : "Waiting for this week's first logs"}
+                      </div>
+                    </div>
+                    {!hasProgressData ? (
+                      <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                        Log a habit to see your momentum curve.
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        <svg
+                          viewBox={`0 0 ${sparklinePath.width} ${sparklinePath.height}`}
+                          className="w-full h-24"
+                          role="img"
+                          aria-label="Seven day completion trend"
+                          preserveAspectRatio="none"
+                        >
+                          <defs>
+                            <linearGradient
+                              id="today-snapshot-fill"
+                              x1="0"
+                              x2="0"
+                              y1="0"
+                              y2="1"
+                            >
+                              <stop offset="0%" stopColor="rgba(240,144,41,0.3)" />
+                              <stop offset="100%" stopColor="rgba(31,133,77,0.05)" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            d={sparklinePath.area}
+                            fill="url(#today-snapshot-fill)"
+                            stroke="none"
+                          />
+                          <path
+                            d={sparklinePath.line}
+                            fill="none"
+                            stroke="rgb(240,144,41)"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="grid grid-cols-7 lg:text-[9px] xl:text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.14em]">
+                          {recentProgressSeries.map((point, index) => (
+                            <span key={`${point.label}-${index}`} className="text-center">
+                              {point.label.slice(0, 3)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <HabitPlaybook items={streakDefensePlaybook} />
               <HabitReflections initialReflections={reflections} />
               <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-330 from-green-soft/30 via-primary/50 to-white">

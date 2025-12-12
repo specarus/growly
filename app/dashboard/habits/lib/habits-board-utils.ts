@@ -1,6 +1,7 @@
 "use client";
 
 import { XP_PER_HABIT } from "@/lib/xp";
+import { formatDayKey, type ProgressByDayMap } from "@/lib/habit-progress";
 
 import {
   RESCUE_MAX_EVENTS,
@@ -27,6 +28,16 @@ export const normalizeGoal = (value?: number | null) => {
     return 1;
   }
   return value;
+};
+
+const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
+
+export const calculateDisplayCompletion = (habit: Habit) => {
+  const completionValue = clampPercent(habit.completion ?? 0);
+  const goal = normalizeGoal(habit.goalAmount);
+  const loggedAmount = Math.max(0, habit.dailyProgress ?? 0);
+  const additionalCompletion = goal > 0 ? (loggedAmount / goal) * 100 : 0;
+  return clampPercent(Math.round(completionValue + additionalCompletion));
 };
 
 export const calculateHabitXpDelta = (
@@ -179,4 +190,25 @@ export const computeRescueAmount = (habit: Habit) => {
   const rounded =
     suggested < 1 ? Math.round(suggested * 10) / 10 : Math.round(suggested);
   return rounded > 0 ? rounded : remaining;
+};
+
+export const buildRecentProgressSeries = (
+  progressByDay: ProgressByDayMap,
+  days = 7,
+  referenceDate = new Date()
+) => {
+  const series = [];
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const day = new Date(referenceDate);
+    day.setDate(referenceDate.getDate() - offset);
+    const key = formatDayKey(day);
+    const raw = progressByDay[key] ?? 0;
+    const clamped = Math.max(0, Math.min(1, raw));
+    series.push({
+      label: day.toLocaleDateString("en-US", { weekday: "short" }),
+      value: Math.round(clamped * 100),
+      raw: clamped,
+    });
+  }
+  return series;
 };
