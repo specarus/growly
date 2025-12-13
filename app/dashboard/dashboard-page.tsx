@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import CelebrationToast from "../components/celebration-toast";
 import GradientCircle from "../components/ui/gradient-circle";
 import AnalyticsWidget from "./components/analytics-widget";
@@ -15,12 +17,14 @@ import { ProgressByDayMap } from "@/lib/habit-progress";
 
 interface DashboardProps {
   progressByDay: ProgressByDayMap;
-  analyticsData: AnalyticsWidgetData;
+  analyticsData: AnalyticsWidgetData | null;
+  privateAccount: boolean;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
   progressByDay,
   analyticsData,
+  privateAccount,
 }) => {
   return (
     <main className="relative w-full lg:pt-14 xl:pt-20 bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 overflow-hidden">
@@ -69,7 +73,31 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          <AnalyticsWidget data={analyticsData} />
+          {analyticsData ? (
+            <AnalyticsWidget data={analyticsData} />
+          ) : (
+            <div className="lg:rounded-2xl xl:rounded-3xl border border-dashed border-gray-200 bg-white/80 shadow-inner lg:p-4 xl:p-6 2xl:p-8 flex flex-col lg:gap-3 xl:gap-4 text-muted-foreground">
+              <div className="space-y-2">
+                <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-primary font-semibold">
+                  Analytics
+                </p>
+                <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold text-foreground">
+                  Insights are hidden
+                </h3>
+                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                  {privateAccount
+                    ? "Your account is private, so the analytics widget stays tucked away."
+                    : "Analytics are temporarily unavailable."}
+                </p>
+              </div>
+              <Link
+                href="/account"
+                className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold shadow-sm shadow-primary/30 hover:-translate-y-0.5 transition"
+              >
+                Manage privacy
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </main>

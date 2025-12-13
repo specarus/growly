@@ -12,10 +12,9 @@ import {
 import { useSession } from "./session-context";
 
 import { MAX_STREAK_BONUS } from "@/lib/xp";
+import { computeLevelState } from "@/lib/xp-level";
 import type { XPActivityEntry, XPActivitySource } from "@/types/xp";
 
-const BASE_XP_PER_LEVEL = 100;
-const LEVEL_XP_INCREMENT = 25;
 const MAX_ACTIVITY_LOG = 8;
 
 type XPActivityMetadata = {
@@ -52,32 +51,11 @@ interface XPProviderProps {
   children: React.ReactNode;
 }
 
-const xpForLevel = (level: number) =>
-  BASE_XP_PER_LEVEL + (level - 1) * LEVEL_XP_INCREMENT;
-
 type CelebrationEvent =
   | { type: CelebrationSource; xp: number }
   | { type: "level"; xp: number; level: number };
 
 type CelebrationSource = "todo" | "habit";
-
-const computeLevelState = (totalXP: number) => {
-  let remainingXP = totalXP;
-  let currentLevel = 1;
-  let xpForCurrentLevel = xpForLevel(currentLevel);
-
-  while (xpForCurrentLevel > 0 && remainingXP >= xpForCurrentLevel) {
-    remainingXP -= xpForCurrentLevel;
-    currentLevel += 1;
-    xpForCurrentLevel = xpForLevel(currentLevel);
-  }
-
-  return {
-    level: currentLevel,
-    xpGainedInLevel: remainingXP,
-    xpNeededForLevelUp: xpForCurrentLevel,
-  };
-};
 
 export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
   const { session } = useSession();

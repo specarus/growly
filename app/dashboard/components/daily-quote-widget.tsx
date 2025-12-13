@@ -66,7 +66,7 @@ const DailyQuoteWidget: React.FC = () => {
               <div className="h-3 w-1/2 rounded bg-linear-to-r from-white/50 to-white/20 dark:from-slate-700/60 dark:to-slate-600/60" />
             </div>
           ) : error ? (
-            <div className="flex h-fit flex-col items-start justify-center lg:gap-2 xl:gap-3 lg:text-xs xl:text-sm">
+            <div className="flex h-fit flex-col items-start justify-center lg:gap-2 xl:gap-3 lg:text-xs xl:text-sm lg:px-4 xl:px-5 lg:py-2 xl:py-3">
               <p className="text-rose-100/90">{error}</p>
               <Button
                 onClick={fetchQuote}

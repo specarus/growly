@@ -24,7 +24,11 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  const [habits, progressEntries] = await Promise.all([
+  const [userRecord, habits, progressEntries] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { privateAccount: true },
+    }),
     prisma.habit.findMany({
       where: {
         userId: session.user.id,
@@ -53,100 +57,113 @@ export default async function DashboardPage() {
     HABIT_ANALYTICS_LOOKBACK_DAYS
   );
 
-  const completionRate =
-    habitsWithStats.length > 0
-      ? Math.round(
-          habitsWithStats.reduce(
-            (sum, habit) => sum + habit.successRate,
-            0
-          ) / habitsWithStats.length
-        )
-      : 0;
+  const privateAccount = userRecord?.privateAccount ?? false;
+  let analyticsData: AnalyticsWidgetData | null = null;
 
-  const today = getUtcDayStart(new Date());
-  const averageProgressForRange = (startOffset: number, days: number) => {
-    if (days <= 0) return 0;
-    let total = 0;
-    for (let offset = startOffset; offset < startOffset + days; offset += 1) {
-      const day = getUtcDayStart(new Date(today));
-      day.setUTCDate(day.getUTCDate() - offset);
-      const key = formatDayKey(day);
-      total += progressByDay[key] ?? 0;
-    }
-    return (total / days) * 100;
-  };
+  if (!privateAccount) {
+    const completionRate =
+      habitsWithStats.length > 0
+        ? Math.round(
+            habitsWithStats.reduce(
+              (sum, habit) => sum + habit.successRate,
+              0
+            ) / habitsWithStats.length
+          )
+        : 0;
 
-  const recentWindowAverage = averageProgressForRange(0, 7);
-  const previousWindowAverage = averageProgressForRange(7, 7);
-  const positiveDelta =
-    previousWindowAverage > 0
-      ? Math.round(
-          ((recentWindowAverage - previousWindowAverage) /
-            previousWindowAverage) *
-            100
-        )
-      : Math.round(recentWindowAverage);
-
-  const favoriteHabits = [...habitsWithStats]
-    .sort(
-      (a, b) =>
-        b.successRate - a.successRate ||
-        b.averageCompletion - a.averageCompletion
-    )
-    .slice(0, 8)
-    .map((habit) => ({
-      id: habit.id,
-      name: habit.name,
-      percentage: habit.successRate,
-    }));
-
-  const habitGoalMap = new Map<string, number>();
-  habits.forEach((habit) => {
-    const goal = habit.goalAmount ?? 1;
-    habitGoalMap.set(habit.id, goal > 0 ? goal : 1);
-  });
-
-  const completionByDay: Record<string, Record<string, number>> = {};
-  progressEntries.forEach((entry) => {
-    const goal = habitGoalMap.get(entry.habitId) ?? 1;
-    const ratio = Math.min(1, entry.progress / goal);
-    const dayKey = formatDayKey(entry.date);
-    completionByDay[dayKey] ??= {};
-    completionByDay[dayKey][entry.habitId] = Math.max(
-      completionByDay[dayKey][entry.habitId] ?? 0,
-      ratio
-    );
-  });
-
-  const recentDays = Array.from({ length: 5 }, (_, index) => {
-    const day = getUtcDayStart(new Date(today));
-    day.setUTCDate(day.getUTCDate() - (4 - index));
-    const key = formatDayKey(day);
-    return {
-      key,
-      label: day.toLocaleDateString("en-US", {
-        weekday: "short",
-        day: "numeric",
-      }),
-      completion: Math.round((progressByDay[key] ?? 0) * 100),
-      habits: favoriteHabits.map((habit) => ({
-        ...habit,
-        percentage: Math.round(
-          (completionByDay[key]?.[habit.id] ?? 0) * 100
-        ),
-      })),
+    const today = getUtcDayStart(new Date());
+    const averageProgressForRange = (startOffset: number, days: number) => {
+      if (days <= 0) return 0;
+      let total = 0;
+      for (
+        let offset = startOffset;
+        offset < startOffset + days;
+        offset += 1
+      ) {
+        const day = getUtcDayStart(new Date(today));
+        day.setUTCDate(day.getUTCDate() - offset);
+        const key = formatDayKey(day);
+        total += progressByDay[key] ?? 0;
+      }
+      return (total / days) * 100;
     };
-  });
 
-  const analyticsData: AnalyticsWidgetData = {
-    completionRate,
-    positiveDelta,
-    favoriteHabits,
-    recentDays,
-    currentYear: today.getUTCFullYear(),
-  };
+    const recentWindowAverage = averageProgressForRange(0, 7);
+    const previousWindowAverage = averageProgressForRange(7, 7);
+    const positiveDelta =
+      previousWindowAverage > 0
+        ? Math.round(
+            ((recentWindowAverage - previousWindowAverage) /
+              previousWindowAverage) *
+              100
+          )
+        : Math.round(recentWindowAverage);
+
+    const favoriteHabits = [...habitsWithStats]
+      .sort(
+        (a, b) =>
+          b.successRate - a.successRate ||
+          b.averageCompletion - a.averageCompletion
+      )
+      .slice(0, 8)
+      .map((habit) => ({
+        id: habit.id,
+        name: habit.name,
+        percentage: habit.successRate,
+      }));
+
+    const habitGoalMap = new Map<string, number>();
+    habits.forEach((habit) => {
+      const goal = habit.goalAmount ?? 1;
+      habitGoalMap.set(habit.id, goal > 0 ? goal : 1);
+    });
+
+    const completionByDay: Record<string, Record<string, number>> = {};
+    progressEntries.forEach((entry) => {
+      const goal = habitGoalMap.get(entry.habitId) ?? 1;
+      const ratio = Math.min(1, entry.progress / goal);
+      const dayKey = formatDayKey(entry.date);
+      completionByDay[dayKey] ??= {};
+      completionByDay[dayKey][entry.habitId] = Math.max(
+        completionByDay[dayKey][entry.habitId] ?? 0,
+        ratio
+      );
+    });
+
+    const recentDays = Array.from({ length: 5 }, (_, index) => {
+      const day = getUtcDayStart(new Date(today));
+      day.setUTCDate(day.getUTCDate() - (4 - index));
+      const key = formatDayKey(day);
+      return {
+        key,
+        label: day.toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "numeric",
+        }),
+        completion: Math.round((progressByDay[key] ?? 0) * 100),
+        habits: favoriteHabits.map((habit) => ({
+          ...habit,
+          percentage: Math.round(
+            (completionByDay[key]?.[habit.id] ?? 0) * 100
+          ),
+        })),
+      };
+    });
+
+    analyticsData = {
+      completionRate,
+      positiveDelta,
+      favoriteHabits,
+      recentDays,
+      currentYear: today.getUTCFullYear(),
+    };
+  }
 
   return (
-    <Dashboard progressByDay={progressByDay} analyticsData={analyticsData} />
+    <Dashboard
+      progressByDay={progressByDay}
+      analyticsData={analyticsData}
+      privateAccount={privateAccount}
+    />
   );
 }

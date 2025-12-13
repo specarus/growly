@@ -168,6 +168,7 @@ export default function Header() {
     { label: "Todos", href: "/dashboard/todos" },
     { label: "Habits", href: "/dashboard/habits" },
     { label: "Analytics", href: "/dashboard/analytics" },
+    { label: "Friends", href: "/dashboard/friends" },
   ];
 
   const normalizedPathname = pathname ?? "";

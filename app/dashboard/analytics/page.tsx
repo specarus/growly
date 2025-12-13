@@ -3,6 +3,8 @@ export const dynamic = "force-dynamic";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { TodoStatus } from "@prisma/client";
+import Link from "next/link";
+import { EyeOff } from "lucide-react";
 
 import AnalyticsClient from "./analytics-client";
 import { auth } from "@/lib/auth";
@@ -12,6 +14,7 @@ import {
   HABIT_ANALYTICS_LOOKBACK_DAYS,
 } from "@/lib/habit-analytics";
 import { formatDayKey, getUtcDayStart } from "@/lib/habit-progress";
+import PageHeading from "@/app/components/page-heading";
 
 export default async function AnalyticsPage() {
   const session = await auth.api.getSession({
@@ -24,9 +27,44 @@ export default async function AnalyticsPage() {
 
   const userRecord = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { streakGoalDays: true },
+    select: { streakGoalDays: true, privateAccount: true },
   });
   const streakGoalDays = userRecord?.streakGoalDays ?? null;
+  const privateAccount = userRecord?.privateAccount ?? false;
+
+  if (privateAccount) {
+    return (
+      <main className="relative lg:px-4 xl:px-8 2xl:px-28 lg:pt-18 xl:pt-24 2xl:pt-28 lg:pb-8 xl:pb-12 2xl:pb-16 min-h-screen w-full bg-linear-to-br from-white via-light-yellow/40 to-green-soft/20 text-foreground overflow-hidden">
+        <PageHeading
+          badgeLabel="Analytics"
+          title="Momentum Observatory"
+          description="Analytics are hidden while your account is private."
+        />
+        <div className="lg:mt-4 xl:mt-6 2xl:mt-8 rounded-2xl border border-dashed border-gray-200 bg-white/80 shadow-inner lg:p-4 xl:p-6 2xl:p-8 max-w-4xl">
+          <div className="flex items-start lg:gap-3 xl:gap-4">
+            <div className="lg:h-9 lg:w-9 xl:h-11 xl:w-11 rounded-full bg-muted text-primary grid place-items-center shadow-sm">
+              <EyeOff className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+            </div>
+            <div className="lg:space-y-1.5 xl:space-y-2">
+              <h2 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
+                Private mode keeps your charts tucked away
+              </h2>
+              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                Turn privacy off in Account → Privacy to view your momentum
+                trends, streak forecasts, and todo analytics.
+              </p>
+              <Link
+                href="/account"
+                className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold shadow-sm shadow-primary/25 hover:-translate-y-0.5 transition"
+              >
+                Manage privacy settings
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const [habits, progressEntries, routines] = await Promise.all([
     prisma.habit.findMany({

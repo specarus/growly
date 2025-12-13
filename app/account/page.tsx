@@ -1,10 +1,18 @@
 ﻿import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { CalendarDays, Flame, Goal, Medal, ShieldCheck } from "lucide-react";
+import {
+  CalendarDays,
+  EyeOff,
+  Flame,
+  Goal,
+  Medal,
+  ShieldCheck,
+} from "lucide-react";
 
 import DeleteAccountForm from "./components/delete-account-form";
 import EditProfileForm from "./components/edit-profile-form";
+import PrivacySettings from "./components/privacy-settings";
 import SignOutButton from "./components/sign-out-button";
 import StreakGoalForm from "./components/streak-goal-form";
 import PageHeading from "@/app/components/page-heading";
@@ -95,12 +103,38 @@ export default async function AccountPage() {
     .slice(0, 2)
     .toUpperCase();
 
-  const [userRecord, completedTodosCount, habits, progressEntries] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { streakGoalDays: true },
-      }),
+  const userRecord = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { streakGoalDays: true, privateAccount: true },
+  });
+
+  const streakGoal = userRecord?.streakGoalDays ?? 21;
+  const privateAccount = userRecord?.privateAccount ?? false;
+
+  type AccountAnalytics = {
+    stats: { label: string; value: string; tone: string }[];
+    level: number;
+    badgeCurrent: (typeof BADGE_TIERS)[number] | null;
+    badgeNext: (typeof BADGE_TIERS)[number] | null;
+    progressToNextBadge: number;
+    badgeStatuses: {
+      stage: string;
+      level: number;
+      label: string;
+      className: string;
+      achieved: boolean;
+      xpNeeded: number;
+      levelsAway: number;
+    }[];
+  };
+
+  let analytics: AccountAnalytics | null = null;
+
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US").format(value);
+
+  if (!privateAccount) {
+    const [completedTodosCount, habits, progressEntries] = await Promise.all([
       prisma.todo.count({
         where: {
           userId: session.user.id,
@@ -123,89 +157,95 @@ export default async function AccountPage() {
       }),
     ]);
 
-  const streakGoal = userRecord?.streakGoalDays ?? 21;
+    const { habitsWithStats, progressByDay } = buildHabitAnalytics(
+      habits,
+      progressEntries
+    );
 
-  const { habitsWithStats, progressByDay } = buildHabitAnalytics(
-    habits,
-    progressEntries
-  );
+    const habitGoalMap = new Map<string, number>();
+    habits.forEach((habit) => {
+      habitGoalMap.set(habit.id, habit.goalAmount ?? 1);
+    });
 
-  const habitGoalMap = new Map<string, number>();
-  habits.forEach((habit) => {
-    habitGoalMap.set(habit.id, habit.goalAmount ?? 1);
-  });
+    const totalHabitCompletions = progressEntries.reduce((sum, entry) => {
+      const goalAmount = habitGoalMap.get(entry.habitId) ?? 1;
+      const normalizedGoal = goalAmount > 0 ? goalAmount : 1;
+      return sum + (entry.progress >= normalizedGoal ? 1 : 0);
+    }, 0);
 
-  const totalHabitCompletions = progressEntries.reduce((sum, entry) => {
-    const goalAmount = habitGoalMap.get(entry.habitId) ?? 1;
-    const normalizedGoal = goalAmount > 0 ? goalAmount : 1;
-    return sum + (entry.progress >= normalizedGoal ? 1 : 0);
-  }, 0);
+    const totalHabitXP = totalHabitCompletions * XP_PER_HABIT;
+    const totalTodosXP = completedTodosCount * XP_PER_TODO;
+    const totalXP = totalTodosXP + totalHabitXP;
 
-  const totalHabitXP = totalHabitCompletions * XP_PER_HABIT;
-  const totalTodosXP = completedTodosCount * XP_PER_TODO;
-  const totalXP = totalTodosXP + totalHabitXP;
+    const { level } = computeLevelState(totalXP);
 
-  const { level, xpGainedInLevel, xpNeededForLevelUp } =
-    computeLevelState(totalXP);
-
-  const badgeCurrent = BADGE_TIERS.find((tier) => level >= tier.level) ?? null;
-  const badgeNext = [...BADGE_TIERS]
-    .sort((a, b) => a.level - b.level)
-    .find((tier) => level < tier.level);
-  const startXP = cumulativeXpForLevel(badgeCurrent?.level ?? 1);
-  const targetXP = badgeNext ? cumulativeXpForLevel(badgeNext.level) : null;
-  const progressToNextBadge =
-    targetXP && targetXP > startXP
-      ? Math.min(
-          100,
-          Math.max(
-            0,
-            Math.floor(((totalXP - startXP) / (targetXP - startXP)) * 100)
+    const badgeCurrent =
+      BADGE_TIERS.find((tier) => level >= tier.level) ?? null;
+    const badgeNext = [...BADGE_TIERS]
+      .sort((a, b) => a.level - b.level)
+      .find((tier) => level < tier.level);
+    const startXP = cumulativeXpForLevel(badgeCurrent?.level ?? 1);
+    const targetXP = badgeNext ? cumulativeXpForLevel(badgeNext.level) : null;
+    const progressToNextBadge =
+      targetXP && targetXP > startXP
+        ? Math.min(
+            100,
+            Math.max(
+              0,
+              Math.floor(((totalXP - startXP) / (targetXP - startXP)) * 100)
+            )
           )
-        )
-      : 100;
+        : 100;
 
-  const badgeStatuses = BADGE_TIERS.map((tier) => {
-    const achieved = level >= tier.level;
-    const xpNeeded = Math.max(cumulativeXpForLevel(tier.level) - totalXP, 0);
-    const levelsAway = Math.max(tier.level - level, 0);
-    return { ...tier, achieved, xpNeeded, levelsAway };
-  });
+    const badgeStatuses = BADGE_TIERS.map((tier) => {
+      const achieved = level >= tier.level;
+      const xpNeeded = Math.max(cumulativeXpForLevel(tier.level) - totalXP, 0);
+      const levelsAway = Math.max(tier.level - level, 0);
+      return { ...tier, achieved, xpNeeded, levelsAway };
+    });
 
-  const bestStreak = habitsWithStats.reduce(
-    (max, habit) => Math.max(max, habit.streak ?? 0),
-    0
-  );
+    const bestStreak = habitsWithStats.reduce(
+      (max, habit) => Math.max(max, habit.streak ?? 0),
+      0
+    );
 
-  const weeklyWins = Array.from({ length: 7 }, (_, index) => {
-    const day = new Date();
-    day.setUTCDate(day.getUTCDate() - index);
-    const key = formatDayKey(day);
-    return (progressByDay[key] ?? 0) >= 1 ? 1 : 0;
-  }).reduce<number>((sum, value) => sum + value, 0);
+    const weeklyWins = Array.from({ length: 7 }, (_, index) => {
+      const day = new Date();
+      day.setUTCDate(day.getUTCDate() - index);
+      const key = formatDayKey(day);
+      return (progressByDay[key] ?? 0) >= 1 ? 1 : 0;
+    }).reduce<number>((sum, value) => sum + value, 0);
 
-  const recoveryDays = Math.max(0, 7 - weeklyWins);
+    const recoveryDays = Math.max(0, 7 - weeklyWins);
 
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat("en-US").format(value);
+    const stats = [
+      {
+        label: "Current streak",
+        value: `${bestStreak} days`,
+        tone: bestStreak > 0 ? "text-primary" : "text-muted-foreground",
+      },
+      {
+        label: "Weekly wins",
+        value: `${weeklyWins} / 7`,
+        tone:
+          weeklyWins >= 5 ? "text-green-soft" : "text-yellow-soft-foreground",
+      },
+      {
+        label: "Recovery days",
+        value: `${recoveryDays} open`,
+        tone: "text-yellow-soft-foreground",
+      },
+    ];
 
-  const stats = [
-    {
-      label: "Current streak",
-      value: `${bestStreak} days`,
-      tone: bestStreak > 0 ? "text-primary" : "text-muted-foreground",
-    },
-    {
-      label: "Weekly wins",
-      value: `${weeklyWins} / 7`,
-      tone: weeklyWins >= 5 ? "text-green-soft" : "text-yellow-soft-foreground",
-    },
-    {
-      label: "Recovery days",
-      value: `${recoveryDays} open`,
-      tone: "text-yellow-soft-foreground",
-    },
-  ];
+    analytics = {
+      stats,
+      level,
+      badgeCurrent,
+      badgeNext: badgeNext ?? null,
+      progressToNextBadge,
+      badgeStatuses,
+    };
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-linear-to-b from-white/90 via-light-yellow/55 to-green-soft/15 lg:pb-8 xl:pb-12 2xl:pb-16 lg:pt-18 xl:pt-24 2xl:pt-28">
@@ -274,6 +314,10 @@ export default async function AccountPage() {
                   />
                 </div>
 
+                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 shadow-inner">
+                  <PrivacySettings initialPrivate={privateAccount} />
+                </div>
+
                 <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 shadow-inner flex flex-col lg:gap-3 xl:gap-4 2xl:gap-5">
                   <div className="lg:space-y-2 xl:space-y-3">
                     <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
@@ -287,33 +331,50 @@ export default async function AccountPage() {
                   </div>
                 </div>
               </div>
-
               <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-inner shadow-primary/20 h-fit">
                 <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
                   Momentum
                 </p>
-                <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
-                  {stats[0].value} streak
-                </p>
-                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                  Focused energy made possible by calm reminders and gentle
-                  check-ins.
-                </p>
-                <div className="lg:mt-4 xl:mt-5 2xl:mt-6 grid lg:gap-2 xl:gap-3">
-                  {stats.map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="flex items-center justify-between rounded-2xl bg-card lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm"
-                    >
-                      <span className="text-muted-foreground">
-                        {stat.label}
-                      </span>
-                      <span className={stat.tone + " font-semibold"}>
-                        {stat.value}
-                      </span>
+                {analytics ? (
+                  <>
+                    <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
+                      {analytics.stats[0]?.value ?? "—"} streak
+                    </p>
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                      Focused energy made possible by calm reminders and gentle
+                      check-ins.
+                    </p>
+                    <div className="lg:mt-4 xl:mt-5 2xl:mt-6 grid lg:gap-2 xl:gap-3">
+                      {analytics.stats.map((stat) => (
+                        <div
+                          key={stat.label}
+                          className="flex items-center justify-between rounded-2xl bg-card lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm"
+                        >
+                          <span className="text-muted-foreground">
+                            {stat.label}
+                          </span>
+                          <span className={stat.tone + " font-semibold"}>
+                            {stat.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                ) : (
+                  <div className="lg:space-y-2 xl:space-y-3">
+                    <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
+                      Analytics paused
+                    </p>
+                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                      Your account is private, so streak and weekly stats stay
+                      hidden. Switch privacy off below to bring them back.
+                    </p>
+                    <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/20 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-primary lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
+                      <EyeOff className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                      Private mode on
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -328,117 +389,127 @@ export default async function AccountPage() {
                       Track your next milestone
                     </h3>
                     <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground max-w-2xl">
-                      Build up XP to unlock badges.
+                      {privateAccount
+                        ? "Badges stay hidden while privacy is on."
+                        : "Build up XP to unlock badges."}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/30 lg:px-3 xl:px-4 lg:py-1 xl:py-2 shadow-sm">
                     <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
                     <span className="lg:text-[11px] xl:text-xs font-semibold text-primary">
-                      Level {level}
+                      {analytics ? `Level ${analytics.level}` : "Private"}
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-muted/50 dark:bg-card/20 border border-gray-100 shadow-inner p-4 rounded-2xl grid gap-3 xl:gap-4">
-                  <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
-                    <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                      <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Current badge
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${
-                              badgeCurrent?.className ??
-                              "bg-muted text-foreground"
-                            }`}
-                          >
-                            <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                            <span className="uppercase tracking-[0.16em]">
-                              {badgeCurrent?.stage ?? "Starter"}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="lg:text-sm xl:text-base font-semibold text-primary">
-                          Level {level}
+                {analytics ? (
+                  <div className="bg-muted/50 dark:bg-card/20 border border-gray-100 shadow-inner p-4 rounded-2xl grid gap-3 xl:gap-4">
+                    <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
+                      <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                        <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Current badge
                         </p>
-                      </div>
-                      <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                        {badgeCurrent?.label ??
-                          "Earn your first badge at level 5."}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                      <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Next badge
-                      </p>
-                      {badgeNext ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
                             <div
-                              className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${badgeNext.className}`}
+                              className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${
+                                analytics.badgeCurrent?.className ??
+                                "bg-muted text-foreground"
+                              }`}
                             >
-                              <Medal className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                               <span className="uppercase tracking-[0.16em]">
-                                {badgeNext.stage}
+                                {analytics.badgeCurrent?.stage ?? "Starter"}
                               </span>
                             </div>
-                            <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
-                              Level {badgeNext.level}
-                            </span>
                           </div>
-                          <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
-                            <div
-                              className="h-full bg-linear-to-r from-primary to-coral transition-all"
-                              style={{ width: `${progressToNextBadge}%` }}
-                            />
-                          </div>
-                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                            {badgeNext.level - level} levels to go ·{" "}
-                            {badgeNext.level - level} levels to go · XP needed
+                          <p className="lg:text-sm xl:text-base font-semibold text-primary">
+                            Level {analytics.level}
                           </p>
                         </div>
-                      ) : (
-                        <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
-                          You&apos;re at the top badge. Keep stacking XP to open
-                          new milestones.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
-                    {badgeStatuses.map((tier) => (
-                      <div
-                        key={tier.stage}
-                        className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                            {tier.stage}
-                          </span>
-                          <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
-                            Lv {tier.level}
-                          </span>
-                        </div>
-                        <div
-                          className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
-                        >
-                          <Medal className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                          <span>{tier.label}</span>
-                        </div>
                         <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                          {tier.achieved
-                            ? "Unlocked"
-                            : `${tier.levelsAway} levels away · ${formatNumber(
-                                tier.xpNeeded
-                              )} XP`}
+                          {analytics.badgeCurrent?.label ??
+                            "Earn your first badge at level 5."}
                         </p>
                       </div>
-                    ))}
+
+                      <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
+                        <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Next badge
+                        </p>
+                        {analytics.badgeNext ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div
+                                className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${analytics.badgeNext.className}`}
+                              >
+                                <span className="uppercase tracking-[0.16em]">
+                                  {analytics.badgeNext.stage}
+                                </span>
+                              </div>
+                              <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
+                                Level {analytics.badgeNext.level}
+                              </span>
+                            </div>
+                            <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
+                              <div
+                                className="h-full bg-linear-to-r from-primary to-coral transition-all"
+                                style={{
+                                  width: `${analytics.progressToNextBadge}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                              {analytics.badgeNext.level - analytics.level}{" "}
+                              levels to go; keep logging to unlock it.
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                            You&apos;re at the top badge. Keep stacking XP to
+                            open new milestones.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
+                      {analytics.badgeStatuses.map((tier) => (
+                        <div
+                          key={tier.stage}
+                          className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                              {tier.stage}
+                            </span>
+                            <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
+                              Lv {tier.level}
+                            </span>
+                          </div>
+                          <div
+                            className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
+                          >
+                            <span>{tier.label}</span>
+                          </div>
+                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                            {tier.achieved
+                              ? "Unlocked"
+                              : `${
+                                  tier.levelsAway
+                                } levels away - ${formatNumber(
+                                  tier.xpNeeded
+                                )} XP`}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-white/80 lg:p-4 xl:p-5 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground shadow-inner">
+                    XP milestones are hidden while your account is private.
+                    Toggle privacy off to see streak levels and badge progress.
+                  </div>
+                )}
               </div>
 
               <div className="flex lg:gap-2 xl:gap-3 flex-row items-center justify-between">
@@ -490,8 +561,9 @@ export default async function AccountPage() {
 
               <div className="rounded-2xl border border-muted bg-card/90 lg:p-4 xl:p-5 shadow-inner shadow-black/5 lg:space-y-3 xl:space-y-4">
                 <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                  Analytics will track how your best streak compares to this
-                  target.
+                  {privateAccount
+                    ? "Analytics are paused while your account is private. You can still set a target for when you turn visibility back on."
+                    : "Analytics will track how your best streak compares to this target."}
                 </p>
                 <StreakGoalForm initialGoal={streakGoal} />
               </div>
