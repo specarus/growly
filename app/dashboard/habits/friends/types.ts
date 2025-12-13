@@ -18,6 +18,8 @@ export type FriendProfile = {
   headline: string;
   focus: string;
   location?: string;
+  privateAccount?: boolean;
+  friendsInCommon?: number;
   mutualLikes: number;
   streakDays: number;
   level: number;

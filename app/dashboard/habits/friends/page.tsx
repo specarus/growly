@@ -81,6 +81,8 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
     streakDays: number;
     badges: string[];
     vibe: string;
+    privateAccount?: boolean;
+    friendsInCommon?: number;
   }> = [
     {
       id: "seed-sofia-lane",
@@ -180,6 +182,8 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
       location: seed.location,
       focus: seed.focus,
       headline: seed.headline,
+      privateAccount: seed.privateAccount ?? false,
+      friendsInCommon: seed.friendsInCommon ?? Math.min(3, mutualLikes),
       mutualLikes,
       streakDays: seed.streakDays,
       level,
@@ -217,7 +221,7 @@ export default async function Friends() {
 
   const users = await prisma.user.findMany({
     where: { id: { not: session.user.id } },
-    select: { id: true, name: true, createdAt: true },
+    select: { id: true, name: true, createdAt: true, privateAccount: true },
     orderBy: { createdAt: "desc" },
     take: 12,
   });
@@ -377,6 +381,8 @@ export default async function Friends() {
     return {
       id: user.id,
       name: user.name,
+      privateAccount: user.privateAccount ?? false,
+      friendsInCommon: Math.min(5, mutualLikes),
       headline,
       focus: dominantCategory ? `${dominantCategory} focus` : "Explorer",
       location: "Community",

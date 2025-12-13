@@ -6,6 +6,7 @@ import {
   ArrowRight,
   HandHeart,
   Heart,
+  Lock,
   MapPin,
   Search,
   Sparkles,
@@ -181,15 +182,16 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
               />
             </div>
 
-            <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[70vh] overflow-y-auto pr-1">
               {filteredFriends.length === 0 ? (
-                <p className="lg:text-[11px] xl:text-xs text-muted-foreground rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-3 xl:py-4">
+                <p className="lg:text-[11px] xl:text-xs text-muted-foreground rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-3 xl:py-4 col-span-full">
                   No friends match that search. Try a different keyword.
                 </p>
               ) : (
                 filteredFriends.map((friend) => {
                   const isSelected = friend.id === selectedFriend?.id;
                   const status = connectionState(friend.id);
+                  const levelLabel = `Level ${friend.level}`;
                   return (
                     <article
                       key={friend.id}
@@ -200,85 +202,66 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       onKeyDown={(event) =>
                         handleCardKeyDown(event, friend.id)
                       }
-                      className={`w-full text-left rounded-2xl border lg:p-3 xl:p-4 transition shadow-sm ${
+                      className={`w-full text-left rounded-2xl border lg:p-3 xl:p-4 transition shadow-sm flex flex-col gap-3 ${
                         isSelected
                           ? "border-primary/50 bg-primary/5"
                           : "border-gray-100 bg-white hover:border-primary/30"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <h4 className="lg:text-sm xl:text-base font-semibold">
-                              {friend.name}
-                            </h4>
-                            {friend.isNew ? (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold">
-                                <Sparkles className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                                Open to new friends
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground line-clamp-2">
-                            {friend.headline}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1">
+                          <h4 className="lg:text-sm xl:text-base font-semibold text-foreground">
+                            {friend.name}
+                          </h4>
+                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                            {levelLabel}
                           </p>
-                          <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
-                            <span className={badgeClass}>
-                              <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                              {friend.location ?? "Remote"}
+                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                            {friend.friendsInCommon ?? 0} friends in common
+                          </p>
+                          {friend.privateAccount ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] font-semibold text-muted-foreground">
+                              <Lock className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                              Private profile
                             </span>
-                            <span className={badgeClass}>{friend.focus}</span>
-                            {friend.dominantCategory ? (
-                              <span className={badgeClass}>
-                                #{friend.dominantCategory}
-                              </span>
-                            ) : null}
-                          </div>
+                          ) : null}
                         </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <CircularProgress
-                            progress={Math.min(100, friend.xpProgress)}
-                            size={60}
-                            progressColor="#f09029"
-                          >
-                            <span className="text-[11px] font-semibold">
-                              L{friend.level}
-                            </span>
-                          </CircularProgress>
-                          <span className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                            {formatXP(friend.xpIntoLevel)}/
-                            {formatXP(friend.xpNeededForLevelUp)} XP
+                        <CircularProgress
+                          progress={Math.min(100, friend.xpProgress)}
+                          size={54}
+                          progressColor="#f09029"
+                        >
+                          <span className="text-[10px] font-semibold">
+                            L{friend.level}
                           </span>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleConnect(friend.id);
-                            }}
-                            className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
-                              status === "connected"
-                                ? "border-primary bg-primary text-white"
-                                : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                            }`}
-                          >
-                            <UserPlus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                            {status === "connected" ? "Friends" : "Add friend"}
-                          </button>
-                        </div>
+                        </CircularProgress>
                       </div>
-                      <div className="flex flex-wrap items-center lg:gap-2 xl:gap-3 mt-3">
-                        <span className={badgeClass}>
-                          <HandHeart className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                          {friend.mutualLikes} mutual likes
-                        </span>
-                        <span className={badgeClass}>
-                          <Activity className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-green-soft" />
-                          {friend.streakDays} streak days
-                        </span>
-                        <span className={badgeClass}>
-                          <Heart className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                          {friend.likedHabits.length} liked habits
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleCardActivate(friend.id);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full bg-primary text-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[10px] xl:text-xs font-semibold shadow-sm shadow-primary/25"
+                        >
+                          View profile
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleConnect(friend.id);
+                          }}
+                          className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
+                            status === "connected"
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                          }`}
+                        >
+                          <UserPlus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                          {status === "connected" ? "Friends" : "Add friend"}
+                        </button>
                       </div>
                     </article>
                   );
@@ -307,6 +290,12 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                         {selectedFriend.location ?? "Remote"}
                       </span>
+                      {selectedFriend.privateAccount ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground">
+                          <Lock className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                          Private profile
+                        </span>
+                      ) : null}
                     </div>
                     <p className="lg:text-[10px] xl:text-[11px] 2xl:text-sm text-muted-foreground max-w-3xl">
                       {selectedFriend.highlight ?? selectedFriend.headline}
@@ -380,13 +369,13 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                 <div className="grid lg:grid-cols-4 lg:gap-2 xl:gap-3">
                   <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
                     <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                      Mutual likes
+                      Friends in common
                     </p>
                     <p className="lg:text-lg xl:text-xl font-bold text-foreground">
-                      {selectedFriend.mutualLikes}
+                      {selectedFriend.friendsInCommon ?? 0}
                     </p>
                     <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      Habits both of you liked
+                      People already connected to both of you
                     </p>
                   </div>
                   <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
