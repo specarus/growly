@@ -9,7 +9,17 @@ import { useTheme } from "@/app/context/theme-context";
 import { useXP } from "@/app/context/xp-context";
 import { BADGE_TIERS } from "@/lib/badges";
 import { signOut } from "@/lib/actions/auth-actions";
-import { ChevronDown, Medal, Moon, Sprout, Sun, User } from "lucide-react";
+import type { XPActivityEntry } from "@/types/xp";
+import {
+  Bell,
+  ChevronDown,
+  Medal,
+  Moon,
+  Sprout,
+  Sun,
+  User,
+  Users,
+} from "lucide-react";
 
 const formatSegment = (segment: string) =>
   segment
@@ -31,6 +41,180 @@ type BadgeInfo = {
   stage: string;
   className: string;
 };
+
+type FriendRequest = {
+  id: string;
+  name: string;
+  mutual?: string;
+  requestedAt?: string;
+};
+
+function NotificationsDropdown() {
+  const { activityLog } = useXP();
+  const [isOpen, setIsOpen] = useState(false);
+  const [xpNotifications, setXpNotifications] = useState<XPActivityEntry[]>([]);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setXpNotifications(activityLog.slice(0, 5));
+  }, [activityLog]);
+
+  const handleMarkXpRead = (id: string) => {
+    setXpNotifications((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
+  const handleMarkFriendRead = (id: string) => {
+    setFriendRequests((prev) => prev.filter((request) => request.id !== id));
+  };
+
+  const totalCount = xpNotifications.length + friendRequests.length;
+  const badgeLabel =
+    totalCount > 9 ? "9+" : totalCount > 0 ? totalCount.toString() : null;
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+        aria-label="Open notifications"
+        className="inline-flex items-center gap-1.5 rounded-full border border-muted lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 bg-white text-xs font-semibold text-muted-foreground transition hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        <Bell className="lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4" />
+        <span className="hidden sm:inline lg:text-[10px] xl:text-xs 2xl:text-sm">
+          Notifications
+        </span>
+        {badgeLabel ? (
+          <span className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 lg:text-[9px] xl:text-[10px] font-bold">
+            {badgeLabel}
+          </span>
+        ) : null}
+      </button>
+
+      <div
+        className={`absolute right-0 top-full lg:mt-2 xl:mt-3 w-72 lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200 transition-all duration-200 ease-out z-50 ${
+          isOpen
+            ? "opacity-100 visible translate-y-0 pointer-events-auto"
+            : "opacity-0 invisible translate-y-2 pointer-events-none"
+        }`}
+      >
+        <div className="flex items-center justify-between lg:px-3 xl:px-4 lg:py-2 xl:py-3">
+          <p className="lg:text-[10px] xl:text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Notifications
+          </p>
+          <span className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+            {badgeLabel ? `${totalCount} new` : "Up to date"}
+          </span>
+        </div>
+        <div className="border-t border-gray-50 lg:px-3 xl:px-4 lg:py-3 xl:py-4 space-y-3">
+          <div>
+            <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.24em] text-primary font-semibold">
+              XP updates
+            </p>
+            {xpNotifications.length === 0 ? (
+              <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground mt-1">
+                No XP activity yet. Complete a todo or habit to log XP.
+              </p>
+            ) : (
+              <div className="mt-1 grid gap-2">
+                {xpNotifications.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 lg:px-2.5 xl:px-3 lg:py-1.5 xl:py-2"
+                  >
+                    <div className="flex flex-col min-w-0">
+                      <span className="lg:text-[10px] xl:text-xs font-semibold text-foreground">
+                        {entry.label}
+                      </span>
+                      {entry.detail ? (
+                        <span className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
+                          {entry.detail}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="lg:text-[10px] xl:text-xs font-bold text-primary">
+                        {entry.xp > 0 ? "+" : ""}
+                        {entry.xp} XP
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkXpRead(entry.id)}
+                        className="lg:text-[9px] xl:text-[10px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline"
+                      >
+                        Mark as read
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-gray-100 pt-3">
+            <div className="flex items-center justify-between">
+              <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.24em] text-muted-foreground font-semibold">
+                Friend requests
+              </p>
+              <Users className="lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-muted-foreground" />
+            </div>
+            {friendRequests.length === 0 ? (
+              <p className="mt-1 lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                No friend requests right now. Check back after connecting in
+                the community.
+              </p>
+            ) : (
+              <div className="mt-2 space-y-2">
+                {friendRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 lg:px-2.5 xl:px-3 lg:py-1.5 xl:py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="lg:text-[10px] xl:text-xs font-semibold text-foreground">
+                        {request.name}
+                      </p>
+                      <p className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
+                        {request.mutual ?? "Waiting to connect"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
+                        {request.requestedAt ?? "New"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkFriendRead(request.id)}
+                        className="lg:text-[9px] xl:text-[10px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline"
+                      >
+                        Mark as read
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const getBadgeForLevel = (level: number): BadgeInfo | null => {
   const tier = BADGE_TIERS.find((item) => level >= item.level);
@@ -234,6 +418,7 @@ export default function Header() {
 
         <div className="flex items-center lg:gap-2 xl:gap-3 justify-self-end">
           <ThemeToggle />
+          {session ? <NotificationsDropdown /> : null}
           {session && <AccountDropdown session={session} badge={badge} />}
         </div>
       </div>
