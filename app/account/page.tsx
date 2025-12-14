@@ -291,40 +291,21 @@ export default async function AccountPage() {
                     <div className="grid lg:h-12 lg:w-12 xl:h-16 2xl:h-20 xl:w-16 2xl:w-20 place-items-center rounded-2xl bg-primary lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white shadow-lg shadow-primary/30">
                       {initials}
                     </div>
-                    <div>
+                    <div className="flex flex-col gap-1">
                       <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                         Profile
                       </p>
-                      <div className="flex items-center gap-2">
-                        <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
-                          {name}
-                        </p>
-                        {username ? (
-                          <span className="rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] font-semibold text-muted-foreground">
-                            @{username}
-                          </span>
-                        ) : null}
-                      </div>
+                      <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
+                        {name}
+                      </p>
+                      {username ? (
+                        <span className="w-fit rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] font-semibold text-muted-foreground">
+                          @{username}
+                        </span>
+                      ) : null}
                       <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                         {email}
                       </p>
-                      {headline ? (
-                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground max-w-xl">
-                          {headline}
-                        </p>
-                      ) : null}
-                      <div className="flex flex-wrap items-center gap-2 lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                        {focusArea ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-white border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 font-semibold">
-                            Focus: {focusArea}
-                          </span>
-                        ) : null}
-                        {location ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-white border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 font-semibold">
-                            {location}
-                          </span>
-                        ) : null}
-                      </div>
                     </div>
                   </div>
                   <div className="space-y-1 lg:text-[10px] xl:text-xs 2xl:text-sm text-muted-foreground">
