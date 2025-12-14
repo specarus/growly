@@ -14,6 +14,7 @@ import { popularHabits } from "../habits/popular/popular-habits-data";
 import { seedTemplates } from "./seed-templates";
 import { formatDayKey } from "@/lib/habit-progress";
 import { HABIT_STREAK_THRESHOLD } from "@/lib/streak";
+import { ensureUsernameForUser } from "@/lib/usernames";
 
 const normalizeGoal = (value?: number | null) => {
   if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
@@ -102,6 +103,7 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
     return {
       id: seed.id,
       name: seed.name,
+      username: seed.username,
       location: seed.location,
       focus: seed.focus,
       headline: seed.headline,
@@ -145,7 +147,16 @@ export default async function Friends() {
 
   const users = await prisma.user.findMany({
     where: { id: { not: session.user.id } },
-    select: { id: true, name: true, createdAt: true, privateAccount: true },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      headline: true,
+      focusArea: true,
+      location: true,
+      createdAt: true,
+      privateAccount: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 12,
   });
@@ -319,6 +330,15 @@ export default async function Friends() {
     likedByUser.set(record.userId, list);
   });
 
+  const usernameCache = new Map<string, string>();
+
+  for (const user of users) {
+    if (!user.username) {
+      const username = await ensureUsernameForUser(user.id, user.name);
+      usernameCache.set(user.id, username);
+    }
+  }
+
   const friendsFromDb: FriendProfile[] = users.map((user) => {
     const todoCompleted = todoCompletedByUser.get(user.id) ?? 0;
     const habitCompleted = habitCompletionByUser.get(user.id) ?? 0;
@@ -352,8 +372,9 @@ export default async function Friends() {
     if (likedHabits.length >= 3) badges.push("Habit scout");
     if (badges.length === 0) badges.push("Open to connect");
 
-    const headline =
-      likedHabits[0]?.summary ??
+    const profileHeadline =
+      user.headline ||
+      likedHabits[0]?.summary ||
       "Exploring habits from the community and looking for accountability.";
 
     const recentActivity = likedHabits
@@ -363,11 +384,14 @@ export default async function Friends() {
     return {
       id: user.id,
       name: user.name,
+      username: user.username ?? usernameCache.get(user.id) ?? undefined,
+      headline: profileHeadline,
+      focus:
+        user.focusArea ||
+        (dominantCategory ? `${dominantCategory} focus` : "Explorer"),
+      location: user.location ?? "Community",
       privateAccount: user.privateAccount ?? false,
       friendsInCommon: Math.min(5, mutualLikes),
-      headline,
-      focus: dominantCategory ? `${dominantCategory} focus` : "Explorer",
-      location: "Community",
       mutualLikes,
       streakDays: streakDaysByUser.get(user.id)?.size ?? 0,
       level,
@@ -380,7 +404,10 @@ export default async function Friends() {
       dominantCategory,
       joinedAt: user.createdAt?.toISOString(),
       highlight:
-        likedHabits[0]?.highlight ?? likedHabits[0]?.anchor ?? undefined,
+        user.headline ??
+        likedHabits[0]?.highlight ??
+        likedHabits[0]?.anchor ??
+        undefined,
       recentActivity,
       friendStatus: friendStatusByUser.get(user.id)?.status ?? "none",
       requestId: friendStatusByUser.get(user.id)?.requestId,

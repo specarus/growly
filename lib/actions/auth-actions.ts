@@ -3,6 +3,8 @@
 import { auth } from "../auth";
 import { headers } from "next/headers";
 
+import { ensureUsernameForUser } from "../usernames";
+
 export const signUp = async (email: string, password: string, name: string) => {
   const result = await auth.api.signUpEmail({
     body: {
@@ -12,6 +14,16 @@ export const signUp = async (email: string, password: string, name: string) => {
       callbackURL: "/dashboard",
     },
   });
+
+  const userId =
+    (result as any)?.data?.user?.id ?? (result as any)?.data?.session?.userId;
+  if (userId) {
+    try {
+      await ensureUsernameForUser(userId, name);
+    } catch (error) {
+      console.error("[auth-actions] ensure username after signup", error);
+    }
+  }
 
   return result;
 };

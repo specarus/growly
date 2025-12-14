@@ -76,16 +76,8 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
     const query = search.trim().toLowerCase();
     if (!query) return friends;
     return friends.filter((friend) => {
-      const haystack = [
-        friend.name,
-        friend.focus,
-        friend.headline,
-        friend.dominantCategory,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(query);
+      const haystack = friend.username ?? "";
+      return haystack.toLowerCase().includes(query);
     });
   }, [friends, search]);
 
@@ -273,7 +265,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by name, focus, or category"
+                placeholder="Search by username"
                 className="w-full rounded-full border border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:pl-8 xl:pl-10 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
@@ -319,12 +311,15 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           <h4 className="lg:text-sm xl:text-base font-semibold text-foreground">
                             {friend.name}
                           </h4>
+                          {friend.username ? (
+                            <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                              @{friend.username}
+                            </p>
+                          ) : null}
                           <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
                             {levelLabel}
                           </p>
-                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                            {friend.friendsInCommon ?? 0} friends in common
-                          </p>
+
                           {friend.privateAccount ? (
                             <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] font-semibold text-muted-foreground">
                               <Lock className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
@@ -342,14 +337,17 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           </span>
                         </CircularProgress>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col gap-1">
+                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                          {friend.friendsInCommon ?? 0} friends in common
+                        </p>
                         <button
                           type="button"
                           onClick={(event) => {
                             event.stopPropagation();
                             handleCardActivate(friend.id);
                           }}
-                          className="inline-flex items-center gap-1 rounded-full bg-primary text-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[10px] xl:text-xs font-semibold shadow-sm shadow-primary/25"
+                          className="grid place-items-center gap-1 rounded-full bg-primary text-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[10px] xl:text-xs font-semibold shadow-sm shadow-primary/25"
                         >
                           View profile
                         </button>
@@ -359,7 +357,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                             event.stopPropagation();
                             handleConnect(friend.id);
                           }}
-                          className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
+                          className={`flex items-center justify-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
                             status === "friends"
                               ? "border-primary bg-primary text-white"
                               : status === "outgoing"
@@ -397,6 +395,11 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                         {selectedFriend.name}
                       </h3>
+                      {selectedFriend.username ? (
+                        <span className={badgeClass}>
+                          @{selectedFriend.username}
+                        </span>
+                      ) : null}
                       <span className={badgeClass}>
                         <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
                         {selectedFriend.location ?? "Remote"}

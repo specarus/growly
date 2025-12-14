@@ -12,6 +12,7 @@ import {
 
 import DeleteAccountForm from "./components/delete-account-form";
 import EditProfileForm from "./components/edit-profile-form";
+import PublicProfileForm from "./components/public-profile-form";
 import PrivacySettings from "./components/privacy-settings";
 import SignOutButton from "./components/sign-out-button";
 import StreakGoalForm from "./components/streak-goal-form";
@@ -105,11 +106,22 @@ export default async function AccountPage() {
 
   const userRecord = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { streakGoalDays: true, privateAccount: true },
+    select: {
+      streakGoalDays: true,
+      privateAccount: true,
+      username: true,
+      focusArea: true,
+      headline: true,
+      location: true,
+    },
   });
 
   const streakGoal = userRecord?.streakGoalDays ?? 21;
   const privateAccount = userRecord?.privateAccount ?? false;
+  const username = userRecord?.username ?? "";
+  const focusArea = userRecord?.focusArea ?? "";
+  const headline = userRecord?.headline ?? "";
+  const location = userRecord?.location ?? "";
 
   type AccountAnalytics = {
     stats: { label: string; value: string; tone: string }[];
@@ -283,12 +295,36 @@ export default async function AccountPage() {
                       <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                         Profile
                       </p>
-                      <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
-                        {name}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
+                          {name}
+                        </p>
+                        {username ? (
+                          <span className="rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] font-semibold text-muted-foreground">
+                            @{username}
+                          </span>
+                        ) : null}
+                      </div>
                       <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
                         {email}
                       </p>
+                      {headline ? (
+                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground max-w-xl">
+                          {headline}
+                        </p>
+                      ) : null}
+                      <div className="flex flex-wrap items-center gap-2 lg:text-[10px] xl:text-[11px] text-muted-foreground">
+                        {focusArea ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-white border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 font-semibold">
+                            Focus: {focusArea}
+                          </span>
+                        ) : null}
+                        {location ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-white border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 font-semibold">
+                            {location}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-1 lg:text-[10px] xl:text-xs 2xl:text-sm text-muted-foreground">
@@ -311,6 +347,15 @@ export default async function AccountPage() {
                   <EditProfileForm
                     initialName={editableName}
                     initialEmail={editableEmail}
+                  />
+                </div>
+
+                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 shadow-inner">
+                  <PublicProfileForm
+                    initialUsername={username}
+                    initialHeadline={headline}
+                    initialFocus={focusArea}
+                    initialLocation={location}
                   />
                 </div>
 

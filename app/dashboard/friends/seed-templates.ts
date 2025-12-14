@@ -1,6 +1,7 @@
 export type SeedFriendTemplate = {
   id: string;
   name: string;
+  username?: string;
   location: string;
   focus: string;
   headline: string;
@@ -17,7 +18,8 @@ export const seedTemplates: SeedFriendTemplate[] = [
   {
     id: "seed-sofia-lane",
     name: "Sofia Lane",
-    location: "Lisbon GMT",
+    username: "sofialane12",
+    location: "Portugal",
     focus: "Morning energy",
     headline: "Sunrise rituals and light cardio keep her charged.",
     likedHabitIds: [
@@ -33,7 +35,8 @@ export const seedTemplates: SeedFriendTemplate[] = [
   {
     id: "seed-casey-ray",
     name: "Casey Ray",
-    location: "Austin CST",
+    username: "caseyray07",
+    location: "United States",
     focus: "Focus & recovery",
     headline: "Alternates deep work sprints with a nightly detox.",
     likedHabitIds: [
@@ -49,7 +52,8 @@ export const seedTemplates: SeedFriendTemplate[] = [
   {
     id: "seed-jordan-park",
     name: "Jordan Park",
-    location: "Seoul KST",
+    username: "jordanpark19",
+    location: "South Korea",
     focus: "Movement & team accountability",
     headline: "Stacks micro-movement with squad step syncs.",
     likedHabitIds: [
@@ -65,7 +69,8 @@ export const seedTemplates: SeedFriendTemplate[] = [
   {
     id: "seed-ari-woods",
     name: "Ari Woods",
-    location: "Toronto EST",
+    username: "ariwoods23",
+    location: "Canada",
     focus: "Evening calm",
     headline: "Wind-down guardrails and gratitude journaling.",
     likedHabitIds: [

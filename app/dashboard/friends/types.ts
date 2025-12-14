@@ -35,6 +35,7 @@ export type FriendProfile = {
   vibe?: string;
   highlight?: string;
   recentActivity?: string[];
+  username?: string;
   friendStatus?: "none" | "incoming" | "outgoing" | "friends";
   requestId?: string;
 };
