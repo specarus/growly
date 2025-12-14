@@ -16,7 +16,7 @@ export type FriendProfile = {
   id: string;
   name: string;
   headline: string;
-  focus: string;
+  focusTags: string[];
   location?: string;
   privateAccount?: boolean;
   friendsInCommon?: number;
@@ -27,12 +27,9 @@ export type FriendProfile = {
   xpProgress: number;
   xpIntoLevel: number;
   xpNeededForLevelUp: number;
-  badges: string[];
   likedHabits: FriendHabit[];
-  dominantCategory?: string;
   joinedAt?: string;
   isNew?: boolean;
-  vibe?: string;
   highlight?: string;
   recentActivity?: string[];
   username?: string;

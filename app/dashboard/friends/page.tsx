@@ -34,7 +34,7 @@ const mapPostToFriendHabit = (
     anchor?: string | null;
     highlight?: string | null;
     likesCount?: number | null;
-    user?: { name?: string | null } | null;
+    user?: { name?: string | null; privateAccount?: boolean | null } | null;
   },
   likedByCurrentUser: boolean
 ): FriendHabit => ({
@@ -85,17 +85,6 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
     const mutualLikes = likedHabits.filter(
       (habit) => habit.likedByCurrentUser
     ).length;
-    const categoryCounts = likedHabits.reduce<Record<string, number>>(
-      (acc, habit) => {
-        acc[habit.category] = (acc[habit.category] ?? 0) + 1;
-        return acc;
-      },
-      {}
-    );
-    const dominantCategory =
-      Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ??
-      undefined;
-
     const recentActivity = likedHabits
       .slice(0, 3)
       .map((habit) => `Liked ${habit.title}`);
@@ -105,8 +94,8 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
       name: seed.name,
       username: seed.username,
       location: seed.location,
-      focus: seed.focus,
       headline: seed.headline,
+      focusTags: seed.focusTags ?? [],
       privateAccount: seed.privateAccount ?? false,
       friendsInCommon: seed.friendsInCommon ?? Math.min(3, mutualLikes),
       mutualLikes,
@@ -116,16 +105,27 @@ const buildSeedFriends = (currentLikedIds: Set<string>): FriendProfile[] => {
       xpProgress: progress,
       xpIntoLevel: xpGainedInLevel,
       xpNeededForLevelUp,
-      badges: seed.badges,
       likedHabits,
-      dominantCategory,
       isNew: true,
-      vibe: seed.vibe,
       highlight: likedHabits[0]?.summary ?? seed.headline,
       recentActivity,
       friendStatus: "none",
     } satisfies FriendProfile;
   });
+};
+
+const parseTagList = (raw?: string | null) => {
+  const seen = new Set<string>();
+  return (raw || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .filter((tag) => {
+      const normalized = tag.toLowerCase();
+      if (seen.has(normalized)) return false;
+      seen.add(normalized);
+      return true;
+    });
 };
 
 export default async function Friends() {
@@ -165,10 +165,7 @@ export default async function Friends() {
 
   const friendRequests = await (prisma as any).friendRequest.findMany({
     where: {
-      OR: [
-        { fromUserId: session.user.id },
-        { toUserId: session.user.id },
-      ],
+      OR: [{ fromUserId: session.user.id }, { toUserId: session.user.id }],
     },
     select: {
       id: true,
@@ -242,7 +239,7 @@ export default async function Friends() {
         anchor: string | null;
         highlight: string | null;
         likesCount: number | null;
-        user?: { name?: string | null } | null;
+        user?: { name?: string | null; privateAccount?: boolean | null } | null;
       } | null;
     }[]
   ] =
@@ -257,39 +254,44 @@ export default async function Friends() {
             },
             _count: true,
           }),
-          prisma.habitDailyProgress.findMany({
-            where: { habit: { userId: { in: friendIds } } },
-            select: {
-              progress: true,
-              date: true,
-              habit: {
-                select: {
-                  userId: true,
-                  goalAmount: true,
-                },
+        prisma.habitDailyProgress.findMany({
+          where: { habit: { userId: { in: friendIds } } },
+          select: {
+            progress: true,
+            date: true,
+            habit: {
+              select: {
+                userId: true,
+                goalAmount: true,
               },
             },
-          }),
-          prisma.postHabitLike.findMany({
-            where: { userId: { in: friendIds } },
-            include: {
-              post: {
-                select: {
-                  id: true,
-                  title: true,
-                  summary: true,
-                  category: true,
-                  timeWindow: true,
-                  commitment: true,
-                  anchor: true,
-                  highlight: true,
-                  likesCount: true,
-                  user: { select: { name: true } },
-                },
+          },
+        }),
+        prisma.postHabitLike.findMany({
+          where: {
+            userId: { in: friendIds },
+            post: {
+              user: { privateAccount: false },
+            },
+          },
+          include: {
+            post: {
+              select: {
+                id: true,
+                title: true,
+                summary: true,
+                category: true,
+                timeWindow: true,
+                commitment: true,
+                anchor: true,
+                highlight: true,
+                likesCount: true,
+                user: { select: { name: true, privateAccount: true } },
               },
             },
-          }),
-        ]);
+          },
+        }),
+      ]);
 
   const todoCompletedByUser = new Map<string, number>();
   todoGroups.forEach((group) => {
@@ -324,7 +326,7 @@ export default async function Friends() {
   const likedByUser = new Map<string, FriendHabit[]>();
   likedRecords.forEach((record) => {
     const post = record.post;
-    if (!post) return;
+    if (!post || post.user?.privateAccount) return;
     const list = likedByUser.get(record.userId) ?? [];
     list.push(mapPostToFriendHabit(post, currentLikedIds.has(post.id)));
     likedByUser.set(record.userId, list);
@@ -353,18 +355,6 @@ export default async function Friends() {
       (habit) => habit.likedByCurrentUser
     ).length;
 
-    const categoryCounts = likedHabits.reduce<Record<string, number>>(
-      (acc, habit) => {
-        acc[habit.category] = (acc[habit.category] ?? 0) + 1;
-        return acc;
-      },
-      {}
-    );
-
-    const dominantCategory =
-      Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ??
-      undefined;
-
     const badges: string[] = [];
     if (mutualLikes > 0) badges.push("Mutual likes");
     if ((streakDaysByUser.get(user.id)?.size ?? 0) >= 5)
@@ -372,10 +362,8 @@ export default async function Friends() {
     if (likedHabits.length >= 3) badges.push("Habit scout");
     if (badges.length === 0) badges.push("Open to connect");
 
-    const profileHeadline =
-      user.headline ||
-      likedHabits[0]?.summary ||
-      "Exploring habits from the community and looking for accountability.";
+    const profileHeadline = user.headline?.trim() ?? "";
+    const focusTags = parseTagList(user.focusArea);
 
     const recentActivity = likedHabits
       .slice(0, 3)
@@ -386,9 +374,7 @@ export default async function Friends() {
       name: user.name,
       username: user.username ?? usernameCache.get(user.id) ?? undefined,
       headline: profileHeadline,
-      focus:
-        user.focusArea ||
-        (dominantCategory ? `${dominantCategory} focus` : "Explorer"),
+      focusTags,
       location: user.location ?? "Community",
       privateAccount: user.privateAccount ?? false,
       friendsInCommon: Math.min(5, mutualLikes),
@@ -399,9 +385,7 @@ export default async function Friends() {
       xpProgress: progress,
       xpIntoLevel: xpGainedInLevel,
       xpNeededForLevelUp,
-      badges,
       likedHabits,
-      dominantCategory,
       joinedAt: user.createdAt?.toISOString(),
       highlight:
         user.headline ??

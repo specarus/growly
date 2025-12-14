@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import Image from "next/image";
 import PageGradient from "@/app/components/ui/page-gradient";
 import PageHeading from "@/app/components/page-heading";
 import CircularProgress from "@/app/dashboard/components/circular-progress";
@@ -31,10 +32,17 @@ const formatXP = (value: number) => value.toLocaleString("en-US");
 const badgeClass =
   "inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground";
 
+const focusPillClass =
+  "inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/5 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-primary shadow-inner";
+
 const HabitPill: React.FC<{ label: string }> = ({ label }) => (
   <span className="inline-flex items-center gap-1 rounded-full bg-white/70 border border-gray-100 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-foreground shadow-inner">
     {label}
   </span>
+);
+
+const FocusTagPill: React.FC<{ label: string }> = ({ label }) => (
+  <span className={focusPillClass}>{label}</span>
 );
 
 const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
@@ -167,12 +175,44 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
     }
   };
 
+  const cancelFriendRequest = async (id: string) => {
+    if (actionLoading[id]) return;
+    const requestId =
+      friendStatuses[id]?.requestId ??
+      friends.find((friend) => friend.id === id)?.requestId;
+    if (!requestId) return;
+
+    const previous = friendStatuses[id] ?? {
+      status: "outgoing" as FriendStatus,
+      requestId,
+    };
+    setLoading(id, true);
+    updateStatus(id, "none", undefined);
+
+    try {
+      const response = await fetch(
+        `/api/friends/requests/${requestId}/decline`,
+        { method: "POST" }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to cancel friend request");
+      }
+    } catch (error) {
+      console.error("[FriendsPage] cancel friend request", error);
+      updateStatus(id, previous.status, previous.requestId);
+    } finally {
+      setLoading(id, false);
+    }
+  };
+
   const handleConnect = (id: string) => {
     const status = connectionState(id);
     if (status === "none") {
       void sendFriendRequest(id);
     } else if (status === "incoming") {
       void acceptFriendRequest(id);
+    } else if (status === "outgoing") {
+      void cancelFriendRequest(id);
     }
   };
 
@@ -209,12 +249,6 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
         <HabitPill label={habit.category} />
         {habit.timeWindow ? <HabitPill label={habit.timeWindow} /> : null}
         {habit.commitment ? <HabitPill label={habit.commitment} /> : null}
-        {habit.anchor ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">
-            <Sparkles className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-            {habit.anchor}
-          </span>
-        ) : null}
       </div>
     </article>
   );
@@ -238,6 +272,36 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
             </Link>
           }
         />
+        <section className="relative overflow-hidden rounded-3xl border border-gray-100 bg-linear-to-r from-black/30 via-black/10 to-transparent shadow-inner min-h-[200px] lg:min-h-60">
+          <Image
+            src="/gym.jpg"
+            alt="Gym training atmosphere"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="relative flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 lg:px-5 xl:px-7 2xl:px-10 lg:py-8 xl:py-10 2xl:py-12 text-white">
+            <div className="space-y-1">
+              <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.18em] text-white/80">
+                Squad energy
+              </p>
+              <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-bold">
+                Train together, level up faster
+              </h3>
+              <p className="lg:text-[10px] xl:text-[11px] 2xl:text-xs text-white/80">
+                Invite friends to daily reps, streaks, and accountability
+                check-ins.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/habits/popular"
+              className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/10 lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[10px] xl:text-xs font-semibold text-white hover:bg-white/20 transition"
+            >
+              Explore popular habits
+            </Link>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 xl:gap-5">
           <section className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-5 space-y-3">
@@ -284,14 +348,12 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                     status === "friends"
                       ? "Friends"
                       : status === "outgoing"
-                      ? "Request sent"
+                      ? "Cancel request"
                       : status === "incoming"
                       ? "Accept request"
                       : "Add friend";
                   const disabled =
-                    status === "friends" ||
-                    status === "outgoing" ||
-                    actionLoading[friend.id];
+                    status === "friends" || actionLoading[friend.id];
                   return (
                     <article
                       key={friend.id}
@@ -391,19 +453,23 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                     <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.14em] text-primary">
                       Profile
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col justify-start">
                       <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                         {selectedFriend.name}
                       </h3>
-                      {selectedFriend.username ? (
+                      <div className="flex flex-col gap-1 bg-muted/50 rounded-2xl p-2 shadow-inner w-fit">
+                        <div>
+                          {selectedFriend.username ? (
+                            <span className={badgeClass}>
+                              @{selectedFriend.username}
+                            </span>
+                          ) : null}
+                        </div>
                         <span className={badgeClass}>
-                          @{selectedFriend.username}
+                          <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                          {selectedFriend.location ?? "Remote"}
                         </span>
-                      ) : null}
-                      <span className={badgeClass}>
-                        <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        {selectedFriend.location ?? "Remote"}
-                      </span>
+                      </div>
                       {selectedFriend.privateAccount ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground">
                           <Lock className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
@@ -411,29 +477,52 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         </span>
                       ) : null}
                     </div>
-                    <p className="lg:text-[10px] xl:text-[11px] 2xl:text-sm text-muted-foreground max-w-3xl">
-                      {selectedFriend.highlight ?? selectedFriend.headline}
-                    </p>
-                    <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
-                      <HabitPill
-                        label={
-                          selectedFriend.focus || "Exploring accountability"
-                        }
-                      />
-                      {selectedFriend.dominantCategory ? (
-                        <HabitPill
-                          label={`Leans ${selectedFriend.dominantCategory}`}
-                        />
-                      ) : null}
-                      {selectedFriend.badges.map((badge) => (
-                        <span key={badge} className={badgeClass}>
-                          {badge}
-                        </span>
-                      ))}
+                    <div className="flex flex-col lg:gap-1.5 xl:gap-2">
+                      <div>
+                        {selectedFriend.headline?.trim() ? (
+                          <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                            {selectedFriend.headline}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="flex flex-wrap items-center lg:gap-1.5 xl:gap-2">
+                        {(selectedFriend.focusTags.length > 0
+                          ? selectedFriend.focusTags
+                          : ["General growth"]
+                        ).map((tag) => (
+                          <FocusTagPill key={tag} label={tag} />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center lg:gap-2 xl:gap-3">
-                    <div className="flex flex-col items-end gap-2 text-right">
+                  <div className="flex items-center lg:gap-4 xl:gap-6">
+                    <button
+                      type="button"
+                      onClick={() => handleConnect(selectedFriend.id)}
+                      className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold transition shadow-sm ${
+                        connectionState(selectedFriend.id) === "friends"
+                          ? "border-primary bg-primary text-white"
+                          : connectionState(selectedFriend.id) === "outgoing"
+                          ? "border-primary/50 bg-primary/5 text-primary"
+                          : connectionState(selectedFriend.id) === "incoming"
+                          ? "border-primary bg-primary text-white"
+                          : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                      }`}
+                      disabled={
+                        actionLoading[selectedFriend.id] ||
+                        connectionState(selectedFriend.id) === "friends"
+                      }
+                    >
+                      <UserPlus className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                      {connectionState(selectedFriend.id) === "friends"
+                        ? "Friends"
+                        : connectionState(selectedFriend.id) === "outgoing"
+                        ? "Cancel request"
+                        : connectionState(selectedFriend.id) === "incoming"
+                        ? "Accept request"
+                        : "Add friend"}
+                    </button>
+                    <div className="flex flex-col items-center gap-2 text-right">
                       <CircularProgress
                         progress={Math.min(100, selectedFriend.xpProgress)}
                         size={80}
@@ -449,7 +538,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           </span>
                         </div>
                       </CircularProgress>
-                      <div className="lg:text-[10px] xl:text-[11px] 2xl:text-xs text-muted-foreground space-y-0.5">
+                      <div className="text-center lg:text-[10px] xl:text-[11px] 2xl:text-xs text-muted-foreground space-y-0.5">
                         <p>{formatXP(selectedFriend.totalXP)} XP total</p>
                         <p>
                           {formatXP(
@@ -463,75 +552,32 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         </p>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleConnect(selectedFriend.id)}
-                      className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs font-semibold transition shadow-sm ${
-                        connectionState(selectedFriend.id) === "friends"
-                          ? "border-primary bg-primary text-white"
-                          : connectionState(selectedFriend.id) === "outgoing"
-                          ? "border-primary/50 bg-primary/5 text-primary"
-                          : connectionState(selectedFriend.id) === "incoming"
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                      }`}
-                      disabled={
-                        actionLoading[selectedFriend.id] ||
-                        connectionState(selectedFriend.id) === "friends" ||
-                        connectionState(selectedFriend.id) === "outgoing"
-                      }
-                    >
-                      <UserPlus className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                      {connectionState(selectedFriend.id) === "friends"
-                        ? "Friends"
-                        : connectionState(selectedFriend.id) === "outgoing"
-                        ? "Request sent"
-                        : connectionState(selectedFriend.id) === "incoming"
-                        ? "Accept request"
-                        : "Add friend"}
-                    </button>
                   </div>
                 </div>
 
-                <div className="grid lg:grid-cols-4 lg:gap-2 xl:gap-3">
+                <div className="grid lg:grid-cols-3 lg:gap-2 xl:gap-3">
                   <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
                     <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                       Friends in common
                     </p>
-                    <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                    <p className="lg:text-xl xl:text-2xl font-bold text-foreground">
                       {selectedFriend.friendsInCommon ?? 0}
-                    </p>
-                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      People already connected to both of you
                     </p>
                   </div>
                   <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
                     <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                       Streak days
                     </p>
-                    <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                    <p className="lg:text-xl xl:text-2xl font-bold text-foreground">
                       {selectedFriend.streakDays}
                     </p>
-                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      Days at or above streak threshold
-                    </p>
                   </div>
+
                   <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
                     <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                      Top category
+                      XP to next level
                     </p>
-                    <p className="lg:text-lg xl:text-xl font-bold text-foreground">
-                      {selectedFriend.dominantCategory ?? "Balanced"}
-                    </p>
-                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      Where their likes cluster
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-gray-100 bg-muted/50 lg:p-3 xl:p-4 space-y-1">
-                    <p className="lg:text-[10px] xl:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                      XP to next
-                    </p>
-                    <p className="lg:text-lg xl:text-xl font-bold text-foreground">
+                    <p className="lg:text-xl xl:text-2xl font-bold text-foreground">
                       {formatXP(
                         Math.max(
                           0,
@@ -539,9 +585,6 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                             selectedFriend.xpIntoLevel
                         )
                       )}
-                    </p>
-                    <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                      Invite them to a focus sprint
                     </p>
                   </div>
                 </div>
@@ -554,7 +597,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       </p>
                       <h4 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                         What{" "}
-                        {selectedFriend.name.split(" ")[0] ?? "this friend"} is
+                        {selectedFriend.name.split(" ")[0] ?? "this person"} is
                         into
                       </h4>
                     </div>
@@ -565,7 +608,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                   </div>
                   {selectedFriend.likedHabits.length === 0 ? (
                     <p className="lg:text-[11px] xl:text-xs text-muted-foreground rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-3 xl:py-4">
-                      This friend has not liked any habits yet.
+                      This person has not liked any habits yet.
                     </p>
                   ) : (
                     <div className="grid lg:gap-2 xl:gap-3 grid-cols-1 md:grid-cols-2">
@@ -586,10 +629,6 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         Recent activity
                       </h4>
                     </div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold">
-                      <Sparkles className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                      Accountability ready
-                    </span>
                   </div>
                   {selectedFriend.recentActivity &&
                   selectedFriend.recentActivity.length > 0 ? (

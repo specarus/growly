@@ -30,7 +30,11 @@ export async function POST(request: Request, { params }: Params) {
     );
   }
 
-  if (requestRecord.toUserId !== session.user.id) {
+  const isParticipant =
+    requestRecord.toUserId === session.user.id ||
+    requestRecord.fromUserId === session.user.id;
+
+  if (!isParticipant) {
     return NextResponse.json(
       { error: "Not authorized to decline this request" },
       { status: 403 }

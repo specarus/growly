@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
 
 import { updatePublicProfileAction } from "@/app/account/actions/update-public-profile";
+import { X } from "lucide-react";
 
 type PublicProfileFormProps = {
   initialUsername?: string;
@@ -17,9 +18,30 @@ export default function PublicProfileForm({
   initialFocus,
   initialLocation,
 }: PublicProfileFormProps) {
+  const parseTagList = (raw?: string | null) => {
+    const seen = new Set<string>();
+    return (raw || "")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .filter((tag) => {
+        const normalized = tag.toLowerCase();
+        if (seen.has(normalized)) return false;
+        seen.add(normalized);
+        return true;
+      });
+  };
+
+  const serializeTags = (tags: string[]) =>
+    tags
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .join(",");
   const [username, setUsername] = useState(initialUsername ?? "");
   const [headline, setHeadline] = useState(initialHeadline ?? "");
-  const [focus, setFocus] = useState(initialFocus ?? "");
+  const [focusTags, setFocusTags] = useState<string[]>(() =>
+    parseTagList(initialFocus)
+  );
   const [location, setLocation] = useState(initialLocation ?? "");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -27,10 +49,15 @@ export default function PublicProfileForm({
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const abortRef = useRef<AbortController | null>(null);
+  const [focusInput, setFocusInput] = useState("");
 
   useEffect(() => setUsername(initialUsername ?? ""), [initialUsername]);
-  useEffect(() => setHeadline(initialHeadline ?? ""), [initialHeadline]);
-  useEffect(() => setFocus(initialFocus ?? ""), [initialFocus]);
+  useEffect(() => {
+    setHeadline(initialHeadline ?? "");
+  }, [initialHeadline]);
+  useEffect(() => {
+    setFocusTags(parseTagList(initialFocus));
+  }, [initialFocus]);
   useEffect(() => setLocation(initialLocation ?? ""), [initialLocation]);
 
   useEffect(() => {
@@ -68,7 +95,7 @@ export default function PublicProfileForm({
     const formData = new FormData();
     formData.set("username", username);
     formData.set("headline", headline);
-    formData.set("focus", focus);
+    formData.set("focus", serializeTags(focusTags));
     formData.set("location", location);
 
     startTransition(async () => {
@@ -85,6 +112,29 @@ export default function PublicProfileForm({
         );
       }
     });
+  };
+
+  const addTag = (
+    value: string,
+    tags: string[],
+    setTags: React.Dispatch<React.SetStateAction<string[]>>,
+    clearInput: () => void
+  ) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    if (tags.some((tag) => tag.toLowerCase() === trimmed.toLowerCase())) {
+      clearInput();
+      return;
+    }
+    setTags([...tags, trimmed]);
+    clearInput();
+  };
+
+  const removeTag = (
+    tag: string,
+    setTags: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setTags((prev) => prev.filter((item) => item !== tag));
   };
 
   const handleSelectLocation = (value: string) => {
@@ -142,21 +192,62 @@ export default function PublicProfileForm({
             value={headline}
             onChange={(event) => setHeadline(event.target.value)}
             className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
-            placeholder="Morning energy and focus guardrails."
+            placeholder="Deep work and morning movement"
             maxLength={140}
           />
+          <span className="text-muted-foreground lg:text-[10px] xl:text-[11px]">
+            Keep it short. This headline appears in search.
+          </span>
         </label>
 
         <label className="flex flex-col gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm">
           <span className="text-muted-foreground">Focus</span>
-          <input
-            name="focus"
-            value={focus}
-            onChange={(event) => setFocus(event.target.value)}
-            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
-            placeholder="Deep work, recovery, morning energy"
-            maxLength={80}
-          />
+          <div
+            className={`rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-2 xl:py-3 shadow-sm ${
+              focusTags.length > 0 && "space-y-3"
+            }`}
+          >
+            <div className="flex flex-wrap gap-2">
+              {focusTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 rounded-full bg-muted text-muted-foreground lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] font-semibold"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      removeTag(tag, setFocusTags);
+                    }}
+                    className="text-muted-foreground hover:text-primary"
+                    aria-label={`Remove ${tag}`}
+                  >
+                    <X className="lg:w-1 lg:h-1 xl:w-2 xl:h-2" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <input
+              value={focusInput}
+              onChange={(event) => setFocusInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === ",") {
+                  event.preventDefault();
+                  addTag(focusInput, focusTags, setFocusTags, () =>
+                    setFocusInput("")
+                  );
+                }
+              }}
+              className="w-full border-none bg-transparent lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+              placeholder="Add focus areas"
+              maxLength={120}
+            />
+          </div>
+          <span className="text-muted-foreground lg:text-[10px] xl:text-[11px]">
+            These tags show up in search to describe your focus.
+          </span>
         </label>
 
         <div className="relative">
