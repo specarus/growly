@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Asterisk, Check, Flame, LifeBuoy, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Asterisk,
+  Check,
+  Flame,
+  LifeBuoy,
+  Plus,
+} from "lucide-react";
 
 import QuantityMenu from "./quantity-menu";
 import type { Habit, MenuPosition, RescueWindow } from "../types";
@@ -77,16 +84,7 @@ const HabitRow: React.FC<Props> = ({
 
   return (
     <div
-      role="button"
-      tabIndex={0}
       onMouseEnter={() => onHover(habit.id)}
-      onClick={() => onNavigate(habit.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onNavigate(habit.id);
-        }
-      }}
       className={`grid gap-1 w-full text-left grid-cols-6 lg:px-3 xl:px-4 lg:py-2 xl:py-3 items-center lg:text-[11px] xl:text-xs 2xl:text-sm transition ${
         isSelected ? "bg-primary/5" : "bg-white/60 hover:bg-primary/5"
       }`}
@@ -135,7 +133,7 @@ const HabitRow: React.FC<Props> = ({
         <Flame className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
         <span className="font-semibold">{streakValue}d</span>
       </div>
-      <div className="col-span-2 flex items-center justify-between">
+      <div className="col-span-2 flex flex-col lg:flex-row items-center lg:items-start justify-between gap-2">
         <div className="flex items-center">
           {isComplete ? (
             <span className="flex items-center gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-emerald-500">
@@ -158,30 +156,42 @@ const HabitRow: React.FC<Props> = ({
             </div>
           )}
         </div>
-        <div className="relative" ref={anchorRef}>
+        <div className="flex items-center gap-2 lg:gap-3">
           <button
             type="button"
-            className="flex lg:h-6 xl:h-8 lg:w-6 xl:w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
-            aria-haspopup="true"
-            aria-expanded={isMenuOpen}
             onClick={(event) => {
               event.stopPropagation();
-              onToggleMenu(habit.id, anchorRef.current);
+              onNavigate(habit.id);
             }}
+            className="grid place-items-center lg:h-6 xl:h-8 lg:w-6 xl:w-8 rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
           >
-            <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+            <ArrowRight className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
           </button>
-          <QuantityMenu
-            habitId={habit.id}
-            isOpen={isMenuOpen}
-            customValue={customQuantity}
-            onCustomValueChange={onCustomQuantityChange}
-            onAdd={onAddQuantity}
-            onReset={onReset}
-            menuPosition={menuPosition}
-            menuWidth={menuWidth}
-            registerMenu={registerMenu}
-          />
+          <div className="relative" ref={anchorRef}>
+            <button
+              type="button"
+              className="flex lg:h-6 xl:h-8 lg:w-6 xl:w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-primary shadow-sm transition hover:border-primary/70"
+              aria-haspopup="true"
+              aria-expanded={isMenuOpen}
+              onClick={(event) => {
+                event.stopPropagation();
+                onToggleMenu(habit.id, anchorRef.current);
+              }}
+            >
+              <Plus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+            </button>
+            <QuantityMenu
+              habitId={habit.id}
+              isOpen={isMenuOpen}
+              customValue={customQuantity}
+              onCustomValueChange={onCustomQuantityChange}
+              onAdd={onAddQuantity}
+              onReset={onReset}
+              menuPosition={menuPosition}
+              menuWidth={menuWidth}
+              registerMenu={registerMenu}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ type FriendStatus = "none" | "incoming" | "outgoing" | "friends";
 const formatXP = (value: number) => value.toLocaleString("en-US");
 
 const badgeClass =
-  "inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground";
+  "inline-flex items-center gap-1 shadow-inner rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground";
 
 const focusPillClass =
   "inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/5 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-primary shadow-inner";
@@ -479,7 +479,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
                         {selectedFriend.name}
                       </h3>
-                      <div className="flex flex-col gap-1 bg-muted/50 rounded-2xl p-2 shadow-inner w-fit">
+                      <div className="flex lg:gap-1.5 xl:gap-2 bg-muted/30 rounded-xl p-2 border border-muted">
                         <div>
                           {selectedFriend.username ? (
                             <span className={badgeClass}>
@@ -488,7 +488,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           ) : null}
                         </div>
                         <span className={badgeClass}>
-                          <MapPin className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                          <MapPin className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 text-primary" />
                           {selectedFriend.location ?? "Remote"}
                         </span>
                       </div>
@@ -517,7 +517,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center lg:gap-4 xl:gap-6">
+                  <div className="flex items-center lg:gap-3 xl:gap-5">
                     {connectionState(selectedFriend.id) === "friends" ? (
                       <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold shadow-sm text-primary">
                         <Handshake className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
@@ -547,7 +547,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           : "Add friend"}
                       </button>
                     )}
-                    <div className="flex flex-col items-center gap-2 text-right">
+                    <div className="flex flex-col items-end gap-2 text-right">
                       <CircularProgress
                         progress={Math.min(100, selectedFriend.xpProgress)}
                         size={80}
@@ -563,7 +563,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                           </span>
                         </div>
                       </CircularProgress>
-                      <div className="text-center lg:text-[10px] xl:text-[11px] 2xl:text-xs text-muted-foreground space-y-0.5">
+                      <div className="lg:text-[10px] xl:text-[11px] 2xl:text-xs text-muted-foreground space-y-0.5">
                         <p>{formatXP(selectedFriend.totalXP)} XP total</p>
                         <p>
                           {formatXP(

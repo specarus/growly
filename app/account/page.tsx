@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import {
+  ArrowRight,
   CalendarDays,
   EyeOff,
   Flame,
@@ -357,50 +358,80 @@ export default async function AccountPage() {
                   </div>
                 </div>
               </div>
-              <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-inner shadow-primary/20 h-fit">
-                <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
-                  Momentum
-                </p>
-                {analytics ? (
-                  <>
-                    <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
-                      {analytics.stats[0]?.value ?? "—"} streak
-                    </p>
-                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                      Focused energy made possible by calm reminders and gentle
-                      check-ins.
-                    </p>
-                    <div className="lg:mt-4 xl:mt-5 2xl:mt-6 grid lg:gap-2 xl:gap-3">
-                      {analytics.stats.map((stat) => (
-                        <div
-                          key={stat.label}
-                          className="flex items-center justify-between rounded-2xl bg-card lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm"
-                        >
-                          <span className="text-muted-foreground">
-                            {stat.label}
-                          </span>
-                          <span className={stat.tone + " font-semibold"}>
-                            {stat.value}
-                          </span>
-                        </div>
-                      ))}
+
+              <div className="lg:space-y-4 xl:space-y-6">
+                <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-inner shadow-primary/20 h-fit">
+                  <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
+                    Momentum
+                  </p>
+                  {analytics ? (
+                    <>
+                      <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
+                        {analytics.stats[0]?.value ?? "—"} streak
+                      </p>
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                        Focused energy made possible by calm reminders and
+                        gentle check-ins.
+                      </p>
+                      <div className="lg:mt-4 xl:mt-5 2xl:mt-6 grid lg:gap-2 xl:gap-3">
+                        {analytics.stats.map((stat) => (
+                          <div
+                            key={stat.label}
+                            className="flex items-center justify-between rounded-2xl bg-card lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm"
+                          >
+                            <span className="text-muted-foreground">
+                              {stat.label}
+                            </span>
+                            <span className={stat.tone + " font-semibold"}>
+                              {stat.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="lg:space-y-2 xl:space-y-3">
+                      <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
+                        Analytics paused
+                      </p>
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
+                        Your account is private, so streak and weekly stats stay
+                        hidden. Switch privacy off below to bring them back.
+                      </p>
+                      <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/20 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-primary lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
+                        <EyeOff className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        Private mode on
+                      </div>
                     </div>
-                  </>
-                ) : (
-                  <div className="lg:space-y-2 xl:space-y-3">
-                    <p className="lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground">
-                      Analytics paused
-                    </p>
-                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                      Your account is private, so streak and weekly stats stay
-                      hidden. Switch privacy off below to bring them back.
-                    </p>
-                    <div className="flex items-center gap-2 rounded-full bg-white/80 border border-primary/20 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-primary lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold">
-                      <EyeOff className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                      Private mode on
+                  )}
+                </div>
+                <div
+                  className="relative bg-cover bg-no-repeat overflow-hidden rounded-3xl border border-gray-100 shadow-inner shadow-black/5 h-[1000px]"
+                  style={{ backgroundImage: "url(/grow.jpg)" }}
+                >
+                  <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/30 to-black/80" />
+                  <div className="h-full flex flex-col justify-between relative lg:px-6 xl:px-8 2xl:px-10 lg:py-8 xl:py-10 space-y-3 text-white">
+                    <div>
+                      <p className="lg:text-[11px] xl:text-xs uppercase tracking-[0.4em] text-white/80">
+                        Keep the flame alive
+                      </p>
+                      <h3 className="lg:text-xl xl:text-2xl 2xl:text-3xl font-semibold">
+                        Growly discipline in full color
+                      </h3>
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-white/80">
+                        Let this rhythm remind you to log another habit or tidy
+                        a todo.
+                      </p>
                     </div>
+                    <Link
+                      href={"/dashboard"}
+                      className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em]"
+                    >
+                      <ArrowRight className="lg:h-3 lg:w-3 xl:h-4 xl:w-4 text-white" />
+                      Continue building streaks
+                    </Link>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 

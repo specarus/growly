@@ -67,7 +67,7 @@ export default function PrivacySettings({ initialPrivate }: Props) {
           } disabled:opacity-60 disabled:cursor-not-allowed`}
         >
           <span
-            className={`inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm transition-transform ${
+            className={`inline-flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm transition-transform ${
               isPrivate ? "translate-x-5" : "translate-x-1"
             }`}
           >
