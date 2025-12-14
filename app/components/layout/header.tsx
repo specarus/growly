@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -9,7 +15,6 @@ import { useTheme } from "@/app/context/theme-context";
 import { useXP } from "@/app/context/xp-context";
 import { BADGE_TIERS } from "@/lib/badges";
 import { signOut } from "@/lib/actions/auth-actions";
-import type { XPActivityEntry } from "@/types/xp";
 import {
   Bell,
   ChevronDown,
@@ -44,15 +49,13 @@ type BadgeInfo = {
 
 type FriendRequest = {
   id: string;
-  name: string;
-  mutual?: string;
-  requestedAt?: string;
+  fromName: string;
+  createdAt?: string | null;
 };
 
 function NotificationsDropdown() {
-  const { activityLog } = useXP();
+  const { activityLog, markNotificationsRead } = useXP();
   const [isOpen, setIsOpen] = useState(false);
-  const [xpNotifications, setXpNotifications] = useState<XPActivityEntry[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,19 +73,57 @@ function NotificationsDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    setXpNotifications(activityLog.slice(0, 5));
-  }, [activityLog]);
-
   const handleMarkXpRead = (id: string) => {
-    setXpNotifications((prev) => prev.filter((entry) => entry.id !== id));
+    void markNotificationsRead([id]);
   };
 
   const handleMarkFriendRead = (id: string) => {
     setFriendRequests((prev) => prev.filter((request) => request.id !== id));
+    void fetch(`/api/friends/requests/${id}/decline`, { method: "POST" }).catch(
+      (error) => console.error("[NotificationsDropdown] decline request", error)
+    );
   };
 
-  const totalCount = xpNotifications.length + friendRequests.length;
+  const handleAcceptFriend = async (id: string) => {
+    setFriendRequests((prev) => prev.filter((request) => request.id !== id));
+    try {
+      await fetch(`/api/friends/requests/${id}/accept`, { method: "POST" });
+    } catch (error) {
+      console.error("[NotificationsDropdown] accept friend request", error);
+    }
+  };
+
+  const loadFriendRequests = useCallback(async () => {
+    try {
+      const response = await fetch("/api/friends/requests?direction=incoming", {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      const mapped: FriendRequest[] = (data.requests ?? []).map(
+        (item: FriendRequest & { createdAt?: string | null }) => ({
+          id: item.id,
+          fromName: item.fromName,
+          createdAt: item.createdAt
+            ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            : "New",
+        })
+      );
+      setFriendRequests(mapped);
+    } catch (error) {
+      console.error("[NotificationsDropdown] load friend requests", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadFriendRequests();
+  }, [loadFriendRequests]);
+
+  const visibleXpNotifications = activityLog.slice(0, 5);
+  const totalCount = visibleXpNotifications.length + friendRequests.length;
   const badgeLabel =
     totalCount > 9 ? "9+" : totalCount > 0 ? totalCount.toString() : null;
 
@@ -93,12 +134,9 @@ function NotificationsDropdown() {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-label="Open notifications"
-        className="inline-flex items-center gap-1.5 rounded-full border border-muted lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 bg-white text-xs font-semibold text-muted-foreground transition hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex items-center gap-1.5 rounded-full border border-muted lg:p-1 xl:p-2 bg-white text-xs font-semibold text-muted-foreground transition hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         <Bell className="lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4" />
-        <span className="hidden sm:inline lg:text-[10px] xl:text-xs 2xl:text-sm">
-          Notifications
-        </span>
         {badgeLabel ? (
           <span className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 lg:text-[9px] xl:text-[10px] font-bold">
             {badgeLabel}
@@ -107,32 +145,32 @@ function NotificationsDropdown() {
       </button>
 
       <div
-        className={`absolute right-0 top-full lg:mt-2 xl:mt-3 w-72 lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200 transition-all duration-200 ease-out z-50 ${
+        className={`absolute right-0 top-full lg:mt-2 xl:mt-3 w-72 lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200 dark:shadow-black/40 transition-all duration-200 ease-out z-50 ${
           isOpen
             ? "opacity-100 visible translate-y-0 pointer-events-auto"
             : "opacity-0 invisible translate-y-2 pointer-events-none"
         }`}
       >
         <div className="flex items-center justify-between lg:px-3 xl:px-4 lg:py-2 xl:py-3">
-          <p className="lg:text-[10px] xl:text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+          <p className="lg:text-[9px] xl:text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Notifications
           </p>
-          <span className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
+          <span className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
             {badgeLabel ? `${totalCount} new` : "Up to date"}
           </span>
         </div>
-        <div className="border-t border-gray-50 lg:px-3 xl:px-4 lg:py-3 xl:py-4 space-y-3">
+        <div className="border-t border-gray-50 lg:px-3 xl:px-4 lg:py-2 xl:py-3 space-y-3">
           <div>
-            <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.24em] text-primary font-semibold">
+            <p className="lg:text-[9px] xl:text-[10px] uppercase tracking-[0.24em] text-primary font-semibold">
               XP updates
             </p>
-            {xpNotifications.length === 0 ? (
-              <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground mt-1">
+            {activityLog.length === 0 ? (
+              <p className="lg:text-[9px] xl:text-[10px] text-muted-foreground mt-1">
                 No XP activity yet. Complete a todo or habit to log XP.
               </p>
             ) : (
               <div className="mt-1 grid gap-2">
-                {xpNotifications.map((entry) => (
+                {visibleXpNotifications.map((entry) => (
                   <div
                     key={entry.id}
                     className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 lg:px-2.5 xl:px-3 lg:py-1.5 xl:py-2"
@@ -166,17 +204,17 @@ function NotificationsDropdown() {
             )}
           </div>
 
-          <div className="border-t border-gray-100 pt-3">
+          <div className="border-t border-gray-100 pt-2">
             <div className="flex items-center justify-between">
-              <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.24em] text-muted-foreground font-semibold">
+              <p className="lg:text-[9px] xl:text-[10px] uppercase tracking-[0.24em] text-muted-foreground font-semibold">
                 Friend requests
               </p>
               <Users className="lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-muted-foreground" />
             </div>
             {friendRequests.length === 0 ? (
-              <p className="mt-1 lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                No friend requests right now. Check back after connecting in
-                the community.
+              <p className="mt-1 lg:text-[9px] xl:text-[10px] text-muted-foreground">
+                No friend requests right now. Check back after connecting in the
+                community.
               </p>
             ) : (
               <div className="mt-2 space-y-2">
@@ -187,22 +225,29 @@ function NotificationsDropdown() {
                   >
                     <div className="min-w-0">
                       <p className="lg:text-[10px] xl:text-xs font-semibold text-foreground">
-                        {request.name}
+                        {request.fromName}
                       </p>
                       <p className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
-                        {request.mutual ?? "Waiting to connect"}
+                        wants to connect
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
-                        {request.requestedAt ?? "New"}
+                        {request.createdAt ?? "New"}
                       </span>
+                      <button
+                        type="button"
+                        onClick={() => handleAcceptFriend(request.id)}
+                        className="lg:text-[9px] xl:text-[10px] text-primary hover:text-primary/80 underline-offset-2 hover:underline"
+                      >
+                        Accept
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleMarkFriendRead(request.id)}
                         className="lg:text-[9px] xl:text-[10px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline"
                       >
-                        Mark as read
+                        Dismiss
                       </button>
                     </div>
                   </div>
@@ -271,7 +316,9 @@ function AccountDropdown({ session, badge }: AccountDropdownProps) {
         <User className="lg:h-3 lg:w-3 xl:h-4 xl:w-4" />
         <p className="lg:text-[10px] xl:text-xs 2xl:text-sm truncate">{name}</p>
         {badge ? (
-          <span className={`hidden sm:inline-flex items-center gap-1 rounded-full border border-white/40 lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 text-[10px] font-semibold shadow-sm ${badge.className}`}>
+          <span
+            className={`hidden sm:inline-flex items-center gap-1 rounded-full border border-white/40 lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 text-[10px] font-semibold shadow-sm ${badge.className}`}
+          >
             <Medal className="lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5" />
             <span className="uppercase tracking-wider">{badge.stage}</span>
           </span>
@@ -284,7 +331,7 @@ function AccountDropdown({ session, badge }: AccountDropdownProps) {
       </button>
 
       <div
-        className={`absolute right-0 top-full lg:mt-2 xl:mt-3 lg:w-40 xl:w-56 lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200 transition-all duration-200 ease-out z-50 ${
+        className={`absolute right-0 top-full lg:mt-2 xl:mt-3 lg:w-40 xl:w-56 lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-200 dark:shadow-black/40 transition-all duration-200 ease-out z-50 ${
           isOpen
             ? "opacity-100 visible translate-y-0 pointer-events-auto"
             : "opacity-0 invisible translate-y-2 pointer-events-none"

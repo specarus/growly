@@ -43,6 +43,7 @@ interface XPContextValue extends GamificationState {
   loading: boolean;
   celebration: CelebrationEvent | null;
   clearCelebration: () => void;
+  markNotificationsRead: (ids: string[]) => Promise<void>;
 }
 
 const XPContext = createContext<XPContextValue | undefined>(undefined);
@@ -240,6 +241,34 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
 
   const clearCelebration = useCallback(() => setCelebration(null), []);
 
+  const markNotificationsRead = useCallback(
+    async (ids: string[]) => {
+      if (!session?.user?.id) return;
+
+      const uniqueIds = Array.from(
+        new Set(ids.filter((id) => typeof id === "string" && id.length > 0))
+      );
+
+      if (uniqueIds.length === 0) return;
+
+      setActivityLog((prev) =>
+        prev.filter((entry) => !uniqueIds.includes(entry.id))
+      );
+
+      try {
+        await fetch("/api/notifications/read", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: uniqueIds }),
+        });
+      } catch (error) {
+        console.error("[XPProvider] mark notifications read", error);
+        void refreshXP();
+      }
+    },
+    [session?.user?.id, refreshXP]
+  );
+
   const loading = totalXP === null;
 
   const value = useMemo(
@@ -256,6 +285,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       refreshXP,
       celebration,
       clearCelebration,
+      markNotificationsRead,
       loading,
     }),
     [
@@ -271,6 +301,7 @@ export const XPProvider: React.FC<XPProviderProps> = ({ children }) => {
       refreshXP,
       celebration,
       clearCelebration,
+      markNotificationsRead,
       loading,
     ]
   );

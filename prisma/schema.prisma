@@ -33,6 +33,9 @@ model User {
   postHabitLikes PostHabitLike[]
   shouldDos     ShouldDo[]
   shouldDoLikes ShouldDoLike[]
+  notificationReads NotificationRead[]
+  sentFriendRequests FriendRequest[] @relation("FriendRequestFrom")
+  receivedFriendRequests FriendRequest[] @relation("FriendRequestTo")
   streakGoalDays Int? @default(21)
 
   @@unique([email])
@@ -300,6 +303,36 @@ model RoutineHabit {
   @@map("routine_habit")
 }
 
+model NotificationRead {
+  id              String   @id @default(uuid())
+  userId          String
+  notificationId  String
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationId])
+  @@index([userId])
+  @@map("notification_read")
+}
+
+model FriendRequest {
+  id         String               @id @default(uuid())
+  fromUserId String
+  toUserId   String
+  status     FriendRequestStatus  @default(PENDING)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @default(now()) @updatedAt
+
+  fromUser User @relation("FriendRequestFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("FriendRequestTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, status])
+  @@index([fromUserId, status])
+  @@map("friend_request")
+}
+
 enum TodoPriority {
   LOW
   MEDIUM
@@ -334,4 +367,10 @@ enum HabitTimeWindow {
   Morning
   Workday
   Evening
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }

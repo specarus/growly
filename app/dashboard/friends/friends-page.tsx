@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import {
-  Activity,
   ArrowRight,
   HandHeart,
   Heart,
+  LayoutDashboard,
   Lock,
   MapPin,
   Search,
@@ -24,6 +24,8 @@ type FriendsPageProps = {
   friends: FriendProfile[];
 };
 
+type FriendStatus = "none" | "incoming" | "outgoing" | "friends";
+
 const formatXP = (value: number) => value.toLocaleString("en-US");
 
 const badgeClass =
@@ -38,9 +40,37 @@ const HabitPill: React.FC<{ label: string }> = ({ label }) => (
 const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(friends[0]?.id ?? "");
-  const [connections, setConnections] = useState<
-    Record<string, "connected" | "requested">
-  >({});
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [friendStatuses, setFriendStatuses] = useState<
+    Record<string, { status: FriendStatus; requestId?: string }>
+  >(() =>
+    friends.reduce<
+      Record<string, { status: FriendStatus; requestId?: string }>
+    >((acc, friend) => {
+      acc[friend.id] = {
+        status: friend.friendStatus ?? "none",
+        requestId: friend.requestId,
+      };
+      return acc;
+    }, {})
+  );
+
+  useEffect(() => {
+    setFriendStatuses(
+      friends.reduce<
+        Record<string, { status: FriendStatus; requestId?: string }>
+      >((acc, friend) => {
+        acc[friend.id] = {
+          status: friend.friendStatus ?? "none",
+          requestId: friend.requestId,
+        };
+        return acc;
+      }, {})
+    );
+    setSelectedId((prev) => prev || (friends[0]?.id ?? ""));
+  }, [friends]);
 
   const filteredFriends = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -75,18 +105,84 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
     }
   };
 
-  const handleConnect = (id: string) => {
-    setConnections((current) => {
-      if (current[id] === "connected") {
-        const { [id]: _removed, ...rest } = current;
-        return rest;
+  const connectionState = (id: string): FriendStatus =>
+    friendStatuses[id]?.status ?? "none";
+
+  const setLoading = (id: string, loading: boolean) =>
+    setActionLoading((prev) => ({ ...prev, [id]: loading }));
+
+  const updateStatus = (id: string, status: FriendStatus, requestId?: string) =>
+    setFriendStatuses((prev) => ({
+      ...prev,
+      [id]: { status, requestId },
+    }));
+
+  const sendFriendRequest = async (id: string) => {
+    if (actionLoading[id]) return;
+    const previous = friendStatuses[id] ?? { status: "none" as FriendStatus };
+    setLoading(id, true);
+    updateStatus(id, "outgoing", previous.requestId);
+
+    try {
+      const response = await fetch("/api/friends/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send friend request");
       }
-      return { ...current, [id]: "connected" };
-    });
+
+      const data = await response.json().catch(() => ({}));
+      updateStatus(id, "outgoing", data.requestId ?? previous.requestId);
+    } catch (error) {
+      console.error("[FriendsPage] send friend request", error);
+      updateStatus(id, previous.status, previous.requestId);
+    } finally {
+      setLoading(id, false);
+    }
   };
 
-  const connectionState = (id: string) =>
-    connections[id] ? "connected" : "add";
+  const acceptFriendRequest = async (id: string) => {
+    if (actionLoading[id]) return;
+    const requestId =
+      friendStatuses[id]?.requestId ??
+      friends.find((friend) => friend.id === id)?.requestId;
+    if (!requestId) return;
+
+    const previous = friendStatuses[id] ?? {
+      status: "incoming" as FriendStatus,
+    };
+    setLoading(id, true);
+    updateStatus(id, "friends", requestId);
+
+    try {
+      const response = await fetch(
+        `/api/friends/requests/${requestId}/accept`,
+        {
+          method: "POST",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to accept friend request");
+      }
+    } catch (error) {
+      console.error("[FriendsPage] accept friend request", error);
+      updateStatus(id, previous.status, previous.requestId);
+    } finally {
+      setLoading(id, false);
+    }
+  };
+
+  const handleConnect = (id: string) => {
+    const status = connectionState(id);
+    if (status === "none") {
+      void sendFriendRequest(id);
+    } else if (status === "incoming") {
+      void acceptFriendRequest(id);
+    }
+  };
 
   const renderLikedHabit = (habit: FriendHabit) => (
     <article
@@ -142,11 +238,11 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
           titleClassName="font-bold"
           actions={
             <Link
-              href="/dashboard/habits"
+              href="/dashboard"
               className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white lg:px-3 xl:px-4 lg:py-1.5 xl:py-2 lg:text-[10px] xl:text-xs font-semibold text-muted-foreground hover:border-primary/40 hover:text-primary transition shadow-sm"
             >
-              <Users className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-              Habit board
+              <LayoutDashboard className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+              Back to dashboard
             </Link>
           }
         />
@@ -192,6 +288,18 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                   const isSelected = friend.id === selectedFriend?.id;
                   const status = connectionState(friend.id);
                   const levelLabel = `Level ${friend.level}`;
+                  const buttonLabel =
+                    status === "friends"
+                      ? "Friends"
+                      : status === "outgoing"
+                      ? "Request sent"
+                      : status === "incoming"
+                      ? "Accept request"
+                      : "Add friend";
+                  const disabled =
+                    status === "friends" ||
+                    status === "outgoing" ||
+                    actionLoading[friend.id];
                   return (
                     <article
                       key={friend.id}
@@ -199,9 +307,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       tabIndex={0}
                       aria-pressed={isSelected}
                       onClick={() => handleCardActivate(friend.id)}
-                      onKeyDown={(event) =>
-                        handleCardKeyDown(event, friend.id)
-                      }
+                      onKeyDown={(event) => handleCardKeyDown(event, friend.id)}
                       className={`w-full text-left rounded-2xl border lg:p-3 xl:p-4 transition shadow-sm flex flex-col gap-3 ${
                         isSelected
                           ? "border-primary/50 bg-primary/5"
@@ -254,13 +360,18 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                             handleConnect(friend.id);
                           }}
                           className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
-                            status === "connected"
+                            status === "friends"
+                              ? "border-primary bg-primary text-white"
+                              : status === "outgoing"
+                              ? "border-primary/50 bg-primary/5 text-primary"
+                              : status === "incoming"
                               ? "border-primary bg-primary text-white"
                               : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
                           }`}
+                          disabled={disabled}
                         >
                           <UserPlus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                          {status === "connected" ? "Friends" : "Add friend"}
+                          {buttonLabel}
                         </button>
                       </div>
                     </article>
@@ -353,14 +464,27 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                       type="button"
                       onClick={() => handleConnect(selectedFriend.id)}
                       className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-[11px] xl:text-xs font-semibold transition shadow-sm ${
-                        connectionState(selectedFriend.id) === "connected"
+                        connectionState(selectedFriend.id) === "friends"
+                          ? "border-primary bg-primary text-white"
+                          : connectionState(selectedFriend.id) === "outgoing"
+                          ? "border-primary/50 bg-primary/5 text-primary"
+                          : connectionState(selectedFriend.id) === "incoming"
                           ? "border-primary bg-primary text-white"
                           : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
                       }`}
+                      disabled={
+                        actionLoading[selectedFriend.id] ||
+                        connectionState(selectedFriend.id) === "friends" ||
+                        connectionState(selectedFriend.id) === "outgoing"
+                      }
                     >
                       <UserPlus className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                      {connectionState(selectedFriend.id) === "connected"
+                      {connectionState(selectedFriend.id) === "friends"
                         ? "Friends"
+                        : connectionState(selectedFriend.id) === "outgoing"
+                        ? "Request sent"
+                        : connectionState(selectedFriend.id) === "incoming"
+                        ? "Accept request"
                         : "Add friend"}
                     </button>
                   </div>
@@ -426,7 +550,9 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         Liked habits
                       </p>
                       <h4 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
-                        What {selectedFriend.name.split(" ")[0] ?? "this friend"} is into
+                        What{" "}
+                        {selectedFriend.name.split(" ")[0] ?? "this friend"} is
+                        into
                       </h4>
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-full bg-white border border-gray-100 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-[11px] 2xl:text-xs font-semibold text-muted-foreground">

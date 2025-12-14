@@ -215,10 +215,34 @@ export async function GET(request: Request) {
   const streakBonus = Math.min(MAX_STREAK_BONUS, streak * 10);
   const activity = buildActivityLog(recentCompletions, habitProgressEntries);
 
+  let readEntries: Array<{ notificationId: string }> = [];
+
+  if (activity.length > 0) {
+    try {
+      readEntries = await (prisma as any).notificationRead.findMany({
+        where: {
+          userId,
+          notificationId: { in: activity.map((entry) => entry.id) },
+        },
+        select: { notificationId: true },
+      });
+    } catch (error) {
+      console.error("[XP GET] read notifications lookup", error);
+    }
+  }
+
+  const readSet = new Set(
+    readEntries.map(
+      (entry: { notificationId: string }) => entry.notificationId
+    )
+  );
+
+  const unreadActivity = activity.filter((entry) => !readSet.has(entry.id));
+
   return NextResponse.json({
     totalXP: totalTodosXP + totalHabitXP,
     todayXP: todayTodoXP + todayHabitXP,
     streakBonus,
-    activity,
+    activity: unreadActivity,
   });
 }
