@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -122,6 +116,23 @@ function NotificationsDropdown() {
     void loadFriendRequests();
   }, [loadFriendRequests]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const handleFriendRequestChange = () => {
+      void loadFriendRequests();
+    };
+    window.addEventListener(
+      "friend-request-status-changed",
+      handleFriendRequestChange
+    );
+    return () => {
+      window.removeEventListener(
+        "friend-request-status-changed",
+        handleFriendRequestChange
+      );
+    };
+  }, [loadFriendRequests]);
+
   const visibleXpNotifications = activityLog.slice(0, 5);
   const totalCount = visibleXpNotifications.length + friendRequests.length;
   const badgeLabel =
@@ -138,7 +149,7 @@ function NotificationsDropdown() {
       >
         <Bell className="lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4" />
         {badgeLabel ? (
-          <span className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:px-1.5 xl:px-2 lg:py-0.5 xl:py-0.5 lg:text-[9px] xl:text-[10px] font-bold">
+          <span className="inline-flex items-center justify-center rounded-full bg-primary text-white lg:w-4 lg:h-4 xl:w-5 xl:h-5 lg:text-[9px] xl:text-[10px] font-bold">
             {badgeLabel}
           </span>
         ) : null}
@@ -176,7 +187,7 @@ function NotificationsDropdown() {
                     className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 lg:px-2.5 xl:px-3 lg:py-1.5 xl:py-2"
                   >
                     <div className="flex flex-col min-w-0">
-                      <span className="lg:text-[10px] xl:text-xs font-semibold text-foreground">
+                      <span className="lg:text-[9px] xl:text-[11px] font-semibold text-foreground">
                         {entry.label}
                       </span>
                       {entry.detail ? (
@@ -228,7 +239,7 @@ function NotificationsDropdown() {
                         {request.fromName}
                       </p>
                       <p className="lg:text-[9px] xl:text-[10px] text-muted-foreground">
-                        wants to connect
+                        wants to be friends
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">

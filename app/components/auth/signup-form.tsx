@@ -123,7 +123,7 @@ const SignupForm: React.FC<FormProps> = ({ setIsLogin }) => {
             <Lock className="absolute lg:left-3 xl:left-5 top-1/2 -translate-y-1/2 lg:w-3 lg:h-3 xl:h-4 xl:w-4 text-muted-foreground" />
             <Input
               id="signup-password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

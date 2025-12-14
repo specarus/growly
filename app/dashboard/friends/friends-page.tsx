@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import {
   ArrowRight,
   HandHeart,
+  Handshake,
   Heart,
   LayoutDashboard,
   Lock,
   MapPin,
   Search,
-  Sparkles,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -117,6 +117,18 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
       [id]: { status, requestId },
     }));
 
+  const dispatchFriendRequestStatusChange = (
+    id: string,
+    status: "accepted" | "declined"
+  ) => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("friend-request-status-changed", {
+        detail: { id, status },
+      })
+    );
+  };
+
   const sendFriendRequest = async (id: string) => {
     if (actionLoading[id]) return;
     const previous = friendStatuses[id] ?? { status: "none" as FriendStatus };
@@ -167,6 +179,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
       if (!response.ok) {
         throw new Error("Failed to accept friend request");
       }
+      dispatchFriendRequestStatusChange(id, "accepted");
     } catch (error) {
       console.error("[FriendsPage] accept friend request", error);
       updateStatus(id, previous.status, previous.requestId);
@@ -197,6 +210,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
       if (!response.ok) {
         throw new Error("Failed to cancel friend request");
       }
+      dispatchFriendRequestStatusChange(id, "declined");
     } catch (error) {
       console.error("[FriendsPage] cancel friend request", error);
       updateStatus(id, previous.status, previous.requestId);
@@ -413,26 +427,34 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                         >
                           View profile
                         </button>
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleConnect(friend.id);
-                          }}
-                          className={`flex items-center justify-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
-                            status === "friends"
-                              ? "border-primary bg-primary text-white"
-                              : status === "outgoing"
-                              ? "border-primary/50 bg-primary/5 text-primary"
-                              : status === "incoming"
-                              ? "border-primary bg-primary text-white"
-                              : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                          }`}
-                          disabled={disabled}
-                        >
-                          <UserPlus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                          {buttonLabel}
-                        </button>
+                        {status === "friends" ? (
+                          <div
+                            className="flex items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary/5 text-primary lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold"
+                            aria-label="Friends"
+                          >
+                            <Handshake className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                            Friends
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleConnect(friend.id);
+                            }}
+                            className={`flex items-center justify-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs font-semibold transition ${
+                              status === "outgoing"
+                                ? "border-primary/50 bg-primary/5 text-primary"
+                                : status === "incoming"
+                                ? "border-primary bg-primary text-white"
+                                : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                            }`}
+                            disabled={disabled}
+                          >
+                            <UserPlus className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
+                            {buttonLabel}
+                          </button>
+                        )}
                       </div>
                     </article>
                   );
@@ -496,32 +518,35 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-4 xl:gap-6">
-                    <button
-                      type="button"
-                      onClick={() => handleConnect(selectedFriend.id)}
-                      className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold transition shadow-sm ${
-                        connectionState(selectedFriend.id) === "friends"
-                          ? "border-primary bg-primary text-white"
-                          : connectionState(selectedFriend.id) === "outgoing"
-                          ? "border-primary/50 bg-primary/5 text-primary"
+                    {connectionState(selectedFriend.id) === "friends" ? (
+                      <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold shadow-sm text-primary">
+                        <Handshake className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        Friends
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleConnect(selectedFriend.id)}
+                        className={`inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs font-semibold transition shadow-sm ${
+                          connectionState(selectedFriend.id) === "outgoing"
+                            ? "border-primary/50 bg-primary/5 text-primary"
+                            : connectionState(selectedFriend.id) === "incoming"
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
+                        }`}
+                        disabled={
+                          actionLoading[selectedFriend.id] ||
+                          connectionState(selectedFriend.id) === "friends"
+                        }
+                      >
+                        <UserPlus className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
+                        {connectionState(selectedFriend.id) === "outgoing"
+                          ? "Cancel request"
                           : connectionState(selectedFriend.id) === "incoming"
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-200 bg-white text-muted-foreground hover:border-primary/40"
-                      }`}
-                      disabled={
-                        actionLoading[selectedFriend.id] ||
-                        connectionState(selectedFriend.id) === "friends"
-                      }
-                    >
-                      <UserPlus className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                      {connectionState(selectedFriend.id) === "friends"
-                        ? "Friends"
-                        : connectionState(selectedFriend.id) === "outgoing"
-                        ? "Cancel request"
-                        : connectionState(selectedFriend.id) === "incoming"
-                        ? "Accept request"
-                        : "Add friend"}
-                    </button>
+                          ? "Accept request"
+                          : "Add friend"}
+                      </button>
+                    )}
                     <div className="flex flex-col items-center gap-2 text-right">
                       <CircularProgress
                         progress={Math.min(100, selectedFriend.xpProgress)}

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type Params = {
-  params: { id: string };
+  params: { id: string } | Promise<{ id: string }>;
 };
 
 export async function POST(request: Request, { params }: Params) {
@@ -19,8 +19,17 @@ export async function POST(request: Request, { params }: Params) {
     );
   }
 
+  const { id: requestId } = await params;
+
+  if (!requestId) {
+    return NextResponse.json(
+      { error: "Missing friend request id" },
+      { status: 400 }
+    );
+  }
+
   const requestRecord = await (prisma as any).friendRequest.findUnique({
-    where: { id: params.id },
+    where: { id: requestId },
   });
 
   if (!requestRecord) {
@@ -46,7 +55,7 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   await (prisma as any).friendRequest.update({
-    where: { id: params.id },
+    where: { id: requestId },
     data: { status: "DECLINED" },
   });
 
