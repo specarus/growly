@@ -20,6 +20,7 @@ import type { TodoStatus } from "@prisma/client";
 import GradientCircle from "@/app/components/ui/gradient-circle";
 import PageHeading from "@/app/components/page-heading";
 import { calculateHabitRisk } from "../habits/lib/habit-risk";
+import { normalizeGoal } from "../habits/lib/habits-board-utils";
 
 type TrendPoint = { label: string; value: number };
 
@@ -29,6 +30,8 @@ type HabitInsight = {
   streak: number;
   successRate: number;
   averageCompletion: number;
+  goalAmount: number;
+  dailyProgress?: number | null;
   cadence: string;
   goal: string;
   description?: string | null;
@@ -62,6 +65,16 @@ type Props = {
   habits: HabitInsight[];
   todoStatusCounts: Record<TodoStatus, number>;
   routinePerformance: RoutinePerformance[];
+};
+
+const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
+
+const getDisplayCompletion = (habit: HabitInsight) => {
+  const completionValue = clampPercent(habit.averageCompletion ?? 0);
+  const goal = normalizeGoal(habit.goalAmount);
+  const loggedAmount = Math.max(0, habit.dailyProgress ?? 0);
+  const additionalCompletion = goal > 0 ? (loggedAmount / goal) * 100 : 0;
+  return clampPercent(Math.round(completionValue + additionalCompletion));
 };
 
 const buildAreaPath = (points: number[], width = 720, height = 200) => {
@@ -347,20 +360,17 @@ const AnalyticsClient: React.FC<Props> = ({
       : 0;
 
   const habitRisks = useMemo(() => {
-    const parseGoalAmount = (goal: string) => {
-      if (!goal) return 1;
-      const numeric = Number.parseFloat(goal.replace(/[^\d.-]/g, ""));
-      return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
-    };
-
     return habits
       .map((habit, index) => {
-        const goalAmount = parseGoalAmount(habit.goal);
+        const goalAmountValue = normalizeGoal(habit.goalAmount);
+        const displayCompletion = getDisplayCompletion(habit);
+        const loggedAmount = Math.max(0, habit.dailyProgress ?? 0);
         const risk = calculateHabitRisk({
           streak: habit.streak,
-          averageCompletion: habit.averageCompletion,
+          completion: displayCompletion,
           successRate: habit.successRate,
-          goalAmount,
+          goalAmount: goalAmountValue,
+          loggedAmount,
         });
         const seed = index + habit.id.length;
         const base = risk.score * 100;
@@ -904,7 +914,7 @@ const AnalyticsClient: React.FC<Props> = ({
 
             <div
               ref={routineChartRef}
-              className="relative w-full overflow-hidden rounded-2xl border border-gray-100 bg-linear-to-br from-slate-50 via-white to-emerald-50/40 lg:p-3 xl:p-4 shadow-inner"
+              className="relative w-full overflow-hidden rounded-2xl border border-gray-100 bg-linear-to-br from-slate-50 dark:from-secondary/20 to-emerald-50/40 lg:p-3 xl:p-4 shadow-inner"
             >
               {sortedRoutinePerformance.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-gray-200 bg-white/80 lg:px-3 xl:px-4 lg:py-6 xl:py-8 text-center lg:text-xs xl:text-sm text-muted-foreground">

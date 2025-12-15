@@ -188,8 +188,10 @@ export default async function AnalyticsPage() {
     successRate: habit.successRate,
     averageCompletion: habit.averageCompletion,
     cadence: habit.cadence,
+    goalAmount: habit.goalAmount,
     goal: `${habit.goalAmount} ${habit.goalUnit}`,
     description: habit.description,
+    dailyProgress: habit.dailyProgress ?? 0,
   }));
 
   const habitStatsById = new Map(

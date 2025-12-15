@@ -4,6 +4,7 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import { Loader, Loader2, NotebookPen, Sparkles } from "lucide-react";
 
+import AuroraBackground from "./aurora-background";
 import {
   createHabitReflection,
   fetchRecentHabitReflections,
@@ -104,8 +105,9 @@ const HabitReflections: React.FC<Props> = ({ initialReflections }) => {
   };
 
   return (
-    <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-card to-amber-50 dark:to-secondary/20">
-      <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
+    <div className="relative overflow-hidden lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-card to-amber-50 dark:to-secondary/20">
+      <AuroraBackground amplitude={1.05} blend={0.45} speed={0.4} />
+      <div className="relative z-10 lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">

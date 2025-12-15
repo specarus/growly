@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function PlantBanner() {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-linear-to-br from-white/90 via-light-yellow/80 to-green-soft/70 shadow-sm lg:p-4 xl:p-7 2xl:p-10">
+    <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-linear-to-br from-card/90 dark:via-secondary/20 via-light-yellow/80 to-green-soft/70 shadow-sm lg:p-4 xl:p-7 2xl:p-10">
       <div className="pointer-events-none absolute -top-6 right-6 h-32 w-32 rounded-full bg-primary/30 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-6 left-6 h-32 w-32 rounded-full bg-green-soft/40 blur-3xl" />
       <div className="relative z-10">

@@ -35,6 +35,7 @@ import { Cadence, HabitFormState, UnitCategory } from "./types";
 import type { PopularPost } from "../popular/types";
 
 import { buildTemplates } from "./templates";
+import AuroraBackground from "../components/aurora-background";
 
 interface HabitFormProps {
   mode?: "create" | "edit";
@@ -897,72 +898,80 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
               </form>
 
               <aside className="lg:space-y-3 xl:space-y-4">
-                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-linear-to-br from-white/80 via-slate-50 to-slate-100 lg:p-4 xl:p-5 shadow-inner dark:border-white/10 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-                  <div className="pointer-events-none absolute -top-4 right-6 h-32 w-32 rounded-full bg-primary/20 blur-3xl dark:hidden" />
-                  <div className="pointer-events-none absolute -bottom-10 left-6 h-36 w-36 rounded-[2.5rem] bg-green-soft/30 blur-[90px] dark:hidden" />
-                  <div className="flex items-center justify-between lg:mb-2 xl:mb-3">
-                    <div className="flex items-center lg:gap-1.5 xl:gap-2">
-                      <span className="font-semibold lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary/20 text-primary lg:px-2 xl:px-3 2xl:px-4 lg:py-0.5 xl:py-1 rounded-full flex gap-2 items-center">
-                        <View className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
-                        Habit preview
+                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-card bg-linear-to-br from-white/80 via-card to-card shadow-inner dark:border-white/10 dark:bg-card dark:bg-linear-to-br dark:from-card dark:via-card dark:to-card">
+                  <AuroraBackground
+                    colorStops={["#ffffff", "#f8fafc", "#e2e8f0"]}
+                    amplitude={0.85}
+                    blend={0.45}
+                    speed={0.4}
+                  />
+                  <div className="relative z-10 lg:p-4 xl:p-5 lg:space-y-3 xl:space-y-4">
+                    <div className="pointer-events-none absolute -top-4 right-6 h-32 w-32 rounded-full bg-primary/20 blur-3xl dark:hidden" />
+                    <div className="pointer-events-none absolute -bottom-10 left-6 h-36 w-36 rounded-[2.5rem] bg-green-soft/30 blur-[90px] dark:hidden" />
+                    <div className="flex items-center justify-between lg:mb-2 xl:mb-3">
+                      <div className="flex items-center lg:gap-1.5 xl:gap-2">
+                        <span className="font-semibold lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary/20 text-primary lg:px-2 xl:px-3 2xl:px-4 lg:py-0.5 xl:py-1 rounded-full flex gap-2 items-center">
+                          <View className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5" />
+                          Habit preview
+                        </span>
+                      </div>
+                      <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                        Live
                       </span>
                     </div>
-                    <span className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
-                      Live
-                    </span>
-                  </div>
-                  <div className="lg:space-y-2 xl:space-y-3">
-                    <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground dark:text-white">
-                      {form.name || "Untitled habit"}
-                    </h3>
-                    <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
-                      {form.description ||
-                        "Add a short description so future you remembers why this matters."}
-                    </p>
-                  </div>
-                  <div className="lg:mt-3 xl:mt-4 grid lg:gap-2 xl:gap-3 lg:text-[11px] xl:text-xs 2xl:text-sm lg:grid-cols-2">
-                    <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
-                      <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Cadence
+                    <div className="lg:space-y-2 xl:space-y-3">
+                      <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground dark:text-white">
+                        {form.name || "Untitled habit"}
+                      </h3>
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                        {form.description ||
+                          "Add a short description so future you remembers why this matters."}
+                      </p>
+                    </div>
+                    <div className="lg:mt-3 xl:mt-4 grid lg:gap-2 xl:gap-3 lg:text-[11px] xl:text-xs 2xl:text-sm lg:grid-cols-2">
+                      <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                        <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Cadence
+                        </div>
+                        <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
+                          <Recycle className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                          <span>{form.cadence}</span>
+                        </div>
                       </div>
-                      <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
-                        <Recycle className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        <span>{form.cadence}</span>
+                      <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                        <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Start date
+                        </div>
+                        <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
+                          <CalendarDays className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                          <span>{formattedStartDate}</span>
+                        </div>
+                      </div>
+                      <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                        <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Preferred time
+                        </div>
+                        <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
+                          <AlarmClockCheck className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
+                          <span>{form.timeOfDay || "--:--"}</span>
+                        </div>
+                      </div>
+                      <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
+                        <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                          Reminder
+                        </div>
+                        <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
+                          <AlarmCheck className="lg:w-3 lg:h-3 xl:w-4 xl:h-4   text-primary" />
+                          <span>{form.reminder}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
-                      <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Start date
-                      </div>
-                      <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
-                        <CalendarDays className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        <span>{formattedStartDate}</span>
-                      </div>
+                    <div className="lg:mt-3 xl:mt-4 flex items-center lg:gap-1.5 xl:gap-2 rounded-2xl border border-primary/30 bg-white/80 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-xs xl:text-sm font-semibold text-foreground shadow-sm dark:border-primary/50 dark:bg-primary/10">
+                      <span>
+                        {form.goalAmount || "1"} {previewGoalUnit}{" "}
+                        {previewCadenceLabel}
+                      </span>
                     </div>
-                    <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
-                      <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Preferred time
-                      </div>
-                      <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
-                        <AlarmClockCheck className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        <span>{form.timeOfDay || "--:--"}</span>
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-white/60 bg-white/70 lg:p-2 xl:p-3 text-foreground shadow-sm transition dark:border-white/10 dark:bg-white/5">
-                      <div className="lg:text-[8px] xl:text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                        Reminder
-                      </div>
-                      <div className="mt-1 flex items-center lg:gap-1.5 xl:gap-2 font-semibold">
-                        <AlarmCheck className="lg:w-3 lg:h-3 xl:w-4 xl:h-4   text-primary" />
-                        <span>{form.reminder}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="lg:mt-3 xl:mt-4 flex items-center lg:gap-1.5 xl:gap-2 rounded-2xl border border-primary/30 bg-white/80 lg:px-3 xl:px-4 lg:py-2 xl:py-3 lg:text-xs xl:text-sm font-semibold text-foreground shadow-sm dark:border-primary/50 dark:bg-primary/10">
-                    <span>
-                      {form.goalAmount || "1"} {previewGoalUnit}{" "}
-                      {previewCadenceLabel}
-                    </span>
                   </div>
                 </div>
               </aside>
