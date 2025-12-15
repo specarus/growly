@@ -104,7 +104,7 @@ const HabitReflections: React.FC<Props> = ({ initialReflections }) => {
   };
 
   return (
-    <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-card to-amber-50">
+    <div className="lg:max-w-5xl xl:max-w-6xl shadow-inner lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white bg-linear-to-br from-primary/10 via-card to-amber-50 dark:to-secondary/20">
       <div className="lg:p-4 xl:p-5 2xl:p-6 lg:space-y-3 xl:space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">

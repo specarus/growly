@@ -31,14 +31,6 @@ export type PlaybookItem = {
   accent: string;
 };
 
-export type RescueWindow = {
-  startHour: number;
-  endHour: number;
-  label: string;
-  sampleSize: number;
-  confidence: "low" | "medium" | "high";
-};
-
 export type MenuPosition = {
   top: number;
   left: number;

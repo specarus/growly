@@ -21,20 +21,15 @@ import {
   resetHabitProgress,
 } from "./actions/habit-progress";
 import {
-  appendRescueEvent,
   calculateHabitXpDelta,
   calculateDisplayCompletion,
-  computeRescueAmount,
-  computeRescueWindow,
   getFocusLabel,
-  isWithinRescueWindow,
   normalizeGoal,
-  readRescueEvents,
   buildRecentProgressSeries,
 } from "./lib/habits-board-utils";
 import { calculateHabitRisk } from "./lib/habit-risk";
 import { streakDefensePlaybook } from "./constants";
-import type { Habit, HabitsBoardProps, RescueWindow } from "./types";
+import type { Habit, HabitsBoardProps } from "./types";
 import { formatDayKey, type ProgressByDayMap } from "@/lib/habit-progress";
 
 const HabitsBoard: React.FC<HabitsBoardProps> = ({
@@ -55,9 +50,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
   >({});
   const [progressMap, setProgressMap] =
     useState<ProgressByDayMap>(progressByDay);
-  const [rescueWindows, setRescueWindows] = useState<
-    Record<string, RescueWindow | null>
-  >({});
   const [clockTick, setClockTick] = useState<number>(() => Date.now());
 
   const {
@@ -177,12 +169,8 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
             refreshTodayProgress(next);
             return next;
           });
-          const { window } = appendRescueEvent(habitId, Date.now());
-          setRescueWindows((prev) => ({
-            ...prev,
-            [habitId]: window,
-          }));
           void reloadProgressMap();
+          void router.refresh();
           if (xpDelta !== 0) {
             void refreshXP();
           }
@@ -228,6 +216,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
           return next;
         });
         void reloadProgressMap();
+        void router.refresh();
         if (xpDelta !== 0) {
           void refreshXP();
         }
@@ -252,19 +241,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
   useEffect(() => {
     setProgressMap(progressByDay);
   }, [progressByDay]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const events = readRescueEvents();
-    const today = new Date().getDay();
-    const next: Record<string, RescueWindow | null> = {};
-    localHabits.forEach((habit) => {
-      next[habit.id] = computeRescueWindow(events[habit.id] ?? [], today);
-    });
-    setRescueWindows(next);
-  }, [localHabits]);
 
   useEffect(() => {
     const param = searchParams.get("habitId");
@@ -457,13 +433,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                           loggedAmount,
                         });
                         const isComplete = displayCompletion >= 100;
-                        const rescueWindow = rescueWindows[habit.id];
-                        const showRescueNudge =
-                          rescueWindow &&
-                          !isComplete &&
-                          loggedAmount < goalAmountValue &&
-                          isWithinRescueWindow(rescueWindow, clockTick);
-                        const quickRescueAmount = computeRescueAmount(habit);
                         const loggedLabel =
                           loggedAmount > 0
                             ? `+${loggedAmount}${
@@ -480,9 +449,6 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                             isSelected={isSelected}
                             loggedLabel={loggedLabel}
                             isComplete={isComplete}
-                            rescueWindow={rescueWindow}
-                            quickRescueAmount={quickRescueAmount}
-                            showRescueNudge={Boolean(showRescueNudge)}
                             customQuantity={customQuantities[habit.id] ?? ""}
                             quantityMenuOpenId={quantityMenuOpenId}
                             menuPosition={menuPosition}
@@ -591,7 +557,7 @@ const HabitsBoard: React.FC<HabitsBoardProps> = ({
                     </div>
                     <div className="rounded-xl border border-gray-100 bg-white/80 shadow-inner lg:p-3 xl:p-4">
                       <p className="lg:text-[10px] xl:text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.14em]">
-                        Streaks protected
+                        Streaks
                       </p>
                       <p className="lg:text-lg xl:text-xl font-bold text-foreground">
                         {completedTodayCount}/{localHabits.length || 0}

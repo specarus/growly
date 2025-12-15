@@ -6,12 +6,11 @@ import {
   Asterisk,
   Check,
   Flame,
-  LifeBuoy,
   Plus,
 } from "lucide-react";
 
 import QuantityMenu from "./quantity-menu";
-import type { Habit, MenuPosition, RescueWindow } from "../types";
+import type { Habit, MenuPosition } from "../types";
 import type { HabitRisk } from "../lib/habit-risk";
 
 type Props = {
@@ -22,9 +21,6 @@ type Props = {
   isSelected: boolean;
   loggedLabel: string;
   isComplete: boolean;
-  rescueWindow?: RescueWindow | null;
-  quickRescueAmount: number;
-  showRescueNudge: boolean;
   customQuantity: string;
   quantityMenuOpenId: string | null;
   menuPosition: MenuPosition | null;
@@ -48,9 +44,6 @@ const HabitRow: React.FC<Props> = ({
   isSelected,
   loggedLabel,
   isComplete,
-  rescueWindow,
-  quickRescueAmount,
-  showRescueNudge,
   customQuantity,
   quantityMenuOpenId,
   menuPosition,
@@ -67,8 +60,6 @@ const HabitRow: React.FC<Props> = ({
 }) => {
   const anchorRef = useRef<HTMLDivElement | null>(null);
   const isMenuOpen = quantityMenuOpenId === habit.id;
-  const shouldShowRescue = rescueWindow && showRescueNudge;
-
   const riskColor =
     risk.level === "high"
       ? "bg-coral/15 text-coral border-coral/40"
@@ -107,25 +98,6 @@ const HabitRow: React.FC<Props> = ({
           <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
             {loggedLabel}
           </p>
-          {shouldShowRescue && rescueWindow && (
-            <button
-              type="button"
-              className="group inline-flex w-full flex-wrap items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 shadow-sm transition hover:border-primary/70 hover:bg-primary/10"
-              onClick={(event) => {
-                event.stopPropagation();
-                onCustomQuantityChange(habit.id, quickRescueAmount.toString());
-                onToggleMenu(habit.id, anchorRef.current);
-              }}
-            >
-              <span className="inline-flex items-center gap-1.5 lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold text-primary">
-                <LifeBuoy className="lg:w-2 lg:h-2 xl:w-3 xl:h-3" />
-                Rescue now
-              </span>
-              <span className="lg:text-[8px] xl:text-[9px] 2xl:text-[11px] text-muted-foreground">
-                You often save this at {rescueWindow.label}. Want a quick win?
-              </span>
-            </button>
-          )}
         </div>
       </div>
       <div className="text-muted-foreground">{habit.cadence}</div>

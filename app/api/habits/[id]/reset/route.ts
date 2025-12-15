@@ -55,6 +55,7 @@ export async function POST(
 
     revalidatePath("/dashboard/habits");
     revalidatePath("/dashboard");
+    revalidatePath("/account");
 
     return NextResponse.json({ dailyProgress: 0 });
   } catch (error) {

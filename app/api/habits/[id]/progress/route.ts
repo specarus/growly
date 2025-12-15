@@ -73,6 +73,7 @@ export async function PATCH(
 
     revalidatePath("/dashboard/habits");
     revalidatePath("/dashboard");
+    revalidatePath("/account");
 
     return NextResponse.json({ dailyProgress: progressEntry.progress });
   } catch (error) {

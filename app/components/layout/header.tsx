@@ -145,7 +145,7 @@ function NotificationsDropdown() {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-label="Open notifications"
-        className="inline-flex items-center gap-1.5 rounded-full border border-muted lg:p-1 xl:p-2 bg-white text-xs font-semibold text-muted-foreground transition hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex items-center gap-1.5 rounded-full border border-muted lg:p-1 xl:p-1.5 bg-white text-xs font-semibold text-muted-foreground transition hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         <Bell className="lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4" />
         {badgeLabel ? (

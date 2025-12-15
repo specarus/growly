@@ -8,10 +8,6 @@ export const MENU_DEFAULT_WIDTH = 192;
 export const MENU_MIN_WIDTH = 160;
 export const MENU_VIEWPORT_GUTTER = 16;
 
-export const RESCUE_STORAGE_KEY = "habit-rescue-events";
-export const RESCUE_MAX_EVENTS = 40;
-export const RESCUE_MIN_SAMPLES = 2;
-
 export const streakDefensePlaybook: PlaybookItem[] = [
   {
     title: "Anchor a reliable cue",
