@@ -133,8 +133,10 @@ function NotificationsDropdown() {
     };
   }, [loadFriendRequests]);
 
+  const totalXpNotifications = activityLog.length;
   const visibleXpNotifications = activityLog.slice(0, 5);
-  const totalCount = visibleXpNotifications.length + friendRequests.length;
+  const xpOverflow = Math.max(0, totalXpNotifications - visibleXpNotifications.length);
+  const totalCount = totalXpNotifications + friendRequests.length;
   const badgeLabel =
     totalCount > 9 ? "9+" : totalCount > 0 ? totalCount.toString() : null;
 
@@ -211,6 +213,12 @@ function NotificationsDropdown() {
                     </div>
                   </div>
                 ))}
+                {xpOverflow > 0 ? (
+                  <p className="mt-1 text-[10px] text-muted-foreground">
+                    +{xpOverflow} more XP update
+                    {xpOverflow === 1 ? "" : "s"} not shown
+                  </p>
+                ) : null}
               </div>
             )}
           </div>

@@ -171,12 +171,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
   >(null);
   const [assignmentPending, setAssignmentPending] = useState(false);
   const [deleteCompletedPending, setDeleteCompletedPending] = useState(false);
-  const [deleteCompletedMessage, setDeleteCompletedMessage] = useState<
-    string | null
-  >(null);
-  const [deleteCompletedError, setDeleteCompletedError] = useState<
-    string | null
-  >(null);
+  const [deleteCompletedError, setDeleteCompletedError] = useState<string | null>(null);
   const [pickerOpenId, setPickerOpenId] = useState<string | null>(null);
   const [dropTargetCollectionId, setDropTargetCollectionId] = useState<
     string | null
@@ -223,11 +218,6 @@ const TodosPage: React.FC<TodosPageProps> = ({
   useEffect(() => {
     setCollections(initialCollections.map(normalizeCollection));
   }, [initialCollections]);
-
-  useEffect(() => {
-    setDeleteCompletedMessage(null);
-    setDeleteCompletedError(null);
-  }, [collectionContext?.id, isCollectionView]);
 
   const availableTodos = useMemo(
     () => todos.filter((todo) => todo.collectionIds.length === 0),
@@ -352,51 +342,38 @@ const TodosPage: React.FC<TodosPageProps> = ({
   const handleDeleteCompleted = async () => {
     const targetIds = visibleCompletedIds.slice();
     if (targetIds.length === 0) {
-      setDeleteCompletedMessage("No completed todos to delete.");
-      setDeleteCompletedError(null);
       return;
     }
 
     setDeleteCompletedPending(true);
-    setDeleteCompletedMessage(null);
     setDeleteCompletedError(null);
 
     try {
-      const params = new URLSearchParams();
-      if (isCollectionView && collectionContext?.id) {
-        params.set("collectionId", collectionContext.id);
-      }
+      const requests = targetIds.map((id) =>
+        fetch(`/api/todos/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        }).then(async (response) => {
+          if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(
+              body?.error || "Failed to delete completed todos"
+            );
+          }
+        })
+      );
 
-      const query = params.toString();
-      const response = await fetch(`/api/todos${query ? `?${query}` : ""}`, {
-        method: "DELETE",
-      });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error || "Failed to delete completed todos");
-      }
+      await Promise.all(requests);
 
-      const deletedCount =
-        typeof payload?.deleted === "number"
-          ? payload.deleted
-          : targetIds.length;
-
-      if (deletedCount > 0) {
-        setTodos((prev) => prev.filter((todo) => !targetIds.includes(todo.id)));
-        setCollections((prev) =>
-          prev.map((collection) => ({
-            ...collection,
-            todoIds: collection.todoIds.filter((id) => !targetIds.includes(id)),
-          }))
-        );
-      }
-
-      setDeleteCompletedMessage(
-        deletedCount > 0
-          ? `${deletedCount} completed ${
-              deletedCount === 1 ? "todo" : "todos"
-            } deleted.`
-          : "No completed todos were deleted."
+      const deletedSet = new Set(targetIds);
+      setTodos((prev) =>
+        prev.filter((todo) => !deletedSet.has(todo.id))
+      );
+      setCollections((prev) =>
+        prev.map((collection) => ({
+          ...collection,
+          todoIds: collection.todoIds.filter((id) => !deletedSet.has(id)),
+        }))
       );
     } catch (error) {
       console.error(error);
@@ -724,30 +701,24 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 </div>
               </div>
 
-              <div className="flex flex-col items-end gap-2">
-                <button
-                  type="button"
-                  disabled={
-                    deleteCompletedPending || visibleCompletedIds.length === 0
-                  }
-                  onClick={handleDeleteCompleted}
-                  className="cursor-pointer inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
-                >
-                  <Trash2 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4" />
-                  Delete completed
-                </button>
-                {(deleteCompletedMessage || deleteCompletedError) && (
-                  <div
-                    className={`rounded-2xl border px-3 py-2 text-sm ${
-                      deleteCompletedError
-                        ? "border-destructive/60 bg-destructive/10 text-destructive"
-                        : "border-green-soft/50 bg-green-soft/10 text-foreground"
-                    }`}
-                  >
-                    {deleteCompletedError ?? deleteCompletedMessage}
+                  <div className="flex flex-col items-end gap-2">
+                    <button
+                      type="button"
+                      disabled={
+                        deleteCompletedPending || visibleCompletedIds.length === 0
+                      }
+                      onClick={handleDeleteCompleted}
+                      className="cursor-pointer inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                    >
+                      <Trash2 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4" />
+                      Delete completed
+                    </button>
+                    {deleteCompletedError ? (
+                      <p className="text-[11px] text-destructive">
+                        {deleteCompletedError}
+                      </p>
+                    ) : null}
                   </div>
-                )}
-              </div>
             </div>
           </div>
           <div className="w-full h-auto lg:px-4 xl:px-8 2xl:px-28">

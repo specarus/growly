@@ -17,7 +17,7 @@ export default async function Todos() {
   }
 
   const todos = await prisma.todo.findMany({
-    where: { userId: session.user.id },
+    where: { userId: session.user.id, archived: false },
     orderBy: { dueAt: "asc" },
     include: { collections: true },
   });
