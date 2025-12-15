@@ -14,6 +14,7 @@ import { SessionProvider } from "./context/session-context";
 import Footer from "./components/layout/footer";
 import CelebrationToast from "./components/celebration-toast";
 import { ThemeProvider } from "./context/theme-context";
+import Snowfall from "./components/snowfall";
 
 import { LayoutPanelTop } from "lucide-react";
 
@@ -85,9 +86,10 @@ export default async function RootLayout({
           <ThemeProvider>
             <XPProvider>
               <ModalProvider>
-                <div className="min-h-screen flex flex-col text-foreground">
-                  <NavigationLoader />
-                  <Header />
+        <div className="min-h-screen flex flex-col text-foreground">
+          <NavigationLoader />
+          <Snowfall />
+          <Header />
                   <main className="flex-1 w-full h-full">{children}</main>
                   <Footer />
                   <CelebrationToast />
