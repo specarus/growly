@@ -318,8 +318,8 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
         </section>
 
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 xl:gap-5">
-          <section className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-5 space-y-3">
-            <div className="flex items-center justify-between">
+          <section className="space-y-3">
+            <div className="flex items-start justify-between">
               <div>
                 <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                   Friend directory
@@ -348,7 +348,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[70vh] overflow-y-auto pr-1 friends-scrollbar">
               {filteredFriends.length === 0 ? (
                 <p className="lg:text-[11px] xl:text-xs text-muted-foreground rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-3 xl:py-4 col-span-full">
                   No friends match that search. Try a different keyword.
@@ -463,7 +463,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
             </div>
           </section>
 
-          <section className="h-fit lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-5 space-y-4">
+          <section className="lg:min-h-[70vh] min-h-[560px] lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-transparent shadow-inner lg:p-4 xl:p-5 space-y-4">
             {!selectedFriend ? (
               <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
                 Select a friend to view their profile.

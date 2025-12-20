@@ -78,7 +78,7 @@ const QuantityMenu: React.FC<Props> = ({
           </div>
           <button
             type="button"
-            className="w-full rounded-full border border-muted/40 bg-muted/10 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white"
+            className="w-full rounded-full border border-muted/40 bg-muted/10 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[10px] xl:text-xs font-semibold text-muted-foreground transition hover:border-muted hover:bg-white dark:border-muted/60 dark:bg-muted/20 dark:text-muted-foreground/80 dark:hover:border-muted/40 dark:hover:bg-white/10"
             onClick={(event) => {
               event.stopPropagation();
               onReset(habitId);
