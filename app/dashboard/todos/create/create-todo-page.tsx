@@ -1074,7 +1074,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     type="button"
                     onClick={() => handleSubmit("Planned")}
                     disabled={isPending}
-                    className="lg:min-w-24 xl:min-w-28 font-semibold 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 lg:text-[11px] xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
+                    className="lg:min-w-24 xl:min-w-28 font-semiboldgit c 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 lg:text-[11px] xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
                   >
                     Save draft
                   </Button>

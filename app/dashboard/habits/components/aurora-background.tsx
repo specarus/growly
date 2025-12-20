@@ -161,7 +161,7 @@ const AuroraBackground: React.FC<AuroraBackgroundProps> = ({
       delete geometry.attributes.uv;
     }
 
-    let program: Program | null = null;
+    let program: Program | undefined;
 
     const buildColorStops = (stops: string[]) =>
       stops.map((hex) => {
