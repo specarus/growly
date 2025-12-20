@@ -285,8 +285,8 @@ export default async function AccountPage() {
               descriptionClassName="text-muted-foreground max-w-3xl"
             />
 
-            <div className="grid lg:gap-4 xl:gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="lg:space-y-4 xl:space-y-6">
+            <div className="grid lg:gap-4 xl:gap-6 lg:grid-cols-[1.1fr_0.9fr] items-stretch">
+              <div className="flex min-h-0 flex-col lg:h-full lg:space-y-4 xl:space-y-6">
                 <div className="lg:space-y-3 xl:space-y-5 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 shadow-inner">
                   <div className="flex items-center gap-4">
                     <div className="grid lg:h-12 lg:w-12 xl:h-16 2xl:h-20 xl:w-16 2xl:w-20 place-items-center rounded-2xl bg-primary lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white shadow-lg shadow-primary/30">
@@ -359,7 +359,7 @@ export default async function AccountPage() {
                 </div>
               </div>
 
-              <div className="lg:space-y-4 xl:space-y-6">
+              <div className="flex min-h-0 flex-col lg:h-full gap-4 xl:gap-6">
                 <div className="lg:rounded-2xl xl:rounded-3xl border border-primary/40 bg-linear-to-b from-primary/10 to-white/75 lg:p-4 xl:p-6 shadow-inner shadow-primary/20 h-fit">
                   <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-primary">
                     Momentum
@@ -406,7 +406,7 @@ export default async function AccountPage() {
                   )}
                 </div>
                 <div
-                  className="relative bg-cover bg-no-repeat overflow-hidden rounded-3xl border border-gray-100 shadow-inner shadow-black/5 h-[1000px]"
+                  className="relative bg-cover bg-no-repeat overflow-hidden rounded-3xl border border-gray-100 shadow-inner shadow-black/5 flex-1 min-h-[480px]"
                   style={{ backgroundImage: "url(/grow.jpg)" }}
                 >
                   <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/30 to-black/80" />
@@ -627,7 +627,7 @@ export default async function AccountPage() {
             </div>
           </section>
 
-          <section className="grid lg:gap-4 xl:gap-6 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-card lg:p-4 xl:p-6 2xl:p-8 shadow-inner shadow-black/10 backdrop-blur">
+          <section className="grid lg:gap-4 xl:gap-6 backdrop-blur">
             <div className="flex flex-col lg:gap-1.5 xl:gap-2">
               <p className="lg:text-[11px] xl:text-xs 2xl:text-sm uppercase tracking-[0.4em] text-muted-foreground">
                 Weekly focus

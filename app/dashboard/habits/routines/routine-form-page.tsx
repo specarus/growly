@@ -307,10 +307,7 @@ const RoutineFormPage: React.FC<RoutineFormPageProps> = ({
           />
 
           <div className="grid lg:grid-cols-[1.2fr_0.8fr] lg:gap-4 xl:gap-6">
-            <form
-              onSubmit={handleSubmit}
-              className="lg:space-y-4 xl:space-y-6 lg:rounded-2xl xl:rounded-3xl border border-white/70 bg-white/90 lg:p-4 xl:p-6 shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5"
-            >
+            <form onSubmit={handleSubmit} className="lg:space-y-4 xl:space-y-6">
               <div className="lg:space-y-3 xl:space-y-5">
                 <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>

@@ -113,7 +113,7 @@ const AnalyticsWidget: React.FC<Props> = ({ data }) => {
 
   const formattedDelta = `${
     positiveDelta >= 0 ? "+" : ""
-  }${positiveDelta.toFixed(1)}%`;
+  }${Math.round(positiveDelta)}%`;
   const formattedCompletionRate = `${Math.round(completionRate)}%`;
 
   return (

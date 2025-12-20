@@ -102,13 +102,13 @@ const pillByPriority: Record<PriorityLabel, string> = {
 };
 
 const inputClassName =
-  "w-full border-none bg-transparent lg:px-3 xl:px-4 lg:py-1.5 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none";
+  "w-full border-none lg:px-3 xl:px-4 lg:py-1.5 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none";
 
 const fieldButtonClassName =
   "w-full flex items-center justify-between lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white/90 lg:px-3 xl:px-4 lg:py-1.5 xl:py-3 lg:text-[11px] xl:text-xs 2xl:text-sm font-medium text-foreground shadow-inner transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
 const dropdownSelectWrapperClassName =
-  "relative overflow-visible  lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-gradient-to-br from-white/95 to-white/70 shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
+  "relative overflow-visible lg:rounded-xl xl:rounded-2xl border border-gray-100 bg-white shadow-inner transition-colors hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0";
 
 const categoryOptions = ["Personal", "Work"];
 const CATEGORY_PLACEHOLDER = "Choose a category";
@@ -1074,7 +1074,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     type="button"
                     onClick={() => handleSubmit("Planned")}
                     disabled={isPending}
-                    className="lg:min-w-24 xl:min-w-28 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 lg:text-[11px] xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
+                    className="lg:min-w-24 xl:min-w-28 font-semibold 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 xl:px-4 2xl:px-6 lg:text-[11px] xl:text-xs 2xl:text-sm bg-white border border-gray-200 shadow-sm hover:border-primary/40 disabled:opacity-60"
                   >
                     Save draft
                   </Button>
@@ -1082,7 +1082,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                     type="button"
                     onClick={() => handleSubmit()}
                     disabled={isPending}
-                    className="lg:min-w-24 xl:min-w-32 2xl:min-w-40 lg:h-6 xl:h-8 2xl:h-10 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
+                    className="lg:min-w-24 xl:min-w-32 2xl:min-w-40 font-semibold lg:h-6 xl:h-8 2xl:h-10 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition disabled:opacity-60"
                   >
                     {primaryCtaLabel}
                   </Button>
@@ -1091,7 +1091,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                       type="button"
                       onClick={handleDelete}
                       disabled={isPending}
-                      className="lg:min-w-20 xl:min-w-28 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border lg:text-[11px] xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                      className="lg:min-w-20 xl:min-w-28 2xl:min-w-36 lg:h-6 xl:h-8 2xl:h-10 cursor-pointer inline-flex items-center gap-2 rounded-full border lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
                     >
                       <Trash className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
                       Delete
@@ -1116,7 +1116,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
 
           <div className="grid lg:grid-cols-3 lg:gap-4 xl:gap-6">
             <div className="lg:col-span-2 lg:space-y-6 xl:space-y-8">
-              <div className="bg-white/90 border border-gray-50 shadow-inner lg:rounded-2xl 2xl:rounded-3xl lg:p-3 xl:p-4 2xl:p-6">
+              <div>
                 <div className="flex items-start justify-between lg:ga-3 xl:gap-4">
                   <div className="flex items-center lg:gap-3 xl:gap-4">
                     <Target className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
@@ -1223,17 +1223,17 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                                 type="button"
                                 aria-selected={form.category === category}
                                 onClick={() => {
-                                setForm((prev) => ({
-                                  ...prev,
-                                  category,
-                                }));
-                                markDirty();
-                                closeCategoryMenu();
-                              }}
-                              className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
-                                form.category === category
-                                  ? "bg-primary/10 text-primary font-semibold"
-                                  : "text-foreground hover:bg-primary/5"
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    category,
+                                  }));
+                                  markDirty();
+                                  closeCategoryMenu();
+                                }}
+                                className={`w-full rounded-none border-b border-gray-100 lg:px-3 lg:py-1.5 xl:px-4 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 ${
+                                  form.category === category
+                                    ? "bg-primary/10 text-primary font-semibold"
+                                    : "text-foreground hover:bg-primary/5"
                                 }`}
                               >
                                 {category}
@@ -1448,7 +1448,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 </form>
               </div>
 
-              <div className="bg-white/90 border border-gray-50 shadow-inner lg:rounded-2xl 2xl:rounded-3xl lg:p-3 xl:p-4 2xl:p-6 lg:space-y-2 xl:space-y-4">
+              <div className="lg:space-y-2 xl:space-y-4">
                 <div className="flex items-start justify-between lg:gap-3 xl:gap-4">
                   <div className="flex items-center lg:gap-3 xl:gap-4">
                     <CalendarDays className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 text-primary" />
@@ -1683,7 +1683,7 @@ const CreateTodoPage: React.FC<TodoFormProps> = ({
                 </div>
               </div>
 
-              <div className="lg:rounded-2xl border border-gray-100 bg-white lg:px-3 xl:px-4 lg:py-3 xl:py-5 shadow-inner lg:space-y-3 xl:space-y-4">
+              <div className="lg:space-y-3 xl:space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock3 className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />

@@ -298,7 +298,11 @@ const AnalyticsClient: React.FC<Props> = ({
   }, []);
 
   const gradientStops = ["#f8a84b", "#f7805c", "#4cd7b4"];
-  const routineGradientStops = ["#6366f1", "#a855f7", "#14b8a6"];
+  const routineGradientStops = [
+    "hsl(var(--secondary) / 0.9)",
+    "hsl(var(--secondary) / 0.6)",
+    "hsl(var(--secondary) / 0.3)",
+  ];
 
   const activeHabit =
     habits.find((habit) => habit.streak === summary.topStreak?.streak) ??
@@ -990,7 +994,7 @@ const AnalyticsClient: React.FC<Props> = ({
                           x={routineMarginLeft - 12}
                           y={labelY - 6}
                           textAnchor="end"
-                          className="lg:text-[9px] xl:text-[11px] font-semibold fill-slate-800"
+                          className="lg:text-[9px] xl:text-[11px] font-semibold fill-foreground"
                         >
                           {routine.name}
                         </text>
@@ -1102,123 +1106,7 @@ const AnalyticsClient: React.FC<Props> = ({
           </div>
         </section>
 
-        <section className="lg:space-y-3 xl:space-y-4 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                Streak risk
-              </p>
-              <h3 className="lg:text-base xl:text-lg 2xl:text-xl font-semibold">
-                Risk forecast
-              </h3>
-              <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                ML-flavored risk plus goal suggestions to keep streaks
-                breathing.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-1 xl:py-1.5 lg:text-[9px] xl:text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-              7-day outlook
-            </div>
-          </div>
-
-          {habitRisks.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-muted/40 lg:px-3 xl:px-4 lg:py-4 xl:py-6 text-center lg:text-xs xl:text-sm text-muted-foreground">
-              Track a few habits to see streak risk and suggested targets.
-            </div>
-          ) : (
-            <div className="grid lg:grid-cols-3 lg:gap-3 xl:gap-4">
-              {habitRisks.slice(0, 6).map((habit) => {
-                const palette = riskPalette[habit.risk.level];
-                const points = buildSparklinePolyline(habit.forecast);
-                const lastPointValue =
-                  habit.forecast.length > 0
-                    ? habit.forecast[habit.forecast.length - 1]
-                    : 0;
-                const lastPoint = Math.max(0, Math.min(lastPointValue, 100));
-                return (
-                  <div
-                    key={habit.id}
-                    className="rounded-2xl border border-gray-100 bg-linear-to-br from-white via-card to-green-soft/20 lg:px-3 xl:px-4 lg:py-3 xl:py-4 shadow-inner space-y-2"
-                  >
-                    <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
-                      <div>
-                        <p className="lg:text-xs xl:text-sm font-semibold text-foreground">
-                          {habit.name}
-                        </p>
-                        <p className="lg:text-[9px] xl:text-[11px] text-muted-foreground">
-                          {habit.cadence}
-                        </p>
-                      </div>
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full border lg:px-2 xl:px-2.5 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[11px] font-semibold ${palette.chip}`}
-                      >
-                        <LifeBuoy className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                        {habit.risk.label}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between lg:text-[10px] xl:text-xs text-muted-foreground">
-                      <div className="flex items-center lg:gap-1.5 xl:gap-2 font-semibold text-foreground">
-                        <Flame className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        <span>{habit.streak}d streak</span>
-                      </div>
-                      <div className="font-semibold text-foreground">
-                        Adjusted goal {habit.risk.adjustedGoal}
-                        {habit.risk.goalDelta !== 0 && (
-                          <span className="text-muted-foreground">
-                            {" "}
-                            ({habit.risk.goalDelta > 0 ? "+" : ""}
-                            {habit.risk.goalDelta})
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="rounded-xl bg-white border border-gray-100 lg:p-2 xl:p-3 shadow-sm">
-                      <svg
-                        viewBox="0 0 160 46"
-                        xmlns="http://www.w3.org/2000/svg"
-                        role="img"
-                        aria-label={`${habit.name} risk forecast`}
-                        className="w-full h-12"
-                        preserveAspectRatio="none"
-                      >
-                        <polyline
-                          points={points}
-                          fill="none"
-                          stroke={palette.stroke}
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        {points ? (
-                          <circle
-                            cx={160}
-                            cy={46 - (lastPoint / 100) * 46}
-                            r="3.5"
-                            fill="white"
-                            stroke={palette.stroke}
-                            strokeWidth="2"
-                          />
-                        ) : null}
-                      </svg>
-                      <div className="flex items-center justify-between lg:text-[10px] xl:text-xs text-muted-foreground">
-                        <span>Risk {Math.round(habit.risk.score * 100)}%</span>
-                        <span>
-                          Try {habit.risk.suggestedLogAmount} next log
-                        </span>
-                      </div>
-                    </div>
-                    <p className="lg:text-[10px] xl:text-xs text-muted-foreground">
-                      {habit.risk.reasons[0] ?? "Keeping momentum steady"}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        <section className="lg:space-y-3 xl:space-y-4 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl shadow-inner border border-gray-100 bg-white">
+        <section className="lg:space-y-3 xl:space-y-4">
           <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
             Insights
           </p>

@@ -318,7 +318,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
         </section>
 
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 xl:gap-5">
-          <section className="space-y-3">
+          <section className="space-y-3 min-h-[640px] lg:min-h-[70vh]">
             <div className="flex items-start justify-between">
               <div>
                 <p className="lg:text-[11px] xl:text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -463,7 +463,7 @@ const FriendsPage: React.FC<FriendsPageProps> = ({ friends }) => {
             </div>
           </section>
 
-          <section className="lg:min-h-[70vh] min-h-[560px] lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-transparent shadow-inner lg:p-4 xl:p-5 space-y-4">
+          <section className="lg:min-h-[70vh] min-h-[560px] lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-5 space-y-4">
             {!selectedFriend ? (
               <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
                 Select a friend to view their profile.

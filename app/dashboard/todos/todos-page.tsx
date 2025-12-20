@@ -171,7 +171,9 @@ const TodosPage: React.FC<TodosPageProps> = ({
   >(null);
   const [assignmentPending, setAssignmentPending] = useState(false);
   const [deleteCompletedPending, setDeleteCompletedPending] = useState(false);
-  const [deleteCompletedError, setDeleteCompletedError] = useState<string | null>(null);
+  const [deleteCompletedError, setDeleteCompletedError] = useState<
+    string | null
+  >(null);
   const [pickerOpenId, setPickerOpenId] = useState<string | null>(null);
   const [dropTargetCollectionId, setDropTargetCollectionId] = useState<
     string | null
@@ -356,9 +358,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
         }).then(async (response) => {
           if (!response.ok) {
             const body = await response.json().catch(() => ({}));
-            throw new Error(
-              body?.error || "Failed to delete completed todos"
-            );
+            throw new Error(body?.error || "Failed to delete completed todos");
           }
         })
       );
@@ -366,9 +366,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
       await Promise.all(requests);
 
       const deletedSet = new Set(targetIds);
-      setTodos((prev) =>
-        prev.filter((todo) => !deletedSet.has(todo.id))
-      );
+      setTodos((prev) => prev.filter((todo) => !deletedSet.has(todo.id)));
       setCollections((prev) =>
         prev.map((collection) => ({
           ...collection,
@@ -649,7 +647,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
                       </Link>
                     ) : (
                       <Button
-                        className="lg:text-[10px] xl:text-xs 2xl:text-sm  text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
+                        className="lg:text-[10px] xl:text-xs 2xl:text-sm font-semibold text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
                         onClick={handleNewTodo}
                       >
                         <Plus className="lg:w-2 lg:h-2 xl:w-3 xl:h-3 2xl:w-4 2xl:h-4" />
@@ -701,28 +699,28 @@ const TodosPage: React.FC<TodosPageProps> = ({
                 </div>
               </div>
 
-                  <div className="flex flex-col items-end gap-2">
-                    <button
-                      type="button"
-                      disabled={
-                        deleteCompletedPending || visibleCompletedIds.length === 0
-                      }
-                      onClick={handleDeleteCompleted}
-                      className="cursor-pointer inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
-                    >
-                      <Trash2 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4" />
-                      Delete completed
-                    </button>
-                    {deleteCompletedError ? (
-                      <p className="text-[11px] text-destructive">
-                        {deleteCompletedError}
-                      </p>
-                    ) : null}
-                  </div>
+              <div className="flex flex-col items-end gap-2">
+                <button
+                  type="button"
+                  disabled={
+                    deleteCompletedPending || visibleCompletedIds.length === 0
+                  }
+                  onClick={handleDeleteCompleted}
+                  className="cursor-pointer inline-flex items-center gap-2 rounded-full border lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[10px] xl:text-xs 2xl:text-sm font-medium text-destructive transition hover:border-destructive/70 hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-60 border-destructive/40 bg-destructive/10"
+                >
+                  <Trash2 className="lg:w-3 lg:h-3 2xl:w-4 2xl:h-4" />
+                  Delete completed
+                </button>
+                {deleteCompletedError ? (
+                  <p className="text-[11px] text-destructive">
+                    {deleteCompletedError}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
           <div className="w-full h-auto lg:px-4 xl:px-8 2xl:px-28">
-            <div className="bg-white/90 border border-gray-50 shadow-inner rounded-3xl lg:p-4 2xl:p-6 space-y-4">
+            <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <ListChecks className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
@@ -1252,7 +1250,7 @@ const TodosPage: React.FC<TodosPageProps> = ({
               ) : null}
 
               {!isCollectionView ? (
-                <div className="rounded-3xl border border-gray-50 bg-linear-to-br from-primary/30 via-slate-200 to-green-soft/30 shadow-inner lg:p-5 xl:p-6 lg:space-y-5 xl:space-y-6 lg:mt-5 xl:mt-6">
+                <div className="rounded-3xl border border-gray-50 bg-linear-to-br from-primary/30 via-card to-green-soft/30 shadow-inner lg:p-5 xl:p-6 lg:space-y-5 xl:space-y-6 lg:mt-5 xl:mt-6">
                   <div className="flex flex-row items-center justify-between lg:gap-2 xl:gap-3">
                     <div className="lg:space-y-1 xl:space-y-2">
                       <div className="inline-flex items-center lg:gap-1.5 xl:gap-2 rounded-full bg-white/80 lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.2em] text-primary shadow-sm border border-primary/20">

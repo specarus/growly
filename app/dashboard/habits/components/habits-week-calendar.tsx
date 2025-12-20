@@ -130,7 +130,7 @@ const HabitsWeekCalendar: React.FC<Props> = ({ habits, progressByDay }) => {
       <div className="relative lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner overflow-hidden">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 shadow-inner bg-linear-to-br from-amber-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-900/40 opacity-95"
+          className="pointer-events-none absolute inset-0 shadow-inner bg-linear-to-b from-amber-50 via-white to-emerald-50 dark:from-card dark:via-secondary/20 dark:to-card opacity-95"
         />
         <div className="relative">
           <div

@@ -114,11 +114,11 @@ const HabitReflections: React.FC<Props> = ({ initialReflections }) => {
               Notes
             </p>
             <div className="flex items-center gap-2">
-              <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
+              <h2 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-white">
                 What went well today?
               </h2>
             </div>
-            <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+            <p className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-white">
               Capture today&apos;s wins so you can repeat what worked tomorrow.
             </p>
           </div>

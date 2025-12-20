@@ -168,7 +168,7 @@ export default function PublicProfileForm({
       <div className="grid lg:gap-2 xl:gap-3">
         <label className="flex flex-col gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm">
           <span className="text-muted-foreground">Username</span>
-          <div className="flex items-center rounded-2xl shadow-sm border border-muted focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/40">
+          <div className="flex items-center rounded-2xl shadow-inner border border-muted focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/40">
             <span className="pl-3 text-muted-foreground lg:text-[11px] xl:text-xs 2xl:text-sm">
               @
             </span>
@@ -191,7 +191,7 @@ export default function PublicProfileForm({
             name="headline"
             value={headline}
             onChange={(event) => setHeadline(event.target.value)}
-            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
             placeholder="Deep work and morning movement"
             maxLength={140}
           />
@@ -203,7 +203,7 @@ export default function PublicProfileForm({
         <label className="flex flex-col gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm">
           <span className="text-muted-foreground">Focus</span>
           <div
-            className={`rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-2 xl:py-3 shadow-sm ${
+            className={`rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-2 xl:py-3 shadow-inner ${
               focusTags.length > 0 && "space-y-3"
             }`}
           >
@@ -261,7 +261,7 @@ export default function PublicProfileForm({
                 setLocation(event.target.value);
                 setShowSuggestions(true);
               }}
-              className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
               placeholder="Romania"
               maxLength={60}
               autoComplete="off"

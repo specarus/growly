@@ -499,7 +499,7 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
             <div className="grid lg:grid-cols-[1.3fr_0.7fr] lg:gap-4 xl:gap-6">
               <form
                 onSubmit={handleSubmit}
-                className="bg-white/90 border border-gray-50 shadow-inner lg:rounded-2xl 2xl:rounded-3xl lg:p-3 xl:p-4 2xl:p-6 lg:space-y-3 xl:space-y-5"
+                className="lg:space-y-3 xl:space-y-5"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center lg:gap-1.5 xl:gap-2">
@@ -920,10 +920,10 @@ const HabitCreatePage: React.FC<HabitFormProps> = ({
                       </span>
                     </div>
                     <div className="lg:space-y-2 xl:space-y-3">
-                      <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground dark:text-white">
+                      <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-white dark:text-white">
                         {form.name || "Untitled habit"}
                       </h3>
-                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground leading-relaxed">
+                      <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-white leading-relaxed">
                         {form.description ||
                           "Add a short description so future you remembers why this matters."}
                       </p>

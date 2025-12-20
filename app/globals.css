@@ -282,3 +282,19 @@ body {
     transform: translate3d(var(--sway, 0px), 110vh, 0);
   }
 }
+
+.friends-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0) transparent;
+}
+
+.friends-scrollbar::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+.friends-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.friends-scrollbar::-webkit-scrollbar-corner {
+  background-color: transparent;
+}

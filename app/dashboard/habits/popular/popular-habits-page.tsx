@@ -767,8 +767,8 @@ const PopularHabitsPage: React.FC = () => {
           </div>
 
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-5">
-            <div className="rounded-3xl border border-gray-100 bg-white shadow-inner">
-              <div className="lg:px-4 xl:px-5 lg:pt-4 xl:pt-5 lg:pb-5 xl:pb-6 lg:space-y-3 xl:space-y-4">
+            <div>
+              <div className="lg:space-y-3 xl:space-y-4">
                 <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>
                     <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
@@ -908,7 +908,7 @@ const PopularHabitsPage: React.FC = () => {
               </div>
             </div>
 
-            <aside className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 shadow-inner shadow-black/10 h-fit bg-linear-to-tr to-primary/30 via-white from-white">
+            <aside className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 shadow-inner shadow-black/10 h-fit bg-linear-to-tr to-primary/30 via-card from-white">
               <div className="lg:px-4 xl:px-5 lg:pt-4 xl:pt-5 lg:pb-5 xl:pb-6 lg:space-y-3 xl:space-y-4">
                 <div className="flex items-center justify-between lg:gap-2 xl:gap-3">
                   <div>
@@ -1130,7 +1130,7 @@ const PopularHabitsPage: React.FC = () => {
 
         <section
           id="should-do"
-          className="lg:space-y-2 xl:space-y-3 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-secondary via-slate-100 to-green-soft/30 lg:scroll-mt-24 xl:scroll-mt-28"
+          className="lg:space-y-2 xl:space-y-3 lg:p-4 xl:p-6 lg:rounded-2xl xl:rounded-3xl shadow-inner border border-gray-100 bg-linear-to-bl from-coral-300 via-slate-100 to-green-soft/30 lg:scroll-mt-24 xl:scroll-mt-28"
         >
           <div className="flex lg:gap-2 xl:gap-3 items-start justify-between">
             <div className="space-y-1">

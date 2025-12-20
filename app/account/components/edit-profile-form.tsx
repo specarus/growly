@@ -81,7 +81,7 @@ export default function EditProfileForm({
             name="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </label>
         <label className="flex flex-col gap-1 lg:text-[11px] xl:text-xs 2xl:text-sm">
@@ -91,7 +91,7 @@ export default function EditProfileForm({
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="rounded-2xl border border-muted lg:px-3 xl:px-4 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </label>
       </div>

@@ -158,7 +158,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
             onChange={handleHourInputChange}
             placeholder="--"
             aria-label="Hour"
-            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 lg:rounded-lg xl:rounded-2xl border border-gray-100 shadow-inner text-center lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 bg-white 2xl:w-20 lg:rounded-lg xl:rounded-2xl border border-gray-100 shadow-inner text-center lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           />
           <p className="lg:text-[7px] xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Hour
@@ -177,7 +177,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ time, onChange }) => {
             onChange={handleMinuteInputChange}
             placeholder="--"
             aria-label="Minute"
-            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 2xl:w-20 lg:rounded-xl xl:rounded-2xl border border-gray-100 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            className="lg:h-10 lg:w-16 xl:h-12 xl:w-18 2xl:h-14 bg-white 2xl:w-20 lg:rounded-xl xl:rounded-2xl border border-gray-100 shadow-inner text-center xl:text-xl 2xl:text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           />
           <p className="lg:text-[7px] xl:text-[9px] 2xl:text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Minute

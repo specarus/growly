@@ -225,7 +225,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({
           actions={
             <div className="flex flex-row lg:gap-2 xl:gap-3">
               <Button
-                className="lg:text-[10px] xl:text-xs 2xl:text-sm text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)] hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
+                className="lg:text-[10px] font-semibold xl:text-xs 2xl:text-sm text-white shadow-[0_5px_10px_rgba(240,144,41,0.35)]  hover:shadow-none hover:brightness-105 transition lg:h-6 xl:h-8 2xl:h-10 bg-primary lg:px-3 xl:px-4"
                 onClick={handleNewRoutine}
               >
                 Create routine

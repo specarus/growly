@@ -184,23 +184,23 @@ const DropdownField: React.FC<DropdownFieldProps> = ({
               const optionId = `${optionsId}-option-${sanitizeDropdownValue(
                 option.value
               )}`;
-                  const isSelected = option.value === value;
-                  return (
-                    <button
-                      key={optionId}
-                      id={optionId}
-                      type="button"
-                      role="option"
-                      aria-selected={isSelected}
-                      onClick={() => {
-                        onSelect(option.value);
-                        toggleRef.current?.blur();
-                        setOpen(false);
-                      }}
-                      className={`w-full block rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
-                        isSelected
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground hover:bg-primary/5"
+              const isSelected = option.value === value;
+              return (
+                <button
+                  key={optionId}
+                  id={optionId}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onSelect(option.value);
+                    toggleRef.current?.blur();
+                    setOpen(false);
+                  }}
+                  className={`w-full block rounded-none border-b border-gray-100 lg:px-3 xl:px-4 lg:py-2 xl:py-3 text-left lg:text-[11px] xl:text-xs 2xl:text-sm transition last:border-b-0 last:rounded-b-2xl ${
+                    isSelected
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground hover:bg-primary/5"
                   }`}
                 >
                   {option.label}
@@ -428,7 +428,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
             }
           />
 
-          <div className="lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+          <div className="lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto">
             {habits.length === 0 ? (
               <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:px-4 xl:px-6 lg:py-6 xl:py-8 lg:space-y-2 xl:space-y-3 lg:text-xs xl:text-sm text-muted-foreground">
                 <p>
@@ -446,7 +446,7 @@ const CreatePopularPostForm: React.FC<CreatePopularPostFormProps> = ({
                 onSubmit={handleSubmit}
                 className="lg:space-y-4 xl:space-y-6"
               >
-                <div className="lg:rounded-2xl xl:rounded-3xl border border-gray-100 bg-white shadow-inner lg:p-4 xl:p-6 lg:space-y-4 xl:space-y-6">
+                <div className="lg:space-y-4 xl:space-y-6">
                   <DropdownField
                     label="Habit to share"
                     options={habits.map((habit) => ({
