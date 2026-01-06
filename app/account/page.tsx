@@ -13,11 +13,13 @@ import {
 
 import DeleteAccountForm from "./components/delete-account-form";
 import EditProfileForm from "./components/edit-profile-form";
+import LevelBadgeCarousel from "./components/level-badge-carousel";
 import PublicProfileForm from "./components/public-profile-form";
 import PrivacySettings from "./components/privacy-settings";
 import SignOutButton from "./components/sign-out-button";
 import StreakGoalForm from "./components/streak-goal-form";
 import PageHeading from "@/app/components/page-heading";
+import type { AccountAnalytics } from "./types";
 import { auth } from "@/lib/auth";
 import { buildHabitAnalytics } from "@/lib/habit-analytics";
 import { formatDayKey } from "@/lib/habit-progress";
@@ -124,27 +126,7 @@ export default async function AccountPage() {
   const headline = userRecord?.headline ?? "";
   const location = userRecord?.location ?? "";
 
-  type AccountAnalytics = {
-    stats: { label: string; value: string; tone: string }[];
-    level: number;
-    badgeCurrent: (typeof BADGE_TIERS)[number] | null;
-    badgeNext: (typeof BADGE_TIERS)[number] | null;
-    progressToNextBadge: number;
-    badgeStatuses: {
-      stage: string;
-      level: number;
-      label: string;
-      className: string;
-      achieved: boolean;
-      xpNeeded: number;
-      levelsAway: number;
-    }[];
-  };
-
   let analytics: AccountAnalytics | null = null;
-
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat("en-US").format(value);
 
   if (!privateAccount) {
     const [completedTodosCount, habits, progressEntries] = await Promise.all([
@@ -210,7 +192,8 @@ export default async function AccountPage() {
           )
         : 100;
 
-    const badgeStatuses = BADGE_TIERS.map((tier) => {
+    const sortedBadgeTiers = [...BADGE_TIERS].sort((a, b) => a.level - b.level);
+    const badgeStatuses = sortedBadgeTiers.map((tier) => {
       const achieved = level >= tier.level;
       const xpNeeded = Math.max(cumulativeXpForLevel(tier.level) - totalXP, 0);
       const levelsAway = Math.max(tier.level - level, 0);
@@ -460,107 +443,13 @@ export default async function AccountPage() {
                 </div>
 
                 {analytics ? (
-                  <div className="bg-muted/50 dark:bg-card/20 border border-gray-100 shadow-inner p-4 rounded-2xl grid gap-3 xl:gap-4">
-                    <div className="grid lg:grid-cols-2 gap-3 xl:gap-4">
-                      <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                        <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                          Current badge
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${
-                                analytics.badgeCurrent?.className ??
-                                "bg-muted text-foreground"
-                              }`}
-                            >
-                              <span className="uppercase tracking-[0.16em]">
-                                {analytics.badgeCurrent?.stage ?? "Starter"}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="lg:text-sm xl:text-base font-semibold text-primary">
-                            Level {analytics.level}
-                          </p>
-                        </div>
-                        <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                          {analytics.badgeCurrent?.label ??
-                            "Earn your first badge at level 5."}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl border border-gray-100 bg-card/90 shadow-sm lg:p-3 xl:p-4 space-y-2">
-                        <p className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                          Next badge
-                        </p>
-                        {analytics.badgeNext ? (
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div
-                                className={`inline-flex items-center gap-2 rounded-full lg:px-2.5 xl:px-3 lg:py-1 xl:py-1.5 text-xs font-semibold ${analytics.badgeNext.className}`}
-                              >
-                                <span className="uppercase tracking-[0.16em]">
-                                  {analytics.badgeNext.stage}
-                                </span>
-                              </div>
-                              <span className="lg:text-[11px] xl:text-xs text-muted-foreground font-semibold">
-                                Level {analytics.badgeNext.level}
-                              </span>
-                            </div>
-                            <div className="rounded-full bg-muted lg:h-2 xl:h-3 overflow-hidden">
-                              <div
-                                className="h-full bg-linear-to-r from-primary to-coral transition-all"
-                                style={{
-                                  width: `${analytics.progressToNextBadge}%`,
-                                }}
-                              />
-                            </div>
-                            <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                              {analytics.badgeNext.level - analytics.level}{" "}
-                              levels to go; keep logging to unlock it.
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
-                            You&apos;re at the top badge. Keep stacking XP to
-                            open new milestones.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid lg:grid-cols-4 gap-2 xl:gap-3">
-                      {analytics.badgeStatuses.map((tier) => (
-                        <div
-                          key={tier.stage}
-                          className="rounded-2xl border border-gray-100 bg-white/80 shadow-sm lg:p-3 xl:p-4 space-y-1"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="lg:text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                              {tier.stage}
-                            </span>
-                            <span className="lg:text-[10px] xl:text-[11px] font-semibold text-primary">
-                              Lv {tier.level}
-                            </span>
-                          </div>
-                          <div
-                            className={`inline-flex items-center gap-1 rounded-full lg:px-2 xl:px-2.5 lg:py-0.5 text-xs font-semibold ${tier.className}`}
-                          >
-                            <span>{tier.label}</span>
-                          </div>
-                          <p className="lg:text-[10px] xl:text-[11px] text-muted-foreground">
-                            {tier.achieved
-                              ? "Unlocked"
-                              : `${
-                                  tier.levelsAway
-                                } levels away - ${formatNumber(
-                                  tier.xpNeeded
-                                )} XP`}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <LevelBadgeCarousel
+                    badges={analytics.badgeStatuses}
+                    level={analytics.level}
+                    progressToNextBadge={analytics.progressToNextBadge}
+                    nextBadgeStage={analytics.badgeNext?.stage ?? null}
+                    nextBadgeLevel={analytics.badgeNext?.level ?? null}
+                  />
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-white/80 lg:p-4 xl:p-5 lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground shadow-inner">
                     XP milestones are hidden while your account is private.

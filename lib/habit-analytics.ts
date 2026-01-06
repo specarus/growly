@@ -24,7 +24,7 @@ export type HabitWithStats = Habit & {
 type HabitAnalyticsResult = {
   habitsWithStats: HabitWithStats[];
   progressByDay: ProgressByDayMap;
-  weekdayPerformance: { label: string; value: number }[];
+  weekdayPerformance: { label: string; value: number; dateLabel: string }[];
   lookbackDays: number;
 };
 
@@ -51,8 +51,6 @@ export const buildHabitAnalytics = (
 
   const completionByHabit = new Map<string, Map<string, number>>();
   const rawProgressByDay: Record<string, number> = {};
-  const weekdayTotals = Array<number>(7).fill(0);
-  const weekdayCounts = Array<number>(7).fill(0);
 
   progressEntries.forEach((entry) => {
     const goalAmount = habitGoalMap.get(entry.habitId) ?? 1;
@@ -70,16 +68,17 @@ export const buildHabitAnalytics = (
     }
     habitCompletion.set(dayKey, ratio);
 
-    rawProgressByDay[dayKey] = (rawProgressByDay[dayKey] ?? 0) + ratio;
-
-    const weekdayIndex = getUtcDayStart(entry.date).getUTCDay();
-    weekdayTotals[weekdayIndex] += ratio;
-    weekdayCounts[weekdayIndex] += 1;
   });
 
   const totalHabits = habits.length;
   const progressByDay: ProgressByDayMap = {};
   if (totalHabits > 0) {
+    completionByHabit.forEach((habitCompletion) => {
+      habitCompletion.forEach((ratio, dayKey) => {
+        rawProgressByDay[dayKey] = (rawProgressByDay[dayKey] ?? 0) + ratio;
+      });
+    });
+
     Object.entries(rawProgressByDay).forEach(([date, sum]) => {
       const day = getUtcDayStart(new Date(date));
       const activeHabitsForDay = habitStartDates.filter(
@@ -89,6 +88,25 @@ export const buildHabitAnalytics = (
       progressByDay[date] = Math.min(1, sum / divisor);
     });
   }
+
+  const currentWeekStart = new Date(today);
+  const weekDay = currentWeekStart.getUTCDay();
+  currentWeekStart.setUTCDate(currentWeekStart.getUTCDate() - weekDay);
+  const weekdayFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  const weekdayPerformance = weekdayLabels.map((label, index) => {
+    const day = new Date(currentWeekStart);
+    day.setUTCDate(day.getUTCDate() + index);
+    const key = formatDayKey(day);
+    return {
+      label,
+      value: Math.min(1, Math.max(0, progressByDay[key] ?? 0)),
+      dateLabel: weekdayFormatter.format(day),
+    };
+  });
 
   const habitsWithStats: HabitWithStats[] = habits.map((habit) => {
     const completionMap = completionByHabit.get(habit.id);
@@ -141,16 +159,6 @@ export const buildHabitAnalytics = (
       streak,
       averageCompletion,
       successRate,
-    };
-  });
-
-  const weekdayPerformance = weekdayLabels.map((label, index) => {
-    const total = weekdayTotals[index];
-    const count = weekdayCounts[index];
-    const value = count > 0 ? Math.min(1, total / count) : 0;
-    return {
-      label,
-      value,
     };
   });
 

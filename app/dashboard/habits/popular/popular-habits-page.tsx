@@ -662,7 +662,7 @@ const PopularHabitsPage: React.FC = () => {
             <div className="flex flex-col lg:gap-1.5 xl:gap-2 items-center">
               <Button
                 onClick={() => router.push("/dashboard/habits/popular/create")}
-                className="lg:h-6 xl:h-8 2xl:h-10 lg:px-3 xl:px-5 2xl:px-7 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition"
+                className="lg:h-6 xl:h-8 2xl:h-10 lg:px-3 font-semibold xl:px-5 2xl:px-7 lg:text-[11px] xl:text-xs 2xl:text-sm bg-primary text-white shadow-sm hover:brightness-105 transition"
               >
                 Create a post
               </Button>

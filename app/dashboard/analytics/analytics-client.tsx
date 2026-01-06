@@ -45,6 +45,12 @@ type RoutinePerformance = {
   completion: number;
 };
 
+type WeekdayPerformance = {
+  label: string;
+  value: number;
+  dateLabel: string;
+};
+
 type Summary = {
   totalHabits: number;
   averageStreak: number;
@@ -61,7 +67,7 @@ type Summary = {
 type Props = {
   summary: Summary;
   trend: TrendPoint[];
-  weekdayPerformance: TrendPoint[];
+  weekdayPerformance: WeekdayPerformance[];
   habits: HabitInsight[];
   todoStatusCounts: Record<TodoStatus, number>;
   routinePerformance: RoutinePerformance[];
@@ -218,6 +224,16 @@ const AnalyticsClient: React.FC<Props> = ({
     routineChartWidth - routineMarginLeft - routineMarginRight
   );
   const routineXTicks = [0, 25, 50, 75, 100];
+  const currentWeekLabel = useMemo(() => {
+    if (weekdayPerformance.length === 0) {
+      return "";
+    }
+    const startLabel = weekdayPerformance[0].dateLabel;
+    const endLabel = weekdayPerformance[weekdayPerformance.length - 1].dateLabel;
+    return startLabel === endLabel
+      ? `Week of ${startLabel}`
+      : `Week of ${startLabel} — ${endLabel}`;
+  }, [weekdayPerformance]);
   const sortedRoutinePerformance = useMemo(
     () => [...routinePerformance].sort((a, b) => b.completion - a.completion),
     [routinePerformance]
@@ -298,11 +314,26 @@ const AnalyticsClient: React.FC<Props> = ({
   }, []);
 
   const gradientStops = ["#f8a84b", "#f7805c", "#4cd7b4"];
-  const routineGradientStops = [
-    "hsl(var(--secondary) / 0.9)",
-    "hsl(var(--secondary) / 0.6)",
-    "hsl(var(--secondary) / 0.3)",
+  const routineFillColors = [
+    "#0EA5E9",
+    "#22D3EE",
+    "#34D399",
+    "#A78BFA",
+    "#F472B6",
+    "#FACC15",
+    "#F87171",
+    "#F97316",
   ];
+  const selectRoutineColor = (value: string) => {
+    let hash = 0;
+    for (let i = 0; i < value.length; i += 1) {
+      hash = (value.charCodeAt(i) + (hash << 5) - hash) | 0;
+    }
+    return (
+      routineFillColors[Math.abs(hash) % routineFillColors.length] ??
+      routineFillColors[0]
+    );
+  };
 
   const activeHabit =
     habits.find((habit) => habit.streak === summary.topStreak?.streak) ??
@@ -760,6 +791,9 @@ const AnalyticsClient: React.FC<Props> = ({
                   <h3 className="lg:text-sm xl:text-base 2xl:text-lg font-semibold">
                     Weekday rhythm
                   </h3>
+                  <p className="lg:text-[11px] xl:text-xs text-muted-foreground">
+                    {currentWeekLabel}
+                  </p>
                 </div>
                 <div className="lg:h-9 lg:w-9 xl:h-10 xl:w-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <Rotate3D className="lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary" />
@@ -767,7 +801,7 @@ const AnalyticsClient: React.FC<Props> = ({
               </div>
 
               <div className="grid grid-cols-7 lg:gap-4 xl:gap-3 lg:mt-1.5 xl:mt-2">
-                {weekdayPerformance.map((day) => (
+                {weekdayPerformance.map((day, index) => (
                   <div
                     key={day.label}
                     className="flex flex-col items-center lg:gap-1 xl:gap-2 text-center"
@@ -780,7 +814,7 @@ const AnalyticsClient: React.FC<Props> = ({
                         );
                         return (
                           <div
-                            className="w-full rounded-full bg-linear-to-t from-primary via-primary-400 to-amber-300"
+                            className="w-full rounded-full bg-secondary/90"
                             style={{ height: `${barHeight}%` }}
                           />
                         );
@@ -788,6 +822,9 @@ const AnalyticsClient: React.FC<Props> = ({
                     </div>
                     <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs font-semibold">
                       {day.label}
+                    </div>
+                    <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
+                      {day.dateLabel}
                     </div>
                     <div className="lg:text-[9px] xl:text-[11px] 2xl:text-xs text-muted-foreground">
                       {Math.round(day.value * 100)}%
@@ -934,20 +971,6 @@ const AnalyticsClient: React.FC<Props> = ({
                   className="w-full h-full"
                   preserveAspectRatio="none"
                 >
-                  <defs>
-                    <linearGradient
-                      id="routineBarGradient"
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor={routineGradientStops[0]} />
-                      <stop offset="50%" stopColor={routineGradientStops[1]} />
-                      <stop offset="100%" stopColor={routineGradientStops[2]} />
-                    </linearGradient>
-                  </defs>
-
                   {routineXTicks.map((tick) => {
                     const x =
                       routineMarginLeft +
@@ -987,6 +1010,7 @@ const AnalyticsClient: React.FC<Props> = ({
                       (clamped / 100) * Math.max(routineInnerWidth, 1);
                     const labelY = y + routineBarHeight / 2 + 4;
                     const textInside = barWidth > 120;
+                    const fillColor = selectRoutineColor(routine.id);
 
                     return (
                       <g key={routine.id}>
@@ -1015,7 +1039,6 @@ const AnalyticsClient: React.FC<Props> = ({
                           y={y}
                           width={Math.max(routineInnerWidth, 1)}
                           height={routineBarHeight}
-                          rx={12}
                           fill="rgba(148,163,184,0.18)"
                         />
                         <rect
@@ -1023,8 +1046,7 @@ const AnalyticsClient: React.FC<Props> = ({
                           y={y}
                           width={Math.max(barWidth, 4)}
                           height={routineBarHeight}
-                          rx={12}
-                          fill="url(#routineBarGradient)"
+                          fill={fillColor}
                           className="drop-shadow-sm"
                         />
 
@@ -1103,93 +1125,6 @@ const AnalyticsClient: React.FC<Props> = ({
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="lg:space-y-3 xl:space-y-4">
-          <p className="lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-            Insights
-          </p>
-
-          <div className="grid lg:grid-cols-3 lg:gap-3 xl:gap-4">
-            {statCards.map((card) => {
-              const Icon = card.icon;
-              const progress = Math.max(0, Math.min(card.progress ?? 0, 100));
-              return (
-                <FlipCard
-                  key={card.id}
-                  accent={card.accent}
-                  front={
-                    <div className="flex flex-col justify-between h-full lg:space-y-3 xl:space-y-4">
-                      <div className="flex items-start justify-between lg:gap-2 xl:gap-3">
-                        <div className="lg:space-y-1 xl:space-y-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-muted lg:px-2 xl:px-3 lg:py-0.5 xl:py-1 lg:text-[9px] xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                            {card.badge}
-                          </span>
-                          <p className="lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
-                            {card.title}
-                          </p>
-                          <p className="lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-foreground">
-                            {card.value}
-                          </p>
-                          <p className="lg:text-[11px] xl:text-xs 2xl:text-sm text-muted-foreground">
-                            {card.helper}
-                          </p>
-                        </div>
-                        <div
-                          className={`lg:w-10 lg:h-10 xl:w-11 xl:h-11 2xl:h-12 2xl:w-12 rounded-2xl bg-linear-to-br ${card.accent} text-white flex items-center justify-center shadow-md`}
-                        >
-                          <Icon className="lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
-                        </div>
-                      </div>
-
-                      <div className="lg:h-1.5 xl:h-2 w-full rounded-full bg-muted overflow-hidden">
-                        <div
-                          className={`h-full bg-linear-to-r ${card.accent}`}
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 lg:gap-1.5 xl:gap-2">
-                        {card.details.map((detail) => (
-                          <div
-                            key={detail}
-                            className="rounded-xl border border-gray-100 bg-white/80 lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[10px] text-[12px] font-semibold text-foreground shadow-sm flex items-center lg:gap-1.5 xl:gap-2"
-                          >
-                            <BarChart3 className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                            <span>{detail}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="lg:text-[9px] xl:text-[11px] text-muted-foreground flex items-center gap-2">
-                        <ArrowUpRight className="lg:w-3 lg:h-3 xl:w-4 xl:h-4 text-primary" />
-                        Tap to view the playbook
-                      </div>
-                    </div>
-                  }
-                  back={
-                    <div className="h-full lg:space-y-2 xl:space-y-3 text-white">
-                      <div className="flex items-center justify-between">
-                        <p className="lg:text-[9px] xl:text-[11px] font-semibold uppercase tracking-[0.16em]">
-                          {card.backTitle}
-                        </p>
-                      </div>
-                      <p className="lg:text-base xl:text-lg 2xl:text-xl font-semibold leading-tight">
-                        {card.title}
-                      </p>
-                      <p className="lg:text-xs xl:text-sm leading-relaxed opacity-90">
-                        {card.backCopy}
-                      </p>
-                      <div className="rounded-2xl bg-white/20 lg:px-2 xl:px-3 lg:py-1 xl:py-2 lg:text-[11px] xl:text-xs 2xl:text-sm font-semibold flex items-center gap-2">
-                        <ArrowUpRight className="lg:w-3 lg:h-3 xl:w-4 xl:h-4" />
-                        <span>Tap again to flip back</span>
-                      </div>
-                    </div>
-                  }
-                />
-              );
-            })}
           </div>
         </section>
       </div>
